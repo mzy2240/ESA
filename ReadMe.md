@@ -1,4 +1,4 @@
-# SSimauto
+# SSimAuto
 A python package that makes PowerWorld Simauto easier yet more powerful to use
 ## Environment
 * [Git](https://git-scm.com/) - Version control system for tracking changes in computer files and coordinating work on those files among multiple people.
