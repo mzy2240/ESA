@@ -4,8 +4,10 @@ import sys
 
 class Workers:
 
-    def __init__(self, number=1, auto_shutdown=False, timeout=0, file_path=""):
+    def __init__(self, number=1, ip="165.91.215.167", port=1883, auto_shutdown=False, timeout=0, file_path=""):
         self.number = number
+        self.ip=ip
+        self.port=port
         self.auto_shutdown = auto_shutdown
         self.timeout = timeout
         self.file_path = file_path
@@ -14,7 +16,7 @@ class Workers:
     def start(self):
         plist = []
         print("Wake up %s workers ..." % self.number)
-        target = [sys.executable, 'Worker.py']
+        target = [sys.executable, 'Worker.py', self.ip, self.port, self.file_path]
         for i in range(self.number):
             plist.append(subprocess.Popen(target))
 
