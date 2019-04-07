@@ -1,6 +1,6 @@
 # SimautoWrapper
 SimautoWrapper is a python-based script collection for communicating with PowerWorld Simulator. There are two major scripts in this collection:
-
+ 
 * SimautoWrapper.py
 * main.py
 ## Environment
@@ -12,7 +12,7 @@ git clone [https://github.tamu.edu/zeyumao2/PYSA.git] (may require an account in
 Before running the following scripts, make sure you have PowerWorld Simulator installed.
 ## SimautoWrapper
 SimautoWrapper is a wrapper for PowerWorld Simulator. When running this script, you can get results without knowledge of how the SimautoCOM works.
-Most common used commands are listed below. In the future version, more Simauto commands will be wrapped.
+Most common used commands are listed below. In the future version, more Simauto commands will be wrapped. 
 
 |  Function   |      Action      |        Argument      |
 |-------------|----------------|-----------------------|
