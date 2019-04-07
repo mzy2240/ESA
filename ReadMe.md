@@ -1,15 +1,14 @@
 # SSimAuto
 A python package that makes PowerWorld Simauto easier yet more powerful to use
 ## Environment
-* [Git](https://git-scm.com/) - Version control system for tracking changes in computer files and coordinating work on those files among multiple people.
-* [Anaconda](https://www.anaconda.com/distribution/#windows) (python3.6, not necessary if you already have python installed) - A free and open source[4] distribution of the Python and R programming languages for data science and machine learning related applications.
+python 3.5 or above (recommend the latest Anaconda 3)
 ## Installation
-git clone [https://github.tamu.edu/zeyumao2/PYSA.git] (may require an account in gitlab)
+pip install ssimauto
 ## Usage
-Before running the following scripts, make sure you have PowerWorld Simulator installed.
-## SimautoWrapper
-SimautoWrapper is a wrapper for PowerWorld Simulator. When running this script, you can get results without knowledge of how the SimautoCOM works.
-Most common used commands are listed below. In the future version, more Simauto commands will be wrapped. 
+Before using the package, make sure you have PowerWorld Simulator and SimAuto add-on installed.
+## from ssimauto import PYSimAuto
+PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
+Most common methods are listed below.
 
 |  Function   |      Action      |        Argument      |
 |-------------|----------------|-----------------------|
