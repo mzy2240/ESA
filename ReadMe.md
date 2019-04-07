@@ -1,8 +1,5 @@
-# SimautoWrapper
-SimautoWrapper is a python-based script collection for communicating with PowerWorld Simulator. There are two major scripts in this collection:
- 
-* SimautoWrapper.py
-* main.py
+# SSimauto
+A python package that makes PowerWorld Simauto easier yet more powerful to use
 ## Environment
 * [Git](https://git-scm.com/) - Version control system for tracking changes in computer files and coordinating work on those files among multiple people.
 * [Anaconda](https://www.anaconda.com/distribution/#windows) (python3.6, not necessary if you already have python installed) - A free and open source[4] distribution of the Python and R programming languages for data science and machine learning related applications.
