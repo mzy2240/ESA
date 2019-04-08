@@ -52,9 +52,10 @@ Most common methods are listed below.
 |calculateLODF(Branch, LinearMethod, PostClosureLCDF)|Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a particular branch.|*Branch*: string (Required). *LinearMethod*: string (Oprional) Default is 'DC'. *PostClosureLCDF*: string (Optional) Default is 'YES'.|
 |saveJacobian(JacFileName, JIDFileName, FileType, JacForm)|Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab.|*JacFileName, JIDFileName*: string (Required). *FileType*: string 'M' or 'TEX' or 'EXPM' (Required). *JacForm*: string 'R' or 'P' (Required).|
 |saveYbusInMatlabFormat(fileName, IncludeVoltages)|Use this action to save the YBus to a file formatted for use with Matlab|*fileName*: string (Required). *IncludeVoltages*: string (Optional) Default is 'YES'.|
-||||
-||||
-||||
+|setParticipationFactors(Method, ConstantValue, Object)|Use this action to modify the generator participation factors in the case. |*Method*: string 'MAXMWRAT'or 'RESERVE' or 'CONSTANT' (Required). *ConstantValue*: float (Required). *Object*: string (Required)|
+|tsRunUntilSpecifiedTime(ContingencyName, RunOptions)|This command allows manual control of the transient stability run.|*ContingencyName*: string (Required). *RunOptions*: string '[StopTime(in seconds), StepSize(numbers), StepsInCycles='YES', ResetStartTime='NO', NumberOfTimeStepsToDo=0]' (Required).|
+|tsWriteOptions(fileName, Options, Keyfield|Save the transient stability option settings to an auxiliary file.|*fileName*: string (Required). *Options*: string '[SaveDynamicModel, SaveStabilityOptions, SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]' (Optional). *Keyfield*: string (Optional)|
+|enterMode(mode)|This action will change the mode in which Simulator is operating.|*mode*: string (Required)|
 ## Developer
 If you have any questions, feel free to contact the developers.
 
