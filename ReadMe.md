@@ -12,13 +12,37 @@ python 3.5 or above (recommend the latest Anaconda 3)
 Before using the package, make sure you have PowerWorld Simulator and SimAuto add-on installed. Use script below to start:
 
 ```
-from ssimauto import Manager
+from esa import Manager
 
-from ssimauto import Workers
+from esa import Workers
 
-from ssimauto import PYSimAuto
+from esa import PYSimAuto
 ```
-## from ssimauto import PYSimAuto
+### Manager
+Manager is a task scheduler for distributed workers. It is designed for task distribution and worker management.
+```buildoutcfg
+manager = Manager(progressbar=False)
+manager.addTask(["some_task"])           # Add tasks
+manager.onFinish(a_callback_func)        # The function will be called when all tasks are done
+manager.onSingleResult(a_callback_func)  # The function will be called when any task is done
+manager.start()                          # Manager starts to work (*non-block)
+manager.stop()                           # Manager stops working
+manager.loop_forever()                   # Manager starts to work (*block)
+```
+Using the following properties can help you track the task progress:
+```buildoutcfg
+manager.status                           # Manager status and remaining tasks
+manager.management                       # Statistics for workers
+manager.time                             # The time format that manager uses
+```
+
+### Workers
+Workers is a group of PowerWorld Simauto COM objects. It is designed to get the task from Manager and execute the task with PYSimAuto in parallel.
+```buildoutcfg
+worker = Workers(number=1, ip="165.91.215.167", port=1883, auto_shutdown=False, timeout=0, file_path="")
+worker.start()
+```
+### PYSimAuto
 PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
 Most common methods are listed below.
 
