@@ -80,9 +80,7 @@ Most common methods are listed below.
 |tsRunUntilSpecifiedTime(ContingencyName, RunOptions)|This command allows manual control of the transient stability run.|*ContingencyName*: string (Required). *RunOptions*: string '[StopTime(in seconds), StepSize(numbers), StepsInCycles='YES', ResetStartTime='NO', NumberOfTimeStepsToDo=0]' (Required).|
 |tsWriteOptions(fileName, Options, Keyfield|Save the transient stability option settings to an auxiliary file.|*fileName*: string (Required). *Options*: string '[SaveDynamicModel, SaveStabilityOptions, SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]' (Optional). *Keyfield*: string (Optional)|
 |enterMode(mode)|This action will change the mode in which Simulator is operating.|*mode*: string (Required)|
-## Developer
-If you have any questions, feel free to contact the developers.
 
-Zeyu Mao, PhD student in Texas A&M University, zeyumao2@tamu.edu  
+## Developers
+If you have any questions regarding this package, please feel free to contact the developers via GitHub.
 
-Yijing Liu, PhD student in Texas A&M University, yiji21@tamu.edu
