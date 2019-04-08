@@ -7,7 +7,7 @@ A python package that makes PowerWorld Simauto easier yet more powerful to use. 
 ## Environment
 python 3.5 or above (recommend the latest Anaconda 3)
 ## Installation
-`pip install esa`
+`pip install ssimauto`
 ## Usage
 Before using the package, make sure you have PowerWorld Simulator and SimAuto add-on installed. Use script below to start:
 
@@ -50,14 +50,14 @@ Most common methods are listed below.
 |createData(ObjectType, FieldList, ValueList)|Use this action to create particular objects.|*ObjectType*: string (Required). *FieldList*: A variant of string (Required). *ValueList*: A variant of string. (Required).|
 |writeAuxFile(FileName, FilterName, ObjectType, FieldList, ToAppend, EString)|This function can be used to write data from the case in the Simulator Automation Server to a PowerWorld Auxiliary file.|*FileName*: string (Required). *FilterName*: string (Required). *ObjectType*: string (Required). *FieldList*: A variant of string  (Required). *ToAppend* =True. *EString*=None |
 |calculateLODF(Branch, LinearMethod, PostClosureLCDF)|Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a particular branch.|*Branch*: string (Required). *LinearMethod*: string (Oprional) Default is 'DC'. *PostClosureLCDF*: string (Optional) Default is 'YES'.|
-||||
+|saveJacobian(JacFileName, JIDFileName, FileType, JacForm)|Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab.|*JacFileName, JIDFileName*: string (Required). *FileType*: string 'M' or 'TEX' or 'EXPM' (Required). *JacForm*: string 'R' or 'P' (Required).|
 ||||
 ||||
 ||||
 ||||
 ## Developer
-If you have any questions regarding this package, please feel free to contact the developers.
+If you have any questions, feel free to contact the developers.
 
-Zeyu Mao, zeyumao2@tamu.edu  
+Zeyu Mao, PhD student in Texas A&M University, zeyumao2@tamu.edu  
 
-Yijing Liu, yiji21@tamu.edu
+Yijing Liu, PhD student in Texas A&M University, yiji21@tamu.edu
