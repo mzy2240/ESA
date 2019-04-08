@@ -56,8 +56,8 @@ Most common methods are listed below.
 ||||
 ||||
 ## Developer
-If you have any questions, feel free to contact the developers.
+If you have any questions regarding this package, please feel free to contact the developers.
 
-Zeyu Mao, PhD student in Texas A&M University, zeyumao2@tamu.edu  
+Zeyu Mao, zeyumao2@tamu.edu  
 
-Yijing Liu, PhD student in Texas A&M University, yiji21@tamu.edu
+Yijing Liu, yiji21@tamu.edu
