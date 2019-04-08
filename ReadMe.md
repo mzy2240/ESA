@@ -1,11 +1,7 @@
-# ESA
-A python package that makes PowerWorld Simauto easier yet more powerful to use. There are two major scripts in this collection:
- 
-* Manager.py
-* Workers.py
-* PYSimAuto.py
+# esa
+A python package that makes PowerWorld Simauto easier yet more powerful to use. With esa, you can run most SimAuto commands and Aux scripts easily, and even run these tasks in a parallel and distributed way.
 ## Environment
-python 3.5 or above (recommend the latest Anaconda 3)
+python 3.5 or above (recommend to use the latest Anaconda 3)
 ## Installation
 `pip install esa`
 ## Usage
