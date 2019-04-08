@@ -1,4 +1,4 @@
-# SSimAuto
+# ESA
 A python package that makes PowerWorld Simauto easier yet more powerful to use. There are two major scripts in this collection:
  
 * Manager.py
