@@ -1,19 +1,25 @@
 #!/usr/bin/env python
+import setuptools
 
-from setuptools import setup
+with open("ReadMe.md", "r") as fh:
+    long_description = fh.read()
 
-setup(
-    name = 'ssimauto',
-    version = '0.2',
+setuptools.setup(
+    name = 'esa',
+    version = '0.1.1',
     description = 'A python package that makes PowerWorld Simauto easier yet more powerful to use',
-    long_description = open('README.rst').read() + '\n\n' + open('HISTORY.rst').read(),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
     author = 'Zeyu Mao',
     author_email = 'zeyumao2@tamu.edu',
-    url = 'https://github.tamu.edu/zeyumao2/ssimauto',
-    packages = [
-        'ssimauto'
+    url = 'https://github.tamu.edu/zeyumao2/esa',
+    packages=setuptools.find_packages(),
+    classifiers=[
+        "Programming Language :: Python :: 3",
+        "License :: OSI Approved :: MIT License",
+        "Operating System :: OS Independent",
     ],
-    install_requires=['paho-mqtt', 'tqdm', 'psutil', 'pandas', 'numpy', 'pywin32', 'pypiwin32', ],
+    install_requires=['paho-mqtt', 'tqdm', 'psutil', 'pandas', 'numpy', 'pywin32', 'pypiwin32'],
     license='MIT',
     zip_safe=False
 )
