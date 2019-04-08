@@ -20,7 +20,9 @@ from ssimauto import PYSimAuto
 ```
 ## Developer
 If you have any questions, feel free to contact the developers.
+
 Zeyu Mao, PhD student in Texas A&M University, zeyumao2@tamu.edu  
+
 Yijing Liu, PhD student in Texas A&M University, yiji21@tamu.edu
 ## from ssimauto import PYSimAuto
 PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
