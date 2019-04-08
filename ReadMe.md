@@ -11,11 +11,11 @@ python 3.5 or above (recommend the latest Anaconda 3)
 ## Usage
 Before using the package, make sure you have PowerWorld Simulator and SimAuto add-on installed. Use script below to start:
 
-`from ssimauto import Manager
+`from ssimauto import Manager`
 
-from ssimauto import Workers
+`from ssimauto import Workers`
 
-from ssimauto import PYSimAuto`
+`from ssimauto import PYSimAuto`
 ## from ssimauto import PYSimAuto
 PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
 Most common methods are listed below.
