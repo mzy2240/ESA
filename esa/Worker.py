@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from .SimautoWrapper import PYSimAuto
+from .SimautoWrapper import sa
 import time, random, string, json, psutil
 from ast import literal_eval
 import sys
