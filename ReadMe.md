@@ -12,7 +12,7 @@ from esa import Manager
 
 from esa import Workers
 
-from esa import PYSimAuto
+from esa import sa
 ```
 ### Manager
 Manager is a task scheduler for distributed workers. It is designed for task distribution and worker management.
@@ -38,8 +38,8 @@ Workers is a group of PowerWorld Simauto COM objects. It is designed to get the 
 worker = Workers(number=1, ip="165.91.215.167", port=1883, auto_shutdown=False, timeout=0, file_path="")
 worker.start()
 ```
-### PYSimAuto
-PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
+### sa
+sa is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
 Most common methods are listed below.
 ```
 pysimauto = PYSimAuto(pwb_file_path)
