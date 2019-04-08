@@ -43,11 +43,12 @@ PYSimAuto is a wrapper for the PowerWorld SimAuto COM object. It is designed to 
 Most common methods are listed below.
 ```
 pysimauto = PYSimAuto(pwb_file_path)
-pysimauto.getListOfDevices(ObjType, filterName)
-ContingencyName = 'My Transient Contingency'
-pysimauto.tsSolve(ContingencyName)
-Branch = '"Branch ''4'' ''5'' ''1''"'
-pysimatuo.tsCalculateCriticalClearTime(Branch)
+pysimauto.getListOfDevices(ObjType, filterName)                               # Get a list of objects and their key fields
+ContingencyName = 'My Transient Contingency'                                  # Contingency that has already been defined in PowerWorld Simulator
+pysimauto.tsSolve(ContingencyName)                                            # Solve contingency
+pysimauto.tsGetContingencyResults(CtgName, ObjFieldList, StartTime, StopTime) # This function should ONLY be used after the simulation is run
+Branch = '"Branch ''4'' ''5'' ''1''"'                                         # Branch label should be entered as a string
+pysimatuo.tsCalculateCriticalClearTime(Branch)                                # Calculate CCT of the branch and the result is returned to PW as a new ctg.
 ```
 |  Function   |      Action      |        Argument      |
 |-------------|----------------|-----------------------|
@@ -71,7 +72,7 @@ pysimatuo.tsCalculateCriticalClearTime(Branch)
 |tsCalculateCriticalClearTime(Branch)|Use this action to calculate critical clearing time for faults on the lines that meet the specified filter.|*Branch*: string (Required)|
 |tsResultStorageSetAll(objectttype, choice)|This command will allow setting which object types are stored in memory during a transient stability run. This will affect all fields and states for the specified objecttype. |*objectttype*: string (Required). *choice*: string (Required).|
 |tsSolve(ContingencyName)|Solves only the specified contingency|*ContingencyName*: string (Required).|
-|tsGetContingencyResults(CtgName, ObjFieldList, StartTime, StopTime)|Read transient stability results directly into the SimAuto COM obkect and be further used. This function should ONLY be used after the simulation is run|*CtgName*: string (Required). *ObjFieldList*: string (Required). *StartTime*: string (Optional). *StopTime*: string (Optional)|
+|tsGetContingencyResults(CtgName, ObjFieldList, StartTime, StopTime)|Read transient stability results directly into the SimAuto COM obkect and be further used. This function should ONLY be used after the simulation is run.|*CtgName*: string (Required). *ObjFieldList*: string (Required). *StartTime*: string (Optional). *StopTime*: string (Optional)|
 |setData(ObjectType, FieldList, ValueList, Filter)|Use this action to set fields for particular objects.|*ObjectType*: string (Required). *FieldList*: A variant of string (Required). *ValueList*: A variant of string (Required). *Filter*: string (Optional) |
 |delete(ObjectType)|Use this delete objects of a particular type. A filter may optionally be specified to only delete objects that meet a filter.|*ObjectType*: string (Required)|
 |createData(ObjectType, FieldList, ValueList)|Use this action to create particular objects.|*ObjectType*: string (Required). *FieldList*: A variant of string (Required). *ValueList*: A variant of string. (Required).|
