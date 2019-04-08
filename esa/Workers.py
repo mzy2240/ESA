@@ -16,7 +16,7 @@ class Workers:
     def start(self):
         plist = []
         print("Wake up %s workers ..." % self.number)
-        target = [sys.executable, 'Worker.py', self.ip, self.port, self.file_path]
+        target = [sys.executable, 'Worker.py', self.ip, str(self.port), self.file_path]
         for i in range(self.number):
             plist.append(subprocess.Popen(target))
 

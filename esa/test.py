@@ -1,4 +1,5 @@
 from Manager import Manager
+from Workers import Workers
 import time
 
 
@@ -18,6 +19,9 @@ for i in range(10):
            ("tsGetContingencyResults", "My Transient Contingency", ['"Bus 4 | frequency"']),
            ("delete", ObjectType)])
 
+
+worker = Workers(number=2, file_path="C:/PowerWorld20/PWcases/PWcases/UIUC150Original/UIUC150_JAN-15-2016_Etime_Johnsonville_CT.PWB")
+worker.start()
 
 boss = Manager()
 
