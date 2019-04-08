@@ -51,7 +51,7 @@ Most common methods are listed below.
 |writeAuxFile(FileName, FilterName, ObjectType, FieldList, ToAppend, EString)|This function can be used to write data from the case in the Simulator Automation Server to a PowerWorld Auxiliary file.|*FileName*: string (Required). *FilterName*: string (Required). *ObjectType*: string (Required). *FieldList*: A variant of string  (Required). *ToAppend* =True. *EString*=None |
 |calculateLODF(Branch, LinearMethod, PostClosureLCDF)|Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a particular branch.|*Branch*: string (Required). *LinearMethod*: string (Oprional) Default is 'DC'. *PostClosureLCDF*: string (Optional) Default is 'YES'.|
 |saveJacobian(JacFileName, JIDFileName, FileType, JacForm)|Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab.|*JacFileName, JIDFileName*: string (Required). *FileType*: string 'M' or 'TEX' or 'EXPM' (Required). *JacForm*: string 'R' or 'P' (Required).|
-||||
+|saveYbusInMatlabFormat(fileName, IncludeVoltages)||*fileName*: string (Required). *IncludeVoltages*: string (Optional) Default is 'YES'.|
 ||||
 ||||
 ||||
