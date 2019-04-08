@@ -8,7 +8,7 @@ import pythoncom
 import datetime
 
 
-class PYSimAuto(object):
+class sa(object):
     """A SimAuto Wrapper in Python"""
 
     def __init__(self, pwb_file_path=None):
