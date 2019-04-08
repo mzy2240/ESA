@@ -1,8 +1,9 @@
 import paho.mqtt.client as mqtt
-from .SimautoWrapper import sa
+from SimautoWrapper import sa
 import time, random, string, json, psutil
 from ast import literal_eval
 import sys
+import platform
 
 
 def init_mqtt(client):
@@ -47,7 +48,7 @@ def on_message(client, userdata, msg):
                 print('Job done! %s will leave now.' % worker_id)
                 client.disconnect()
         elif 'fallin' in msg.payload.decode():
-            worker.publish("registration", json.dumps({'id': worker_id, 'hardware': worker_hardware}))
+            worker.publish("registration", json.dumps({'machine': platform.node(), 'id': worker_id, 'hardware': worker_hardware}))
 
 
 args = sys.argv

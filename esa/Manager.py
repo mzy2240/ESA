@@ -49,6 +49,7 @@ class Manager:
             workerid = worker_info['id']
             self.__management[workerid] = {
                 'status': 'online',
+                'machine': worker_info['machine'],
                 'hardware': worker_info['hardware'],
                 'task': None,
                 'CRT': None,
