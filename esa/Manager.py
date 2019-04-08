@@ -11,7 +11,7 @@ from threading import Thread
 
 class Manager:
 
-    def __init__(self, auto_shutdown=False, dynamic_load_balance=False, save_to_excel=False, progressbar=False):
+    def __init__(self, auto_shutdown=False, dynamic_load_balance=False, save_to_excel=False, progressbar=False, visualization=False):
         self.__queue = Queue()
         self.__active = False
         # self.__thread = Thread(target=self.__run)
@@ -19,6 +19,7 @@ class Manager:
         self.dynamic_load_balance = dynamic_load_balance
         self.save_to_excel = save_to_excel
         self.progressbar = progressbar
+        self.visualization = visualization
         self.__handlers = {}
         self.__running = False
         self.__status = None
@@ -77,6 +78,8 @@ class Manager:
             self.__final_result.append(final_tp)
             if self.progressbar:
                 self.__pbar.update(1)
+            if self.visualization:
+                self.__power_dashboard()
             if self.__running:
                 self.__process("onSingleResult", final_tp)
                 task = self.__obtain_task(workerid)
@@ -138,6 +141,9 @@ class Manager:
             self.__handlers[event] = handlerList
         if handler not in handlerList:
             handlerList.append(handler)
+
+    def __power_dashboard(self):
+        self.boss.publish("dashboard", str(self.management))
 
     def start(self):
         self.__running = True
