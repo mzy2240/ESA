@@ -106,6 +106,8 @@ class Manager:
                         if self.progressbar:
                             self.__pbar.close()
                         self.__process("onFinish", self.__final_result)
+                        if self.auto_shutdown:
+                            self.boss.disconnect()
                 return None
             except KeyError:
                 pass
