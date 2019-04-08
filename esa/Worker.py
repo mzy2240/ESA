@@ -67,7 +67,7 @@ normal_mode = True
 worker_hardware = [psutil.cpu_count(False), psutil.cpu_freq().max, psutil.virtual_memory().free]
 # file_path = "C:/PowerWorld20/PWcases/PWcases/UIUC150Original/UIUC150_JAN-15-2016_Etime_Johnsonville_CT.PWB"
 # file_path = "C:/Users/maomz/Case/UIUC150_JAN-15-2016_Etime_Johnsonville_CT.PWB"
-sim_server = PYSimAuto(file_path)
+sim_server = sa(file_path)
 worker_id = "Worker_%s" % ''.join(random.choices(string.ascii_uppercase + string.digits, k=6))
 worker = init_mqtt(mqtt.Client(worker_id))
 #worker.connect("127.0.0.1")
