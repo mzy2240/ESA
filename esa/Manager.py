@@ -193,6 +193,7 @@ class Manager:
         tasks = args[0]
         for task in tasks:
             self.__queue.put(task)
+        self.__management["total_task"] = len(tasks)
         if self.progressbar:
             self.__pbar = tqdm(total=len(tasks), desc="TOTAL", smoothing=0)
 
