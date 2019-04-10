@@ -1,4 +1,4 @@
-    # esa
+# esa
 A python package that makes PowerWorld Simauto easier yet more powerful to use. With esa, you can run most SimAuto commands and Aux scripts easily, and even run these tasks in a parallel and distributed way.
 ## Environment
 python 3.5 or above (recommend to use the latest Anaconda 3)
@@ -41,8 +41,8 @@ worker.start()
 ### sa
 sa is a wrapper for the PowerWorld SimAuto COM object. It is designed to be easy to use, and it includes most of the SimAuto functions and script actions included in the script sections of the Auxiliary Files.
 Most common methods are listed below.
-```
-pysimauto = PYSimAuto(pwb_file_path)
+```buildoutcfg
+pysimauto = sa(pwb_file_path)
 pysimauto.getListOfDevices(ObjType, filterName)                               # Get a list of objects and their key fields
 ContingencyName = 'My Transient Contingency'                                  # Contingency that has already been defined in PowerWorld Simulator
 pysimauto.tsSolve(ContingencyName)                                            # Solve contingency
