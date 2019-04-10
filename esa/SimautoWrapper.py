@@ -170,15 +170,17 @@ class PYSimAuto(object):
         field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, field_list)
         value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, value_list)
         self.COMout = self.__pwcom__.GetParametersSingleElement(element_type, field_array, value_array)
+        # return self.COMout
         if self.__pwerr__():
             print('Error retrieving single element parameters:\n\n%s', self.error_message)
         elif self.error_message != '':
             print(self.error_message)
         elif self.COMout is not None:
-            df = pd.DataFrame(np.array(self.COMout[1]).transpose())
-            df = df.replace('', np.nan, regex=True)
-            return df
-        return df
+            return self.COMout[-1]
+            # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=field_list)
+            # df = df.replace('', np.nan, regex=True)
+            # return df
+        return None
 
     def getParametersMultipleElement(self, elementtype, fieldlist, filtername=''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
@@ -187,10 +189,8 @@ class PYSimAuto(object):
             print('Error retrieving single element parameters:\n\n%s\n\n', self.error_message)
         elif self.error_message != '':
             print(self.error_message)
-        elif self.__pwcom__.output is not None:
-            df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
-            df = df.replace('', np.nan, regex=True)
-            return df
+        elif self.COMout is not None:
+            return self.COMout[-1]
         return None
 
     def get3PBFaultCurrent(self, busnum):
