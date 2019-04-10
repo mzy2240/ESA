@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import pkg_resources
 
 
 class Workers:
@@ -16,7 +17,8 @@ class Workers:
     def start(self):
         plist = []
         print("Wake up %s workers ..." % self.number)
-        target = [sys.executable, 'Worker.py', self.ip, str(self.port), self.file_path]
+        filepath = pkg_resources.resource_filename(__name__, 'Worker.py')
+        target = [sys.executable, filepath, self.ip, str(self.port), self.file_path]
         for i in range(self.number):
             plist.append(subprocess.Popen(target))
 

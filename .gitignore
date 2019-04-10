@@ -3,3 +3,6 @@ build
 dist
 *.egg-info
 esa/test.py
+esa/test_plot.py
+test.py
+test_plot.py
