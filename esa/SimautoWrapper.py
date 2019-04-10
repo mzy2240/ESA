@@ -8,7 +8,7 @@ import pythoncom
 import datetime
 
 
-class sa(object):
+class PYSimAuto(object):
     """A SimAuto Wrapper in Python"""
 
     def __init__(self, pwb_file_path=None):
@@ -174,11 +174,11 @@ class sa(object):
             print('Error retrieving single element parameters:\n\n%s', self.error_message)
         elif self.error_message != '':
             print(self.error_message)
-        elif self.__pwcom__.output is not None:
-            df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=field_list)
+        elif self.COMout is not None:
+            df = pd.DataFrame(np.array(self.COMout[1]).transpose())
             df = df.replace('', np.nan, regex=True)
             return df
-        return None
+        return df
 
     def getParametersMultipleElement(self, elementtype, fieldlist, filtername=''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
@@ -519,8 +519,9 @@ if __name__ == "__main__":
   #  Method = 'CONSTANT'
   #  ConstantValue = 0.5
   #  Object = 'SYSTEM'
+    print(auto_server.getParametersSingleElement())
     Options=[None]
-    print(auto_server.tsWriteOptions(fileName, Options))
+  #  print(auto_server.tsWriteOptions(fileName, Options))
 #    auto_server.saveCase()
  #   FileType = 'TXT'
 #    JacForm = 'P'
