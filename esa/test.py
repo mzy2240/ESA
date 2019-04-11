@@ -33,5 +33,5 @@ boss.start()
 
 
 while True:
-    print(boss.management)
+    # print(boss.management)
     time.sleep(2)
