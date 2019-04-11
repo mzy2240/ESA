@@ -74,7 +74,7 @@ worker = init_mqtt(mqtt.Client(worker_id))
 #worker.connect("127.0.0.1")
 
 worker.connect(ip, port)
-worker.publish("registration", json.dumps({'id': worker_id, 'hardware': worker_hardware}))
+worker.publish("registration", json.dumps({'machine': platform.node(), 'id': worker_id, 'hardware': worker_hardware}))
 worker.subscribe("broadcast")
 worker.subscribe("task/%s" % worker_id)
 # client.loop_start()

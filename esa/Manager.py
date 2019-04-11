@@ -47,6 +47,7 @@ class Manager:
         if "registration" in msg.topic:
             worker_info = json.loads(msg.payload.decode())
             workerid = worker_info['id']
+            # print(worker_info)
             self.__management[workerid] = {
                 'status': 'online',
                 'machine': worker_info['machine'],
