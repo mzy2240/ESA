@@ -15,17 +15,17 @@ def some_function(result):
 ObjectType = 'TSContingencyElement'
 FieldList = '[TSTimeInSeconds,WhoAmI,TSEventString,TSCTGName]'
 tasks = []
-for i in range(100):
+for i in range(4):
     ValueList = '[%s,"Branch \'144\' \'101\' \'1\'","OPEN BOTH","My Transient Contingency"]' % 120
     tasks.append([120, ("createData", ObjectType, FieldList, ValueList), ("tsSolve", "My Transient Contingency"),
            ("tsGetContingencyResults", "My Transient Contingency", ['"Bus 4 | frequency"']),
            ("delete", ObjectType)])
 
 
-worker = Workers(number=1, file_path="C:/PowerWorld20/PWcases/PWcases/UIUC150Original/UIUC150_JAN-15-2016_Etime_Johnsonville_CT.PWB")
+worker = Workers(number=2, file_path="C:/Users/maomz/Case/UIUC150_JAN-15-2016_Etime_Johnsonville_CT.PWB", ip="127.0.0.1")
 worker.start()
 
-boss = Manager(visualization=True)
+boss = Manager(visualization=True, ip="127.0.0.1")
 boss.addTask(tasks)
 boss.start()
 
@@ -33,5 +33,5 @@ boss.start()
 
 
 while True:
-    # print(boss.management)
+    print(boss.management)
     time.sleep(2)
