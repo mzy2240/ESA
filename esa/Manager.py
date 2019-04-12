@@ -11,10 +11,11 @@ from threading import Thread
 
 class Manager:
 
-    def __init__(self, auto_shutdown=False, dynamic_load_balance=False, save_to_excel=False, progressbar=False, visualization=False):
+    def __init__(self, ip="165.91.215.167", auto_shutdown=False, dynamic_load_balance=False, save_to_excel=False, progressbar=False, visualization=False):
         self.__queue = Queue()
         self.__active = False
         # self.__thread = Thread(target=self.__run)
+        self.ip = ip
         self.auto_shutdown = auto_shutdown
         self.dynamic_load_balance = dynamic_load_balance
         self.save_to_excel = save_to_excel
@@ -74,6 +75,7 @@ class Manager:
             workerid = payload[1]
             task_id = payload[-2]
             self.__management[workerid]['working_hours'] += time.time() - self.__management[workerid]['start']
+            self.__management[workerid]['task'] = None
             self.__management[workerid]['task_count'] += 1
             self.__management[workerid]['efficiency'] = round(self.__management[workerid]['working_hours']/self.__management[workerid]['task_count'],2)
             final_tp = float(payload[-1])
@@ -154,7 +156,7 @@ class Manager:
         self.__status = "Running"
         self.__time = time.time()
         # self.boss.connect("127.0.0.1")
-        self.boss.connect("165.91.215.167")
+        self.boss.connect(self.ip)
         self.boss.subscribe("registration")
         self.boss.subscribe("feedback")
         self.boss.subscribe("heartbeat")
