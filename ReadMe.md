@@ -1,5 +1,5 @@
-# esa
-A python package that makes PowerWorld Simauto easier yet more powerful to use. With esa, you can run most SimAuto commands and Aux scripts easily, and even run these tasks in a parallel and distributed way.
+# ESA
+A python package that could dramatically reduce the time for general power system computation tasks by using a parallel and distributed framework.
 ## Environment
 python 3.5 or above (recommend to use the latest Anaconda 3)
 ## Installation
