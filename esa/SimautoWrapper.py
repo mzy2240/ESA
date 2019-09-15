@@ -80,7 +80,8 @@ class sa(object):
 
     def saveCase(self):
         """Saves case with changes to existing file name and path."""
-        self.COMout = self.__pwcom__.SaveCase(self.pwb_file_path, 'PWB', 1)
+        self.pwb_file_path = self.pwb_file_path.replace('/', '\\')
+        self.COMout = self.__pwcom__.SaveCase(self.pwb_file_path, 'PWB', True)
         if self.__pwerr__():
             print('Error saving case:\n\n%s\n\n', self.error_message)
             print('******CASE NOT SAVED!******\n\n')
@@ -91,7 +92,7 @@ class sa(object):
         """If file name and path are specified, saves case as a new file.
         Overwrites any existing file with the same name and path."""
         if pwb_file_path is not None:
-            self.pwb_file_path = os.path.splitext(pwb_file_path)[1] + '.pwb'
+            self.pwb_file_path = os.path.splitext(pwb_file_path)[0] + '.pwb'
             self.__setfilenames__()
         return self.saveCase()
 
