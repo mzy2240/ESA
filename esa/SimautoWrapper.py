@@ -19,7 +19,7 @@ class sa(object):
             print("Unable to launch SimAuto.",
                   "Please confirm that your PowerWorld license includes the SimAuto add-on ",
                   "and that SimAuto has been successfuly installed.")
-        print(self.__ctime__(), "SimAuto launched")
+        # print(self.__ctime__(), "SimAuto launched")
         self.pwb_file_path = pwb_file_path
         self.__setfilenames__()
         self.output = ''
@@ -127,7 +127,7 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         else:
-            print(self.__ctime__(), "List of", ObjType, ":", output)
+            # print(self.__ctime__(), "List of", ObjType, ":", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
@@ -159,8 +159,8 @@ class sa(object):
             return False
         df = pd.DataFrame(np.array(_output[1]))
         # df = df.replace('', np.nan, regex=True
-        print(df)
-        print(self.__ctime__(), "Field list:", _output)
+        # print(df)
+        # print(self.__ctime__(), "Field list:", _output)
         return df
 
     def getParametersSingleElement(self, element_type='BUS', field_list=['BusName', 'BusNum'], value_list=[0, 1]):
@@ -231,7 +231,7 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         else:
-            print(self.__ctime__(), "State:", output)
+            # print(self.__ctime__(), "State:", output)
             return output
         return None
 
@@ -243,7 +243,7 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         else:
-            print(self.__ctime__(), "State:", output)
+            # print(self.__ctime__(), "State:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
@@ -258,7 +258,7 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         else:
-            print(self.__ctime__(), "Process ID:", output)
+            # print(self.__ctime__(), "Process ID:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
@@ -273,7 +273,7 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         else:
-            print(self.__ctime__(), "Build date:", output)
+            # print(self.__ctime__(), "Build date:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
@@ -284,7 +284,7 @@ class sa(object):
         ChangeParameters is used to change single or multiple parameters of a single object.
         Paramlist is a variant array storing strings that are Simulator object field variables,
         and must contain the key fields for the objecttype.
-        Create variant arrays (one for each element being changed) with values corresponding to the fields in ParamList. 
+        Create variant arrays (one for each element being changed) with values corresponding to the fields in ParamList.
         """
         self.COMout = self.__pwcom__.ChangeParameters(ObjType, Paramlist, ValueArray)
         if self.__pwerr__():
@@ -313,44 +313,44 @@ class sa(object):
         if self.__pwerr__():
             return False
         return output
-    
+
     def tsCalculateCriticalClearTime(self, Branch):
         """
         Use this action to calculate critical clearing time for faults on the lines that meet the specified filter.
-        A single line can be specified in the format [BRANCH keyfield1 keyfield2 ckt] or [BRANCH label]. 
-        Multiple lines can be selected by specifying a filter. 
+        A single line can be specified in the format [BRANCH keyfield1 keyfield2 ckt] or [BRANCH label].
+        Multiple lines can be selected by specifying a filter.
         For the specified lines, this calculation will determine the first time a violation is reached (critical clearing time),
-        where a violation is determined based on all enabled Transient Limit Monitors. For each line, results are saved as a new 
-        Transient Contingency on a line, with the fault duration equal to the critical clearing time. 
+        where a violation is determined based on all enabled Transient Limit Monitors. For each line, results are saved as a new
+        Transient Contingency on a line, with the fault duration equal to the critical clearing time.
         """
         _output = self.runScriptCommand("TSCalculateCriticalClearTime (%s)" % Branch)
-        print(self.__ctime__(), _output)
+        # print(self.__ctime__(), _output)
 
         if self.__pwerr__():
             print('Error calculating CCT %s:\n\n %s' % (Branch,self.__pwcom__.error_message))
             return False
         return _output
-    
+
     def tsResultStorageSetAll(self, objectttype, choice):
-        
+
         self.COMout = self.runScriptCommand("TSResultStorageSetAll (%s) (%s)" % (objectttype, choice))
         if self.__pwerr__():
             print('Error results dtorage set all %s:\n\n %s' % (objectttype,self.__pwcom__.error_message))
             return False
-        return True        
-        
+        return True
+
     def tsSolve(self, ContingencyName):
         """
         Solves only the specified contingency
         """
   #      self.TSResultStorageSetAll('Bus', 'Yes')
         _output = self.runScriptCommand("TSSolve (%s)" % ContingencyName)
-        print(_output)
+        # print(_output)
         if self.__pwerr__():
             print('Error solving contingency %s:\n\n %s' % (ContingencyName,self.__pwcom__.error_message))
             return False
-        print(self.__ctime__(), "TsSolve executed")
-        
+        # print(self.__ctime__(), "TsSolve executed")
+
         return None
 
     def tsGetContingencyResults(self, CtgName, ObjFieldList, StartTime=None, StopTime=None):
@@ -366,7 +366,7 @@ class sa(object):
         # print(_output[2][-1])
         # print(self.__ctime__(), "TS result: %s" % str(_output[2]))
         return _output
-    
+
     def setData(self, ObjectType: str, FieldList: str, ValueList: str, Filter=''):
         """
         Use this action to set fields for particular objects. If a filter is specified, then it will set the respective fields for all
@@ -379,14 +379,14 @@ class sa(object):
                                           Filter))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Setting data: %s" % ObjectType)
+        # print(self.__ctime__(), "Setting data: %s" % ObjectType)
         return self.COMout
 
     def delete(self, ObjectType: str):
         _output = self.runScriptCommand("Delete(%s)" % ObjectType)
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Delete: %s" % ObjectType)
+        # print(self.__ctime__(), "Delete: %s" % ObjectType)
         # self.saveCase()
         return None
 
@@ -394,23 +394,23 @@ class sa(object):
         _output = self.runScriptCommand("CreateData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Creating data: %s" % ObjectType)
+        # print(self.__ctime__(), "Creating data: %s" % ObjectType)
         # self.saveCase()
         return None
-    
+
     def writeAuxFile(self, FileName, FilterName, ObjectType, FieldList, ToAppend=True, EString=None):
         """
-        The WriteAuxFile function can be used to write data from the case in the Simulator Automation Server 
-        to a PowerWorldâ Auxiliary file. The name of an advanced filter which was PREVIOUSLY DEFINED in the 
-        case before being loaded in the Simulator Automation Server. If no filter is desired, then simply pass 
+        The WriteAuxFile function can be used to write data from the case in the Simulator Automation Server
+        to a PowerWorldâ Auxiliary file. The name of an advanced filter which was PREVIOUSLY DEFINED in the
+        case before being loaded in the Simulator Automation Server. If no filter is desired, then simply pass
         an empty string. If a filter name is passed but the filter cannot be found in the loaded case, no filter is used.
         """
         self.COMout = self.__pwcom__.WriteAuxFile(FileName, FilterName, ObjectType, FieldList, ToAppend)
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Writing Aux File (%s):" % ObjectType)
+        # print(self.__ctime__(), "Writing Aux File (%s):" % ObjectType)
         return None
-    
+
     def calculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
         """
         Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a
@@ -418,14 +418,14 @@ class sa(object):
         values will be calculated. You may optionally specify the linear calculation method as well. If no Linear Method is
         specified, Lossless DC will be used.
         The LODF results will be sent to excel
-        """  
+        """
         self.CalLODFout3 = self.runScriptCommand("CalculateLODF (%s,%s,%s)" %(Branch, LinearMethod, PostClosureLCDF))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Calculate LODF (%s):" % Branch)
+        # print(self.__ctime__(), "Calculate LODF (%s):" % Branch)
         self.sendToExcel('Branch', '',['BusNumFrom','BusNumTo','LODF'])
-        return self.CalLODFout3          
-        
+        return self.CalLODFout3
+
     def saveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
         """
         Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab
@@ -433,9 +433,9 @@ class sa(object):
         self.SaveJacCOMout = self.runScriptCommand("SaveJacobian(%s,%s,%s,%s) " % (JacFileName, JIDFileName, FileType, JacForm))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Successfully savd Jacobian to(%s):" % FileType)
+        # print(self.__ctime__(), "Successfully savd Jacobian to(%s):" % FileType)
         return None
-    
+
     def saveYbusInMatlabFormat(self, fileName, IncludeVoltages='Yes'):
         """
         Use this action to save the YBus to a file formatted for use with Matlab
@@ -443,9 +443,9 @@ class sa(object):
         self.SaveYBusCOMout = self.runScriptCommand("SaveYbusInMatlabFormat(%s,%s)" %(fileName, IncludeVoltages))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Successfully savd Ybus_inMatlabFormat to(%s):" % fileName)
+        # print(self.__ctime__(), "Successfully savd Ybus_inMatlabFormat to(%s):" % fileName)
         return None
-    
+
     def setParticipationFactors(self, Method, ConstantValue, Object):
         """
         Use this action to modify the generator participation factors in the case
@@ -460,21 +460,21 @@ class sa(object):
         self.SetParticipationFactorCOMout = self.runScriptCommand("SetParticipationFactors (%s,%s,%s)" %(Method, ConstantValue, Object))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Successfully set ParticipationFactor to(%s):" % Method)
+        # print(self.__ctime__(), "Successfully set ParticipationFactor to(%s):" % Method)
         return True
-    
+
     def tsRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
         """
         This command allows manual control of the transient stability run. The simulation can be run until a
         specified time or number of times steps and then paused for further evaluation.
         RunOptions = '[StopTime(in seconds), StepSize(numbers), StepsInCycles='YES', ResetStartTime='NO', NumberOfTimeStepsToDo=0]'
         """
-        self.tsRunUntilSpecifiedTimeCOMout = self.runScriptCommand("TSRunUntilSpecifiedTime (%s,%s)" % (ContingencyName, RunOptions))     
+        self.tsRunUntilSpecifiedTimeCOMout = self.runScriptCommand("TSRunUntilSpecifiedTime (%s,%s)" % (ContingencyName, RunOptions))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Run until specified time(%s):" % ContingencyName)
+        # print(self.__ctime__(), "Run until specified time(%s):" % ContingencyName)
         return True
-    
+
     def tsWriteOptions(self, fileName, Options, Keyfield=' Primary'):
         """
         Save the transient stability option settings to an auxiliary file.
@@ -489,16 +489,16 @@ class sa(object):
         self.WriteOptionsCOMout = self.runScriptCommand("TSWriteOptions(%s,%s)" %(fileName, Options))
         if self.__pwerr__():
             return False
-        print(self.__ctime__(), "Save transient stability option seting to(%s):" % fileName)
+        # print(self.__ctime__(), "Save transient stability option seting to(%s):" % fileName)
         return True
-        
+
     def enterMode(self, mode):
         self.COMout = self.runScriptCommand("EnterMode(%s)" % mode)
         if self.__pwerr__():
             return False
         return True
-    
-     
+
+
     def exit(self):
         """Clean up for the PowerWorld COM object"""
         self.closeCase()
@@ -533,7 +533,7 @@ if __name__ == "__main__":
  #   FilterName = 'BusNmuberLessThan4'
   #  FilterName = ''
  #   Branch = '"Branch ''4'' ''5'' ''1''"'
- #   LinearMethod = 
+ #   LinearMethod =
  #   auto_server.tsResultStorageSetAll()
   #  print(auto_server.calculateLODF(Branch))
   #  auto_server.sendToExcel('Branch', '',['MWTo','LODF'])
