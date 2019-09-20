@@ -373,12 +373,13 @@ class sa(object):
         objects which meet this filter. Otherwise, if no filter is specified, then the keyfields must be included in the field
         list so that the object can be found. e.g.FieldList = '[Number,NomkV]'
         """
-        _output = self.runScriptCommand("SetData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
+        _output = \
+            self.runScriptCommand("SetData({},{},{},{})"
+                                  .format(ObjectType, FieldList, ValueList,
+                                          Filter))
         if self.__pwerr__():
             return False
         print(self.__ctime__(), "Setting data: %s" % ObjectType)
-        # self.saveCase()
-        self.saveCase()
         return self.COMout
 
     def delete(self, ObjectType: str):
