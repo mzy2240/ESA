@@ -11,9 +11,12 @@ import datetime
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
-    def __init__(self, pwb_file_path=None):
+    def __init__(self, pwb_file_path=None, earlybind=False):
         try:
-            self.__pwcom__ = win32com.client.Dispatch('pwrworld.SimulatorAuto')
+            if earlybind:
+                self.__pwcom__ = win32com.client.gencache.EnsureDispatch('pwrworld.SimulatorAuto')
+            else:
+                self.__pwcom__ = win32com.client.dynamic.Dispatch('pwrworld.SimulatorAuto')
         except Exception as e:
             print(str(e))
             print("Unable to launch SimAuto.",
