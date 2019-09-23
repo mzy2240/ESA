@@ -181,7 +181,7 @@ class sa(object):
             print(self.error_message)
         elif self.COMout is not None:
             return self.COMout[-1]
-            # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=field_list)
+            # df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=field_list)
             # df = df.replace('', np.nan, regex=True)
             # return df
         return None
@@ -194,7 +194,35 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         elif self.COMout is not None:
-            return self.COMout[-1]
+            df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
+            # df = df.replace('', np.nan, regex=True)
+            return df
+        return None
+
+    def getPowerFlowResult(self, elementtype):
+        """
+        Get the power flow results from SimAuto server. Needs to specify the object type, e.g. bus, load, generator, etc
+        """
+        if 'bus' in elementtype.lower():
+            fieldlist = ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR']
+        elif 'gen' in elementtype.lower():
+            fieldlist = ['BusNum', 'GenID', 'GenMW', 'GenMVR']
+        elif 'load' in elementtype.lower():
+            fieldlist = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        elif 'shunt' in elementtype.lower():
+            fieldlist = ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']
+        elif 'branch' in elementtype.lower():
+            fieldlist = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1']
+        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
+        self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, '')
+        if self.__pwerr__():
+            print('Error retrieving single element parameters:\n\n%s\n\n', self.error_message)
+        elif self.error_message != '':
+            print(self.error_message)
+        elif self.COMout is not None:
+            df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
+            # df = df.replace('', np.nan, regex=True)
+            return df
         return None
 
     def get3PBFaultCurrent(self, busnum):
