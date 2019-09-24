@@ -166,7 +166,7 @@ class sa(object):
         print(self.__ctime__(), "Field list:", _output)
         return df
 
-    def getParametersSingleElement(self, element_type='BUS', field_list=['BusName', 'BusNum'], value_list=[0, 1]):
+    def getParametersSingleElement(self, element_type: str, field_list: list, value_list: list):
         """Retrieves parameter data according to the fields specified in field_list.
         value_list consists of identifying parameter values and zeroes and should be
         the same length as field_list"""
@@ -186,7 +186,7 @@ class sa(object):
             # return df
         return None
 
-    def getParametersMultipleElement(self, elementtype, fieldlist, filtername=''):
+    def getParametersMultipleElement(self, elementtype: str, fieldlist: list, filtername: str = ''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, filtername)
         if self.__pwerr__():
@@ -198,6 +198,15 @@ class sa(object):
             # df = df.replace('', np.nan, regex=True)
             return df
         return None
+
+    def runPF(self, method: str = 'RECTNEWT'):
+        script_command = "SolvePowerFlow(%s)" % method.upper()
+        self.COMout = self.__pwcom__.RunScriptCommand(script_command)
+        if self.__pwerr__():
+            print('Error encountered with script:\n\n%s\n\n', self.error_message)
+            print('Script command which was attempted:\n\n%s\n\n', script_command)
+            return False
+        return True
 
     def getPowerFlowResult(self, elementtype):
         """
