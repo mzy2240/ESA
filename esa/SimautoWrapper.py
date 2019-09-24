@@ -332,6 +332,19 @@ class sa(object):
             return False
         return True
 
+    def changeParametersMultipleElement(self, ObjType: str, Paramlist: list, ValueArray: list):
+        """
+        :param ObjType: String The type of object you are changing parameters for.
+        :param Paramlist: Variant A variant array storing strings (COM Type BSTR). This array stores a list of PowerWorldâ object field variables, as defined in the section on PowerWorld Object Fields. The ParamList must contain the key field variables for the specific device, or the device cannot be identified.
+        :param ValueArray: Variant A variant array storing arrays of variants. This is the difference between the multiple element and single element change parameter functions. This array stores a list of arrays of values matching the fields laid out in ParamList. You construct ValueList by creating an array of variants with the necessary parameters for each device, and then inserting each individual array of values into the ValueList array. SimAuto will pick out each array from ValueList, and calls ChangeParametersSingleElement internally for each array of values in ValueList.
+        :return: True or False
+        """
+        self.COMout = self.__pwcom__.ChangeParametersMultipleElement(ObjType, Paramlist, ValueArray)
+        if self.__pwerr__():
+            print('Error changing parameters %s:\n\n %s' % (ObjType, self.__pwcom__.error_message))
+            return False
+        return True
+
     def sendToExcel(self, ObjectType: str, FilterName: str, FieldList):
         """Send data from the Simulator Automation Server to an Excel spreadsheet."""
         self.COMout = self.__pwcom__.SendToExcel(ObjectType, FilterName, FieldList)
