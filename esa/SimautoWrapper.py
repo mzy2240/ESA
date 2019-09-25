@@ -339,6 +339,7 @@ class sa(object):
         :param ValueArray: Variant A variant array storing arrays of variants. This is the difference between the multiple element and single element change parameter functions. This array stores a list of arrays of values matching the fields laid out in ParamList. You construct ValueList by creating an array of variants with the necessary parameters for each device, and then inserting each individual array of values into the ValueList array. SimAuto will pick out each array from ValueList, and calls ChangeParametersSingleElement internally for each array of values in ValueList.
         :return: True or False
         """
+        ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, subArray) for subArray in ValueArray]
         self.COMout = self.__pwcom__.ChangeParametersMultipleElement(ObjType, Paramlist, ValueArray)
         if self.__pwerr__():
             print('Error changing parameters %s:\n\n %s' % (ObjType, self.__pwcom__.error_message))
