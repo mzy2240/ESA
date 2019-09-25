@@ -6,7 +6,7 @@ with open("ReadMe.md", "r") as fh:
 
 setuptools.setup(
     name = 'esa',
-    version = '0.2.7',
+    version = '0.2.8',
     description = 'A python package that makes PowerWorld Simauto easier yet more powerful to use',
     long_description=long_description,
     long_description_content_type="text/markdown",
