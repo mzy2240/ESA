@@ -11,9 +11,12 @@ import datetime
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
-    def __init__(self, pwb_file_path=None):
+    def __init__(self, pwb_file_path=None, earlybind=False):
         try:
-            self.__pwcom__ = win32com.client.Dispatch('pwrworld.SimulatorAuto')
+            if earlybind:
+                self.__pwcom__ = win32com.client.gencache.EnsureDispatch('pwrworld.SimulatorAuto')
+            else:
+                self.__pwcom__ = win32com.client.dynamic.Dispatch('pwrworld.SimulatorAuto')
         except Exception as e:
             print(str(e))
             print("Unable to launch SimAuto.",
@@ -163,7 +166,7 @@ class sa(object):
         # print(self.__ctime__(), "Field list:", _output)
         return df
 
-    def getParametersSingleElement(self, element_type='BUS', field_list=['BusName', 'BusNum'], value_list=[0, 1]):
+    def getParametersSingleElement(self, element_type: str, field_list: list, value_list: list):
         """Retrieves parameter data according to the fields specified in field_list.
         value_list consists of identifying parameter values and zeroes and should be
         the same length as field_list"""
@@ -178,12 +181,12 @@ class sa(object):
             print(self.error_message)
         elif self.COMout is not None:
             return self.COMout[-1]
-            # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=field_list)
+            # df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=field_list)
             # df = df.replace('', np.nan, regex=True)
             # return df
         return None
 
-    def getParametersMultipleElement(self, elementtype, fieldlist, filtername=''):
+    def getParametersMultipleElement(self, elementtype: str, fieldlist: list, filtername: str = ''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, filtername)
         if self.__pwerr__():
@@ -191,7 +194,44 @@ class sa(object):
         elif self.error_message != '':
             print(self.error_message)
         elif self.COMout is not None:
-            return self.COMout[-1]
+            df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
+            # df = df.replace('', np.nan, regex=True)
+            return df
+        return None
+
+    def runPF(self, method: str = 'RECTNEWT'):
+        script_command = "SolvePowerFlow(%s)" % method.upper()
+        self.COMout = self.__pwcom__.RunScriptCommand(script_command)
+        if self.__pwerr__():
+            print('Error encountered with script:\n\n%s\n\n', self.error_message)
+            print('Script command which was attempted:\n\n%s\n\n', script_command)
+            return False
+        return True
+
+    def getPowerFlowResult(self, elementtype):
+        """
+        Get the power flow results from SimAuto server. Needs to specify the object type, e.g. bus, load, generator, etc
+        """
+        if 'bus' in elementtype.lower():
+            fieldlist = ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR']
+        elif 'gen' in elementtype.lower():
+            fieldlist = ['BusNum', 'GenID', 'GenMW', 'GenMVR']
+        elif 'load' in elementtype.lower():
+            fieldlist = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        elif 'shunt' in elementtype.lower():
+            fieldlist = ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']
+        elif 'branch' in elementtype.lower():
+            fieldlist = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1']
+        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
+        self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, '')
+        if self.__pwerr__():
+            print('Error retrieving single element parameters:\n\n%s\n\n', self.error_message)
+        elif self.error_message != '':
+            print(self.error_message)
+        elif self.COMout is not None:
+            df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
+            # df = df.replace('', np.nan, regex=True)
+            return df
         return None
 
     def get3PBFaultCurrent(self, busnum):
@@ -289,6 +329,20 @@ class sa(object):
         self.COMout = self.__pwcom__.ChangeParameters(ObjType, Paramlist, ValueArray)
         if self.__pwerr__():
             print('Error changing parameters %s:\n\n %s' % (ObjType,self.__pwcom__.error_message))
+            return False
+        return True
+
+    def changeParametersMultipleElement(self, ObjType: str, Paramlist: list, ValueArray: list):
+        """
+        :param ObjType: String The type of object you are changing parameters for.
+        :param Paramlist: Variant A variant array storing strings (COM Type BSTR). This array stores a list of PowerWorldâ object field variables, as defined in the section on PowerWorld Object Fields. The ParamList must contain the key field variables for the specific device, or the device cannot be identified.
+        :param ValueArray: Variant A variant array storing arrays of variants. This is the difference between the multiple element and single element change parameter functions. This array stores a list of arrays of values matching the fields laid out in ParamList. You construct ValueList by creating an array of variants with the necessary parameters for each device, and then inserting each individual array of values into the ValueList array. SimAuto will pick out each array from ValueList, and calls ChangeParametersSingleElement internally for each array of values in ValueList.
+        :return: True or False
+        """
+        ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, subArray) for subArray in ValueArray]
+        self.COMout = self.__pwcom__.ChangeParametersMultipleElement(ObjType, Paramlist, ValueArray)
+        if self.__pwerr__():
+            print('Error changing parameters %s:\n\n %s' % (ObjType, self.__pwcom__.error_message))
             return False
         return True
 
