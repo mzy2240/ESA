@@ -6,7 +6,7 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 import datetime
-import exceptions
+from exceptions import ConvergenceException, GeneralException, FileException
 
 
 class sa(object):
@@ -77,9 +77,7 @@ class sa(object):
         else:
             self.COMout = self.__pwcom__.OpenCase(self.file_folder + '/' + self.file_name + '.pwb')
             if self.__pwerr__():
-                print('Error opening case:\n\n%s\n\n', self.error_message)
-                print('Please check the file name and path and try again (using the opencase method)\n')
-                return False
+                raise FileException(self.error_message)
         return True
 
     def saveCase(self):
@@ -87,9 +85,7 @@ class sa(object):
         self.pwb_file_path = self.pwb_file_path.replace('/', '\\')
         self.COMout = self.__pwcom__.SaveCase(self.pwb_file_path, 'PWB', True)
         if self.__pwerr__():
-            print('Error saving case:\n\n%s\n\n', self.error_message)
-            print('******CASE NOT SAVED!******\n\n')
-            return False
+            raise FileException(self.error_message)
         return True
 
     def saveCaseAs(self, pwb_file_path=None):
@@ -110,17 +106,14 @@ class sa(object):
         self.aux_file_path = self.file_folder + '/' + self.save_file_path + '.aux'
         self.COMout = self.__pwcom__.WriteAuxFile(self.aux_file_path, FilterName, ObjectType, ToAppend, FieldList)
         if self.__pwerr__():
-            print('Error saving case:\n\n%s\n\n', self.error_message)
-            print('******CASE NOT SAVED!******\n\n')
-            return False
+            raise FileException(self.error_message)
         return True
 
     def closeCase(self):
         """Closes case without saving changes."""
         self.COMout = self.__pwcom__.CloseCase()
         if self.__pwerr__():
-            print('Error closing case:\n\n%s\n\n', self.error_message)
-            return False
+            raise FileException(self.error_message)
         return True
 
     def getListOfDevices(self, ObjType, filterName):
@@ -141,9 +134,7 @@ class sa(object):
         """Input a script command as in an Auxiliary file SCRIPT{} statement or the PowerWorld Script command prompt."""
         self.COMout = self.__pwcom__.RunScriptCommand(script_command)
         if self.__pwerr__():
-            print('Error encountered with script:\n\n%s\n\n', self.error_message)
-            print('Script command which was attempted:\n\n%s\n\n', script_command)
-            return False
+            raise GeneralException(self.error_message)
         return True
 
     def loadAuxFileText(self, auxtext):
@@ -204,9 +195,10 @@ class sa(object):
         script_command = "SolvePowerFlow(%s)" % method.upper()
         self.COMout = self.__pwcom__.RunScriptCommand(script_command)
         if self.__pwerr__():
-            print('Error encountered with script:\n\n%s\n\n', self.error_message)
-            print('Script command which was attempted:\n\n%s\n\n', script_command)
-            return False
+            raise ConvergenceException(self.error_message)
+            # print('Error encountered with script:\n\n%s\n\n', self.error_message)
+            # print('Script command which was attempted:\n\n%s\n\n', script_command)
+            # return False
         return True
 
     def getPowerFlowResult(self, elementtype):
@@ -268,7 +260,7 @@ class sa(object):
         """SaveState is used to save the current state of the power system."""
         output = self.__pwcom__.SaveState()
         if self.__pwerr__():
-            print('Error retrieving the state:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
             print(self.error_message)
         else:
@@ -280,7 +272,7 @@ class sa(object):
         """LoadState is used to load the system state previously saved with the SaveState function."""
         output = self.__pwcom__.LoadState()
         if self.__pwerr__():
-            print('Error loading state:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
             print(self.error_message)
         else:
@@ -351,8 +343,7 @@ class sa(object):
         """Send data from the Simulator Automation Server to an Excel spreadsheet."""
         self.COMout = self.__pwcom__.SendToExcel(ObjectType, FilterName, FieldList)
         if self.__pwerr__():
-            print('Error sending to Excel')
-            return False
+            raise FileException(self.error_message)
         return True
 
     @property
@@ -402,8 +393,7 @@ class sa(object):
         _output = self.runScriptCommand("TSSolve (%s)" % ContingencyName)
         print(_output)
         if self.__pwerr__():
-            print('Error solving contingency %s:\n\n %s' % (ContingencyName,self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "TsSolve executed")
         
         return None
@@ -417,7 +407,7 @@ class sa(object):
         """
         _output = self.__pwcom__.TSGetContingencyResults(CtgName, ObjFieldList, StartTime, StopTime)
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         # print(_output[2][-1])
         # print(self.__ctime__(), "TS result: %s" % str(_output[2]))
         return _output
@@ -430,7 +420,7 @@ class sa(object):
         """
         _output = self.runScriptCommand("SetData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Setting data: %s" % ObjectType)
         # self.saveCase()
         self.saveCase()
@@ -439,7 +429,7 @@ class sa(object):
     def delete(self, ObjectType: str):
         _output = self.runScriptCommand("Delete(%s)" % ObjectType)
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Delete: %s" % ObjectType)
         # self.saveCase()
         return None
@@ -447,7 +437,7 @@ class sa(object):
     def createData(self, ObjectType: str, FieldList: str, ValueList: str):
         _output = self.runScriptCommand("CreateData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Creating data: %s" % ObjectType)
         # self.saveCase()
         return None
@@ -461,7 +451,7 @@ class sa(object):
         """
         self.COMout = self.__pwcom__.WriteAuxFile(FileName, FilterName, ObjectType, FieldList, ToAppend)
         if self.__pwerr__():
-            return False
+            raise FileException(self.error_message)
         print(self.__ctime__(), "Writing Aux File (%s):" % ObjectType)
         return None
     
@@ -475,7 +465,7 @@ class sa(object):
         """  
         self.CalLODFout3 = self.runScriptCommand("CalculateLODF (%s,%s,%s)" %(Branch, LinearMethod, PostClosureLCDF))
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Calculate LODF (%s):" % Branch)
         self.sendToExcel('Branch', '',['BusNumFrom','BusNumTo','LODF'])
         return self.CalLODFout3          
@@ -486,7 +476,7 @@ class sa(object):
         """
         self.SaveJacCOMout = self.runScriptCommand("SaveJacobian(%s,%s,%s,%s) " % (JacFileName, JIDFileName, FileType, JacForm))
         if self.__pwerr__():
-            return False
+            raise FileException(self.error_message)
         print(self.__ctime__(), "Successfully savd Jacobian to(%s):" % FileType)
         return None
     
@@ -496,7 +486,7 @@ class sa(object):
         """
         self.SaveYBusCOMout = self.runScriptCommand("SaveYbusInMatlabFormat(%s,%s)" %(fileName, IncludeVoltages))
         if self.__pwerr__():
-            return False
+            raise FileException(self.error_message)
         print(self.__ctime__(), "Successfully savd Ybus_inMatlabFormat to(%s):" % fileName)
         return None
     
@@ -513,7 +503,7 @@ class sa(object):
         """
         self.SetParticipationFactorCOMout = self.runScriptCommand("SetParticipationFactors (%s,%s,%s)" %(Method, ConstantValue, Object))
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Successfully set ParticipationFactor to(%s):" % Method)
         return True
     
@@ -525,7 +515,7 @@ class sa(object):
         """
         self.tsRunUntilSpecifiedTimeCOMout = self.runScriptCommand("TSRunUntilSpecifiedTime (%s,%s)" % (ContingencyName, RunOptions))     
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Run until specified time(%s):" % ContingencyName)
         return True
     
@@ -542,14 +532,14 @@ class sa(object):
         """
         self.WriteOptionsCOMout = self.runScriptCommand("TSWriteOptions(%s,%s)" %(fileName, Options))
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         print(self.__ctime__(), "Save transient stability option seting to(%s):" % fileName)
         return True
         
     def enterMode(self, mode):
         self.COMout = self.runScriptCommand("EnterMode(%s)" % mode)
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         return True
     
      
