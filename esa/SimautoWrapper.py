@@ -6,6 +6,7 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 import datetime
+import exceptions
 
 
 class sa(object):
@@ -563,41 +564,5 @@ class sa(object):
     #     self.exit()
 
 
-if __name__ == "__main__":
-   # auto_server = PYSimAuto("C:/PowerWorld20/PWcases/PWcases/ACTIVSg2000_AUG-09-2018.pwb")
-  #  auto_server = PYSimAuto("C:/Users/yijin/Desktop/Research/case/WSCC9-BusSystem-SimAuto/WSCC9bus.pwb")
-    auto_server = PYSimAuto("C:/Users/yijin/Desktop/Research/case/WSCC9-BusSystem-SimAuto/ProblemSet4_B7flat_DC.pwb")
-    #auto_server = PYSimAuto("C:/Users/zeyumao2/Desktop/Demo DM/WSCC9bus.pwb")
-#    JacFileName = '"C:/Users/yijin/Desktop/Research/case/WSCC9-BusSystem-SimAuto/Jacobian.txt"'
- #   JIDFileName = '"C:/Users/yijin/Desktop/Research/case/WSCC9-BusSystem-SimAuto/Jacobian"'
-    fileName = '"C:/Users/yijin/Desktop/Research/case/WSCC9-BusSystem-SimAuto/transientOptions.txt"'
-  #  Method = 'CONSTANT'
-  #  ConstantValue = 0.5
-  #  Object = 'SYSTEM'
-    print(auto_server.getParametersSingleElement())
-    Options=[None]
-  #  print(auto_server.tsWriteOptions(fileName, Options))
-#    auto_server.saveCase()
- #   FileType = 'TXT'
-#    JacForm = 'P'
- #   ObjectType = 'Bus'
- #   FieldList = ['Number','NomkV']
-  #  FieldList = 'all'
- #   FilterName = 'BusNmuberLessThan4'
-  #  FilterName = ''
- #   Branch = '"Branch ''4'' ''5'' ''1''"'
- #   LinearMethod = 
- #   auto_server.tsResultStorageSetAll()
-  #  print(auto_server.calculateLODF(Branch))
-  #  auto_server.sendToExcel('Branch', '',['MWTo','LODF'])
- #   auto_server.saveJacobian(JacFileName, JIDFileName, FileType, JacForm)
- #   ValueList = '[1, 1.65]'
-  #  auto_server.setData(ObjectType, FieldList, ValueList)
- #   auto_server.saveCase()
-   # CtgName = 'My Transient Contingency'
-  #  ObjFieldList = ['"Bus 4 | frequency"']
-  #  ContingencyName = 'My Transient Contingency'
-  #  auto_server.tsSolve(ContingencyName)
-   # auto_server.tsGetContingencyResults(CtgName, ObjFieldList)
    
 
