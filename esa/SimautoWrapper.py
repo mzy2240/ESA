@@ -6,7 +6,7 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 import datetime
-from exceptions import ConvergenceException, GeneralException, FileException
+from .exceptions import ConvergenceException, GeneralException, FileException
 
 
 class sa(object):
