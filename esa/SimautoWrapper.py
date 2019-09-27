@@ -120,9 +120,9 @@ class sa(object):
         """Request a list of objects and their key fields"""
         output = self.__pwcom__.ListOfDevices(ObjType, filterName)
         if self.__pwerr__():
-            print('Error retrieving the list of devices:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         else:
             print(self.__ctime__(), "List of", ObjType, ":", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
@@ -144,14 +144,13 @@ class sa(object):
         f.close()
         self.COMout = self.__pwcom__.ProcessAuxFile(self.aux_file_path)
         if self.__pwerr__():
-            print('Error running auxiliary text:\n\n%s\n', self.error_message)
-            return False
+            raise GeneralException(self.error_message)
         return True
 
     def getFieldList(self, ObjectType: str): # The second output should be a n*4 matrix, but the raw data is n*5
         _output = self.__pwcom__.GetFieldList(ObjectType)
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         df = pd.DataFrame(np.array(_output[1]))
         # df = df.replace('', np.nan, regex=True
         print(df)
@@ -168,9 +167,9 @@ class sa(object):
         self.COMout = self.__pwcom__.GetParametersSingleElement(element_type, field_array, value_array)
         # return self.COMout
         if self.__pwerr__():
-            print('Error retrieving single element parameters:\n\n%s', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         elif self.COMout is not None:
             return self.COMout[-1]
             # df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=field_list)
@@ -182,9 +181,9 @@ class sa(object):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, filtername)
         if self.__pwerr__():
-            print('Error retrieving single element parameters:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         elif self.COMout is not None:
             df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
@@ -218,9 +217,9 @@ class sa(object):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         self.COMout = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, '')
         if self.__pwerr__():
-            print('Error retrieving single element parameters:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         elif self.COMout is not None:
             df = pd.DataFrame(np.array(self.COMout[-1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
@@ -233,8 +232,7 @@ class sa(object):
         scriptcmd = f'Fault([BUS {busnum}], 3PB);\n'
         self.COMout = self.run_script(scriptcmd)
         if self.__pwerr__():
-            print('Error running 3PB fault:\n\n%s\n\n', self.error_message)
-            return None
+            raise GeneralException(self.error_message)
         fieldlist = ['BusNum', 'FaultCurMag']
         return self.getParametersSingleElement('BUS', fieldlist, [busnum, 0])
 
@@ -252,8 +250,7 @@ class sa(object):
                         filterpre=filterpre, enabled=enabled)
         self.COMout = self.__pwcom__.load_aux(auxtext)
         if self.__pwcom__.error:
-            print('Error creating filter %s:\n\n%s' % (filtername, self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         return True
 
     def saveState(self):
@@ -262,7 +259,7 @@ class sa(object):
         if self.__pwerr__():
             raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         else:
             print(self.__ctime__(), "State:", output)
             return output
@@ -274,7 +271,7 @@ class sa(object):
         if self.__pwerr__():
             raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         else:
             print(self.__ctime__(), "State:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
@@ -287,9 +284,9 @@ class sa(object):
         """Retrieve the process ID of the currently running SimulatorAuto process"""
         output = self.__pwcom__.ProcessID
         if self.__pwerr__():
-            print('Error retrieving the process id:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         else:
             print(self.__ctime__(), "Process ID:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
@@ -302,9 +299,9 @@ class sa(object):
         """Retrieve the build date of the PowerWorld Simulator executable currently running with the SimulatorAuto process"""
         output = self.__pwcom__.RequestBuildDate
         if self.__pwerr__():
-            print('Error retrieving the process id:\n\n%s\n\n', self.error_message)
+            raise GeneralException(self.error_message)
         elif self.error_message != '':
-            print(self.error_message)
+            raise GeneralException(self.error_message)
         else:
             print(self.__ctime__(), "Build date:", output)
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
@@ -321,8 +318,7 @@ class sa(object):
         """
         self.COMout = self.__pwcom__.ChangeParameters(ObjType, Paramlist, ValueArray)
         if self.__pwerr__():
-            print('Error changing parameters %s:\n\n %s' % (ObjType,self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         return True
 
     def changeParametersMultipleElement(self, ObjType: str, Paramlist: list, ValueArray: list):
@@ -335,8 +331,7 @@ class sa(object):
         ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, subArray) for subArray in ValueArray]
         self.COMout = self.__pwcom__.ChangeParametersMultipleElement(ObjType, Paramlist, ValueArray)
         if self.__pwerr__():
-            print('Error changing parameters %s:\n\n %s' % (ObjType, self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         return True
 
     def sendToExcel(self, ObjectType: str, FilterName: str, FieldList):
@@ -350,14 +345,14 @@ class sa(object):
     def UIVisible(self):
         output = self.__pwcom__.UIVisible
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         return output
 
     @property
     def CurrentDir(self):
         output = self.__pwcom__.CurrentDir
         if self.__pwerr__():
-            return False
+            raise GeneralException(self.error_message)
         return output
     
     def tsCalculateCriticalClearTime(self, Branch):
@@ -373,16 +368,14 @@ class sa(object):
         print(self.__ctime__(), _output)
 
         if self.__pwerr__():
-            print('Error calculating CCT %s:\n\n %s' % (Branch,self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         return _output
     
     def tsResultStorageSetAll(self, objectttype, choice):
         
         self.COMout = self.runScriptCommand("TSResultStorageSetAll (%s) (%s)" % (objectttype, choice))
         if self.__pwerr__():
-            print('Error results dtorage set all %s:\n\n %s' % (objectttype,self.__pwcom__.error_message))
-            return False
+            raise GeneralException(self.error_message)
         return True        
         
     def tsSolve(self, ContingencyName):
