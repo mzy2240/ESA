@@ -62,7 +62,7 @@ pysimatuo.tsCalculateCriticalClearTime(Branch)                                # 
 |loadAuxFileText(self, auxtext)|Creates and loads an Auxiliary file with the text specified in auxtext parameter.|*auxtext*: string (Required)|
 |getFieldList(ObjectType)|The GetFieldList function is used to find all fields contained within a given object type.|*ObjectType*: string (Required)|
 |getParametersSingleElement(element_type, field_list, value_list)|Retrieves parameter data according to the fields specified in field_list.|*element_type*: string (Required). *field_list*: variant (Required) A variant array storing strings. *value_list*: variant (Required) A variant array storing variants.|
-|getParametersMultipleElement(elementtype, fieldlist, filtername)|The GetParametersMultipleElement function is used to request the values of specified fields for a set of objects in the load flow case.|*elementtype*: string (Required). *fieldlist*: string (Required). *filtername*: string (Optional).|
+|getParametersMultipleElement(elementtype, fieldlist, filtername)|The GetParametersMultipleElement function is used to request the values of specified fields for a set of objects in the load flow case.|*elementtype*: string (Required). *fieldlist*: list of string (Required). *filtername*: string (Optional).|
 |runPF(method)|Run the power flow |*method*: string (Optional, default NR)|
 |getPowerFlowResult(elementtype)|Get the power flow results from SimAuto server.|*elementtype*: string (Required, e.g. bus, gen, load, etc.)|
 |get3PBFaultCurrent(busnum)|Calculates the three phase fault; this can be done even with cases which only contain positive sequence impedances|*busnum*: string (Required)|
