@@ -9,6 +9,15 @@ import datetime
 from .exceptions import ConvergenceException, GeneralException, FileException
 
 
+def handle_file_exception(func):
+    def wrapper(self, *args, **kwargs):
+        func(self, *args, **kwargs)
+        if self.__pwerr__():
+            raise FileException(self.error_message)
+        return True
+    return wrapper
+
+
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
@@ -75,6 +84,7 @@ class sa(object):
     def test(self):
         print("pass")
 
+    @handle_file_exception
     def openCase(self, pwb_file_path=None):
         """Opens case defined by the full file path; if this is undefined, opens by previous file path"""
         if pwb_file_path is None and self.pwb_file_path is None:
@@ -83,17 +93,12 @@ class sa(object):
             self.pwb_file_path = os.path.splitext(pwb_file_path)[0] + '.pwb'
         else:
             self.COMout = self.__pwcom__.OpenCase(self.file_folder + '/' + self.file_name + '.pwb')
-            if self.__pwerr__():
-                raise FileException(self.error_message)
-        return True
 
+    @handle_file_exception
     def saveCase(self):
         """Saves case with changes to existing file name and path."""
         self.pwb_file_path = self.pwb_file_path.replace('/', '\\')
         self.COMout = self.__pwcom__.SaveCase(self.pwb_file_path, 'PWB', True)
-        if self.__pwerr__():
-            raise FileException(self.error_message)
-        return True
 
     def saveCaseAs(self, pwb_file_path=None):
         """If file name and path are specified, saves case as a new file.
@@ -103,6 +108,7 @@ class sa(object):
             self.__setfilenames__()
         return self.saveCase()
 
+    @handle_file_exception
     def saveCaseAsAux(self, file_name=None, FilterName='', ObjectType=None, ToAppend=True, FieldList='all'):
         """If file name and path are specified, saves case as a new aux file.
         Overwrites any existing file with the same name and path."""
@@ -112,16 +118,11 @@ class sa(object):
         self.save_file_path = os.path.splitext(os.path.split(file_name)[1])[0]
         self.aux_file_path = self.file_folder + '/' + self.save_file_path + '.aux'
         self.COMout = self.__pwcom__.WriteAuxFile(self.aux_file_path, FilterName, ObjectType, ToAppend, FieldList)
-        if self.__pwerr__():
-            raise FileException(self.error_message)
-        return True
 
+    @handle_file_exception
     def closeCase(self):
         """Closes case without saving changes."""
         self.COMout = self.__pwcom__.CloseCase()
-        if self.__pwerr__():
-            raise FileException(self.error_message)
-        return True
 
     def getListOfDevices(self, ObjType, filterName):
         """Request a list of objects and their key fields"""
