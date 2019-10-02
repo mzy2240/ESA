@@ -33,6 +33,13 @@ class sa(object):
         if self.openCase():
             print(self.__ctime__(), "Case loaded")
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        self.exit()
+        return True
+
     def __ctime__(self):
         return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
@@ -128,7 +135,6 @@ class sa(object):
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
-        return None
 
     def runScriptCommand(self, script_command):
         """Input a script command as in an Auxiliary file SCRIPT{} statement or the PowerWorld Script command prompt."""
@@ -263,7 +269,6 @@ class sa(object):
         else:
             print(self.__ctime__(), "State:", output)
             return output
-        return None
 
     def loadState(self):
         """LoadState is used to load the system state previously saved with the SaveState function."""
@@ -277,7 +282,6 @@ class sa(object):
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
-        return None
 
     @property
     def ProcessID(self):
@@ -292,7 +296,6 @@ class sa(object):
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
-        return None
 
     @property
     def BuildDate(self):
@@ -307,7 +310,6 @@ class sa(object):
             # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
             # df = df.replace('', np.nan, regex=True)
             return output
-        return None
 
     def changeParameters(self, ObjType, Paramlist, ValueArray):
         """
@@ -534,8 +536,7 @@ class sa(object):
         if self.__pwerr__():
             raise GeneralException(self.error_message)
         return True
-    
-     
+
     def exit(self):
         """Clean up for the PowerWorld COM object"""
         self.closeCase()
