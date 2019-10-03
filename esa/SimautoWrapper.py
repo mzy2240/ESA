@@ -4,6 +4,8 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 import datetime
+import numpy as np
+import pandas as pd
 from .decorators import *
 
 
@@ -137,7 +139,8 @@ class sa(object):
     @handle_general_exception
     def getFieldList(self, ObjectType: str): # The second output should be a n*4 matrix, but the raw data is n*5
         output = self.__pwcom__.GetFieldList(ObjectType)
-        return output
+        df = pd.DataFrame(np.array(output[1]))
+        return df
 
     @handle_general_exception
     def getParametersSingleElement(self, element_type: str, field_list: list, value_list: list):
@@ -154,7 +157,11 @@ class sa(object):
     def getParametersMultipleElement(self, elementtype: str, fieldlist: list, filtername: str = ''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         output = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, filtername)
-        return output
+        try:
+            df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
+            return df
+        except Exception:
+            return False
 
     @handle_convergence_exception
     def runPF(self, method: str = 'RECTNEWT'):
@@ -178,7 +185,11 @@ class sa(object):
             fieldlist = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1']
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
         output = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, '')
-        return output
+        try:
+            df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
+            return df
+        except Exception:
+            return False
 
     def get3PBFaultCurrent(self, busnum):
         """Calculates the three phase fault; this can be done even with cases which
