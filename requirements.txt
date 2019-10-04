@@ -5,3 +5,4 @@ psutil
 pywin32
 pypiwin32
 tqdm
+pathlib
