@@ -1,4 +1,3 @@
-
 import pandas as pd
 import numpy as np
 import os
@@ -7,6 +6,14 @@ from win32com.client import VARIANT
 import pythoncom
 import datetime
 from .exceptions import ConvergenceException, GeneralException, FileException
+import re
+from typing import Union
+
+# Listing of PowerWorld data types. I guess 'real' means float?
+DATA_TYPES = ['Integer', 'Real', 'String']
+# Hard-code based on indices.
+NUMERIC_TYPES = DATA_TYPES[0:2]
+NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
 
 class sa(object):
@@ -116,19 +123,154 @@ class sa(object):
             raise FileException(self.error_message)
         return True
 
-    def getListOfDevices(self, ObjType, filterName):
-        """Request a list of objects and their key fields"""
-        output = self.__pwcom__.ListOfDevices(ObjType, filterName)
+    def get_object_type_key_fields(self, ObjType: str) -> pd.DataFrame:
+        """Helper function to get all key fields for an object type.
+
+        :param ObjType: The type of the object to get key fields for.
+
+        :returns: DataFrame with the following columns:
+            'internal_field_name', 'field_type', 'description', and
+            'alt_name'. The DataFrame will be indexed based on the key
+            field returned by the Simulator, but modified to be 0-based.
+
+        This method uses the GetFieldList function, documented
+        `here
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____14>`_.
+
+        It's also worth looking at the key fields documentation
+        `here
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
+        """
+        field_list = self.__pwcom__.GetFieldList(ObjType)
+
+        # TODO: Use the decorator when Zeyu is done with it.
         if self.__pwerr__():
             raise GeneralException(self.error_message)
         elif self.error_message != '':
             raise GeneralException(self.error_message)
         else:
-            # print(self.__ctime__(), "List of", ObjType, ":", output)
-            # df = pd.DataFrame(np.array(self.__pwcom__.output[1]).transpose(), columns=fieldlist)
-            # df = df.replace('', np.nan, regex=True)
-            return output
-        return None
+            # Initialize list of lists to hold our data.
+            data = []
+
+            # Loop over the returned list.
+            for t in field_list[1]:
+                # Here's what I've gathered:
+                # Key fields will be of the format *<number><letter>*
+                #   where the <letter> part is optional. It seems the
+                #   letter is only be listed for the last key field.
+                # Required fields are indicated with '**'.
+                # There are also fields of the form *<letter>* and these
+                #   seem to be composite fields? E.g. 'BusName_NomVolt'.
+
+                # Use a regular expression to test for key fields.
+                if re.match(r'\*[0-9]+[A-Z]*\*', t[0]):
+                    # Convert the key field from a 1-based weird index
+                    # thing to a standard 0-based index.
+                    i = int(re.sub('[A-Z]*', '', re.sub(r'\*', '', t[0]))) - 1
+
+                    # Put the index and the rest of the parameters in
+                    # the list.
+                    data.append((i, *t[1:]))
+
+            # Put the data into a DataFrame.
+            df = pd.DataFrame(data,
+                              columns=['key_field_index',
+                                       'internal_field_name',
+                                       'field_type', 'description',
+                                       'alt_name'])
+
+            # Use the key_field_index for the DataFrame index.
+            df.set_index(keys='key_field_index', drop=True,
+                         verify_integrity=True, inplace=True)
+
+            # Sort the index.
+            df.sort_index(axis=0, inplace=True)
+
+            # Ensure the index is as expected (0, 1, 2, 3, etc.)
+            assert np.array_equal(df.index.values,
+                                  np.arange(0, df.index.values[-1] + 1))
+
+            return df
+
+    def getListOfDevices(self, ObjType: str, FilterName='') -> \
+            Union[None, pd.DataFrame]:
+        """Request a list of objects and their key fields. This function
+        is general, and you may be better off running more specific
+        methods like "get_gens"
+
+        :param ObjType: The type of object for which you are acquiring
+            the list of devices. E.g. "Shunt," "Gen," "Bus," "Branch,"
+            etc.
+        :param FilterName: Name of an advanced filter defined in the
+            load flow case open in the automation server. Use the
+            empty string (default) if no filter is desired. If the
+            given filter cannot be found, the server will default to
+            returning all objects in the case of type ObjType.
+
+        :returns: None if there are no objects of the given type in the
+            model. Otherwise, a DataFrame of key fields will be
+            returned. There will be a row for each object of the given
+            type, and columns for each key field. If the "BusNum"
+            key field is present, the data will be sorted by BusNum.
+        """
+        # Start by getting the key fields associated with this object.
+        kf = self.get_object_type_key_fields(ObjType)
+
+        # Now, query for the list of devices.
+        output = self.__pwcom__.ListOfDevices(ObjType, FilterName)
+        if self.__pwerr__():
+            raise GeneralException(self.error_message)
+        elif self.error_message != '':
+            raise GeneralException(self.error_message)
+        else:
+            # If all data in the 2nd dimension comes back None, there
+            # are no objects of this type and we should return None.
+            all_none = True
+            for i in output[1]:
+                if i is not None:
+                    all_none = False
+                    break
+
+            if all_none:
+                # TODO: May be worth adding logging here.
+                return None
+
+            # If we're here, we have this object type in the model.
+            # Create a DataFrame.
+            df = pd.DataFrame(output[1]).transpose()
+            # The return from get_object_type_key_fields is designed to
+            # match up 1:1 with values here. Set columns.
+            df.columns = kf['internal_field_name'].values
+
+            # Cast columns to numeric as appropriate. Strip leading/
+            # trailing whitespace from string columns.
+            for row in kf.itertuples():
+                if row.field_type in NUMERIC_TYPES:
+                    # Cast data to numeric.
+                    df[row.internal_field_name] = \
+                        pd.to_numeric(df[row.internal_field_name])
+                elif row.field_type in NON_NUMERIC_TYPES:
+                    # Strip leading/trailing white space.
+                    df[row.internal_field_name] = \
+                        df[row.internal_field_name].str.strip()
+                else:
+                    # Well, we didn't expect this type.
+                    raise ValueError('Unexpected field_type, {}, for {}.'
+                                     .format(row.field_type,
+                                             row.internal_field_name))
+
+            # Sort by BusNum if present.
+            try:
+                df.sort_values(by='BusNum', axis=0, inplace=True)
+            except KeyError:
+                # If there's no BusNum don't sort the DataFrame.
+                pass
+            else:
+                # Re-index with simple monotonically increasing values.
+                df.index = np.arange(start=0, stop=df.shape[0])
+
+            # All done. We now have a well-formed DataFrame.
+            return df
 
     def runScriptCommand(self, script_command):
         """Input a script command as in an Auxiliary file SCRIPT{} statement or the PowerWorld Script command prompt."""
