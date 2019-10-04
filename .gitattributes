@@ -1,2 +1,6 @@
+*.epc filter=lfs diff=lfs merge=lfs -text
+*.pwb filter=lfs diff=lfs merge=lfs -text
+*.pwd filter=lfs diff=lfs merge=lfs -text
+*.raw filter=lfs diff=lfs merge=lfs -text
 *.pickle filter=lfs diff=lfs merge=lfs -text
 *.doctree filter=lfs diff=lfs merge=lfs -text
