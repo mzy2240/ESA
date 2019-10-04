@@ -1,0 +1,7 @@
+numpy
+paho-mqtt
+pandas
+psutil
+pywin32
+pypiwin32
+tqdm
