@@ -302,6 +302,12 @@ class sa(object):
         output = self.__pwcom__.ProcessAuxFile(self.aux_file_path)
         return output
 
+    @handle_file_exception
+    def openOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
+        script = f"OpenOneline({filename}, {view}, {fullscreen}, {showfull})"
+        output = self.runScriptCommand(script)
+        return output
+
     @handle_general_exception
     def getFieldList(self, ObjectType: str): # The second output should be a n*4 matrix, but the raw data is n*5
         output = self.__pwcom__.GetFieldList(ObjectType)
