@@ -4,6 +4,14 @@ A python package that could dramatically reduce the time for general power syste
 python 3.5 or above (recommend to use the latest Anaconda 3)
 ## Installation
 `pip install esa`
+## Pre-requisites
+- Microsoft Windows Operating System (PowerWorld is Windows only)
+- PowerWorld Simulator with SimAuto add-on installed
+- [Git Large File Storage (LFS)](https://git-lfs.github.com/) (required to download
+case files and run tests). After installing, simply change directories to
+this repository, and run `git lfs install`. You will likely need to run a
+`git pull` or `git lfs pull` after installing and setting up Git LFS.
+After initial setup, you shouldn't need to do anything else with Git LFS.
 ## Usage
 Before using the package, make sure you have PowerWorld Simulator and SimAuto add-on installed. Use script below to start:
 
