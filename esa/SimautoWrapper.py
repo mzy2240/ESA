@@ -18,7 +18,6 @@ NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
 
-
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
@@ -78,12 +77,35 @@ class sa(object):
             self.error_message = self.COMout[0]
         return self.error
 
-    def do(self, task):
-        method_to_call = getattr(self, task)
-        return method_to_call()
+    def _call_simauto(self, func: str, *args):
+        """Helper function for calling the SimAuto server.
 
-    def test(self):
-        print("pass")
+        :param func: Name of PowerWorld SimAuto function to call.
+
+        :param args: Remaining arguments to this function will be
+            passed directly to func.
+
+        :returns: Result from PowerWorld. This will vary from function
+            to function.
+
+        The listing of valid functions can be found `here
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`_.
+        """
+        # Get a reference to the SimAuto function from the COM object.
+        try:
+            f = getattr(self.__pwcom__, func)
+        except AttributeError:
+            raise AttributeError('The given function, {}, is not a valid '
+                                 'SimAuto function.'.format(func)) from None
+
+        # Call the function.
+        output = f(*args)
+
+        # TODO: Handle errors. Maybe we can handle errors differently
+        #   based on specific keyword arguments to the method.
+
+        # After errors have been handled, return the data.
+        return output[1]
 
     @handle_file_exception
     def openCase(self, pwb_file_path=None):
@@ -125,7 +147,6 @@ class sa(object):
         """Closes case without saving changes."""
         self.COMout = self.__pwcom__.CloseCase()
 
-    @handle_general_exception
     def get_object_type_key_fields(self, ObjType: str) -> pd.DataFrame:
         """Helper function to get all key fields for an object type.
 
@@ -144,59 +165,51 @@ class sa(object):
         `here
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
         """
-        field_list = self.__pwcom__.GetFieldList(ObjType)
+        field_list = self._call_simauto('GetFieldList', ObjType)
 
-        # TODO: Use the decorator when Zeyu is done with it.
-        if self.__pwerr__():
-            raise GeneralException(self.error_message)
-        elif self.error_message != '':
-            raise GeneralException(self.error_message)
-        else:
-            # Initialize list of lists to hold our data.
-            data = []
+        # Initialize list of lists to hold our data.
+        data = []
 
-            # Loop over the returned list.
-            for t in field_list[1]:
-                # Here's what I've gathered:
-                # Key fields will be of the format *<number><letter>*
-                #   where the <letter> part is optional. It seems the
-                #   letter is only be listed for the last key field.
-                # Required fields are indicated with '**'.
-                # There are also fields of the form *<letter>* and these
-                #   seem to be composite fields? E.g. 'BusName_NomVolt'.
+        # Loop over the returned list.
+        for t in field_list:
+            # Here's what I've gathered:
+            # Key fields will be of the format *<number><letter>*
+            #   where the <letter> part is optional. It seems the
+            #   letter is only be listed for the last key field.
+            # Required fields are indicated with '**'.
+            # There are also fields of the form *<letter>* and these
+            #   seem to be composite fields? E.g. 'BusName_NomVolt'.
 
-                # Use a regular expression to test for key fields.
-                if re.match(r'\*[0-9]+[A-Z]*\*', t[0]):
-                    # Convert the key field from a 1-based weird index
-                    # thing to a standard 0-based index.
-                    i = int(re.sub('[A-Z]*', '', re.sub(r'\*', '', t[0]))) - 1
+            # Use a regular expression to test for key fields.
+            if re.match(r'\*[0-9]+[A-Z]*\*', t[0]):
+                # Convert the key field from a 1-based weird index
+                # thing to a standard 0-based index.
+                i = int(re.sub('[A-Z]*', '', re.sub(r'\*', '', t[0]))) - 1
 
-                    # Put the index and the rest of the parameters in
-                    # the list.
-                    data.append((i, *t[1:]))
+                # Put the index and the rest of the parameters in
+                # the list.
+                data.append((i, *t[1:]))
 
-            # Put the data into a DataFrame.
-            df = pd.DataFrame(data,
-                              columns=['key_field_index',
-                                       'internal_field_name',
-                                       'field_type', 'description',
-                                       'alt_name'])
+        # Put the data into a DataFrame.
+        df = pd.DataFrame(data,
+                          columns=['key_field_index',
+                                   'internal_field_name',
+                                   'field_type', 'description',
+                                   'alt_name'])
 
-            # Use the key_field_index for the DataFrame index.
-            df.set_index(keys='key_field_index', drop=True,
-                         verify_integrity=True, inplace=True)
+        # Use the key_field_index for the DataFrame index.
+        df.set_index(keys='key_field_index', drop=True,
+                     verify_integrity=True, inplace=True)
 
-            # Sort the index.
-            df.sort_index(axis=0, inplace=True)
+        # Sort the index.
+        df.sort_index(axis=0, inplace=True)
 
-            # Ensure the index is as expected (0, 1, 2, 3, etc.)
-            assert np.array_equal(df.index.values,
-                                  np.arange(0, df.index.values[-1] + 1))
+        # Ensure the index is as expected (0, 1, 2, 3, etc.)
+        assert np.array_equal(df.index.values,
+                              np.arange(0, df.index.values[-1] + 1))
 
-            return df
+        return df
 
-
-    @handle_general_exception
     def getListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
         """Request a list of objects and their key fields. This function
@@ -222,60 +235,56 @@ class sa(object):
         kf = self.get_object_type_key_fields(ObjType)
 
         # Now, query for the list of devices.
-        output = self.__pwcom__.ListOfDevices(ObjType, FilterName)
-        if self.__pwerr__():
-            raise GeneralException(self.error_message)
-        elif self.error_message != '':
-            raise GeneralException(self.error_message)
-        else:
-            # If all data in the 2nd dimension comes back None, there
-            # are no objects of this type and we should return None.
-            all_none = True
-            for i in output[1]:
-                if i is not None:
-                    all_none = False
-                    break
+        output = self._call_simauto('ListOfDevices', ObjType, FilterName)
 
-            if all_none:
-                # TODO: May be worth adding logging here.
-                return None
+        # If all data in the 2nd dimension comes back None, there
+        # are no objects of this type and we should return None.
+        all_none = True
+        for i in output:
+            if i is not None:
+                all_none = False
+                break
 
-            # If we're here, we have this object type in the model.
-            # Create a DataFrame.
-            df = pd.DataFrame(output[1]).transpose()
-            # The return from get_object_type_key_fields is designed to
-            # match up 1:1 with values here. Set columns.
-            df.columns = kf['internal_field_name'].values
+        if all_none:
+            # TODO: May be worth adding logging here.
+            return None
 
-            # Cast columns to numeric as appropriate. Strip leading/
-            # trailing whitespace from string columns.
-            for row in kf.itertuples():
-                if row.field_type in NUMERIC_TYPES:
-                    # Cast data to numeric.
-                    df[row.internal_field_name] = \
-                        pd.to_numeric(df[row.internal_field_name])
-                elif row.field_type in NON_NUMERIC_TYPES:
-                    # Strip leading/trailing white space.
-                    df[row.internal_field_name] = \
-                        df[row.internal_field_name].str.strip()
-                else:
-                    # Well, we didn't expect this type.
-                    raise ValueError('Unexpected field_type, {}, for {}.'
-                                     .format(row.field_type,
-                                             row.internal_field_name))
+        # If we're here, we have this object type in the model.
+        # Create a DataFrame.
+        df = pd.DataFrame(output).transpose()
+        # The return from get_object_type_key_fields is designed to
+        # match up 1:1 with values here. Set columns.
+        df.columns = kf['internal_field_name'].values
 
-            # Sort by BusNum if present.
-            try:
-                df.sort_values(by='BusNum', axis=0, inplace=True)
-            except KeyError:
-                # If there's no BusNum don't sort the DataFrame.
-                pass
+        # Cast columns to numeric as appropriate. Strip leading/
+        # trailing whitespace from string columns.
+        for row in kf.itertuples():
+            if row.field_type in NUMERIC_TYPES:
+                # Cast data to numeric.
+                df[row.internal_field_name] = \
+                    pd.to_numeric(df[row.internal_field_name])
+            elif row.field_type in NON_NUMERIC_TYPES:
+                # Strip leading/trailing white space.
+                df[row.internal_field_name] = \
+                    df[row.internal_field_name].str.strip()
             else:
-                # Re-index with simple monotonically increasing values.
-                df.index = np.arange(start=0, stop=df.shape[0])
+                # Well, we didn't expect this type.
+                raise ValueError('Unexpected field_type, {}, for {}.'
+                                 .format(row.field_type,
+                                         row.internal_field_name))
 
-            # All done. We now have a well-formed DataFrame.
-            return df
+        # Sort by BusNum if present.
+        try:
+            df.sort_values(by='BusNum', axis=0, inplace=True)
+        except KeyError:
+            # If there's no BusNum don't sort the DataFrame.
+            pass
+        else:
+            # Re-index with simple monotonically increasing values.
+            df.index = np.arange(start=0, stop=df.shape[0])
+
+        # All done. We now have a well-formed DataFrame.
+        return df
 
     @handle_general_exception
     def runScriptCommand(self, script_command):
