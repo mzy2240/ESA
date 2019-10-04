@@ -10,6 +10,7 @@ import re
 from typing import Union
 from .decorators import handle_file_exception, handle_convergence_exception, \
     handle_general_exception
+from pathlib import Path
 
 # Listing of PowerWorld data types. I guess 'real' means float?
 DATA_TYPES = ['Integer', 'Real', 'String']
@@ -304,7 +305,8 @@ class sa(object):
 
     @handle_file_exception
     def openOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
-        script = f"OpenOneline({filename}, {view}, {fullscreen}, {showfull})"
+        filename = Path(filename)
+        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}, {showfull})"
         output = self.runScriptCommand(script)
         return output
 
