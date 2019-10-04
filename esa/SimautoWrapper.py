@@ -21,7 +21,7 @@ NON_NUMERIC_TYPES = DATA_TYPES[-1]
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
-    def __init__(self, pwb_file_path=None, earlybind=False):
+    def __init__(self, pwb_file_path=None, earlybind=False, visible=False):
         try:
             if earlybind:
                 self.__pwcom__ = win32com.client.gencache.EnsureDispatch('pwrworld.SimulatorAuto')
@@ -39,6 +39,7 @@ class sa(object):
         self.error = False
         self.error_message = ''
         self.COMout = ''
+        self.__pwcom__.UIVisible = visible
         if self.openCase():
             print(self.__ctime__(), "Case loaded")
 
