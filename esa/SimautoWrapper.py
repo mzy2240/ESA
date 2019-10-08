@@ -58,25 +58,6 @@ class sa(object):
         self.aux_file_path = self.file_folder + '/' + self.file_name + '.aux'  # some operations require an aux file
         self.save_file_path = os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
 
-    def __pwerr__(self):
-        if self.COMout is None:
-            self.output = None
-            self.error = False
-            self.error_message = ''
-        elif self.COMout[0] == '':
-            self.output = None
-            self.error = False
-            self.error_message = ''
-        elif 'No data' in self.COMout[0]:
-            self.output = None
-            self.error = False
-            self.error_message = self.COMout[0]
-        else:
-            self.output = self.COMout[-1]
-            self.error = True
-            self.error_message = self.COMout[0]
-        return self.error
-
     def _call_simauto(self, func: str, *args):
         """Helper function for calling the SimAuto server.
 
