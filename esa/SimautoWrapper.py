@@ -8,8 +8,6 @@ import datetime
 from .exceptions import GeneralException
 import re
 from typing import Union
-from .decorators import handle_file_exception, handle_convergence_exception, \
-    handle_general_exception
 from pathlib import Path
 
 # Listing of PowerWorld data types. I guess 'real' means float?
@@ -103,21 +101,26 @@ class sa(object):
         # Call the function.
         output = f(*args)
 
-        # TODO: Handle errors. Maybe we can handle errors differently
-        #   based on specific keyword arguments to the method.
+        # handle errors
+        if output is None or output[0] == '':
+            pass
+        elif 'No data' in output[0]:
+            pass
+        else:
+            raise GeneralException(output[0])
 
         # After errors have been handled, return the data.
-        return output[1]
+        print(output)
+        return output
 
-    @handle_file_exception
     def openCase(self):
         """Opens case defined by the full file path; if this is undefined, opens by previous file path"""
-        self.COMout = self.__pwcom__.OpenCase(self.pwb_file_path)
+        # self.COMout = self.__pwcom__.OpenCase(self.pwb_file_path)
+        self.COMout = self._call_simauto('OpenCase', self.pwb_file_path)
 
-    @handle_file_exception
     def saveCase(self):
         """Saves case with changes to existing file name and path."""
-        self.COMout = self.__pwcom__.SaveCase(self.pwb_file_path, 'PWB', True)
+        self.COMout = self._call_simauto('SaveCase', self.pwb_file_path, 'PWB', True)
 
     def saveCaseAs(self, pwb_file_path=None):
         """If file name and path are specified, saves case as a new file.
@@ -127,15 +130,13 @@ class sa(object):
             self.pwb_file_path = file_path.as_posix()
         return self.saveCase()
 
-    @handle_file_exception
     def saveCaseAsAux(self, file_name, FilterName='', ObjectType=None, ToAppend=True, FieldList='all'):
         """If file name and path are specified, saves case as a new aux file.
         Overwrites any existing file with the same name and path."""
         file_path = Path(file_name)
         self.aux_file_path = file_path.as_posix()
-        self.COMout = self.__pwcom__.WriteAuxFile(self.aux_file_path, FilterName, ObjectType, ToAppend, FieldList)
+        self.COMout = self._call_simauto('WriteAuxFile', self.aux_file_path, FilterName, ObjectType, ToAppend, FieldList)
 
-    @handle_file_exception
     def closeCase(self):
         """Closes case without saving changes."""
         self.COMout = self.__pwcom__.CloseCase()
@@ -279,35 +280,30 @@ class sa(object):
         # All done. We now have a well-formed DataFrame.
         return df
 
-    @handle_general_exception
     def runScriptCommand(self, script_command):
         """Input a script command as in an Auxiliary file SCRIPT{} statement or the PowerWorld Script command prompt."""
-        output = self.__pwcom__.RunScriptCommand(script_command)
+        output = self._call_simauto('RunScriptCommand', script_command)
         return output
 
-    @handle_general_exception
     def loadAuxFileText(self, auxtext):
         """Creates and loads an Auxiliary file with the text specified in auxtext parameter."""
         f = open(self.aux_file_path, 'w')
         f.writelines(auxtext)
         f.close()
-        output = self.__pwcom__.ProcessAuxFile(self.aux_file_path)
+        output = self._call_simauto('ProcessAuxFile', self.aux_file_path)
         return output
 
-    @handle_file_exception
     def openOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
         filename = Path(filename)
         script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}, {showfull})"
         output = self.runScriptCommand(script)
         return output
 
-    @handle_general_exception
     def getFieldList(self, ObjectType: str): # The second output should be a n*4 matrix, but the raw data is n*5
-        output = self.__pwcom__.GetFieldList(ObjectType)
+        output = self._call_simauto('GetFieldList', ObjectType)
         df = pd.DataFrame(np.array(output[1]))
         return df
 
-    @handle_general_exception
     def getParametersSingleElement(self, element_type: str, field_list: list, value_list: list):
         """Retrieves parameter data according to the fields specified in field_list.
         value_list consists of identifying parameter values and zeroes and should be
@@ -315,25 +311,22 @@ class sa(object):
         assert len(field_list) == len(value_list)
         field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, field_list)
         value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, value_list)
-        output = self.__pwcom__.GetParametersSingleElement(element_type, field_array, value_array)
+        output = self._call_simauto('GetParametersSingleElement', element_type, field_array, value_array)
         return output
 
-    @handle_general_exception
     def getParametersMultipleElement(self, elementtype: str, fieldlist: list, filtername: str = ''):
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
-        output = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, filtername)
+        output = self._call_simauto('GetParametersMultipleElement', elementtype, fieldarray, filtername)
         try:
             df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
             return df
         except Exception:
             return False
 
-    @handle_convergence_exception
     def runPF(self, method: str = 'RECTNEWT'):
         script_command = "SolvePowerFlow(%s)" % method.upper()
-        self.COMout = self.__pwcom__.RunScriptCommand(script_command)
+        self.COMout = self.runScriptCommand(script_command)
 
-    @handle_general_exception
     def getPowerFlowResult(self, elementtype):
         """
         Get the power flow results from SimAuto server. Needs to specify the object type, e.g. bus, load, generator, etc
@@ -349,7 +342,7 @@ class sa(object):
         elif 'branch' in elementtype.lower():
             fieldlist = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1']
         fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
-        output = self.__pwcom__.GetParametersMultipleElement(elementtype, fieldarray, '')
+        output = self._call_simauto('GetParametersMultipleElement', elementtype, fieldarray, '')
         try:
             df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
             return df
@@ -364,7 +357,6 @@ class sa(object):
         fieldlist = ['BusNum', 'FaultCurMag']
         return self.getParametersSingleElement('BUS', fieldlist, [busnum, 0])
 
-    @handle_general_exception
     def createFilter(self, condition, objecttype, filtername, filterlogic='AND', filterpre='NO', enabled='YES'):
         """Creates a filter in PowerWorld. The attempt is to reduce the clunkiness of
         # creating a filter in the API, which entails creating an aux data file"""
@@ -377,36 +369,31 @@ class sa(object):
                 </SUBDATA>
             }'''.format(condition=condition, objecttype=objecttype, filtername=filtername, filterlogic=filterlogic,
                         filterpre=filterpre, enabled=enabled)
-        output = self.__pwcom__.load_aux(auxtext)
+        output = self._call_simauto('LoadAux', auxtext)
         return output
 
-    @handle_general_exception
     def saveState(self):
         """SaveState is used to save the current state of the power system."""
-        output = self.__pwcom__.SaveState()
+        output = self._call_simauto('SaveState')
         return output
 
-    @handle_general_exception
     def loadState(self):
         """LoadState is used to load the system state previously saved with the SaveState function."""
-        output = self.__pwcom__.LoadState()
+        output = self._call_simauto('LoadState')
         return output
 
     @property
-    @handle_general_exception
     def ProcessID(self):
         """Retrieve the process ID of the currently running SimulatorAuto process"""
         output = self.__pwcom__.ProcessID
         return output
 
     @property
-    @handle_general_exception
     def BuildDate(self):
         """Retrieve the build date of the PowerWorld Simulator executable currently running with the SimulatorAuto process"""
         output = self.__pwcom__.RequestBuildDate
         return output
 
-    @handle_general_exception
     def changeParameters(self, ObjType, Paramlist, ValueArray):
         """
         ChangeParameters is used to change single or multiple parameters of a single object.
@@ -414,10 +401,9 @@ class sa(object):
         and must contain the key fields for the objecttype.
         Create variant arrays (one for each element being changed) with values corresponding to the fields in ParamList.
         """
-        output = self.__pwcom__.ChangeParameters(ObjType, Paramlist, ValueArray)
+        output = self._call_simauto('ChangeParameters', ObjType, Paramlist, ValueArray)
         return output
 
-    @handle_general_exception
     def changeParametersMultipleElement(self, ObjType: str, Paramlist: list, ValueArray: list):
         """
         :param ObjType: String The type of object you are changing parameters for.
@@ -426,27 +412,23 @@ class sa(object):
         :return: True or False
         """
         ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, subArray) for subArray in ValueArray]
-        output = self.__pwcom__.ChangeParametersMultipleElement(ObjType, Paramlist, ValueArray)
+        output = self._call_simauto('ChangeParametersMultipleElement', ObjType, Paramlist, ValueArray)
         return output
 
-    @handle_file_exception
     def sendToExcel(self, ObjectType: str, FilterName: str, FieldList):
         """Send data from the Simulator Automation Server to an Excel spreadsheet."""
-        self.COMout = self.__pwcom__.SendToExcel(ObjectType, FilterName, FieldList)
+        self.COMout = self._call_simauto('SendToExcel', ObjectType, FilterName, FieldList)
 
     @property
-    @handle_general_exception
     def UIVisible(self):
         output = self.__pwcom__.UIVisible
         return output
 
     @property
-    @handle_general_exception
     def CurrentDir(self):
         output = self.__pwcom__.CurrentDir
         return output
 
-    @handle_general_exception
     def tsCalculateCriticalClearTime(self, Branch):
         """
         Use this action to calculate critical clearing time for faults on the lines that meet the specified filter.
@@ -459,21 +441,17 @@ class sa(object):
         output = self.runScriptCommand("TSCalculateCriticalClearTime (%s)" % Branch)
         return output
 
-    @handle_general_exception
     def tsResultStorageSetAll(self, objectttype, choice):
         output = self.runScriptCommand("TSResultStorageSetAll (%s) (%s)" % (objectttype, choice))
         return output
 
-    @handle_general_exception
     def tsSolve(self, ContingencyName):
         """
         Solves only the specified contingency
         """
-  #      self.TSResultStorageSetAll('Bus', 'Yes')
         output = self.runScriptCommand("TSSolve (%s)" % ContingencyName)
         return output
 
-    @handle_general_exception
     def tsGetContingencyResults(self, CtgName, ObjFieldList, StartTime=None, StopTime=None):
         """
         Read transient stability results directly into the SimAuto COM obkect and be further used.
@@ -481,10 +459,9 @@ class sa(object):
         (for example, use this after running script commands tsSolveAll or tsSolve).
         ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or ObjFieldList = ['"Bus 4 | frequency"']
         """
-        output = self.__pwcom__.TSGetContingencyResults(CtgName, ObjFieldList, StartTime, StopTime)
+        output = self._call_simauto('TSGetContingencyResults', CtgName, ObjFieldList, StartTime, StopTime)
         return output
 
-    @handle_general_exception
     def setData(self, ObjectType: str, FieldList: str, ValueList: str, Filter=''):
         """
         Use this action to set fields for particular objects. If a filter is specified, then it will set the respective fields for all
@@ -498,17 +475,14 @@ class sa(object):
         self.saveCase()
         return output
 
-    @handle_general_exception
     def delete(self, ObjectType: str):
         output = self.runScriptCommand("Delete(%s)" % ObjectType)
         return output
 
-    @handle_general_exception
     def createData(self, ObjectType: str, FieldList: str, ValueList: str):
         output = self.runScriptCommand("CreateData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
         return output
 
-    @handle_file_exception
     def writeAuxFile(self, FileName, FilterName, ObjectType, FieldList, ToAppend=True, EString=None):
         """
         The WriteAuxFile function can be used to write data from the case in the Simulator Automation Server
@@ -518,9 +492,8 @@ class sa(object):
         """
         file_path = Path(FileName)
         self.aux_file_path = file_path.as_posix()
-        self.COMout = self.__pwcom__.WriteAuxFile(self.aux_file_path, FilterName, ObjectType, FieldList, ToAppend)
+        self.COMout = self._call_simauto('WriteAuxFile', self.aux_file_path, FilterName, ObjectType, FieldList, ToAppend)
 
-    @handle_general_exception
     def calculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
         """
         Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a
@@ -532,21 +505,18 @@ class sa(object):
         output = self.runScriptCommand("CalculateLODF (%s,%s,%s)" %(Branch, LinearMethod, PostClosureLCDF))
         return output
 
-    @handle_file_exception
     def saveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
         """
         Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab
         """
         self.SaveJacCOMout = self.runScriptCommand("SaveJacobian(%s,%s,%s,%s) " % (JacFileName, JIDFileName, FileType, JacForm))
 
-    @handle_file_exception
     def saveYbusInMatlabFormat(self, fileName, IncludeVoltages='Yes'):
         """
         Use this action to save the YBus to a file formatted for use with Matlab
         """
         self.SaveYBusCOMout = self.runScriptCommand("SaveYbusInMatlabFormat(%s,%s)" %(fileName, IncludeVoltages))
 
-    @handle_general_exception
     def setParticipationFactors(self, Method, ConstantValue, Object):
         """
         Use this action to modify the generator participation factors in the case
@@ -561,7 +531,6 @@ class sa(object):
         output = self.runScriptCommand("SetParticipationFactors (%s,%s,%s)" %(Method, ConstantValue, Object))
         return output
 
-    @handle_general_exception
     def tsRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
         """
         This command allows manual control of the transient stability run. The simulation can be run until a
@@ -571,7 +540,6 @@ class sa(object):
         output = self.runScriptCommand("TSRunUntilSpecifiedTime (%s,%s)" % (ContingencyName, RunOptions))
         return output
 
-    @handle_general_exception
     def tsWriteOptions(self, fileName, Options, Keyfield=' Primary'):
         """
         Save the transient stability option settings to an auxiliary file.
@@ -586,7 +554,6 @@ class sa(object):
         output = self.runScriptCommand("TSWriteOptions(%s,%s)" %(fileName, Options))
         return output
 
-    @handle_general_exception
     def enterMode(self, mode):
         output = self.runScriptCommand("EnterMode(%s)" % mode)
         return output
