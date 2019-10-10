@@ -67,7 +67,8 @@ class sa(object):
             passed directly to func.
 
         :returns: Result from PowerWorld. This will vary from function
-            to function.
+            to function. If PowerWorld returns ('',), this method
+            returns None.
 
         The listing of valid functions can be found `here
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`_.
@@ -83,6 +84,10 @@ class sa(object):
         output = f(*args)
 
         # handle errors
+        if output == ('',):
+            # If we just get a tuple with the empty string in it,
+            # there's nothing to return.
+            return None
         if output is None or output[0] == '':
             pass
         elif 'No data' in output[0]:
@@ -90,9 +95,9 @@ class sa(object):
         else:
             raise GeneralException(output[0])
 
-        # After errors have been handled, return the data.
-        print(output)
-        return output
+        # After errors have been handled, return the data (which is in
+        # position 1 of the tuple).
+        return output[1]
 
     def openCase(self):
         """Opens case defined by the full file path; if this is undefined, opens by previous file path"""
