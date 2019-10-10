@@ -37,7 +37,6 @@ class sa(object):
         self.output = ''
         self.error = False
         self.error_message = ''
-        self.COMout = ''
         self.__pwcom__.UIVisible = visible
         if self.openCase():
             print(self.__ctime__(), "Case loaded")
@@ -100,13 +99,13 @@ class sa(object):
         return output[1]
 
     def openCase(self):
-        """Opens case defined by the full file path; if this is undefined, opens by previous file path"""
-        # self.COMout = self.__pwcom__.OpenCase(self.pwb_file_path)
-        self.COMout = self._call_simauto('OpenCase', self.pwb_file_path)
+        """Opens case defined by the full file path; if this is
+        undefined, opens by previous file path"""
+        return self._call_simauto('OpenCase', self.pwb_file_path)
 
     def saveCase(self):
         """Saves case with changes to existing file name and path."""
-        self.COMout = self._call_simauto('SaveCase', self.pwb_file_path, 'PWB', True)
+        return self._call_simauto('SaveCase', self.pwb_file_path, 'PWB', True)
 
     def saveCaseAs(self, pwb_file_path=None):
         """If file name and path are specified, saves case as a new file.
@@ -121,11 +120,12 @@ class sa(object):
         Overwrites any existing file with the same name and path."""
         file_path = Path(file_name)
         self.aux_file_path = file_path.as_posix()
-        self.COMout = self._call_simauto('WriteAuxFile', self.aux_file_path, FilterName, ObjectType, ToAppend, FieldList)
+        return self._call_simauto('WriteAuxFile', self.aux_file_path,
+                                  FilterName, ObjectType, ToAppend, FieldList)
 
     def closeCase(self):
         """Closes case without saving changes."""
-        self.COMout = self.__pwcom__.CloseCase()
+        return self.__pwcom__.CloseCase()
 
     def get_object_type_key_fields(self, ObjType: str) -> pd.DataFrame:
         """Helper function to get all key fields for an object type.
@@ -311,7 +311,7 @@ class sa(object):
 
     def runPF(self, method: str = 'RECTNEWT'):
         script_command = "SolvePowerFlow(%s)" % method.upper()
-        self.COMout = self.runScriptCommand(script_command)
+        return self.runScriptCommand(script_command)
 
     def getPowerFlowResult(self, elementtype):
         """
@@ -339,7 +339,7 @@ class sa(object):
         """Calculates the three phase fault; this can be done even with cases which
         only contain positive sequence impedances"""
         scriptcmd = f'Fault([BUS {busnum}], 3PB);\n'
-        self.COMout = self.run_script(scriptcmd)
+        result = self.run_script(scriptcmd)
         fieldlist = ['BusNum', 'FaultCurMag']
         return self.getParametersSingleElement('BUS', fieldlist, [busnum, 0])
 
@@ -403,7 +403,7 @@ class sa(object):
 
     def sendToExcel(self, ObjectType: str, FilterName: str, FieldList):
         """Send data from the Simulator Automation Server to an Excel spreadsheet."""
-        self.COMout = self._call_simauto('SendToExcel', ObjectType, FilterName, FieldList)
+        return self._call_simauto('SendToExcel', ObjectType, FilterName, FieldList)
 
     @property
     def UIVisible(self):
@@ -478,7 +478,8 @@ class sa(object):
         """
         file_path = Path(FileName)
         self.aux_file_path = file_path.as_posix()
-        self.COMout = self._call_simauto('WriteAuxFile', self.aux_file_path, FilterName, ObjectType, FieldList, ToAppend)
+        return self._call_simauto('WriteAuxFile', self.aux_file_path,
+                                  FilterName, ObjectType, FieldList, ToAppend)
 
     def calculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
         """
