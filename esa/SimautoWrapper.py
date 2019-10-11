@@ -23,22 +23,26 @@ class sa(object):
     def __init__(self, pwb_file_path=None, earlybind=False, visible=False):
         try:
             if earlybind:
-                self.__pwcom__ = win32com.client.gencache.EnsureDispatch('pwrworld.SimulatorAuto')
+                self.__pwcom__ = win32com.client.gencache.EnsureDispatch(
+                    'pwrworld.SimulatorAuto')
             else:
-                self.__pwcom__ = win32com.client.dynamic.Dispatch('pwrworld.SimulatorAuto')
+                self.__pwcom__ = win32com.client.dynamic.Dispatch(
+                    'pwrworld.SimulatorAuto')
         except Exception as e:
             print(str(e))
-            print("Unable to launch SimAuto.",
-                  "Please confirm that your PowerWorld license includes the SimAuto add-on ",
-                  "and that SimAuto has been successfuly installed.")
+            print("Unable to launch SimAuto. ",
+                  "Please confirm that your PowerWorld license includes "
+                  "the SimAuto add-on, and that SimAuto has been "
+                  "successfully installed.")
         # print(self.__ctime__(), "SimAuto launched")
         file_path = Path(pwb_file_path)
         self.pwb_file_path = file_path.as_posix()
+        self.aux_file_path = None
         self.output = ''
         self.error = False
         self.error_message = ''
         self.__pwcom__.UIVisible = visible
-        if self.openCase():
+        if self.OpenCase():
             print(self.__ctime__(), "Case loaded")
 
     def __enter__(self):
@@ -48,14 +52,18 @@ class sa(object):
         self.exit()
         return True
 
-    def __ctime__(self):
+    @staticmethod
+    def __ctime__():
         return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
 
     def __setfilenames__(self):
         self.file_folder = os.path.split(self.pwb_file_path)[0]
-        self.file_name = os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
-        self.aux_file_path = self.file_folder + '/' + self.file_name + '.aux'  # some operations require an aux file
-        self.save_file_path = os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
+        self.file_name =\
+            os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
+        # some operations require an aux file
+        self.aux_file_path = self.file_folder + '/' + self.file_name + '.aux'
+        self.save_file_path = os.path.splitext(
+            os.path.split(self.pwb_file_path)[1])[0]
 
     def _call_simauto(self, func: str, *args):
         """Helper function for calling the SimAuto server.
@@ -98,35 +106,44 @@ class sa(object):
         # position 1 of the tuple).
         return output[1]
 
-    def openCase(self):
+    # noinspection PyPep8Naming
+    def OpenCase(self):
         """Opens case defined by the full file path; if this is
         undefined, opens by previous file path"""
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
-    def saveCase(self):
+    # noinspection PyPep8Naming
+    def SaveCase(self):
         """Saves case with changes to existing file name and path."""
         return self._call_simauto('SaveCase', self.pwb_file_path, 'PWB', True)
 
-    def saveCaseAs(self, pwb_file_path=None):
-        """If file name and path are specified, saves case as a new file.
-        Overwrites any existing file with the same name and path."""
+    def save_case_as(self, pwb_file_path=None):
+        """If file name and path are specified, saves case as a new
+        file. Overwrites any existing file with the same name and path.
+        """
         if pwb_file_path is not None:
             file_path = Path(pwb_file_path)
             self.pwb_file_path = file_path.as_posix()
-        return self.saveCase()
+        return self.SaveCase()
 
-    def saveCaseAsAux(self, file_name, FilterName='', ObjectType=None, ToAppend=True, FieldList='all'):
-        """If file name and path are specified, saves case as a new aux file.
-        Overwrites any existing file with the same name and path."""
+    # noinspection PyPep8Naming
+    def save_case_as_aux_file(self, file_name, FilterName='', ObjectType=None,
+                              ToAppend=True, FieldList='all'):
+        """If file name and path are specified, saves case as a new aux
+        file. Overwrites any existing file with the same name and
+        path.
+        """
         file_path = Path(file_name)
         self.aux_file_path = file_path.as_posix()
         return self._call_simauto('WriteAuxFile', self.aux_file_path,
                                   FilterName, ObjectType, ToAppend, FieldList)
 
-    def closeCase(self):
+    # noinspection PyPep8Naming
+    def CloseCase(self):
         """Closes case without saving changes."""
-        return self.__pwcom__.CloseCase()
+        return self._call_simauto('CloseCase')
 
+    # noinspection PyPep8Naming
     def get_object_type_key_fields(self, ObjType: str) -> pd.DataFrame:
         """Helper function to get all key fields for an object type.
 
@@ -190,7 +207,8 @@ class sa(object):
 
         return df
 
-    def getListOfDevices(self, ObjType: str, FilterName='') -> \
+    # noinspection PyPep8Naming
+    def ListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
         """Request a list of objects and their key fields. This function
         is general, and you may be better off running more specific
@@ -266,86 +284,117 @@ class sa(object):
         # All done. We now have a well-formed DataFrame.
         return df
 
-    def runScriptCommand(self, script_command):
-        """Input a script command as in an Auxiliary file SCRIPT{} statement or the PowerWorld Script command prompt."""
+    # noinspection PyPep8Naming
+    def RunScriptCommand(self, script_command):
+        """Input a script command as in an Auxiliary file SCRIPT{}
+        statement or the PowerWorld Script command prompt."""
         output = self._call_simauto('RunScriptCommand', script_command)
         return output
 
-    def loadAuxFileText(self, auxtext):
-        """Creates and loads an Auxiliary file with the text specified in auxtext parameter."""
+    # noinspection PyPep8Naming
+    def ProcessAuxFile(self, auxtext):
+        """Creates and loads an Auxiliary file with the text specified
+        in auxtext parameter."""
         f = open(self.aux_file_path, 'w')
         f.writelines(auxtext)
         f.close()
         output = self._call_simauto('ProcessAuxFile', self.aux_file_path)
         return output
 
-    def openOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
+    # noinspection PyPep8Naming
+    def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
         filename = Path(filename)
-        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}, {showfull})"
-        output = self.runScriptCommand(script)
+        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
+                 f" {showfull})"
+        output = self.RunScriptCommand(script)
         return output
 
-    def getFieldList(self, ObjectType: str): # The second output should be a n*4 matrix, but the raw data is n*5
+    # noinspection PyPep8Naming
+    def GetFieldList(self, ObjectType: str):
+        # The second output should be a n*4 matrix, but the raw data is
+        # n*5
         output = self._call_simauto('GetFieldList', ObjectType)
         df = pd.DataFrame(np.array(output[1]))
         return df
 
-    def getParametersSingleElement(self, element_type: str, field_list: list, value_list: list):
-        """Retrieves parameter data according to the fields specified in field_list.
-        value_list consists of identifying parameter values and zeroes and should be
-        the same length as field_list"""
+    # noinspection PyPep8Naming
+    def GetParametersSingleElement(self, element_type: str,
+                                   field_list: list, value_list: list):
+        """Retrieves parameter data according to the fields specified in
+        field_list. value_list consists of identifying parameter values
+        and zeroes and should be the same length as field_list
+        """
         assert len(field_list) == len(value_list)
-        field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, field_list)
-        value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, value_list)
-        output = self._call_simauto('GetParametersSingleElement', element_type, field_array, value_array)
+        # noinspection PyUnresolvedReferences
+        field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              field_list)
+        # noinspection PyUnresolvedReferences
+        value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              value_list)
+        output = self._call_simauto('GetParametersSingleElement',
+                                    element_type, field_array, value_array)
         return output
 
-    def getParametersMultipleElement(self, elementtype: str, fieldlist: list, filtername: str = ''):
-        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
-        output = self._call_simauto('GetParametersMultipleElement', elementtype, fieldarray, filtername)
-        try:
-            df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
-            return df
-        except Exception:
-            return False
+    # noinspection PyPep8Naming
+    def GetParametersMultipleElement(self, elementtype: str,
+                                     fieldlist: list, filtername: str = ''):
+        # noinspection PyUnresolvedReferences
+        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                             fieldlist)
+        output = self._call_simauto('GetParametersMultipleElement',
+                                    elementtype, fieldarray, filtername)
 
-    def runPF(self, method: str = 'RECTNEWT'):
+        return pd.DataFrame(np.array(output).transpose(),
+                            columns=fieldlist)
+
+    # noinspection PyPep8Naming
+    def SolvePowerFlow(self, method: str = 'RECTNEWT'):
         script_command = "SolvePowerFlow(%s)" % method.upper()
-        return self.runScriptCommand(script_command)
+        return self.RunScriptCommand(script_command)
 
-    def getPowerFlowResult(self, elementtype):
+    def get_power_flow_result(self, element_type):
+        """Get the power flow results from SimAuto server. Needs to
+        specify the object type, e.g. bus, load, generator, etc
         """
-        Get the power flow results from SimAuto server. Needs to specify the object type, e.g. bus, load, generator, etc
+        if 'bus' in element_type.lower():
+            field_list = ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle',
+                          'BusNetMW', 'BusNetMVR']
+        elif 'gen' in element_type.lower():
+            field_list = ['BusNum', 'GenID', 'GenMW', 'GenMVR']
+        elif 'load' in element_type.lower():
+            field_list = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        elif 'shunt' in element_type.lower():
+            field_list = ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']
+        elif 'branch' in element_type.lower():
+            field_list = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW',
+                          'LineMW:1', 'LineMVR', 'LineMVR:1']
+        else:
+            raise ValueError('Unsupported element_type, {}.'
+                             .format(element_type))
+
+        # noinspection PyUnresolvedReferences
+        field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              field_list)
+        output = self._call_simauto('GetParametersMultipleElement',
+                                    element_type, field_array, '')
+
+        return pd.DataFrame(np.array(output).transpose(),
+                            columns=field_list)
+
+    def get_three_phase_bolted_fault_current(self, bus_num):
+        """Calculates the three phase fault; this can be done even with
+        cases which only contain positive sequence impedances"""
+        script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
+        result = self.RunScriptCommand(script_cmd)
+        field_list = ['BusNum', 'FaultCurMag']
+        return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
+
+    def create_filter(self, condition, objecttype, filtername,
+                      filterlogic='AND', filterpre='NO', enabled='YES'):
+        """Creates a filter in PowerWorld. The attempt is to reduce the
+        clunkiness of creating a filter in the API, which entails
+        creating an aux data file.
         """
-        if 'bus' in elementtype.lower():
-            fieldlist = ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR']
-        elif 'gen' in elementtype.lower():
-            fieldlist = ['BusNum', 'GenID', 'GenMW', 'GenMVR']
-        elif 'load' in elementtype.lower():
-            fieldlist = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
-        elif 'shunt' in elementtype.lower():
-            fieldlist = ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']
-        elif 'branch' in elementtype.lower():
-            fieldlist = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1']
-        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, fieldlist)
-        output = self._call_simauto('GetParametersMultipleElement', elementtype, fieldarray, '')
-        try:
-            df = pd.DataFrame(np.array(output[-1]).transpose(), columns=fieldlist)
-            return df
-        except Exception:
-            return False
-
-    def get3PBFaultCurrent(self, busnum):
-        """Calculates the three phase fault; this can be done even with cases which
-        only contain positive sequence impedances"""
-        scriptcmd = f'Fault([BUS {busnum}], 3PB);\n'
-        result = self.run_script(scriptcmd)
-        fieldlist = ['BusNum', 'FaultCurMag']
-        return self.getParametersSingleElement('BUS', fieldlist, [busnum, 0])
-
-    def createFilter(self, condition, objecttype, filtername, filterlogic='AND', filterpre='NO', enabled='YES'):
-        """Creates a filter in PowerWorld. The attempt is to reduce the clunkiness of
-        # creating a filter in the API, which entails creating an aux data file"""
         auxtext = '''
             DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
             {
@@ -353,201 +402,296 @@ class sa(object):
                 <SUBDATA Condition>
                     {condition}
                 </SUBDATA>
-            }'''.format(condition=condition, objecttype=objecttype, filtername=filtername, filterlogic=filterlogic,
+            }'''.format(condition=condition, objecttype=objecttype,
+                        filtername=filtername, filterlogic=filterlogic,
                         filterpre=filterpre, enabled=enabled)
-        output = self._call_simauto('LoadAux', auxtext)
-        return output
+        return self._call_simauto('LoadAux', auxtext)
 
-    def saveState(self):
-        """SaveState is used to save the current state of the power system."""
+    # noinspection PyPep8Naming
+    def SaveState(self):
+        """SaveState is used to save the current state of the power
+        system.
+        """
         output = self._call_simauto('SaveState')
         return output
 
-    def loadState(self):
-        """LoadState is used to load the system state previously saved with the SaveState function."""
-        output = self._call_simauto('LoadState')
-        return output
+    # noinspection PyPep8Naming
+    def LoadState(self):
+        """LoadState is used to load the system state previously saved
+        with the SaveState function.
+        """
+        return self._call_simauto('LoadState')
 
+    # noinspection PyPep8Naming
     @property
     def ProcessID(self):
-        """Retrieve the process ID of the currently running SimulatorAuto process"""
+        """Retrieve the process ID of the currently running
+        SimulatorAuto process"""
         output = self.__pwcom__.ProcessID
         return output
 
+    # noinspection PyPep8Naming
     @property
-    def BuildDate(self):
-        """Retrieve the build date of the PowerWorld Simulator executable currently running with the SimulatorAuto process"""
-        output = self.__pwcom__.RequestBuildDate
+    def RequestBuildDate(self):
+        """Retrieve the build date of the PowerWorld Simulator
+        executable currently running with the SimulatorAuto process
+        """
+        return self.__pwcom__.RequestBuildDate
+
+    # noinspection PyPep8Naming
+    def ChangeParameters(self, ObjType, Paramlist, ValueArray):
+        """
+        ChangeParameters is used to change single or multiple parameters
+        of a single object. ParamList is a variant array storing strings
+        that are Simulator object field variables, and must contain the
+        key fields for the objecttype. Create variant arrays (one for
+        each element being changed) with values corresponding to the
+        fields in ParamList.
+        """
+        output = self._call_simauto('ChangeParameters', ObjType, Paramlist,
+                                    ValueArray)
         return output
 
-    def changeParameters(self, ObjType, Paramlist, ValueArray):
+    # noinspection PyPep8Naming
+    def ChangeParametersMultipleElement(self, ObjType: str,
+                                        ParamList: list, ValueArray: list):
         """
-        ChangeParameters is used to change single or multiple parameters of a single object.
-        Paramlist is a variant array storing strings that are Simulator object field variables,
-        and must contain the key fields for the objecttype.
-        Create variant arrays (one for each element being changed) with values corresponding to the fields in ParamList.
-        """
-        output = self._call_simauto('ChangeParameters', ObjType, Paramlist, ValueArray)
-        return output
-
-    def changeParametersMultipleElement(self, ObjType: str, Paramlist: list, ValueArray: list):
-        """
-        :param ObjType: String The type of object you are changing parameters for.
-        :param Paramlist: Variant A variant array storing strings (COM Type BSTR). This array stores a list of PowerWorldâ object field variables, as defined in the section on PowerWorld Object Fields. The ParamList must contain the key field variables for the specific device, or the device cannot be identified.
-        :param ValueArray: Variant A variant array storing arrays of variants. This is the difference between the multiple element and single element change parameter functions. This array stores a list of arrays of values matching the fields laid out in ParamList. You construct ValueList by creating an array of variants with the necessary parameters for each device, and then inserting each individual array of values into the ValueList array. SimAuto will pick out each array from ValueList, and calls ChangeParametersSingleElement internally for each array of values in ValueList.
+        :param ObjType: String The type of object you are changing
+            parameters for.
+        :param ParamList: Variant A variant array storing strings (COM
+            Type BSTR). This array stores a list of PowerWorld object
+            field variables, as defined in the section on PowerWorld
+            Object Fields. The ParamList must contain the key field
+            variables for the specific device, or the device cannot be
+            identified.
+        :param ValueArray: Variant A variant array storing arrays of
+            variants. This is the difference between the multiple
+            element and single element change parameter functions.
+            This array stores a list of arrays of values matching the
+            fields laid out in ParamList. You construct ValueList by
+            creating an array of variants with the necessary parameters
+            for each device, and then inserting each individual array of
+            values into the ValueList array. SimAuto will pick out each
+            array from ValueList, and calls
+            ChangeParametersSingleElement internally for each array of
+            values in ValueList.
         :return: True or False
         """
-        ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, subArray) for subArray in ValueArray]
-        output = self._call_simauto('ChangeParametersMultipleElement', ObjType, Paramlist, ValueArray)
-        return output
+        # noinspection PyUnresolvedReferences
+        ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              subArray) for subArray in ValueArray]
+        return self._call_simauto('ChangeParametersMultipleElement',
+                                  ObjType, ParamList, ValueArray)
 
-    def sendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """Send data from the Simulator Automation Server to an Excel spreadsheet."""
-        return self._call_simauto('SendToExcel', ObjectType, FilterName, FieldList)
+    # noinspection PyPep8Naming
+    def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
+        """Send data from the Simulator Automation Server to an Excel
+        spreadsheet."""
+        return self._call_simauto('SendToExcel', ObjectType, FilterName,
+                                  FieldList)
 
+    # noinspection PyPep8Naming
     @property
     def UIVisible(self):
         output = self.__pwcom__.UIVisible
         return output
 
+    # noinspection PyPep8Naming
     @property
     def CurrentDir(self):
         output = self.__pwcom__.CurrentDir
         return output
 
-    def tsCalculateCriticalClearTime(self, Branch):
+    # noinspection PyPep8Naming
+    def TSCalculateCriticalClearTime(self, Branch):
         """
-        Use this action to calculate critical clearing time for faults on the lines that meet the specified filter.
-        A single line can be specified in the format [BRANCH keyfield1 keyfield2 ckt] or [BRANCH label].
-        Multiple lines can be selected by specifying a filter.
-        For the specified lines, this calculation will determine the first time a violation is reached (critical clearing time),
-        where a violation is determined based on all enabled Transient Limit Monitors. For each line, results are saved as a new
-        Transient Contingency on a line, with the fault duration equal to the critical clearing time.
+        Use this action to calculate critical clearing time for faults
+        on the lines that meet the specified filter. A single line can
+        be specified in the format [BRANCH keyfield1 keyfield2 ckt] or
+        [BRANCH label]. Multiple lines can be selected by specifying a
+        filter. For the specified lines, this calculation will determine
+        the first time a violation is reached (critical clearing time),
+        where a violation is determined based on all enabled Transient
+        Limit Monitors. For each line, results are saved as a new
+        Transient Contingency on a line, with the fault duration equal
+        to the critical clearing time.
         """
-        output = self.runScriptCommand("TSCalculateCriticalClearTime (%s)" % Branch)
-        return output
+        return self.RunScriptCommand(
+            "TSCalculateCriticalClearTime (%s)" % Branch)
 
-    def tsResultStorageSetAll(self, objectttype, choice):
-        output = self.runScriptCommand("TSResultStorageSetAll (%s) (%s)" % (objectttype, choice))
-        return output
+    # noinspection PyPep8Naming
+    def TSResultStorageSetAll(self, ObjectType, Choice):
+        return self.RunScriptCommand(
+            "TSResultStorageSetAll (%s) (%s)" % (ObjectType, Choice))
 
-    def tsSolve(self, ContingencyName):
+    # noinspection PyPep8Naming
+    def TSSolve(self, ContingencyName):
         """
         Solves only the specified contingency
         """
-        output = self.runScriptCommand("TSSolve (%s)" % ContingencyName)
-        return output
+        return self.RunScriptCommand("TSSolve (%s)" % ContingencyName)
 
-    def tsGetContingencyResults(self, CtgName, ObjFieldList, StartTime=None, StopTime=None):
+    # noinspection PyPep8Naming
+    def TSGetContingencyResults(self, CtgName, ObjFieldList,
+                                StartTime=None, StopTime=None):
         """
-        Read transient stability results directly into the SimAuto COM obkect and be further used.
+        Read transient stability results directly into the SimAuto COM
+        object and be further used.
         !!!!! This function should ONLY be used after the simulation is run
-        (for example, use this after running script commands tsSolveAll or tsSolve).
-        ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or ObjFieldList = ['"Bus 4 | frequency"']
+        (for example, use this after running script commands tsSolveAll
+        or tsSolve).
+        ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or
+        ObjFieldList = ['"Bus 4 | frequency"']
         """
-        output = self._call_simauto('TSGetContingencyResults', CtgName, ObjFieldList, StartTime, StopTime)
+        output = self._call_simauto('TSGetContingencyResults', CtgName,
+                                    ObjFieldList, StartTime, StopTime)
         return output
 
-    def setData(self, ObjectType: str, FieldList: str, ValueList: str, Filter=''):
+    # noinspection PyPep8Naming
+    def SetData(self, ObjectType: str, FieldList: str, ValueList: str,
+                Filter=''):
         """
-        Use this action to set fields for particular objects. If a filter is specified, then it will set the respective fields for all
-        objects which meet this filter. Otherwise, if no filter is specified, then the keyfields must be included in the field
-        list so that the object can be found. e.g.FieldList = '[Number,NomkV]'
+        Use this action to set fields for particular objects. If a
+        filter is specified, then it will set the respective fields for
+        all objects which meet this filter. Otherwise, if no filter is
+        specified, then the keyfields must be included in the field
+        list so that the object can be found. e.g.
+        FieldList = '[Number,NomkV]'
         """
-        output = \
-            self.runScriptCommand("SetData({},{},{},{})"
-                                  .format(ObjectType, FieldList, ValueList,
-                                          Filter))
-        self.saveCase()
-        return output
 
-    def delete(self, ObjectType: str):
-        output = self.runScriptCommand("Delete(%s)" % ObjectType)
-        return output
+        return self.RunScriptCommand("SetData({},{},{},{})"
+                                     .format(ObjectType, FieldList, ValueList,
+                                             Filter))
 
-    def createData(self, ObjectType: str, FieldList: str, ValueList: str):
-        output = self.runScriptCommand("CreateData(%s,%s,%s)" % (ObjectType, FieldList, ValueList))
-        return output
+    # noinspection PyPep8Naming
+    def Delete(self, ObjectType: str):
+        return self.RunScriptCommand("Delete(%s)" % ObjectType)
 
-    def writeAuxFile(self, FileName, FilterName, ObjectType, FieldList, ToAppend=True, EString=None):
+    # noinspection PyPep8Naming
+    def CreateData(self, ObjectType: str, FieldList: str, ValueList: str):
+        return self.RunScriptCommand("CreateData({},{},{})"
+                                     .format(ObjectType, FieldList, ValueList))
+
+    # noinspection PyPep8Naming
+    def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
+                     ToAppend=True, EString=None):
         """
-        The WriteAuxFile function can be used to write data from the case in the Simulator Automation Server
-        to a PowerWorldâ Auxiliary file. The name of an advanced filter which was PREVIOUSLY DEFINED in the
-        case before being loaded in the Simulator Automation Server. If no filter is desired, then simply pass
-        an empty string. If a filter name is passed but the filter cannot be found in the loaded case, no filter is used.
+        The WriteAuxFile function can be used to write data from the
+        case in the Simulator Automation Server to a PowerWorld
+        Auxiliary file. The name of an advanced filter which was
+        PREVIOUSLY DEFINED in the case before being loaded in the
+        Simulator Automation Server. If no filter is desired, then
+        simply pass an empty string. If a filter name is passed but the
+        filter cannot be found in the loaded case, no filter is used.
         """
         file_path = Path(FileName)
         self.aux_file_path = file_path.as_posix()
         return self._call_simauto('WriteAuxFile', self.aux_file_path,
                                   FilterName, ObjectType, FieldList, ToAppend)
 
-    def calculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
+    # noinspection PyPep8Naming
+    def CalculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
         """
-        Use this action to calculate the Line Outage Distribution Factors (or the Line Closure Distribution Factors) for a
-        particular branch. If the branch is presently closed, then the LODF values will be calculated, otherwise the LCDF
-        values will be calculated. You may optionally specify the linear calculation method as well. If no Linear Method is
-        specified, Lossless DC will be used.
-        The LODF results will be sent to excel
+        Use this action to calculate the Line Outage Distribution
+        Factors (or the Line Closure Distribution Factors) for a
+        particular branch. If the branch is presently closed, then the
+        LODF values will be calculated, otherwise the LCDF values will
+        be calculated. You may optionally specify the linear calculation
+        method as well. If no Linear Method is specified, Lossless DC
+        will be used. The LODF results will be sent to excel
         """
-        output = self.runScriptCommand("CalculateLODF (%s,%s,%s)" %(Branch, LinearMethod, PostClosureLCDF))
-        return output
+        return self.RunScriptCommand("CalculateLODF ({},{},{})"
+                                     .format(Branch, LinearMethod,
+                                             PostClosureLCDF))
 
-    def saveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
+    # noinspection PyPep8Naming
+    def SaveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
         """
-        Use this action to save the Jacobian Matrix to a text file or a file formatted for use with Matlab
+        Use this action to save the Jacobian Matrix to a text file or a
+        file formatted for use with MATLAB
         """
-        self.SaveJacCOMout = self.runScriptCommand("SaveJacobian(%s,%s,%s,%s) " % (JacFileName, JIDFileName, FileType, JacForm))
+        return self.RunScriptCommand("SaveJacobian({},{},{},{})"
+                                     .format(JacFileName, JIDFileName,
+                                             FileType, JacForm))
 
-    def saveYbusInMatlabFormat(self, fileName, IncludeVoltages='Yes'):
+    # noinspection PyPep8Naming
+    def SaveYbusInMatlabFormat(self, FileName, IncludeVoltages='Yes'):
         """
-        Use this action to save the YBus to a file formatted for use with Matlab
+        Use this action to save the YBus to a file formatted for use
+        with MATLAB
         """
-        self.SaveYBusCOMout = self.runScriptCommand("SaveYbusInMatlabFormat(%s,%s)" %(fileName, IncludeVoltages))
+        return self.RunScriptCommand("SaveYbusInMatlabFormat({},{})"
+                                     .format(FileName, IncludeVoltages))
 
-    def setParticipationFactors(self, Method, ConstantValue, Object):
+    # noinspection PyPep8Naming
+    def SetParticipationFactors(self, Method, ConstantValue, Object):
         """
-        Use this action to modify the generator participation factors in the case
-        Method: 'MAXMWRAT'or 'RESERVE' or 'CONSTANT'
-        ConstantValue : The value used if CONSTANT method is specified. If CONSTANT method is not specified, enter 0 (zero).
-        Object : Specify which generators to set the participation factor for.
+        Use this action to modify the generator participation factors in
+        the case.
+
+        :param Method: 'MAXMWRAT'or 'RESERVE' or 'CONSTANT'
+        :param ConstantValue : The value used if CONSTANT method is
+            specified. If CONSTANT method is not specified, enter 0
+            (zero).
+        :param Object : Specify which generators to set the
+            participation factor for.
+
         [Area Num], [Area "name"], [Area "label"]
         [Zone Num], [Zone "name"], [Zone "label"]
         SYSTEM
         AREAZONE or DISPLAYFILTERS
         """
-        output = self.runScriptCommand("SetParticipationFactors (%s,%s,%s)" %(Method, ConstantValue, Object))
-        return output
+        return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
+                                     .format(Method, ConstantValue, Object))
 
-    def tsRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
+    # noinspection PyPep8Naming
+    def TSRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
         """
-        This command allows manual control of the transient stability run. The simulation can be run until a
-        specified time or number of times steps and then paused for further evaluation.
-        RunOptions = '[StopTime(in seconds), StepSize(numbers), StepsInCycles='YES', ResetStartTime='NO', NumberOfTimeStepsToDo=0]'
+        This command allows manual control of the transient stability
+        run. The simulation can be run until a specified time or number
+        of times steps and then paused for further evaluation.
+        :param ContingencyName: TODO
+        :param RunOptions: '[StopTime(in seconds), StepSize(numbers),
+            StepsInCycles='YES', ResetStartTime='NO',
+            NumberOfTimeStepsToDo=0]'
         """
-        output = self.runScriptCommand("TSRunUntilSpecifiedTime (%s,%s)" % (ContingencyName, RunOptions))
-        return output
+        return self.RunScriptCommand("TSRunUntilSpecifiedTime ({},{})"
+                                     .format(ContingencyName, RunOptions))
 
-    def tsWriteOptions(self, fileName, Options, Keyfield=' Primary'):
+    # noinspection PyPep8Naming
+    def TSWriteOptions(self, FileName, Options, KeyField=' Primary'):
         """
-        Save the transient stability option settings to an auxiliary file.
-        Options = [SaveDynamicModel, SaveStabilityOptions, SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]
-        SaveDynamicModel : (optional) NO doesn’t save dynamic model (default YES)
-        SaveStabilityOptions : (optional) NO doesn’t save stability options (default YES)
-        SaveStabilityEvents : (optional) NO doesn’t save stability events (default YES)
-        SaveResultsSettings : (optional) NO doesn’t save results settings (default YES)
-        SavePlotDefinitions : (optional) NO doesn’t save plot definitions (default YES)
-        KeyField : (optional) Specifies key: can be Primary, Secondary, or Label (default Primary)
-        """
-        output = self.runScriptCommand("TSWriteOptions(%s,%s)" %(fileName, Options))
-        return output
+        Save the transient stability option settings to an auxiliary
+        file.
 
-    def enterMode(self, mode):
-        output = self.runScriptCommand("EnterMode(%s)" % mode)
-        return output
+        :param FileName: TODO
+        :param Options: [SaveDynamicModel, SaveStabilityOptions,
+            SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]
+
+            SaveDynamicModel : (optional) NO doesn't save dynamic model
+                (default YES)
+            SaveStabilityOptions : (optional) NO doesn't save stability
+                options (default YES)
+            SaveStabilityEvents : (optional) NO doesn't save stability
+                events (default YES)
+            SaveResultsSettings : (optional) NO doesn't save results
+                settings (default YES)
+            SavePlotDefinitions : (optional) NO doesn't save plot
+                definitions (default YES)
+        :param KeyField: (optional) Specifies key: can be Primary,
+            Secondary, or Label (default Primary)
+        TODO: KeyField isn't currently used?
+        """
+        return self.RunScriptCommand("TSWriteOptions({},{})"
+                                     .format(FileName, Options))
+
+    # noinspection PyPep8Naming
+    def EnterMode(self, mode):
+        return self.RunScriptCommand("EnterMode(%s)" % mode)
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
-        self.closeCase()
+        self.CloseCase()
         del self.__pwcom__
         self.__pwcom__ = None
         return None

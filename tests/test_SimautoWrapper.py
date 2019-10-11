@@ -83,13 +83,14 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         self.assertEqual('ShuntID', result.loc[1, 'internal_field_name'])
 
 
-class GetListOfDevicesTestCase(unittest.TestCase):
-    """Test getListOfDevices for the 14 bus case."""
+class ListOfDevicesTestCase(unittest.TestCase):
+    """Test ListOfDevices for the 14 bus case."""
 
+    # noinspection PyMethodMayBeStatic
     def test_gens(self):
         """Ensure there are 5 generators at the correct buses."""
         # Query.
-        result = saw_14.getListOfDevices(ObjType='Gen')
+        result = saw_14.ListOfDevices(ObjType='Gen')
         # The 14 bus case has 5 generators at buses 1, 2, 3, 6, and 8.
         # Since there's only one generator at each bus, they have an
         # ID of 1. However, ID is a string field.
@@ -100,14 +101,14 @@ class GetListOfDevicesTestCase(unittest.TestCase):
 
     def test_shunts(self):
         """There are no shunts in th 14 bus model."""
-        result = saw_14.getListOfDevices(ObjType="Shunt")
+        result = saw_14.ListOfDevices(ObjType="Shunt")
         self.assertIsNone(result)
 
     def test_branches(self):
         """Ensure we get the correct number of branches, and ensure
         we get back the expected fields.
         """
-        result = saw_14.getListOfDevices(ObjType="Branch")
+        result = saw_14.ListOfDevices(ObjType="Branch")
         # 3 transformers, 17 lines.
         self.assertEqual(20, result.shape[0])
         # Check columns.
@@ -117,12 +118,13 @@ class GetListOfDevicesTestCase(unittest.TestCase):
 
     def test_buses(self):
         """As the name implies, we should get 14 buses."""
-        result = saw_14.getListOfDevices(ObjType="Bus")
+        result = saw_14.ListOfDevices(ObjType="Bus")
         expected = pd.DataFrame(
             data=np.arange(1, 15, dtype=np.int64).reshape(14, 1),
             index=np.arange(0, 14),
             columns=['BusNum'])
         pd.testing.assert_frame_equal(expected, result)
+
 
 if __name__ == '__main__':
     unittest.main()
