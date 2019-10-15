@@ -58,7 +58,7 @@ class sa(object):
 
     def __setfilenames__(self):
         self.file_folder = os.path.split(self.pwb_file_path)[0]
-        self.file_name =\
+        self.file_name = \
             os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
         # some operations require an aux file
         self.aux_file_path = self.file_folder + '/' + self.file_name + '.aux'
@@ -389,23 +389,23 @@ class sa(object):
         field_list = ['BusNum', 'FaultCurMag']
         return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
 
-    def create_filter(self, condition, objecttype, filtername,
-                      filterlogic='AND', filterpre='NO', enabled='YES'):
+    def create_filter(self, condition, object_type, filter_name,
+                      filter_logic='AND', filter_pre='NO', enabled='YES'):
         """Creates a filter in PowerWorld. The attempt is to reduce the
         clunkiness of creating a filter in the API, which entails
         creating an aux data file.
         """
-        auxtext = '''
+        aux_text = '''
             DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
             {
             "{objecttype}" "{filtername}" "{filterlogic}" "{filterpre}" "{enabled]"
                 <SUBDATA Condition>
                     {condition}
                 </SUBDATA>
-            }'''.format(condition=condition, objecttype=objecttype,
-                        filtername=filtername, filterlogic=filterlogic,
-                        filterpre=filterpre, enabled=enabled)
-        return self._call_simauto('LoadAux', auxtext)
+            }'''.format(condition=condition, objecttype=object_type,
+                        filtername=filter_name, filterlogic=filter_logic,
+                        filterpre=filter_pre, enabled=enabled)
+        return self._call_simauto('LoadAux', aux_text)
 
     # noinspection PyPep8Naming
     def SaveState(self):
