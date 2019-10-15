@@ -117,6 +117,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
         self.assertIn('BusNum:1', result.columns.values)
         self.assertIn('LineCircuit', result.columns.values)
 
+    # noinspection PyMethodMayBeStatic
     def test_buses(self):
         """As the name implies, we should get 14 buses."""
         result = saw_14.ListOfDevices(ObjType="Bus")
@@ -166,6 +167,45 @@ class RunScriptCommandTestCase(unittest.TestCase):
         with self.assertRaisesRegex(exceptions.GeneralException,
                                     'Error in script statements definition'):
             saw_14.RunScriptCommand(Statements='invalid statement')
+
+
+class GetPowerFlowResultsTestCase(unittest.TestCase):
+    """Test get_power_flow_result"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """Run the power flow to ensure we have results to fetch."""
+        saw_14.SolvePowerFlow()
+
+    def test_bad_field(self):
+        with self.assertRaisesRegex(ValueError, 'Unsupported ObjectType'):
+            saw_14.get_power_flow_results(ObjectType='nonexistent')
+
+    def test_all_valid_types_except_shunts(self):
+        """Loop and sub test over all types, except shunts."""
+        # Loop over the POWER_FLOW_FIELDS dictionary.
+        for object_type, object_fields in sa.POWER_FLOW_FIELDS.items():
+            # Skip shunts, we'll do that separately (there aren't any
+            # in the 14 bus model).
+            if object_type == 'shunt':
+                continue
+
+            # Perform a test for each valid type.
+            with self.subTest(object_type):
+                # Get results.
+                result = saw_14.get_power_flow_results(ObjectType=object_type)
+                # We should get a DataFrame back.
+                self.assertIsInstance(result, pd.DataFrame)
+                # Ensure the DataFrame has all the columns we expect.
+                self.assertSetEqual(set(result.columns.values),
+                                    set(object_fields))
+                # No NaNs.
+                self.assertFalse(result.isna().any().any())
+
+    def test_shunt(self):
+        """There are no shunts in the IEEE 14 bus model."""
+        self.assertIsNone(saw_14.get_power_flow_results('shunt'))
+
 
 if __name__ == '__main__':
     unittest.main()

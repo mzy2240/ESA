@@ -20,6 +20,18 @@ NON_NUMERIC_TYPES = DATA_TYPES[-1]
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
+    # Class level property defining the fields which will be returned
+    # for different ObjectTypes by the get_power_flow_results method.
+    POWER_FLOW_FIELDS = {
+        'bus': ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW',
+                'BusNetMVR'],
+        'gen': ['BusNum', 'GenID', 'GenMW', 'GenMVR'],
+        'load': ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR'],
+        'shunt': ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR'],
+        'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW',
+                   'LineMW:1', 'LineMVR', 'LineMVR:1']
+    }
+
     def __init__(self, pwb_file_path=None, earlybind=False, visible=False):
         try:
             if earlybind:
@@ -375,31 +387,38 @@ class sa(object):
         script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
         return self.RunScriptCommand(script_command)
 
-    def get_power_flow_result(self, element_type):
-        """Get the power flow results from SimAuto server. Needs to
-        specify the object type, e.g. bus, load, generator, etc
+    # noinspection PyPep8Naming
+    def get_power_flow_results(self, ObjectType: str) -> \
+            Union[None, pd.DataFrame]:
+        """Get the power flow results from SimAuto server.
+
+        :param ObjectType: Object type to get results for. Valid types
+            are the keys in the POWER_FLOW_FIELDS class attribute (case
+            insensitive).
+
+        :returns: Pandas DataFrame with the corresponding results, or
+            None if the given ObjectType is not present in the model.
+
+        :raises ValueError: if given ObjectType is invalid.
         """
-        if 'bus' in element_type.lower():
-            field_list = ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle',
-                          'BusNetMW', 'BusNetMVR']
-        elif 'gen' in element_type.lower():
-            field_list = ['BusNum', 'GenID', 'GenMW', 'GenMVR']
-        elif 'load' in element_type.lower():
-            field_list = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
-        elif 'shunt' in element_type.lower():
-            field_list = ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']
-        elif 'branch' in element_type.lower():
-            field_list = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW',
-                          'LineMW:1', 'LineMVR', 'LineMVR:1']
-        else:
-            raise ValueError('Unsupported element_type, {}.'
-                             .format(element_type))
+
+        # Get the listing of fields for this object type.
+        try:
+            field_list = self.POWER_FLOW_FIELDS[ObjectType.lower()]
+        except KeyError:
+            raise ValueError('Unsupported ObjectType for power flow results, '
+                             '{}.'.format(ObjectType))
 
         # noinspection PyUnresolvedReferences
         field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
                               field_list)
+
         output = self._call_simauto('GetParametersMultipleElement',
-                                    element_type, field_array, '')
+                                    ObjectType, field_array, '')
+
+        # If no output is given,
+        if output is None:
+            return None
 
         return pd.DataFrame(np.array(output).transpose(),
                             columns=field_list)
