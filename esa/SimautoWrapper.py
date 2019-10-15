@@ -285,10 +285,17 @@ class sa(object):
         return df
 
     # noinspection PyPep8Naming
-    def RunScriptCommand(self, script_command):
+    def RunScriptCommand(self, Statements):
         """Input a script command as in an Auxiliary file SCRIPT{}
-        statement or the PowerWorld Script command prompt."""
-        output = self._call_simauto('RunScriptCommand', script_command)
+        statement or the PowerWorld Script command prompt.
+
+        `PowerWorld documentation for RunScriptCommand
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/RunScriptCommand_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____41>`_
+
+        `Auxiliary File Format
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`_
+        """
+        output = self._call_simauto('RunScriptCommand', Statements)
         return output
 
     # noinspection PyPep8Naming
@@ -348,8 +355,24 @@ class sa(object):
                             columns=fieldlist)
 
     # noinspection PyPep8Naming
-    def SolvePowerFlow(self, method: str = 'RECTNEWT'):
-        script_command = "SolvePowerFlow(%s)" % method.upper()
+    def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT'):
+        """Run the SolvePowerFlow command.
+
+        :param SolMethod: Solution method to be used for the Power Flow
+            calculation. Case insensitive. Valid options are:
+                'RECTNEWT' - Rectangular Newton-Raphson
+                'POLARNEWTON' - Polar Newton-Raphson
+                'GAUSSSEIDEL' - Gauss-Seidel
+                'FASTDEC' - Fast Decoupled
+                'ROBUST' - Attempt robust solution process
+                'DC' - DC power flow
+
+        See
+        `Auxiliary File Format.pdf
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`_
+        for more details.
+        """
+        script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
         return self.RunScriptCommand(script_command)
 
     def get_power_flow_result(self, element_type):
