@@ -3,7 +3,7 @@ import unittest
 import os
 import numpy as np
 import pandas as pd
-from esa import sa
+from esa import sa, exceptions
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -125,6 +125,24 @@ class ListOfDevicesTestCase(unittest.TestCase):
             columns=['BusNum'])
         pd.testing.assert_frame_equal(expected, result)
 
+
+class SolvePowerFlowTestCase(unittest.TestCase):
+    """Test the SolvePowerFlow method. Note PowerWorld doesn't return
+    anything for this script command, so we should always get None back
+    unless there is an error.
+    """
+
+    def test_solve_defaults(self):
+        """Solving the power flow with default options should just work.
+        """
+        result = saw_14.SolvePowerFlow()
+        self.assertIsNone(result)
+
+    def test_solve_bad_method(self):
+        """Given a bad solver, we should expect an exception."""
+        with self.assertRaisesRegex(exceptions.GeneralException,
+                                    'Invalid solution method'):
+            saw_14.SolvePowerFlow(SolMethod='junk')
 
 if __name__ == '__main__':
     unittest.main()
