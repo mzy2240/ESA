@@ -1,5 +1,6 @@
 """"""
 import unittest
+from unittest.mock import patch
 import os
 import numpy as np
 import pandas as pd
@@ -143,6 +144,28 @@ class SolvePowerFlowTestCase(unittest.TestCase):
         with self.assertRaisesRegex(exceptions.GeneralException,
                                     'Invalid solution method'):
             saw_14.SolvePowerFlow(SolMethod='junk')
+
+
+class RunScriptCommandTestCase(unittest.TestCase):
+    """Light weight testing of RunScriptCommand."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_calls_call_simauto(self):
+        """RunScriptCommand is a simple wrapper. Enforce this."""
+        with patch.object(saw_14, '_call_simauto') as p:
+            saw_14.RunScriptCommand(Statements='Some stuff')
+
+        # _call_simauto should have been called once.
+        p.assert_called_once()
+
+        # The Statements should simply be passed through.
+        p.assert_called_with('RunScriptCommand', 'Some stuff')
+
+    def test_exception_for_bad_statement(self):
+        """Ensure an exception is thrown for a bad statement."""
+        with self.assertRaisesRegex(exceptions.GeneralException,
+                                    'Error in script statements definition'):
+            saw_14.RunScriptCommand(Statements='invalid statement')
 
 if __name__ == '__main__':
     unittest.main()
