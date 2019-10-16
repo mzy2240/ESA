@@ -207,5 +207,23 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
 
+class GetParametersMultipleElementTestCase(unittest.TestCase):
+    """Test GetParametersMultipleElement"""
+
+    def test_get_gen_voltage_set_points(self):
+        params = ['BusNum', 'GenID', 'GenRegPUVolt']
+        results = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=params)
+
+        self.assertIsInstance(results, pd.DataFrame)
+        self.assertSetEqual(set(params), set(results.columns.values))
+
+    def test_shunts_returns_none(self):
+        """There are no shunts in the 14 bus model."""
+        results = saw_14.GetParametersMultipleElement(ObjectType='shunt',
+                                                      ParamList=['BusNum'])
+        self.assertIsNone(results)
+
+
 if __name__ == '__main__':
     unittest.main()
