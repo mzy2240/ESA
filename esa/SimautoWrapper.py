@@ -333,7 +333,7 @@ class sa(object):
         # The second output should be a n*4 matrix, but the raw data is
         # n*5
         output = self._call_simauto('GetFieldList', ObjectType)
-        df = pd.DataFrame(np.array(output[1]))
+        df = pd.DataFrame(np.array(output))
         return df
 
     # noinspection PyPep8Naming
@@ -355,16 +355,39 @@ class sa(object):
         return output
 
     # noinspection PyPep8Naming
-    def GetParametersMultipleElement(self, elementtype: str,
-                                     fieldlist: list, filtername: str = ''):
-        # noinspection PyUnresolvedReferences
-        fieldarray = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                             fieldlist)
-        output = self._call_simauto('GetParametersMultipleElement',
-                                    elementtype, fieldarray, filtername)
+    def GetParametersMultipleElement(self, ObjectType: str, ParamList: list,
+                                     FilterName: str = '') -> \
+            Union[pd.DataFrame, None]:
+        """Request values of specified fields for a set of objects in
+        the load flow case.
 
+        :param ObjectType: Type of object to get parameters for.
+        :param ParamList: List of variables to obtain for the given
+            object type. E.g. ['BusNum', 'GenID', 'GenRegPUVolt']. One
+            can use the method GetFieldList to get a listing of all
+            available fields. Additionally, you'll likely want to always
+            return the key fields associated with the objects. These
+            key fields can be obtained via the
+            get_object_type_key_fields method.
+        :param FilterName: Name of an advanced filter defined in the
+            load flow case.
+
+        :returns: Pandas DataFrame with columns matching the given
+            ParamList. If the provided ObjectType is not present in the
+            case, None will be returned.
+        """
+        # noinspection PyUnresolvedReferences
+        param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              ParamList)
+        output = self._call_simauto('GetParametersMultipleElement',
+                                    ObjectType, param_array, FilterName)
+        if output is None:
+            # Given object isn't present.
+            return output
+
+        # Create and return DataFrame.
         return pd.DataFrame(np.array(output).transpose(),
-                            columns=fieldlist)
+                            columns=ParamList)
 
     # noinspection PyPep8Naming
     def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT'):
