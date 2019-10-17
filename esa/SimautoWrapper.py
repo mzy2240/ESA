@@ -374,7 +374,11 @@ class sa(object):
 
         :returns: Pandas DataFrame with columns matching the given
             ParamList. If the provided ObjectType is not present in the
-            case, None will be returned.
+            case, None will be returned. Note that if a given parameter
+            is "bad" (e.g. doesn't exist), the corresponding column in
+            the DataFrame will consist only of None.
+
+        TODO: Should we cast None to NaN to be consistent with
         """
         # noinspection PyUnresolvedReferences
         param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
