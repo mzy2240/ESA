@@ -224,6 +224,26 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
                                                       ParamList=['BusNum'])
         self.assertIsNone(results)
 
+    def test_get_nonexistent_parameter(self):
+        """We should get only None in the bad column."""
+        result = saw_14.GetParametersMultipleElement(
+            ObjectType='branch', ParamList=['ThisNotReal'])
+
+        # Ensure the column only has Nones.
+        u = result['ThisNotReal'].unique()
+        self.assertEqual(len(u), 1)
+        self.assertIsNone(u[0])
+
+    def test_bad_object_type(self):
+        """A bad object type should raise an exception."""
+        with self.assertRaises(exceptions.GeneralException):
+            saw_14.GetParametersMultipleElement(
+                ObjectType='bogus', ParamList=['BusNum']
+            )
+
+
+class ChangeParametersMultipleElementTestCase(unittest.TestCase):
+    """Test ChangeParametersMultipleElement"""
 
 if __name__ == '__main__':
     unittest.main()
