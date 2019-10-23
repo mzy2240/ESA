@@ -313,18 +313,18 @@ class sa(object):
         # Cast columns to numeric as appropriate. Strip leading/
         # trailing whitespace from string columns.
         for row in kf.itertuples():
-            if row.field_type in NUMERIC_TYPES:
+            if row.field_data_type in NUMERIC_TYPES:
                 # Cast data to numeric.
                 df[row.internal_field_name] = \
                     pd.to_numeric(df[row.internal_field_name])
-            elif row.field_type in NON_NUMERIC_TYPES:
+            elif row.field_data_type in NON_NUMERIC_TYPES:
                 # Strip leading/trailing white space.
                 df[row.internal_field_name] = \
                     df[row.internal_field_name].str.strip()
             else:
                 # Well, we didn't expect this type.
-                raise ValueError('Unexpected field_type, {}, for {}.'
-                                 .format(row.field_type,
+                raise ValueError('Unexpected field_data_type, {}, for {}.'
+                                 .format(row.field_data_type,
                                          row.internal_field_name))
 
         # Sort by BusNum if present.
