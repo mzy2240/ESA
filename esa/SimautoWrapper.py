@@ -32,13 +32,19 @@ class sa(object):
                    'LineMW:1', 'LineMVR', 'LineMVR:1']
     }
 
-    def __init__(self, pwb_file_path=None, early_bind=True, visible=False):
+    def __init__(self, pwb_file_path, early_bind=True, visible=False,
+                 object_field_lookup=('bus', 'gen', 'load', 'shunt',
+                                      'branch')):
         """Initialize SimAuto wrapper.
 
         :param pwb_file_path: Full file path to .pwb file to open.
         :param early_bind: Whether (True) or not (False) to connect to
             SimAuto via early binding.
         :param visible: Whether or not to display the PowerWorld UI.
+        :param object_field_lookup: Listing of PowerWorld objects to
+            initially look up available fields for. Objects not
+            specified for lookup here will be looked up later as
+            necessary.
 
         `Microsoft recommends
         <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`_
@@ -64,16 +70,27 @@ class sa(object):
                   "Please confirm that your PowerWorld license includes "
                   "the SimAuto add-on, and that SimAuto has been "
                   "successfully installed.")
-        # print(self.__ctime__(), "SimAuto launched")
+
         file_path = Path(pwb_file_path)
         self.pwb_file_path = file_path.as_posix()
         self.aux_file_path = None
-        self.output = ''
-        self.error = False
-        self.error_message = ''
         self._pwcom.UIVisible = visible
-        if self.OpenCase():
-            print(self.__ctime__(), "Case loaded")
+        self.OpenCase()
+
+        # Look up fields for given object types in field_lookup.
+        self.object_fields = dict()
+        for obj in object_field_lookup:
+            # Always use lower case.
+            o = obj.lower()
+
+            # Get the field listing.
+            result = self.GetFieldList(o)
+
+            # Simply store the whole result. This will be used for
+            # a) type casting for other SimAuto calls, and b) avoiding
+            # future SimAuto calls to GetFieldList for this object
+            # type.
+            self.object_fields[o] = result
 
     def __enter__(self):
         return self
@@ -106,6 +123,11 @@ class sa(object):
         :returns: Result from PowerWorld. This will vary from function
             to function. If PowerWorld returns ('',), this method
             returns None.
+
+        :raises GeneralException: If PowerWorld indicates an exception
+            occurred.
+
+        :raises AttributeError: If the given func is invalid.
 
         The listing of valid functions can be found `here
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`_.
@@ -180,8 +202,8 @@ class sa(object):
         :param ObjType: The type of the object to get key fields for.
 
         :returns: DataFrame with the following columns:
-            'internal_field_name', 'field_type', 'description', and
-            'alt_name'. The DataFrame will be indexed based on the key
+            'internal_field_name', 'field_data_type', 'description', and
+            'display_name'. The DataFrame will be indexed based on the key
             field returned by the Simulator, but modified to be 0-based.
 
         This method uses the GetFieldList function, documented
@@ -192,50 +214,54 @@ class sa(object):
         `here
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
         """
-        field_list = self._call_simauto('GetFieldList', ObjType)
+        field_list = self.GetFieldList(ObjectType=ObjType, copy=False)
 
         # Initialize list of lists to hold our data.
         data = []
 
-        # Loop over the returned list.
-        for t in field_list:
-            # Here's what I've gathered:
-            # Key fields will be of the format *<number><letter>*
-            #   where the <letter> part is optional. It seems the
-            #   letter is only be listed for the last key field.
-            # Required fields are indicated with '**'.
-            # There are also fields of the form *<letter>* and these
-            #   seem to be composite fields? E.g. 'BusName_NomVolt'.
+        # Here's what I've gathered:
+        # Key fields will be of the format *<number><letter>*
+        #   where the <letter> part is optional. It seems the
+        #   letter is only listed for the last key field.
+        # Required fields are indicated with '**'.
+        # There are also fields of the form *<letter>* and these
+        #   seem to be composite fields? E.g. 'BusName_NomVolt'.
 
-            # Use a regular expression to test for key fields.
-            if re.match(r'\*[0-9]+[A-Z]*\*', t[0]):
-                # Convert the key field from a 1-based weird index
-                # thing to a standard 0-based index.
-                i = int(re.sub('[A-Z]*', '', re.sub(r'\*', '', t[0]))) - 1
+        # Extract key fields.
+        key_field_mask = \
+            field_list['key_field'].str.match(r'\*[0-9]+[A-Z]*\*').values
+        # Making a copy isn't egregious here because there are a
+        # limited number of key fields, so this will be a small frame.
+        key_field_df = field_list.loc[key_field_mask].copy()
 
-                # Put the index and the rest of the parameters in
-                # the list.
-                data.append((i, *t[1:]))
+        # Replace '*' with the empty string.
+        key_field_df['key_field'] = \
+            key_field_df['key_field'].str.replace(r'\*', '')
 
-        # Put the data into a DataFrame.
-        df = pd.DataFrame(data,
-                          columns=['key_field_index',
-                                   'internal_field_name',
-                                   'field_type', 'description',
-                                   'alt_name'])
+        # Remove letters.
+        key_field_df['key_field'] = \
+            key_field_df['key_field'].str.replace('[A-Z]*', '')
+
+        # Get numeric, 0-based index.
+        key_field_df['key_field_index'] = \
+            pd.to_numeric(key_field_df['key_field']) - 1
+
+        # Drop the key_field column (we only wanted to convert to an
+        # index).
+        key_field_df.drop('key_field', axis=1, inplace=True)
 
         # Use the key_field_index for the DataFrame index.
-        df.set_index(keys='key_field_index', drop=True,
-                     verify_integrity=True, inplace=True)
+        key_field_df.set_index(keys='key_field_index', drop=True,
+                               verify_integrity=True, inplace=True)
 
         # Sort the index.
-        df.sort_index(axis=0, inplace=True)
+        key_field_df.sort_index(axis=0, inplace=True)
 
         # Ensure the index is as expected (0, 1, 2, 3, etc.)
-        assert np.array_equal(df.index.values,
-                              np.arange(0, df.index.values[-1] + 1))
+        assert np.array_equal(key_field_df.index.values,
+                              np.arange(0, key_field_df.index.values[-1] + 1))
 
-        return df
+        return key_field_df
 
     # noinspection PyPep8Naming
     def ListOfDevices(self, ObjType: str, FilterName='') -> \
@@ -347,12 +373,44 @@ class sa(object):
         return output
 
     # noinspection PyPep8Naming
-    def GetFieldList(self, ObjectType: str):
-        # The second output should be a n*4 matrix, but the raw data is
-        # n*5
-        output = self._call_simauto('GetFieldList', ObjectType)
-        df = pd.DataFrame(np.array(output))
-        return df
+    def GetFieldList(self, ObjectType: str, copy=False) -> pd.DataFrame:
+        """Get all fields associated with a given ObjectType.
+
+        :param ObjectType: The type of object for which the fields are
+        requested.
+        :param copy: Whether or not to return a copy of the DataFrame.
+            You may want a copy if you plan to make any modifications.
+
+        :returns: Pandas DataFrame with columns 'key_field,'
+            'internal_field_name,' 'field_data_type,' 'description,'
+            and 'display_name.'
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____14>`_
+        """
+        # Get the ObjectType in lower case.
+        object_type = ObjectType.lower()
+
+        # Either look up stored DataFrame, or call SimAuto.
+        try:
+            output = self.object_fields[object_type]
+        except KeyError:
+            # We haven't looked up fields for this object yet.
+            # Call SimAuto, and place results into a DataFrame.
+            result = self._call_simauto('GetFieldList', ObjectType)
+            output = pd.DataFrame(np.array(result),
+                                  columns=['key_field', 'internal_field_name',
+                                           'field_data_type', 'description',
+                                           'display_name'])
+
+            # Store this for later.
+            self.object_fields[object_type] = output
+
+        # Either return a copy or not.
+        if copy:
+            return output.copy(deep=True)
+        else:
+            return output
 
     # noinspection PyPep8Naming
     def GetParametersSingleElement(self, element_type: str,
