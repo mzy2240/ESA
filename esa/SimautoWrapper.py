@@ -32,13 +32,31 @@ class sa(object):
                    'LineMW:1', 'LineMVR', 'LineMVR:1']
     }
 
-    def __init__(self, pwb_file_path=None, earlybind=False, visible=False):
+    def __init__(self, pwb_file_path=None, early_bind=True, visible=False):
+        """Initialize SimAuto wrapper.
+
+        :param pwb_file_path: Full file path to .pwb file to open.
+        :param early_bind: Whether (True) or not (False) to connect to
+            SimAuto via early binding.
+        :param visible: Whether or not to display the PowerWorld UI.
+
+        `Microsoft recommends
+        <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`_
+        early binding in most cases.
+        """
+        # Useful reference for early vs. late binding:
+        # https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients
+        #
+        # Useful reference for early and late binding in pywin32:
+        # https://youtu.be/xPtp8qFAHuA
         try:
-            if earlybind:
-                self.__pwcom__ = win32com.client.gencache.EnsureDispatch(
+            if early_bind:
+                # Use early binding.
+                self._pwcom = win32com.client.gencache.EnsureDispatch(
                     'pwrworld.SimulatorAuto')
             else:
-                self.__pwcom__ = win32com.client.dynamic.Dispatch(
+                # Use late binding.
+                self._pwcom = win32com.client.dynamic.Dispatch(
                     'pwrworld.SimulatorAuto')
         except Exception as e:
             print(str(e))
@@ -53,7 +71,7 @@ class sa(object):
         self.output = ''
         self.error = False
         self.error_message = ''
-        self.__pwcom__.UIVisible = visible
+        self._pwcom.UIVisible = visible
         if self.OpenCase():
             print(self.__ctime__(), "Case loaded")
 
@@ -94,7 +112,7 @@ class sa(object):
         """
         # Get a reference to the SimAuto function from the COM object.
         try:
-            f = getattr(self.__pwcom__, func)
+            f = getattr(self._pwcom, func)
         except AttributeError:
             raise AttributeError('The given function, {}, is not a valid '
                                  'SimAuto function.'.format(func)) from None
@@ -496,7 +514,7 @@ class sa(object):
     def ProcessID(self):
         """Retrieve the process ID of the currently running
         SimulatorAuto process"""
-        output = self.__pwcom__.ProcessID
+        output = self._pwcom.ProcessID
         return output
 
     # noinspection PyPep8Naming
@@ -505,7 +523,7 @@ class sa(object):
         """Retrieve the build date of the PowerWorld Simulator
         executable currently running with the SimulatorAuto process
         """
-        return self.__pwcom__.RequestBuildDate
+        return self._pwcom.RequestBuildDate
 
     # noinspection PyPep8Naming
     def ChangeParameters(self, ObjType, Paramlist, ValueArray):
@@ -562,13 +580,13 @@ class sa(object):
     # noinspection PyPep8Naming
     @property
     def UIVisible(self):
-        output = self.__pwcom__.UIVisible
+        output = self._pwcom.UIVisible
         return output
 
     # noinspection PyPep8Naming
     @property
     def CurrentDir(self):
-        output = self.__pwcom__.CurrentDir
+        output = self._pwcom.CurrentDir
         return output
 
     # noinspection PyPep8Naming
@@ -761,6 +779,6 @@ class sa(object):
     def exit(self):
         """Clean up for the PowerWorld COM object"""
         self.CloseCase()
-        del self.__pwcom__
-        self.__pwcom__ = None
+        del self._pwcom
+        self._pwcom = None
         return None
