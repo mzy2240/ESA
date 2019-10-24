@@ -117,6 +117,23 @@ class ListOfDevicesTestCase(unittest.TestCase):
         self.assertIn('BusNum:1', result.columns.values)
         self.assertIn('LineCircuit', result.columns.values)
 
+        # Ensure our BusNum columns are numeric.
+        # noinspection PyUnresolvedReferences
+        self.assertTrue(pd.api.types.is_numeric_dtype(result['BusNum']))
+        # noinspection PyUnresolvedReferences
+        self.assertTrue(pd.api.types.is_numeric_dtype(result['BusNum:1']))
+
+        # Ensure our LineCircuit is a string.
+        # noinspection PyUnresolvedReferences
+        self.assertTrue(pd.api.types.is_string_dtype(result['LineCircuit']))
+
+        # Ensure there's no leading space in LineCircuit.
+        pd.testing.assert_series_equal(result['LineCircuit'],
+                                       result['LineCircuit'].str.strip())
+
+        # For the grand finale, ensure we're sorted by BusNum.
+        pd.testing.assert_frame_equal(result, result.sort_values(by='BusNum'))
+
     # noinspection PyMethodMayBeStatic
     def test_buses(self):
         """As the name implies, we should get 14 buses."""
