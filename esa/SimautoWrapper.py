@@ -159,6 +159,75 @@ class sa(object):
         return output[1]
 
     # noinspection PyPep8Naming
+    def _clean_dataframe(self, df: pd.DataFrame, ObjectType: str):
+        """Helper to cast DataFrame columns to the correct types,
+        clean up strings, and sort DataFrame by BusNum (if present).
+
+        :param df: DataFrame to clean up. It's assumed that the
+            DataFrame came more or less directly from placing results
+            from calling SimAuto into a DataFrame. This means all the
+            columns will be strings (even if they should be numeric) and
+            the columns which should be strings often have unnecessary
+            white space. Additionally, the columns of the DataFrame
+            must be existing fields for the given object type (i.e.
+            are present in the 'internal_field_name' column of the
+            corresponding DataFrame which comes from calling
+            GetFieldList for the given object type).
+        :param ObjectType: Object type the data in the DataFrame relates
+            to. E.g. 'gen'
+        """
+        # Start by getting the field list for this ObjectType. Note
+        # that in most cases this will be cached and thus be quite
+        # fast. If it isn't cached now, it will be after calling this.
+        field_list = self.GetFieldList(ObjectType=ObjectType, copy=False)
+
+        # Rely on the fact that the field_list is already sorted by
+        # internal_field_name to get indices related to the given
+        # internal field names.
+        idx = field_list['internal_field_name'].values.searchsorted(
+            df.columns.values)
+
+        # Ensure the columns are actually in the field_list. This is
+        # necessary because search sorted gives the index of where the
+        # given values would go, and doesn't guarantee the values are
+        # actually present. However, we want to use searchsorted for its
+        # speed and leverage the fact that our field_list DataFrame is
+        # already sorted.
+        cols = field_list['internal_field_name'].values[idx]
+
+        if not np.array_equal(cols, df.columns.values):
+            raise ValueError('The given DataFrame has columns which do not '
+                             'match a PowerWorld internal field name!')
+
+        # Now extract the corresponding data types.
+        data_types = field_list['field_data_type'].values[idx]
+
+        # Determine which types are numeric.
+        numeric = np.isin(data_types, NUMERIC_TYPES)
+        numeric_cols = cols[numeric]
+
+        # Make the numeric columns, well, numeric.
+        df[numeric_cols] = df[numeric_cols].apply(pd.to_numeric)
+
+        # Now handle the non-numeric cols.
+        nn_cols = cols[~numeric]
+
+        # Here we'll strip off the white space.
+        df[nn_cols] = df[nn_cols].apply(lambda x: x.str.strip())
+
+        # Sort by BusNum if present.
+        try:
+            df.sort_values(by='BusNum', axis=0, inplace=True)
+        except KeyError:
+            # If there's no BusNum don't sort the DataFrame.
+            pass
+        else:
+            # Re-index with simple monotonically increasing values.
+            df.index = np.arange(start=0, stop=df.shape[0])
+
+        return df
+
+    # noinspection PyPep8Naming
     def OpenCase(self):
         """Opens case defined by the full file path; if this is
         undefined, opens by previous file path"""
@@ -310,32 +379,7 @@ class sa(object):
         # match up 1:1 with values here. Set columns.
         df.columns = kf['internal_field_name'].values
 
-        # Cast columns to numeric as appropriate. Strip leading/
-        # trailing whitespace from string columns.
-        for row in kf.itertuples():
-            if row.field_data_type in NUMERIC_TYPES:
-                # Cast data to numeric.
-                df[row.internal_field_name] = \
-                    pd.to_numeric(df[row.internal_field_name])
-            elif row.field_data_type in NON_NUMERIC_TYPES:
-                # Strip leading/trailing white space.
-                df[row.internal_field_name] = \
-                    df[row.internal_field_name].str.strip()
-            else:
-                # Well, we didn't expect this type.
-                raise ValueError('Unexpected field_data_type, {}, for {}.'
-                                 .format(row.field_data_type,
-                                         row.internal_field_name))
-
-        # Sort by BusNum if present.
-        try:
-            df.sort_values(by='BusNum', axis=0, inplace=True)
-        except KeyError:
-            # If there's no BusNum don't sort the DataFrame.
-            pass
-        else:
-            # Re-index with simple monotonically increasing values.
-            df.index = np.arange(start=0, stop=df.shape[0])
+        df = self._clean_dataframe(df=df, ObjectType=ObjType)
 
         # All done. We now have a well-formed DataFrame.
         return df
@@ -402,6 +446,10 @@ class sa(object):
                                   columns=['key_field', 'internal_field_name',
                                            'field_data_type', 'description',
                                            'display_name'])
+
+            # While it appears PowerWorld gives us the list sorted by
+            # internal_field_name, let's make sure it's always sorted.
+            output.sort_values(by=['internal_field_name'], inplace=True)
 
             # Store this for later.
             self.object_fields[object_type] = output
