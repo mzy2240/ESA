@@ -36,6 +36,12 @@ class PowerWorldError(Error):
     pass
 
 
+class COMError(Error):
+    """Raised when attempting to call a SimAuto function results in an
+    error.
+    """
+
+
 class sa(object):
     """A SimAuto Wrapper in Python"""
 
@@ -140,10 +146,13 @@ class sa(object):
             to function. If PowerWorld returns ('',), this method
             returns None.
 
-        :raises GeneralException: If PowerWorld indicates an exception
+        :raises PowerWorldError: If PowerWorld indicates an exception
             occurred.
 
         :raises AttributeError: If the given func is invalid.
+
+        :raises COMError: If attempting to call the SimAuto function
+            results in an error.
 
         The listing of valid functions can be found `here
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`_.
@@ -156,7 +165,12 @@ class sa(object):
                                  'SimAuto function.'.format(func)) from None
 
         # Call the function.
-        output = f(*args)
+        try:
+            output = f(*args)
+        except Exception:
+            m = f'An error occurred when trying to call {func} with {args}'
+            self.log.exception(m)
+            raise COMError(m)
 
         # handle errors
         if output == ('',):
