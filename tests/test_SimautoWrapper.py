@@ -5,7 +5,8 @@ import os
 import numpy as np
 import pandas as pd
 from esa import sa
-from esa.SimautoWrapper import PowerWorldError, convert_to_posix_path
+from esa.SimautoWrapper import COMError, PowerWorldError,\
+    convert_to_posix_path
 import logging
 
 # Handle pathing.
@@ -115,6 +116,12 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         # Check fields.
         self.assertEqual('BusNum', result.loc[0, 'internal_field_name'])
         self.assertEqual('ShuntID', result.loc[1, 'internal_field_name'])
+
+    def test_nonexistent_object(self):
+        """Not really sure why this raises a COMError rather than a
+        PowerWorldError..."""
+        with self.assertRaises(COMError):
+            saw_14.get_object_type_key_fields('sorry, not here')
 
 
 class ListOfDevicesTestCase(unittest.TestCase):
