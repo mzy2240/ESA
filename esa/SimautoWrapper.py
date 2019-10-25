@@ -189,7 +189,8 @@ class sa(object):
         return output[1]
 
     # noinspection PyPep8Naming
-    def _clean_dataframe(self, df: pd.DataFrame, ObjectType: str):
+    def _clean_dataframe(self, df: pd.DataFrame, ObjectType: str) -> \
+            pd.DataFrame:
         """Helper to cast DataFrame columns to the correct types,
         clean up strings, and sort DataFrame by BusNum (if present).
 
@@ -205,6 +206,9 @@ class sa(object):
             GetFieldList for the given object type).
         :param ObjectType: Object type the data in the DataFrame relates
             to. E.g. 'gen'
+
+        :raises ValueError: if the DataFrame columns are not valid
+            fields for the given object type.
         """
         # Start by getting the field list for this ObjectType. Note
         # that in most cases this will be cached and thus be quite
@@ -223,11 +227,16 @@ class sa(object):
         # actually present. However, we want to use searchsorted for its
         # speed and leverage the fact that our field_list DataFrame is
         # already sorted.
-        cols = field_list['internal_field_name'].values[idx]
+        try:
+            cols = field_list['internal_field_name'].values[idx]
 
-        if not np.array_equal(cols, df.columns.values):
-            raise ValueError('The given DataFrame has columns which do not '
-                             'match a PowerWorld internal field name!')
+            if not np.array_equal(cols, df.columns.values):
+                raise ValueError('The given DataFrame has columns which do not'
+                                 ' match a PowerWorld internal field name!')
+        except IndexError:
+            # An index error also indicates failure.
+            raise ValueError('The given DataFrame has columns which do not'
+                             ' match a PowerWorld internal field name!')
 
         # Now extract the corresponding data types.
         data_types = field_list['field_data_type'].values[idx]
