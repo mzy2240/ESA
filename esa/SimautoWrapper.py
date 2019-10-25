@@ -3,9 +3,15 @@ import numpy as np
 import win32com
 from win32com.client import VARIANT
 import pythoncom
-from .exceptions import GeneralException
 from typing import Union
 from pathlib import Path
+import logging
+
+# TODO: Make logging more configurable.
+logging.basicConfig(
+    format="%(asctime)s [%(levelname)s] [%(name)s]: %(message)s",
+    datefmt="%H:%M:%S"
+)
 
 # Listing of PowerWorld data types. I guess 'real' means float?
 DATA_TYPES = ['Integer', 'Real', 'String']
@@ -17,6 +23,17 @@ NON_NUMERIC_TYPES = DATA_TYPES[-1]
 def _convert_to_posix_path(p):
     """Given a path, p, convert it to a Posix path."""
     return Path(p).as_posix()
+
+
+class Error(Exception):
+    """Base class for exceptions in this module."""
+    pass
+
+
+class PowerWorldError(Error):
+    """Raised when PowerWorld reports an error following a SimAuto call.
+    """
+    pass
 
 
 class sa(object):
@@ -56,6 +73,8 @@ class sa(object):
         <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`_
         early binding in most cases.
         """
+        # Initialize logger.
+        self.log = logging.getLogger(self.__class__.__name__)
         # Useful reference for early vs. late binding:
         # https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients
         #
@@ -71,13 +90,13 @@ class sa(object):
                 self._pwcom = win32com.client.dynamic.Dispatch(
                     'pwrworld.SimulatorAuto')
         except Exception as e:
-            # TODO: This should raise an exception.
-            # TODO: Rather than printing, use logging.
-            print(str(e))
-            print("Unable to launch SimAuto. ",
-                  "Please confirm that your PowerWorld license includes "
-                  "the SimAuto add-on, and that SimAuto has been "
-                  "successfully installed.")
+            m = ("Unable to launch SimAuto. ",
+                 "Please confirm that your PowerWorld license includes "
+                 "the SimAuto add-on, and that SimAuto has been "
+                 "successfully installed.")
+            self.log.exception(m)
+
+            raise e
 
         # Initialize self.pwb_file_path. It will be set in the OpenCase
         # method.
@@ -149,7 +168,7 @@ class sa(object):
         elif 'No data' in output[0]:
             pass
         else:
-            raise GeneralException(output[0])
+            raise PowerWorldError(output[0])
 
         # After errors have been handled, return the data (which is in
         # position 1 of the tuple).

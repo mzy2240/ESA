@@ -4,7 +4,8 @@ from unittest.mock import patch
 import os
 import numpy as np
 import pandas as pd
-from esa import sa, exceptions
+from esa import sa
+from esa.SimautoWrapper import PowerWorldError
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -159,7 +160,7 @@ class SolvePowerFlowTestCase(unittest.TestCase):
 
     def test_solve_bad_method(self):
         """Given a bad solver, we should expect an exception."""
-        with self.assertRaisesRegex(exceptions.GeneralException,
+        with self.assertRaisesRegex(PowerWorldError,
                                     'Invalid solution method'):
             saw_14.SolvePowerFlow(SolMethod='junk')
 
@@ -181,7 +182,7 @@ class RunScriptCommandTestCase(unittest.TestCase):
 
     def test_exception_for_bad_statement(self):
         """Ensure an exception is thrown for a bad statement."""
-        with self.assertRaisesRegex(exceptions.GeneralException,
+        with self.assertRaisesRegex(PowerWorldError,
                                     'Error in script statements definition'):
             saw_14.RunScriptCommand(Statements='invalid statement')
 
@@ -253,7 +254,7 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
 
     def test_bad_object_type(self):
         """A bad object type should raise an exception."""
-        with self.assertRaises(exceptions.GeneralException):
+        with self.assertRaises(PowerWorldError):
             saw_14.GetParametersMultipleElement(
                 ObjectType='bogus', ParamList=['BusNum']
             )
