@@ -6,7 +6,6 @@ from win32com.client import VARIANT
 import pythoncom
 import datetime
 from .exceptions import GeneralException
-import re
 from typing import Union
 from pathlib import Path
 
@@ -65,6 +64,8 @@ class sa(object):
                 self._pwcom = win32com.client.dynamic.Dispatch(
                     'pwrworld.SimulatorAuto')
         except Exception as e:
+            # TODO: This should raise an exception.
+            # TODO: Rather than printing, use logging.
             print(str(e))
             print("Unable to launch SimAuto. ",
                   "Please confirm that your PowerWorld license includes "
@@ -98,19 +99,6 @@ class sa(object):
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.exit()
         return True
-
-    @staticmethod
-    def __ctime__():
-        return datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S.%f')[:-3]
-
-    def __setfilenames__(self):
-        self.file_folder = os.path.split(self.pwb_file_path)[0]
-        self.file_name = \
-            os.path.splitext(os.path.split(self.pwb_file_path)[1])[0]
-        # some operations require an aux file
-        self.aux_file_path = self.file_folder + '/' + self.file_name + '.aux'
-        self.save_file_path = os.path.splitext(
-            os.path.split(self.pwb_file_path)[1])[0]
 
     def _call_simauto(self, func: str, *args):
         """Helper function for calling the SimAuto server.
@@ -283,10 +271,8 @@ class sa(object):
         `here
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
         """
+        # Get the listing of fields for this object type.
         field_list = self.GetFieldList(ObjectType=ObjType, copy=False)
-
-        # Initialize list of lists to hold our data.
-        data = []
 
         # Here's what I've gathered:
         # Key fields will be of the format *<number><letter>*
@@ -379,9 +365,11 @@ class sa(object):
         # match up 1:1 with values here. Set columns.
         df.columns = kf['internal_field_name'].values
 
+        # Ensure the DataFrame has the correct types, is sorted by
+        # BusNum, and has leading/trailing white space stripped.
         df = self._clean_dataframe(df=df, ObjectType=ObjType)
 
-        # All done. We now have a well-formed DataFrame.
+        # All done.
         return df
 
     # noinspection PyPep8Naming
