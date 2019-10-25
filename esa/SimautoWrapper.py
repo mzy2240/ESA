@@ -20,7 +20,7 @@ NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
 
-def _convert_to_posix_path(p):
+def convert_to_posix_path(p):
     """Given a path, p, convert it to a Posix path."""
     return Path(p).as_posix()
 
@@ -264,7 +264,7 @@ class sa(object):
                                 'time, a FileName is required.')
         else:
             # Set pwb_file_path according to the given FileName.
-            self.pwb_file_path = _convert_to_posix_path(FileName)
+            self.pwb_file_path = convert_to_posix_path(FileName)
 
         # Open the case.
         return self._call_simauto('OpenCase', self.pwb_file_path)
@@ -301,7 +301,7 @@ class sa(object):
             already exists, an exception will be raised.
         """
         if FileName is not None:
-            f = _convert_to_posix_path(FileName)
+            f = convert_to_posix_path(FileName)
         else:
             if self.pwb_file_path is None:
                 raise TypeError('SaveCase was called without a FileName, but '
@@ -461,7 +461,7 @@ class sa(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ProcessAuxFile_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____39>`_
         """
-        f = _convert_to_posix_path(FileName)
+        f = convert_to_posix_path(FileName)
         output = self._call_simauto('ProcessAuxFile', f)
         return output
 
@@ -837,7 +837,7 @@ class sa(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/WriteAuxFile_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____51>`_
         """
-        aux_file = _convert_to_posix_path(FileName)
+        aux_file = convert_to_posix_path(FileName)
         return self._call_simauto('WriteAuxFile', aux_file,
                                   FilterName, ObjectType, EString, ToAppend,
                                   FieldList)
