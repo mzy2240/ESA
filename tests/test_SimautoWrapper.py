@@ -5,7 +5,8 @@ import os
 import numpy as np
 import pandas as pd
 from esa import sa
-from esa.SimautoWrapper import PowerWorldError
+from esa.SimautoWrapper import PowerWorldError, convert_to_posix_path
+import logging
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -36,6 +37,37 @@ def tearDownModule():
     global saw_14
     saw_14.exit()
     del saw_14
+
+
+class InitializationTestCase(unittest.TestCase):
+    """Test initialization."""
+
+    def test_bad_path(self):
+        with self.assertRaisesRegex(PowerWorldError, 'OpenCase: '):
+            sa(FileName='bogus')
+
+    def test_init_expected_behavior(self):
+        # Initialize
+        my_saw_14 = sa(PATH_14,
+                       object_field_lookup=('bus', 'shunt'))
+
+        # Ensure we have a log attribute.
+        self.assertIsInstance(my_saw_14.log, logging.Logger)
+
+        # Ensure our pwb_file_path matches our given path.
+        self.assertEqual(convert_to_posix_path(PATH_14),
+                         my_saw_14.pwb_file_path)
+
+        # Ensure we have the expected object_fields.
+        self.assertEqual(2, len(my_saw_14.object_fields))
+
+        for f in ['bus', 'shunt']:
+            df = my_saw_14.object_fields[f]
+            self.assertIsInstance(df, pd.DataFrame)
+            self.assertSetEqual({'key_field', 'internal_field_name',
+                                 'field_data_type', 'description',
+                                 'display_name'},
+                                set(df.columns.values))
 
 
 class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
