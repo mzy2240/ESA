@@ -1,10 +1,8 @@
 import pandas as pd
 import numpy as np
-import os
 import win32com
 from win32com.client import VARIANT
 import pythoncom
-import datetime
 from .exceptions import GeneralException
 from typing import Union
 from pathlib import Path
@@ -14,6 +12,11 @@ DATA_TYPES = ['Integer', 'Real', 'String']
 # Hard-code based on indices.
 NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
+
+
+def _convert_to_posix_path(p):
+    """Given a path, p, convert it to a Posix path."""
+    return Path(p).as_posix()
 
 
 class sa(object):
@@ -31,12 +34,15 @@ class sa(object):
                    'LineMW:1', 'LineMVR', 'LineMVR:1']
     }
 
-    def __init__(self, pwb_file_path, early_bind=True, visible=False,
+    # noinspection PyPep8Naming
+    def __init__(self, FileName, early_bind=True, visible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch')):
-        """Initialize SimAuto wrapper.
+        """Initialize SimAuto wrapper. The case will be opened, and
+        object fields given in object_field_lookup will be retrieved.
 
-        :param pwb_file_path: Full file path to .pwb file to open.
+        :param FileName: Full file path to .pwb file to open. This will
+            be passed to the SimAuto function OpenCase.
         :param early_bind: Whether (True) or not (False) to connect to
             SimAuto via early binding.
         :param visible: Whether or not to display the PowerWorld UI.
@@ -45,6 +51,7 @@ class sa(object):
             specified for lookup here will be looked up later as
             necessary.
 
+        Note that
         `Microsoft recommends
         <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`_
         early binding in most cases.
@@ -72,11 +79,13 @@ class sa(object):
                   "the SimAuto add-on, and that SimAuto has been "
                   "successfully installed.")
 
-        file_path = Path(pwb_file_path)
-        self.pwb_file_path = file_path.as_posix()
-        self.aux_file_path = None
+        # Initialize self.pwb_file_path. It will be set in the OpenCase
+        # method.
+        self.pwb_file_path = None
+        # Set the visible attribute.
         self._pwcom.UIVisible = visible
-        self.OpenCase()
+        # Open the case.
+        self.OpenCase(FileName=FileName)
 
         # Look up fields for given object types in field_lookup.
         self.object_fields = dict()
@@ -216,36 +225,72 @@ class sa(object):
         return df
 
     # noinspection PyPep8Naming
-    def OpenCase(self):
-        """Opens case defined by the full file path; if this is
-        undefined, opens by previous file path"""
+    def OpenCase(self, FileName=None):
+        """Load PowerWorld case into the automation server.
+
+        :param FileName: Full path to the case file to be loaded. If
+            None, this method will attempt to use the last FileName
+            used to open a case.
+
+        :raises TypeError: if FileName is None, and OpenCase has never
+            been called before.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/OpenCase_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____36>`_
+        """
+        # If not given a file name, ensure the pwb_file_path is valid.
+        if FileName is None:
+            if self.pwb_file_path is None:
+                raise TypeError('When OpenCase is called for the first '
+                                'time, a FileName is required.')
+        else:
+            # Set pwb_file_path according to the given FileName.
+            self.pwb_file_path = _convert_to_posix_path(FileName)
+
+        # Open the case.
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
     # noinspection PyPep8Naming
-    def SaveCase(self):
-        """Saves case with changes to existing file name and path."""
-        return self._call_simauto('SaveCase', self.pwb_file_path, 'PWB', True)
+    def SaveCase(self, FileName=None, FileType='PWB', Overwrite=True):
+        """Save the current case to file.
 
-    def save_case_as(self, pwb_file_path=None):
-        """If file name and path are specified, saves case as a new
-        file. Overwrites any existing file with the same name and path.
-        """
-        if pwb_file_path is not None:
-            file_path = Path(pwb_file_path)
-            self.pwb_file_path = file_path.as_posix()
-        return self.SaveCase()
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/SaveCase_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____43>`_
 
-    # noinspection PyPep8Naming
-    def save_case_as_aux_file(self, file_name, FilterName='', ObjectType=None,
-                              ToAppend=True, FieldList='all'):
-        """If file name and path are specified, saves case as a new aux
-        file. Overwrites any existing file with the same name and
-        path.
+        :param FileName: The name of the file you wish to save as,
+            including file path. If None, the original path which was
+            used to open the case (passed to this class's initializer)
+            will be used.
+        :param FileType: String indicating the format of the case file
+            to write out. Here's what PowerWorld currently supports:
+                * "PTI23": "PTI33" specific PTI version (raw).
+                * "GE14": "GE21" GE PSLF version (epc).
+                * "IEEE": IEEE common format (cf).
+                * "UCTE": UCTE Data Exchange (uct).
+                * "AUX": PowerWorld Auxiliary format (aux).
+                * "AUXSECOND": PowerWorld Auxiliary format (aux) using
+                  secondary key fields.
+                * "AUXLABEL": PowerWorld Auxiliary format (aux) using
+                  labels as key field identifiers.
+                * "AUXNETWORK": PowerWorld Auxiliary format (aux) saving
+                  only network data.
+                * "PWB5" through "PWB20": specific PowerWorld Binary
+                  version (pwb).
+                * "PWB":  PowerWorld Binary (most recent) (pwb).
+        :param Overwrite: Whether (True) or not (False) to overwrite the
+            file if it already exists. If False and the specified file
+            already exists, an exception will be raised.
         """
-        file_path = Path(file_name)
-        self.aux_file_path = file_path.as_posix()
-        return self._call_simauto('WriteAuxFile', self.aux_file_path,
-                                  FilterName, ObjectType, ToAppend, FieldList)
+        if FileName is not None:
+            f = _convert_to_posix_path(FileName)
+        else:
+            if self.pwb_file_path is None:
+                raise TypeError('SaveCase was called without a FileName, but '
+                                'it would appear OpenCase has not yet been '
+                                'called.')
+            f = self.pwb_file_path
+
+        return self._call_simauto('SaveCase', f, FileType, Overwrite)
 
     # noinspection PyPep8Naming
     def CloseCase(self):
@@ -387,13 +432,18 @@ class sa(object):
         return output
 
     # noinspection PyPep8Naming
-    def ProcessAuxFile(self, auxtext):
+    def ProcessAuxFile(self, FileName):
         """Creates and loads an Auxiliary file with the text specified
-        in auxtext parameter."""
-        f = open(self.aux_file_path, 'w')
-        f.writelines(auxtext)
-        f.close()
-        output = self._call_simauto('ProcessAuxFile', self.aux_file_path)
+        in auxtext parameter.
+
+        :param FileName: Name of auxiliary file to load. Should be a
+            full path.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ProcessAuxFile_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____39>`_
+        """
+        f = _convert_to_posix_path(FileName)
+        output = self._call_simauto('ProcessAuxFile', f)
         return output
 
     # noinspection PyPep8Naming
@@ -764,11 +814,14 @@ class sa(object):
         Simulator Automation Server. If no filter is desired, then
         simply pass an empty string. If a filter name is passed but the
         filter cannot be found in the loaded case, no filter is used.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/WriteAuxFile_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____51>`_
         """
-        file_path = Path(FileName)
-        self.aux_file_path = file_path.as_posix()
-        return self._call_simauto('WriteAuxFile', self.aux_file_path,
-                                  FilterName, ObjectType, FieldList, ToAppend)
+        aux_file = _convert_to_posix_path(FileName)
+        return self._call_simauto('WriteAuxFile', aux_file,
+                                  FilterName, ObjectType, EString, ToAppend,
+                                  FieldList)
 
     # noinspection PyPep8Naming
     def CalculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
