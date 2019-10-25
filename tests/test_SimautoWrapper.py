@@ -185,6 +185,41 @@ class ListOfDevicesTestCase(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, result)
 
 
+class CleanDataFrameTestCase(unittest.TestCase):
+    def test_bad_df_columns(self):
+        """If the DataFrame columns are not valid fields, we should get
+        an error.
+        """
+        bad_df = pd.DataFrame([[1, 'bleh']], columns=['BusNum', 'bleh'])
+        with self.assertRaisesRegex(ValueError, 'The given DataFrame has col'):
+            saw_14._clean_dataframe(df=bad_df, ObjectType='gen')
+
+    def test_bad_df_columns_2(self):
+        """This time, use upper-case so we don't get an index error."""
+        bad_df = pd.DataFrame([[1, 'bleh']], columns=['BusNum', 'Bleh'])
+        with self.assertRaisesRegex(ValueError, 'The given DataFrame has col'):
+            saw_14._clean_dataframe(df=bad_df, ObjectType='gen')
+
+    def test_works(self):
+        """Ensure that when using valid fields, the DataFrame comes back
+        as expected.
+        """
+        df_in = pd.DataFrame([[' 6    ', '7.2234 ', ' yes '],
+                              [' 3', '11', '   no ']],
+                             columns=['BusNum', 'GenMW', 'GenAGCAble'])
+        df_expected = pd.DataFrame([[3, 11.0, 'no'], [6, 7.2234, 'yes']],
+                                   columns=['BusNum', 'GenMW', 'GenAGCAble'])
+
+        df_actual = saw_14._clean_dataframe(df=df_in, ObjectType='gen')
+
+        pd.testing.assert_frame_equal(df_actual, df_expected)
+
+
+class GetFieldListTestCase(unittest.TestCase):
+    def test_stuff(self):
+        self.assertTrue(False)
+
+
 class SolvePowerFlowTestCase(unittest.TestCase):
     """Test the SolvePowerFlow method. Note PowerWorld doesn't return
     anything for this script command, so we should always get None back
