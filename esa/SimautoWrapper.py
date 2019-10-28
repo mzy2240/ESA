@@ -620,6 +620,9 @@ class sa(object):
         """Request values of specified fields for a set of objects in
         the load flow case.
 
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetParametersMultipleElement_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____20>`_
+
         :param ObjectType: Type of object to get parameters for.
         :param ParamList: List of variables to obtain for the given
             object type. E.g. ['BusNum', 'GenID', 'GenRegPUVolt']. One
@@ -637,6 +640,10 @@ class sa(object):
             is "bad" (e.g. doesn't exist), the corresponding column in
             the DataFrame will consist only of None.
 
+        :raises PowerWorldError: if PowerWorld reports an error.
+        :raises ValueError: if any parameters given in the ParamList
+            are not valid for the given object type.
+
         TODO: Should we cast None to NaN to be consistent with how
             Pandas/Numpy handle bad/missing data?
         """
@@ -649,9 +656,12 @@ class sa(object):
             # Given object isn't present.
             return output
 
-        # Create and return DataFrame.
-        return pd.DataFrame(np.array(output).transpose(),
-                            columns=ParamList)
+        # Create DataFrame.
+        df = pd.DataFrame(np.array(output).transpose(),
+                          columns=ParamList)
+
+        # Clean DataFrame and return it.
+        return self._clean_df_or_series(obj=df, ObjectType=ObjectType)
 
     # noinspection PyPep8Naming
     def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT'):
