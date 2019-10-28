@@ -404,14 +404,10 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
         self.assertIsNone(results)
 
     def test_get_nonexistent_parameter(self):
-        """We should get only None in the bad column."""
-        result = saw_14.GetParametersMultipleElement(
-            ObjectType='branch', ParamList=['ThisNotReal'])
-
-        # Ensure the column only has Nones.
-        u = result['ThisNotReal'].unique()
-        self.assertEqual(len(u), 1)
-        self.assertIsNone(u[0])
+        """We should get a ValueError for a bogus parameter."""
+        with self.assertRaisesRegex(ValueError, 'The given object has fields'):
+            saw_14.GetParametersMultipleElement(
+                ObjectType='branch', ParamList=['ThisNotReal'])
 
     def test_bad_object_type(self):
         """A bad object type should raise an exception."""
