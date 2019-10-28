@@ -200,6 +200,7 @@ class CleanDataFrameTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'The given DataFrame has col'):
             saw_14._clean_dataframe(df=bad_df, ObjectType='gen')
 
+    # noinspection PyMethodMayBeStatic
     def test_works(self):
         """Ensure that when using valid fields, the DataFrame comes back
         as expected.
@@ -216,8 +217,81 @@ class CleanDataFrameTestCase(unittest.TestCase):
 
 
 class GetFieldListTestCase(unittest.TestCase):
-    def test_stuff(self):
-        self.assertTrue(False)
+    """Test the GetFieldList method"""
+
+    def check_field_list(self, field_list):
+        """Helper to check a returned field list DataFrame."""
+        self.assertIsInstance(field_list, pd.DataFrame)
+        self.assertEqual(saw_14.FIELD_LIST_COLUMNS,
+                         field_list.columns.values.tolist())
+        pd.testing.assert_frame_equal(
+            field_list, field_list.sort_values(by=['internal_field_name']))
+
+    def test_does_not_call_simauto_if_not_necessary(self):
+        """Ensure that if the field list has already been accessed for
+        the given object type that SimAuto is not called again.
+        """
+        # Generators are looked up by default on initialization.
+        with patch.object(saw_14, '_call_simauto') as m:
+            field_list = saw_14.GetFieldList(ObjectType='gen')
+
+        # Ensure DataFrame is as expected.
+        self.check_field_list(field_list)
+
+        # Ensure _call_simauto was not called
+        self.assertEqual(m.call_count, 0)
+
+    def test_simauto_called_for_new_object_type(self):
+        """Ensure that for a new object type, SimAuto is called and
+        the new result is stored in the object_fields dictionary.
+        """
+        # Let's look up field for three winding transformers.
+        # Cast to lower case so we can easily use the variable later.
+        obj_type = '3WXFormer'.lower()
+
+        # Start by ensuring we don't currently have this in the
+        # dictionary.
+        self.assertNotIn(obj_type, saw_14.object_fields)
+
+        # Call GetFieldList.
+        try:
+            with patch.object(saw_14, '_call_simauto',
+                              wraps=saw_14._call_simauto) as p:
+                field_list = saw_14.GetFieldList(ObjectType=obj_type)
+
+            # Check our field list.
+            self.check_field_list(field_list)
+
+            # Ensure _call_simauto was called.
+            self.assertEqual(p.call_count, 1)
+            p.assert_called_with('GetFieldList', obj_type)
+
+            # We should now have the object type in the object_fields
+            # attribute.
+            self.assertIn(obj_type, saw_14.object_fields)
+
+        finally:
+            # Always remove from the object_fields dictionary to avoid
+            # state changes that could impact other tests.
+            del saw_14.object_fields[obj_type]
+
+    def test_copy_true(self):
+        """Ensure we get a copy when asked for."""
+        field_list = saw_14.GetFieldList('gen', copy=True)
+        self.assertIsNot(field_list, saw_14.object_fields['gen'])
+
+    def test_copy_false(self):
+        """Ensure we don't get a copy when we don't ask for it."""
+        field_list = saw_14.GetFieldList('branch')
+        self.assertIs(field_list, saw_14.object_fields['branch'])
+
+    def test_works_if_object_type_not_in_model(self):
+        """Ensure we still get a valid field listing even if the given
+        object type is not in the model. Shunts are not present in the
+        14 bus test case.
+        """
+        field_list = saw_14.GetFieldList('shunt')
+        self.check_field_list(field_list)
 
 
 class SolvePowerFlowTestCase(unittest.TestCase):
