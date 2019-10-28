@@ -481,7 +481,7 @@ class sa(object):
 
         # Ensure the DataFrame has the correct types, is sorted by
         # BusNum, and has leading/trailing white space stripped.
-        df = self._clean_dataframe(df=df, ObjectType=ObjType)
+        df = self._clean_df_or_series(obj=df, ObjectType=ObjType)
 
         # All done.
         return df
