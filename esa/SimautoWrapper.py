@@ -566,22 +566,52 @@ class sa(object):
             return output
 
     # noinspection PyPep8Naming
-    def GetParametersSingleElement(self, element_type: str,
-                                   field_list: list, value_list: list):
-        """Retrieves parameter data according to the fields specified in
-        field_list. value_list consists of identifying parameter values
-        and zeroes and should be the same length as field_list
+    def GetParametersSingleElement(self, ObjectType: str,
+                                   ParamList: list, Values: list) -> pd.Series:
+        """Request values of specified fields for a particular object.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetParametersSingleElement_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____16>`_
+
+        :param ObjectType: The type of object you're retrieving
+            parameters for.
+        :param ParamList: List of strings indicating parameters to
+            retrieve. Note the key fields MUST be present. One can
+            obtain key fields for an object type via the
+            get_object_type_key_fields method.
+        :param Values: List of values corresponding 1:1 to parameters in
+            the ParamList. Values must be included for the key fields,
+            and the remaining values should be set to 0.
+
+        :returns: Pandas Series indexed by the given ParamList. This
+            Series will be cleaned by _clean_df_or_series, so data will
+            be of the appropriate type and strings are cleaned up.
+
+        :raises PowerWorldError: if the object cannot be found.
+        :raises ValueError: if any given element in ParamList is not
+            valid for the given ObjectType.
         """
-        assert len(field_list) == len(value_list)
+        # Ensure list lengths match.
+        assert len(ParamList) == len(Values), \
+            'The given ParamList and Values must have the same length.'
+
+        # Get arrays as variants.
         # noinspection PyUnresolvedReferences
         field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              field_list)
+                              ParamList)
         # noinspection PyUnresolvedReferences
         value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              value_list)
-        output = self._call_simauto('GetParametersSingleElement',
-                                    element_type, field_array, value_array)
-        return output
+                              Values)
+
+        # Call PowerWorld.
+        output = self._call_simauto('GetParametersSingleElement', ObjectType,
+                                    field_array, value_array)
+
+        # Convert to Series.
+        s = pd.Series(output, index=ParamList)
+
+        # Clean the Series and return.
+        return self._clean_df_or_series(obj=s, ObjectType=ObjectType)
 
     # noinspection PyPep8Naming
     def GetParametersMultipleElement(self, ObjectType: str, ParamList: list,
@@ -607,7 +637,8 @@ class sa(object):
             is "bad" (e.g. doesn't exist), the corresponding column in
             the DataFrame will consist only of None.
 
-        TODO: Should we cast None to NaN to be consistent with
+        TODO: Should we cast None to NaN to be consistent with how
+            Pandas/Numpy handle bad/missing data?
         """
         # noinspection PyUnresolvedReferences
         param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
