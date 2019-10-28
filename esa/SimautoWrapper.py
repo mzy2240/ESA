@@ -57,6 +57,11 @@ class sa(object):
                    'LineMW:1', 'LineMVR', 'LineMVR:1']
     }
 
+    # Class level property defining the columns used by the DataFrame
+    FIELD_LIST_COLUMNS = \
+        ['key_field', 'internal_field_name', 'field_data_type', 'description',
+         'display_name']
+
     # noinspection PyPep8Naming
     def __init__(self, FileName, early_bind=True, visible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
@@ -523,9 +528,7 @@ class sa(object):
             # Call SimAuto, and place results into a DataFrame.
             result = self._call_simauto('GetFieldList', ObjectType)
             output = pd.DataFrame(np.array(result),
-                                  columns=['key_field', 'internal_field_name',
-                                           'field_data_type', 'description',
-                                           'display_name'])
+                                  columns=self.FIELD_LIST_COLUMNS)
 
             # While it appears PowerWorld gives us the list sorted by
             # internal_field_name, let's make sure it's always sorted.
