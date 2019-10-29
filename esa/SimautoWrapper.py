@@ -40,6 +40,15 @@ class COMError(Error):
     """Raised when attempting to call a SimAuto function results in an
     error.
     """
+    pass
+
+
+class CommandNotRespectedError(Error):
+    """Raised if a command sent into PowerWorld is not respected, but
+    PowerWorld itself does not raise an error. This exception should
+    be used with helpers that double-check commands.
+    """
+    pass
 
 
 class sa(object):
@@ -638,9 +647,7 @@ class sa(object):
 
         :returns: Pandas DataFrame with columns matching the given
             ParamList. If the provided ObjectType is not present in the
-            case, None will be returned. Note that if a given parameter
-            is "bad" (e.g. doesn't exist), the corresponding column in
-            the DataFrame will consist only of None.
+            case, None will be returned.
 
         :raises PowerWorldError: if PowerWorld reports an error.
         :raises ValueError: if any parameters given in the ParamList
@@ -792,6 +799,75 @@ class sa(object):
         output = self._call_simauto('ChangeParameters', ObjType, Paramlist,
                                     ValueArray)
         return output
+
+    # noinspection PyPep8Naming
+    def change_and_confirm_params_multiple_element(self, ObjectType: str,
+                                                   command_df: pd.DataFrame) \
+            -> None:
+        """Change parameters for multiple objects of the same type, and
+        confirm that the change was respected by PowerWorld.
+
+        :param ObjectType: The type of objects you are changing
+            parameters for.
+        :param command_df: Pandas DataFrame representing the objects
+            which will have their parameters changed. The columns should
+            be object field variable names, and MUST include the key
+            fields for the given ObjectType (which you can get via the
+            get_object_type_key_fields method). Columns which are not
+            key fields indicate parameters to be changed, while the key
+            fields are used internally by PowerWorld to look up objects.
+            Each row of the DataFrame represents a single element.
+
+        :raises CommandNotRespectedError: if PowerWorld does not
+            actually change the parameters.
+        :raises: PowerWorldError: if PowerWorld reports an error.
+
+        :returns: None
+        """
+        # Start by cleaning up the DataFrame. This will avoid silly
+        # issues later (e.g. comparing ' 1 ' and '1').
+        cleaned_df = self._clean_df_or_series(obj=command_df,
+                                              ObjectType=ObjectType)
+
+        # Convert the DataFrame to a list.
+        value_list = cleaned_df.values.tolist()
+
+        # Get the columns as a list.
+        param_list = cleaned_df.columns.values.tolist()
+
+        # Send in the command.
+        # noinspection PyTypeChecker
+        self.ChangeParametersMultipleElement(
+            ObjectType=ObjectType, ParamList=param_list, ValueList=value_list)
+
+        # Now, query for the given parameters.
+        df = self.GetParametersMultipleElement(ObjectType=ObjectType,
+                                               ParamList=param_list)
+
+        # Get the key fields for this ObjectType.
+        kf = self.get_object_type_key_fields(ObjType=ObjectType)
+
+        # Merge the DataFrames on the key fields.
+        merged = pd.merge(left=cleaned_df, right=df, how='inner',
+                          on=kf['internal_field_name'].values.tolist(),
+                          suffixes=('_in', '_out'), copy=False)
+
+        # Time to check if our input and output values match. Note this
+        # relies on our use of "_in" and "_out" suffixes above.
+        cols_in = merged.columns[merged.columns.str.endswith('_in')]
+        cols_out = merged.columns[merged.columns.str.endswith('_out')]
+
+        # Check. Use allclose to avoid rounding error.
+        if not np.allclose(merged[cols_in].values, merged[cols_out].values):
+            # TODO: add some debug logging here to see what's different.
+            m = ('After calling ChangeParametersMultipleElement, not all '
+                 'parameters were actually changed within PowerWorld. Try '
+                 'again with a different parameter (e.g. use GenVoltSet '
+                 'instead of GenRegPUVolt).')
+            raise CommandNotRespectedError(m)
+
+        # All done.
+        return None
 
     # noinspection PyPep8Naming
     def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,

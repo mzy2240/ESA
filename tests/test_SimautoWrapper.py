@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 from esa import sa
 from esa.SimautoWrapper import COMError, PowerWorldError,\
-    convert_to_posix_path
+    convert_to_posix_path, CommandNotRespectedError
 import logging
 
 # Handle pathing.
@@ -122,6 +122,10 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         PowerWorldError..."""
         with self.assertRaises(COMError):
             saw_14.get_object_type_key_fields('sorry, not here')
+
+    def test_cached(self):
+        self.assertTrue(False, "TODO: Ensure the key fields are cached like "
+                        + "the field lists.")
 
 
 class ListOfDevicesTestCase(unittest.TestCase):
@@ -603,6 +607,70 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
             pass
         else:
             self.fail('DataFrames are equal, but they should not be.')
+
+    # noinspection DuplicatedCode
+    @unittest.expectedFailure
+    def test_change_gen_voltage_set_points_via_helper(self):
+        """Use change_and_confirm_params_multiple_element.
+        """
+        command_df = self.gen_v_pu.copy(deep=True)
+        command_df['GenRegPUVolt'] = 1.0
+
+        result = saw_14.change_and_confirm_params_multiple_element(
+            ObjectType='gen', command_df=command_df)
+
+        self.assertIsNone(result)
+
+
+class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
+    """Test change_and_confirm_params_multiple_element."""
+
+    def test_success(self):
+        """Send in a simple command that matches what's already in the
+        case and ensure the output from PowerWorld matches.
+        """
+        # Create DataFrame which a) only modifies a couple elements
+        # (not all), b) does not actually change anything (e.g. matches
+        # the initial case values), and c) has NOT been cleaned (e.g.
+        # bad data types (string where float should be), not sorted by
+        # BusNum).
+        # Part a) ensures the merge + comparison in the method is
+        #   working.
+        # Part b) means we don't need to clean up after ourselves and
+        #   set things back.
+        # Part c) ensures the user doesn't have to provide a perfect
+        #   pre-cleaned DataFrame.
+        command_df = pd.DataFrame(
+            [[13, '1', 13.5, '5.8'],
+             [3, ' 1 ', '94.2', '19.0']],
+            columns=['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        )
+
+        # Patch the call to ChangeParametersMultipleElement.
+        with patch.object(saw_14, 'ChangeParametersMultipleElement'):
+            result = saw_14.change_and_confirm_params_multiple_element(
+                ObjectType='load', command_df=command_df)
+
+        self.assertIsNone(result)
+
+    def test_failure(self):
+        """Don't actually send in a command, and ensure that we get
+        an exception.
+        """
+        # Note this DataFrame is only one value off from what's in the
+        # base case model (130.5 in first row).
+        command_df = pd.DataFrame(
+            [[13, '1', 130.5, '5.8'],
+             [3, ' 1 ', '94.2', '19.0']],
+            columns=['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        )
+
+        # Patch the call to ChangeParametersMultipleElement.
+        with patch.object(saw_14, 'ChangeParametersMultipleElement'):
+            with self.assertRaisesRegex(CommandNotRespectedError,
+                                        'After calling .* not all parameters'):
+                saw_14.change_and_confirm_params_multiple_element(
+                    ObjectType='load', command_df=command_df)
 
 
 if __name__ == '__main__':
