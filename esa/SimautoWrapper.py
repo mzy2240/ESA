@@ -590,6 +590,8 @@ class sa(object):
         :raises PowerWorldError: if the object cannot be found.
         :raises ValueError: if any given element in ParamList is not
             valid for the given ObjectType.
+        :raises AssertionError: if the given ParamList and Values do
+            not have the same length.
         """
         # Ensure list lengths match.
         assert len(ParamList) == len(Values), \
@@ -792,35 +794,44 @@ class sa(object):
         return output
 
     # noinspection PyPep8Naming
-    def ChangeParametersMultipleElement(self, ObjType: str,
-                                        ParamList: list, ValueArray: list):
-        """
-        :param ObjType: String The type of object you are changing
+    def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,
+                                        ValueList: list):
+        """Set parameters for multiple objects of the same type.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____7>`_
+
+        :param ObjectType: The type of object you are changing
             parameters for.
-        :param ParamList: Variant A variant array storing strings (COM
-            Type BSTR). This array stores a list of PowerWorld object
-            field variables, as defined in the section on PowerWorld
-            Object Fields. The ParamList must contain the key field
-            variables for the specific device, or the device cannot be
-            identified.
-        :param ValueArray: Variant A variant array storing arrays of
-            variants. This is the difference between the multiple
-            element and single element change parameter functions.
-            This array stores a list of arrays of values matching the
-            fields laid out in ParamList. You construct ValueList by
-            creating an array of variants with the necessary parameters
-            for each device, and then inserting each individual array of
-            values into the ValueList array. SimAuto will pick out each
-            array from ValueList, and calls
-            ChangeParametersSingleElement internally for each array of
-            values in ValueList.
-        :return: True or False
+        :param ParamList: Listing of object field variable names. Note
+            this MUST include the key fields for the given ObjectType
+            (which you can get via the get_object_type_key_fields
+            method).
+        :param ValueList: List of lists corresponding to the ParamList.
+            Should have length n, where n is the number of elements you
+            with to change parameters for. Each sub-list should have
+            the same length as ParamList, and the items in the sub-list
+            should correspond 1:1 with ParamList.
+        :returns: Result from calling SimAuto, which should always
+            simply be None.
+
+        :raises PowerWorldError: if PowerWorld reports an error.
         """
+        # Massage both the ParamList and ValueList into variant arrays.
+        # Example from PowerWorld:
+        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
+
+        # Convert arrays to variants.
         # noinspection PyUnresolvedReferences
-        ValueArray = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              subArray) for subArray in ValueArray]
+        param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                              ParamList)
+        # noinspection PyUnresolvedReferences
+        value_array = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
+                               sub_array) for sub_array in ValueList]
+
+        # Call SimAuto and return the result (should just be None)
         return self._call_simauto('ChangeParametersMultipleElement',
-                                  ObjType, ParamList, ValueArray)
+                                  ObjectType, param_array, value_array)
 
     # noinspection PyPep8Naming
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
