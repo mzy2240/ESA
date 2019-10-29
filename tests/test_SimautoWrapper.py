@@ -454,6 +454,156 @@ class GetParametersSingleElementTestCase(unittest.TestCase):
 
 class ChangeParametersMultipleElementTestCase(unittest.TestCase):
     """Test ChangeParametersMultipleElement"""
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Get generator key fields.
+        cls.key_field_df_gens = saw_14.get_object_type_key_fields('gen')
+        cls.params = \
+            cls.key_field_df_gens['internal_field_name'].values.tolist()
+        # Combine key fields with our desired attribute.
+        cls.params.append('GenVoltSet')
+        cls.gen_v_pu = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=cls.params)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Always be nice and clean up after yourself and put your toys
+        away. No, but seriously, put the voltage set points back."""
+        value_list = cls.gen_v_pu.values.tolist()
+        saw_14.ChangeParametersMultipleElement(
+            ObjectType='gen', ParamList=cls.params, ValueList=value_list)
+
+    # noinspection DuplicatedCode
+    def test_change_gen_voltage_set_points(self):
+        """Set all generator voltages to 1, and ensure the command
+        sticks.
+        """
+        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
+        # Start by converting our generator data to a list of lists.
+        value_list = self.gen_v_pu.values.tolist()
+
+        # Loop over the values, set to 1.
+        for v in value_list:
+            # Set voltage at 1.
+            v[-1] = 1.0
+
+        # Send in the command.
+        result = saw_14.ChangeParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params, ValueList=value_list)
+
+        self.assertIsNone(result)
+
+        # Check results.
+        gen_v = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params)
+
+        # Our present results should not be the same as the original.
+        try:
+            pd.testing.assert_frame_equal(gen_v, self.gen_v_pu)
+        except AssertionError:
+            # Frames are not equal. Success.
+            pass
+        else:
+            self.fail('DataFrames are equal, but they should not be.')
+
+        # Our current results should have all 1's for the GenRegPUVolt
+        # column.
+        # actual = pd.to_numeric(gen_v['GenRegPUVolt']).values
+        actual = pd.to_numeric(gen_v['GenVoltSet']).values
+        expected = np.array([1.0] * actual.shape[0])
+
+        np.testing.assert_array_equal(actual, expected)
+
+    def test_missing_key_fields(self):
+        # Extract a portion of the gen_v_pu DataFrame which was created
+        # in setUpClass. Notably, this is missing GenID.
+        df = self.gen_v_pu[['BusNum', 'GenVoltSet']]
+
+        # Convert to list.
+        value_list = df.values.tolist()
+
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'does not adequately define each object'):
+            saw_14.ChangeParametersMultipleElement(
+                ObjectType='gen', ParamList=['BusNum', 'GenVoltSet'],
+                ValueList=value_list)
+
+    def test_bad_object_type(self):
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'Object type bad not recognized'):
+            saw_14.ChangeParametersMultipleElement(ObjectType='bad',
+                                                   ParamList=['BusNum'],
+                                                   ValueList=[[1]])
+
+    def test_mismatched_list_lengths(self):
+        # Start by converting our generator data to a list of lists.
+        value_list = self.gen_v_pu.values.tolist()
+
+        # Delete an entry.
+        del value_list[1][-1]
+
+        m = 'Number of fields and number of values given are not equal'
+        with self.assertRaisesRegex(PowerWorldError, m):
+            saw_14.ChangeParametersMultipleElement(
+                ObjectType='gen', ParamList=self.params,
+                ValueList=value_list
+            )
+
+
+class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
+    """Test case to illustrate the PowerWorld sometimes will not report
+    an error, but won't actually change a parameter when you ask it to.
+    TODO: Determine the mechanism by which PowerWorld does or does not
+        change values. Could we check if they're "changeable" before
+        hand?
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Get generator key fields.
+        cls.key_field_df_gens = saw_14.get_object_type_key_fields('gen')
+        cls.params = \
+            cls.key_field_df_gens['internal_field_name'].values.tolist()
+        # Combine key fields with our desired attribute.
+        cls.params.append('GenRegPUVolt')
+        cls.gen_v_pu = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=cls.params)
+
+    # noinspection DuplicatedCode
+    @unittest.expectedFailure
+    def test_change_gen_voltage_set_points(self):
+        """Set all generator voltages to 1, and ensure the command
+        sticks.
+        """
+        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
+        # Start by converting our generator data to a list of lists.
+        value_list = self.gen_v_pu.values.tolist()
+
+        # Loop over the values, set to 1.
+        for v in value_list:
+            # Set voltage at 1.
+            v[-1] = 1.0
+
+        # Send in the command.
+        result = saw_14.ChangeParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params, ValueList=value_list)
+
+        self.assertIsNone(result)
+
+        # Check results.
+        gen_v = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params)
+
+        # Our present results should not be the same as the original.
+        try:
+            pd.testing.assert_frame_equal(gen_v, self.gen_v_pu)
+        except AssertionError:
+            # Frames are not equal. Success.
+            pass
+        else:
+            self.fail('DataFrames are equal, but they should not be.')
+
 
 if __name__ == '__main__':
     unittest.main()
