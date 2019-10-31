@@ -50,7 +50,7 @@ class InitializationTestCase(unittest.TestCase):
     def test_init_expected_behavior(self):
         # Initialize
         my_saw_14 = SAW(PATH_14,
-                       object_field_lookup=('bus', 'shunt'))
+                        object_field_lookup=('bus', 'shunt'))
 
         # Ensure we have a log attribute.
         self.assertIsInstance(my_saw_14.log, logging.Logger)
@@ -124,8 +124,22 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
             saw_14.get_object_type_key_fields('sorry, not here')
 
     def test_cached(self):
-        self.assertTrue(False, "TODO: Ensure the key fields are cached like "
-                        + "the field lists.")
+        """Test that the "caching" is working as intended."""
+        # Generators are in the default listing.
+        with patch.object(saw_14, '_call_simauto',
+                          wraps=saw_14._call_simauto) as p:
+            kf = saw_14.get_object_type_key_fields('GEN')
+
+        self.assertIsInstance(kf, pd.DataFrame)
+        self.assertEqual(0, p.call_count)
+
+        # Now, actually look something up.
+        with patch.object(saw_14, '_call_simauto',
+                          wraps=saw_14._call_simauto) as p:
+            kf = saw_14.get_object_type_key_fields('area')
+
+        self.assertIsInstance(kf, pd.DataFrame)
+        self.assertEqual(1, p.call_count)
 
 
 class ListOfDevicesTestCase(unittest.TestCase):

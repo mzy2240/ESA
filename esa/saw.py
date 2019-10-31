@@ -131,6 +131,7 @@ class SAW(object):
 
         # Look up fields for given object types in field_lookup.
         self.object_fields = dict()
+        self.object_key_fields = dict()
         for obj in object_field_lookup:
             # Always use lower case.
             o = obj.lower()
@@ -143,6 +144,12 @@ class SAW(object):
             # future SimAuto calls to GetFieldList for this object
             # type.
             self.object_fields[o] = result
+
+            # Get the key fields for this object.
+            kf = self.get_object_type_key_fields(ObjectType=o)
+
+            # Store the result.
+            self.object_key_fields[o] = kf
 
     def __enter__(self):
         return self
@@ -379,10 +386,10 @@ class SAW(object):
         return self._call_simauto('CloseCase')
 
     # noinspection PyPep8Naming
-    def get_object_type_key_fields(self, ObjType: str) -> pd.DataFrame:
+    def get_object_type_key_fields(self, ObjectType: str) -> pd.DataFrame:
         """Helper function to get all key fields for an object type.
 
-        :param ObjType: The type of the object to get key fields for.
+        :param ObjectType: The type of the object to get key fields for.
 
         :returns: DataFrame with the following columns:
             'internal_field_name', 'field_data_type', 'description', and
@@ -397,8 +404,22 @@ class SAW(object):
         `here
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
         """
+        # Cast to lower case.
+        obj_type = ObjectType.lower()
+
+        # See if we've already looked up the key fields for this object.
+        # If we have, just return the cached results.
+        try:
+            key_field_df = self.object_key_fields[obj_type]
+        except KeyError:
+            # We haven't looked up key fields for this object yet.
+            pass
+        else:
+            # There's not work to do here. Return the DataFrame.
+            return key_field_df
+
         # Get the listing of fields for this object type.
-        field_list = self.GetFieldList(ObjectType=ObjType, copy=False)
+        field_list = self.GetFieldList(ObjectType=obj_type, copy=False)
 
         # Here's what I've gathered:
         # Key fields will be of the format *<number><letter>*
@@ -458,7 +479,7 @@ class SAW(object):
             load flow case open in the automation server. Use the
             empty string (default) if no filter is desired. If the
             given filter cannot be found, the server will default to
-            returning all objects in the case of type ObjType.
+            returning all objects in the case of type ObjectType.
 
         :returns: None if there are no objects of the given type in the
             model. Otherwise, a DataFrame of key fields will be
@@ -848,7 +869,7 @@ class SAW(object):
                                                ParamList=param_list)
 
         # Get the key fields for this ObjectType.
-        kf = self.get_object_type_key_fields(ObjType=ObjectType)
+        kf = self.get_object_type_key_fields(ObjectType=ObjectType)
 
         # Merge the DataFrames on the key fields.
         merged = pd.merge(left=cleaned_df, right=df, how='inner',
