@@ -146,7 +146,7 @@ class SAW(object):
             self.object_fields[o] = result
 
             # Get the key fields for this object.
-            kf = self.get_object_type_key_fields(ObjectType=o)
+            kf = self.get_key_fields_for_object_type(ObjectType=o)
 
             # Store the result.
             self.object_key_fields[o] = kf
@@ -386,7 +386,7 @@ class SAW(object):
         return self._call_simauto('CloseCase')
 
     # noinspection PyPep8Naming
-    def get_object_type_key_fields(self, ObjectType: str) -> pd.DataFrame:
+    def get_key_fields_for_object_type(self, ObjectType: str) -> pd.DataFrame:
         """Helper function to get all key fields for an object type.
 
         :param ObjectType: The type of the object to get key fields for.
@@ -488,7 +488,7 @@ class SAW(object):
             key field is present, the data will be sorted by BusNum.
         """
         # Start by getting the key fields associated with this object.
-        kf = self.get_object_type_key_fields(ObjType)
+        kf = self.get_key_fields_for_object_type(ObjType)
 
         # Now, query for the list of devices.
         output = self._call_simauto('ListOfDevices', ObjType, FilterName)
@@ -508,7 +508,7 @@ class SAW(object):
         # If we're here, we have this object type in the model.
         # Create a DataFrame.
         df = pd.DataFrame(output).transpose()
-        # The return from get_object_type_key_fields is designed to
+        # The return from get_key_fields_for_object_type is designed to
         # match up 1:1 with values here. Set columns.
         df.columns = kf['internal_field_name'].values
 
@@ -611,7 +611,7 @@ class SAW(object):
         :param ParamList: List of strings indicating parameters to
             retrieve. Note the key fields MUST be present. One can
             obtain key fields for an object type via the
-            get_object_type_key_fields method.
+            get_key_fields_for_object_type method.
         :param Values: List of values corresponding 1:1 to parameters in
             the ParamList. Values must be included for the key fields,
             and the remaining values should be set to 0.
@@ -665,7 +665,7 @@ class SAW(object):
             available fields. Additionally, you'll likely want to always
             return the key fields associated with the objects. These
             key fields can be obtained via the
-            get_object_type_key_fields method.
+            get_key_fields_for_object_type method.
         :param FilterName: Name of an advanced filter defined in the
             load flow case.
 
@@ -837,7 +837,7 @@ class SAW(object):
             which will have their parameters changed. The columns should
             be object field variable names, and MUST include the key
             fields for the given ObjectType (which you can get via the
-            get_object_type_key_fields method). Columns which are not
+            get_key_fields_for_object_type method). Columns which are not
             key fields indicate parameters to be changed, while the key
             fields are used internally by PowerWorld to look up objects.
             Each row of the DataFrame represents a single element.
@@ -869,7 +869,7 @@ class SAW(object):
                                                ParamList=param_list)
 
         # Get the key fields for this ObjectType.
-        kf = self.get_object_type_key_fields(ObjectType=ObjectType)
+        kf = self.get_key_fields_for_object_type(ObjectType=ObjectType)
 
         # Merge the DataFrames on the key fields.
         merged = pd.merge(left=cleaned_df, right=df, how='inner',
@@ -905,7 +905,7 @@ class SAW(object):
             parameters for.
         :param ParamList: Listing of object field variable names. Note
             this MUST include the key fields for the given ObjectType
-            (which you can get via the get_object_type_key_fields
+            (which you can get via the get_key_fields_for_object_type
             method).
         :param ValueList: List of lists corresponding to the ParamList.
             Should have length n, where n is the number of elements you
