@@ -71,13 +71,13 @@ class InitializationTestCase(unittest.TestCase):
                                 set(df.columns.values))
 
 
-class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
-    """Test the get_object_type_key_fields method."""
+class GetKeyFieldsForObjectType(unittest.TestCase):
+    """Test the get_key_fields_for_object_type method."""
 
     def test_gens(self):
         """Gens should have bus number and generator ID key fields."""
         # Query.
-        result = saw_14.get_object_type_key_fields("Gen")
+        result = saw_14.get_key_fields_for_object_type("Gen")
         # Check length.
         self.assertEqual(2, result.shape[0])
         # Check fields.
@@ -89,7 +89,7 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         ID.
         """
         # Query
-        result = saw_14.get_object_type_key_fields("Branch")
+        result = saw_14.get_key_fields_for_object_type("Branch")
         # Check length.
         self.assertEqual(3, result.shape[0])
         # Check fields.
@@ -100,7 +100,7 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
     def test_buses(self):
         """Buses should only have one key field - their number."""
         # Query.
-        result = saw_14.get_object_type_key_fields("Bus")
+        result = saw_14.get_key_fields_for_object_type("Bus")
         # Check length.
         self.assertEqual(1, result.shape[0])
         # Check fields.
@@ -110,7 +110,7 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         """Shunts, similar to generators, will have a bus number and an
         ID."""
         # Query.
-        result = saw_14.get_object_type_key_fields("Shunt")
+        result = saw_14.get_key_fields_for_object_type("Shunt")
         # Check length.
         self.assertEqual(2, result.shape[0])
         # Check fields.
@@ -121,14 +121,14 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         """Not really sure why this raises a COMError rather than a
         PowerWorldError..."""
         with self.assertRaises(COMError):
-            saw_14.get_object_type_key_fields('sorry, not here')
+            saw_14.get_key_fields_for_object_type('sorry, not here')
 
     def test_cached(self):
         """Test that the "caching" is working as intended."""
         # Generators are in the default listing.
         with patch.object(saw_14, '_call_simauto',
                           wraps=saw_14._call_simauto) as p:
-            kf = saw_14.get_object_type_key_fields('GEN')
+            kf = saw_14.get_key_fields_for_object_type('GEN')
 
         self.assertIsInstance(kf, pd.DataFrame)
         self.assertEqual(0, p.call_count)
@@ -136,7 +136,7 @@ class GetObjectTypeKeyFieldsTestCase(unittest.TestCase):
         # Now, actually look something up.
         with patch.object(saw_14, '_call_simauto',
                           wraps=saw_14._call_simauto) as p:
-            kf = saw_14.get_object_type_key_fields('area')
+            kf = saw_14.get_key_fields_for_object_type('area')
 
         self.assertIsInstance(kf, pd.DataFrame)
         self.assertEqual(1, p.call_count)
@@ -475,7 +475,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         # Get generator key fields.
-        cls.key_field_df_gens = saw_14.get_object_type_key_fields('gen')
+        cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
         cls.params = \
             cls.key_field_df_gens['internal_field_name'].values.tolist()
         # Combine key fields with our desired attribute.
@@ -580,7 +580,7 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         # Get generator key fields.
-        cls.key_field_df_gens = saw_14.get_object_type_key_fields('gen')
+        cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
         cls.params = \
             cls.key_field_df_gens['internal_field_name'].values.tolist()
         # Combine key fields with our desired attribute.
