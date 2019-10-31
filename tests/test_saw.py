@@ -4,8 +4,8 @@ from unittest.mock import patch
 import os
 import numpy as np
 import pandas as pd
-from esa import sa
-from esa.SimautoWrapper import COMError, PowerWorldError,\
+from esa import SAW
+from esa.saw import COMError, PowerWorldError,\
     convert_to_posix_path, CommandNotRespectedError
 import logging
 
@@ -27,7 +27,7 @@ def setUpModule():
     added to this module, initialize them here.
     """
     global saw_14
-    saw_14 = sa(PATH_14)
+    saw_14 = SAW(PATH_14)
 
 
 # noinspection PyPep8Naming
@@ -45,11 +45,11 @@ class InitializationTestCase(unittest.TestCase):
 
     def test_bad_path(self):
         with self.assertRaisesRegex(PowerWorldError, 'OpenCase: '):
-            sa(FileName='bogus')
+            SAW(FileName='bogus')
 
     def test_init_expected_behavior(self):
         # Initialize
-        my_saw_14 = sa(PATH_14,
+        my_saw_14 = SAW(PATH_14,
                        object_field_lookup=('bus', 'shunt'))
 
         # Ensure we have a log attribute.
@@ -367,7 +367,7 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
     def test_all_valid_types_except_shunts(self):
         """Loop and sub test over all types, except shunts."""
         # Loop over the POWER_FLOW_FIELDS dictionary.
-        for object_type, object_fields in sa.POWER_FLOW_FIELDS.items():
+        for object_type, object_fields in SAW.POWER_FLOW_FIELDS.items():
             # Skip shunts, we'll do that separately (there aren't any
             # in the 14 bus model).
             if object_type == 'shunt':

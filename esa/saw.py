@@ -1,3 +1,6 @@
+"""saw is short for SimAuto wrapper. This module provides a class,
+SAW, for interfacing with PowerWorld's SimulatorAuto.
+"""
 import pandas as pd
 import numpy as np
 import win32com
@@ -51,7 +54,7 @@ class CommandNotRespectedError(Error):
     pass
 
 
-class sa(object):
+class SAW(object):
     """A SimAuto Wrapper in Python"""
 
     # Class level property defining the fields which will be returned
