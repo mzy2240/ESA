@@ -12,7 +12,7 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 from typing import Union
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
 import logging
 
 # TODO: Make logging more configurable.
@@ -713,13 +713,13 @@ class SAW(object):
             already exists, an exception will be raised.
         """
         if FileName is not None:
-            f = convert_to_posix_path(FileName)
+            f = convert_to_windows_path(FileName)
         else:
             if self.pwb_file_path is None:
                 raise TypeError('SaveCase was called without a FileName, but '
                                 'it would appear OpenCase has not yet been '
                                 'called.')
-            f = self.pwb_file_path
+            f = convert_to_windows_path(self.pwb_file_path)
 
         return self._call_simauto('SaveCase', f, FileType, Overwrite)
 
@@ -1140,6 +1140,11 @@ class SAW(object):
 def convert_to_posix_path(p):
     """Given a path, p, convert it to a Posix path."""
     return Path(p).as_posix()
+
+
+def convert_to_windows_path(p):
+    """Given a path, p, convert it to a Windows path."""
+    return str(PureWindowsPath(p))
 
 
 class Error(Exception):
