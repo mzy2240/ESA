@@ -27,6 +27,13 @@ DATA_TYPES = ['Integer', 'Real', 'String']
 NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
+# Message for NotImplementedErrors.
+NIE_MSG = ('This method is either not complete or untested. We appreciate '
+           'contributions, so if you would like to complete and test this '
+           'method, please read contributing.md. If there is commented out '
+           'code, you can uncomment it and re-install esa from source at '
+           'your own risk.')
+
 
 # noinspection PyPep8Naming
 class SAW(object):
@@ -202,17 +209,18 @@ class SAW(object):
         clunkiness of creating a filter in the API, which entails
         creating an aux data file.
         """
-        aux_text = '''
-            DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
-            {
-            "{objecttype}" "{filtername}" "{filterlogic}" "{filterpre}" "{enabled]"
-                <SUBDATA Condition>
-                    {condition}
-                </SUBDATA>
-            }'''.format(condition=condition, objecttype=object_type,
-                        filtername=filter_name, filterlogic=filter_logic,
-                        filterpre=filter_pre, enabled=enabled)
-        return self._call_simauto('LoadAux', aux_text)
+        raise NotImplementedError(NIE_MSG)
+        # aux_text = '''
+        #     DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
+        #     {
+        #     "{objecttype}" "{filtername}" "{filterlogic}" "{filterpre}" "{enabled]"
+        #         <SUBDATA Condition>
+        #             {condition}
+        #         </SUBDATA>
+        #     }'''.format(condition=condition, objecttype=object_type,
+        #                 filtername=filter_name, filterlogic=filter_logic,
+        #                 filterpre=filter_pre, enabled=enabled)
+        # return self._call_simauto('LoadAux', aux_text)
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
@@ -327,10 +335,11 @@ class SAW(object):
     def get_three_phase_bolted_fault_current(self, bus_num):
         """Calculates the three phase fault; this can be done even with
         cases which only contain positive sequence impedances"""
-        script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
-        result = self.RunScriptCommand(script_cmd)
-        field_list = ['BusNum', 'FaultCurMag']
-        return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
+        raise NotImplementedError(NIE_MSG)
+        # script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
+        # result = self.RunScriptCommand(script_cmd)
+        # field_list = ['BusNum', 'FaultCurMag']
+        # return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
 
     ####################################################################
     # SimAuto Server Functions
@@ -345,13 +354,13 @@ class SAW(object):
         each element being changed) with values corresponding to the
         fields in ParamList.
         """
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
         # output = self._call_simauto('ChangeParameters', ObjType, ParamList,
         #                             ValueArray)
         # return output
 
     def ChangeParametersSingleElement(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,
                                         ValueList: list):
@@ -393,7 +402,7 @@ class SAW(object):
                                   ObjectType, param_array, value_array)
 
     def ChangeParametersMultipleElementFlatInput(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def CloseCase(self):
         """Closes case without saving changes.
@@ -404,7 +413,7 @@ class SAW(object):
         return self._call_simauto('CloseCase')
 
     def GetCaseHeader(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def GetFieldList(self, ObjectType: str, copy=False) -> pd.DataFrame:
         """Get all fields associated with a given ObjectType.
@@ -544,16 +553,16 @@ class SAW(object):
         return self._clean_df_or_series(obj=df, ObjectType=ObjectType)
 
     def GetParametersMultipleElementFlatOutput(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def GetParameters(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def GetSpecificFieldList(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def GetSpecificFieldMaxNum(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def ListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
@@ -609,10 +618,10 @@ class SAW(object):
         return df
 
     def ListOfDevicesAsVariantStrings(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def ListOfDevicesFlatOutput(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def LoadState(self):
         """LoadState is used to load the system state previously saved
@@ -623,7 +632,8 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm>`_
         """
-        return self._call_simauto('LoadState')
+        raise NotImplementedError(NIE_MSG)
+        # return self._call_simauto('LoadState')
 
     def OpenCase(self, FileName=None):
         """Load PowerWorld case into the automation server.
@@ -651,7 +661,7 @@ class SAW(object):
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
     def OpenCaseType(self):
-        raise NotImplementedError()
+        raise NotImplementedError(NIE_MSG)
 
     def ProcessAuxFile(self, FileName):
         """Load a PowerWorld Auxiliary file into SimAuto. This allows
@@ -665,9 +675,10 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm>`_
         """
-        f = convert_to_posix_path(FileName)
-        output = self._call_simauto('ProcessAuxFile', f)
-        return output
+        raise NotImplementedError(NIE_MSG)
+        # f = convert_to_posix_path(FileName)
+        # output = self._call_simauto('ProcessAuxFile', f)
+        # return output
 
     def RunScriptCommand(self, Statements):
         """Execute a list of script statements. The script actions are
@@ -729,7 +740,8 @@ class SAW(object):
         various cases, much as the "Difference Flows" feature works in
         the Simulator application.
         """
-        return self._call_simauto('SaveState')
+        raise NotImplementedError(NIE_MSG)
+        # return self._call_simauto('SaveState')
 
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
         """Send data from SimAuto to an Excel spreadsheet.
@@ -737,8 +749,9 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`_
         """
-        return self._call_simauto('SendToExcel', ObjectType, FilterName,
-                                  FieldList)
+        raise NotImplementedError(NIE_MSG)
+        # return self._call_simauto('SendToExcel', ObjectType, FilterName,
+        #                           FieldList)
 
     def TSGetContingencyResults(self, CtgName, ObjFieldList,
                                 StartTime=None, StopTime=None):
@@ -751,9 +764,10 @@ class SAW(object):
         ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or
         ObjFieldList = ['"Bus 4 | frequency"']
         """
-        output = self._call_simauto('TSGetContingencyResults', CtgName,
-                                    ObjFieldList, StartTime, StopTime)
-        return output
+        raise NotImplementedError(NIE_MSG)
+        # output = self._call_simauto('TSGetContingencyResults', CtgName,
+        #                             ObjFieldList, StartTime, StopTime)
+        # return output
 
     def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
                      ToAppend=True, EString=None):
@@ -769,10 +783,11 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm>`_
         """
-        aux_file = convert_to_posix_path(FileName)
-        return self._call_simauto('WriteAuxFile', aux_file,
-                                  FilterName, ObjectType, EString, ToAppend,
-                                  FieldList)
+        raise NotImplementedError(NIE_MSG)
+        # aux_file = convert_to_posix_path(FileName)
+        # return self._call_simauto('WriteAuxFile', aux_file,
+        #                           FilterName, ObjectType, EString, ToAppend,
+        #                           FieldList)
 
     ####################################################################
     # PowerWorld ScriptCommand helper functions
@@ -787,43 +802,50 @@ class SAW(object):
         method as well. If no Linear Method is specified, Lossless DC
         will be used. The LODF results will be sent to excel
         """
-        return self.RunScriptCommand("CalculateLODF ({},{},{})"
-                                     .format(Branch, LinearMethod,
-                                             PostClosureLCDF))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("CalculateLODF ({},{},{})"
+        #                              .format(Branch, LinearMethod,
+        #                                      PostClosureLCDF))
 
     def CreateData(self, ObjectType: str, FieldList: str, ValueList: str):
-        return self.RunScriptCommand("CreateData({},{},{})"
-                                     .format(ObjectType, FieldList, ValueList))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("CreateData({},{},{})"
+        #                              .format(ObjectType, FieldList, ValueList))
 
     def Delete(self, ObjectType: str):
-        return self.RunScriptCommand("Delete(%s)" % ObjectType)
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("Delete(%s)" % ObjectType)
 
     def EnterMode(self, mode):
-        return self.RunScriptCommand("EnterMode(%s)" % mode)
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("EnterMode(%s)" % mode)
 
     def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
-        filename = Path(filename)
-        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
-                 f" {showfull})"
-        output = self.RunScriptCommand(script)
-        return output
+        raise NotImplementedError(NIE_MSG)
+        # filename = Path(filename)
+        # script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
+        #          f" {showfull})"
+        # output = self.RunScriptCommand(script)
+        # return output
 
     def SaveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
         """
         Use this action to save the Jacobian Matrix to a text file or a
         file formatted for use with MATLAB
         """
-        return self.RunScriptCommand("SaveJacobian({},{},{},{})"
-                                     .format(JacFileName, JIDFileName,
-                                             FileType, JacForm))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("SaveJacobian({},{},{},{})"
+        #                              .format(JacFileName, JIDFileName,
+        #                                      FileType, JacForm))
 
     def SaveYbusInMatlabFormat(self, FileName, IncludeVoltages='Yes'):
         """
         Use this action to save the YBus to a file formatted for use
         with MATLAB
         """
-        return self.RunScriptCommand("SaveYbusInMatlabFormat({},{})"
-                                     .format(FileName, IncludeVoltages))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("SaveYbusInMatlabFormat({},{})"
+        #                              .format(FileName, IncludeVoltages))
 
     def SetData(self, ObjectType: str, FieldList: str, ValueList: str,
                 Filter=''):
@@ -835,10 +857,10 @@ class SAW(object):
         list so that the object can be found. e.g.
         FieldList = '[Number,NomkV]'
         """
-
-        return self.RunScriptCommand("SetData({},{},{},{})"
-                                     .format(ObjectType, FieldList, ValueList,
-                                             Filter))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("SetData({},{},{},{})"
+        #                              .format(ObjectType, FieldList, ValueList,
+        #                                      Filter))
 
     def SetParticipationFactors(self, Method, ConstantValue, Object):
         """
@@ -857,8 +879,9 @@ class SAW(object):
         SYSTEM
         AREAZONE or DISPLAYFILTERS
         """
-        return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
-                                     .format(Method, ConstantValue, Object))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
+        #                              .format(Method, ConstantValue, Object))
 
     def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT'):
         """Run the SolvePowerFlow command.
@@ -893,12 +916,14 @@ class SAW(object):
         Transient Contingency on a line, with the fault duration equal
         to the critical clearing time.
         """
-        return self.RunScriptCommand(
-            "TSCalculateCriticalClearTime (%s)" % Branch)
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand(
+        #     "TSCalculateCriticalClearTime (%s)" % Branch)
 
     def TSResultStorageSetAll(self, ObjectType, Choice):
-        return self.RunScriptCommand(
-            "TSResultStorageSetAll (%s) (%s)" % (ObjectType, Choice))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand(
+        #     "TSResultStorageSetAll (%s) (%s)" % (ObjectType, Choice))
 
     def TSRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
         """
@@ -910,14 +935,16 @@ class SAW(object):
             StepsInCycles='YES', ResetStartTime='NO',
             NumberOfTimeStepsToDo=0]'
         """
-        return self.RunScriptCommand("TSRunUntilSpecifiedTime ({},{})"
-                                     .format(ContingencyName, RunOptions))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("TSRunUntilSpecifiedTime ({},{})"
+        #                              .format(ContingencyName, RunOptions))
 
     def TSSolve(self, ContingencyName):
         """
         Solves only the specified contingency
         """
-        return self.RunScriptCommand("TSSolve (%s)" % ContingencyName)
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("TSSolve (%s)" % ContingencyName)
 
     def TSWriteOptions(self, FileName, Options, KeyField=' Primary'):
         """
@@ -942,8 +969,9 @@ class SAW(object):
             Secondary, or Label (default Primary)
         TODO: KeyField isn't currently used?
         """
-        return self.RunScriptCommand("TSWriteOptions({},{})"
-                                     .format(FileName, Options))
+        raise NotImplementedError(NIE_MSG)
+        # return self.RunScriptCommand("TSWriteOptions({},{})"
+        #                              .format(FileName, Options))
 
     ####################################################################
     # PowerWorld SimAuto Properties
