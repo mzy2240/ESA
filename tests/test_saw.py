@@ -32,7 +32,7 @@ import numpy as np
 import pandas as pd
 from esa import SAW
 from esa.saw import COMError, PowerWorldError,\
-    convert_to_posix_path, CommandNotRespectedError
+    convert_to_posix_path, convert_to_windows_path, CommandNotRespectedError
 import logging
 
 # Handle pathing.
@@ -662,6 +662,48 @@ class RunScriptCommandTestCase(unittest.TestCase):
         with self.assertRaisesRegex(PowerWorldError,
                                     'Error in script statements definition'):
             saw_14.RunScriptCommand(Statements='invalid statement')
+
+
+class SaveCaseTestCase(unittest.TestCase):
+    """Test SaveCase."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.out_file = os.path.join(THIS_DIR, 'tmp.pwb')
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        os.remove(cls.out_file)
+
+    def test_save_creates_file(self):
+        """Simply save the case and then ensure the file is present."""
+        # File should not exist.
+        self.assertFalse(os.path.isfile(self.out_file))
+
+        # Save file.
+        saw_14.SaveCase(FileName=self.out_file)
+
+        # File should exist (it'll get cleaned up by tearDownClass).
+        self.assertTrue(os.path.isfile(self.out_file))
+
+    def test_bad_type(self):
+        """A bad FileType should result in a PowerWorldError."""
+        with self.assertRaises(PowerWorldError):
+            saw_14.SaveCase(FileName=self.out_file, FileType='BAD',
+                            Overwrite=True)
+
+    # noinspection PyMethodMayBeStatic
+    def test_save_with_same_file(self):
+        """Save case with the existing file, but don't actually call
+        SimAuto.
+        """
+        with patch.object(saw_14, '_call_simauto') as p:
+            saw_14.SaveCase()
+
+        p.assert_called_once()
+        p.assert_called_with(
+            'SaveCase', convert_to_windows_path(saw_14.pwb_file_path),
+            'PWB', True)
 
 ########################################################################
 # ScriptCommand helper tests
