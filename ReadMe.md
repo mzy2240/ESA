@@ -1,5 +1,12 @@
 # ESA
 A python package that could dramatically reduce the time for general power system computation tasks by using a parallel and distributed framework.
+## Citation
+If you use ESA in any of your work, please use the following citation:
+```latex
+TODO
+```
+## Contributing
+We welcome contributions! Please read out `contributing.md`.
 ## Environment
 python 3.5 or above (recommend to use the latest Anaconda 3)
 ## Installation
