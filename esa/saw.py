@@ -635,7 +635,7 @@ class SAW(object):
         raise NotImplementedError(NIE_MSG)
         # return self._call_simauto('LoadState')
 
-    def OpenCase(self, FileName=None):
+    def OpenCase(self, FileName: Union[str, None] = None) -> None:
         """Load PowerWorld case into the automation server.
 
         :param FileName: Full path to the case file to be loaded. If
@@ -657,7 +657,7 @@ class SAW(object):
             # Set pwb_file_path according to the given FileName.
             self.pwb_file_path = convert_to_posix_path(FileName)
 
-        # Open the case.
+        # Open the case. PowerWorld should return None.
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
     def OpenCaseType(self):
