@@ -1,4 +1,30 @@
-""""""
+"""Tests for saw.py. One can use these tests as examples.
+
+IMPORTANT NOTES FOR DEVELOPERS, PLEASE READ:
+
+It can take quite a long time to initialize a SAW object due to the
+time it takes for SimAuto to start and then for it to load a case. In
+order to keep these tests running in a reasonable amount of time, a
+global SAW object, saw_14, is leveraged. This is unfortunate in that
+it breaks one of the fundamental rules of good testing: test isolation.
+Since this global object is used for most tests, it becomes important
+for the test developer to "clean up after themselves." If you
+change the state of the saw_14 object in a test (e.g. by calling
+GetFieldList for a new object type), make sure to undo the state change
+at the end of the test (e.g. removing the entry for that object type
+from saw_14.object_fields). While this is a pain, it's better than
+writing a test suite that takes 10 minutes to run a small handful of
+tests.
+
+Note that the saw_14 object is initialized in the setUpModule method,
+and torn down in the tearDownModule. If we need to add another SAW
+object corresponding to a different case (which is likely, seeing as
+the IEEE 14 bus test case doesn't have all possible components), make
+sure to follow the pattern used for saw_14: Initialize to None in
+main code body, initialize actual SAW object in setUpModule (don't
+forget to tag it as global!), and then call the object's exit() method
+in tearDownModule.
+"""
 import unittest
 from unittest.mock import patch
 import os
@@ -15,8 +41,10 @@ THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 # Path to IEEE 14 bus model.
 PATH_14 = os.path.join(THIS_DIR, 'cases', 'ieee_14', 'IEEE 14 bus.pwb')
 
-# Initialize the 14 bus SimAutoWrapper.
-saw_14 = None
+# Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
+# development easier.
+# noinspection PyTypeChecker
+saw_14: SAW = None
 
 
 # noinspection PyPep8Naming
