@@ -313,27 +313,16 @@ class SAW(object):
 
         :raises ValueError: if given ObjectType is invalid.
         """
-
+        object_type = ObjectType.lower()
         # Get the listing of fields for this object type.
         try:
-            field_list = self.POWER_FLOW_FIELDS[ObjectType.lower()]
+            field_list = self.POWER_FLOW_FIELDS[object_type]
         except KeyError:
             raise ValueError('Unsupported ObjectType for power flow results, '
                              '{}.'.format(ObjectType))
 
-        # noinspection PyUnresolvedReferences
-        field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              field_list)
-
-        output = self._call_simauto('GetParametersMultipleElement',
-                                    ObjectType, field_array, '')
-
-        # If no output is given,
-        if output is None:
-            return None
-
-        return pd.DataFrame(np.array(output).transpose(),
-                            columns=field_list)
+        return self.GetParametersMultipleElement(ObjectType=object_type,
+                                                 ParamList=field_list)
 
     def get_three_phase_bolted_fault_current(self, bus_num):
         """Calculates the three phase fault; this can be done even with
