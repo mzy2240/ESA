@@ -15,9 +15,9 @@ setuptools.setup(
     url = 'https://github.com/mzy2240/ESA',
     packages=setuptools.find_packages(),
     classifiers=[
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.6",
         "License :: OSI Approved :: MIT License",
-        "Operating System :: OS Independent",
+        "Operating System :: Microsoft :: Windows :: Windows 10",
     ],
     install_requires=['pandas', 'numpy', 'pywin32', 'pypiwin32'],
     license='MIT',
