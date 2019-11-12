@@ -4,14 +4,6 @@ esa package
 Submodules
 ----------
 
-esa.decorators module
----------------------
-
-.. automodule:: esa.decorators
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 esa.saw module
 --------------
 
