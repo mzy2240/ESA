@@ -419,7 +419,7 @@ class SAW(object):
         """Get all fields associated with a given ObjectType.
 
         :param ObjectType: The type of object for which the fields are
-        requested.
+            requested.
         :param copy: Whether or not to return a copy of the DataFrame.
             You may want a copy if you plan to make any modifications.
 
@@ -516,7 +516,7 @@ class SAW(object):
 
         :param ObjectType: Type of object to get parameters for.
         :param ParamList: List of variables to obtain for the given
-            object type. E.g. ['BusNum', 'GenID', 'GenRegPUVolt']. One
+            object type. E.g. ['BusNum', 'GenID', 'GenMW']. One
             can use the method GetFieldList to get a listing of all
             available fields. Additionally, you'll likely want to always
             return the key fields associated with the objects. These
@@ -705,20 +705,20 @@ class SAW(object):
             will be used.
         :param FileType: String indicating the format of the case file
             to write out. Here's what PowerWorld currently supports:
-                * "PTI23": "PTI33" specific PTI version (raw).
-                * "GE14": "GE21" GE PSLF version (epc).
-                * "IEEE": IEEE common format (cf).
-                * "UCTE": UCTE Data Exchange (uct).
-                * "AUX": PowerWorld Auxiliary format (aux).
-                * "AUXSECOND": PowerWorld Auxiliary format (aux) using
-                  secondary key fields.
-                * "AUXLABEL": PowerWorld Auxiliary format (aux) using
-                  labels as key field identifiers.
-                * "AUXNETWORK": PowerWorld Auxiliary format (aux) saving
-                  only network data.
-                * "PWB5" through "PWB20": specific PowerWorld Binary
-                  version (pwb).
-                * "PWB":  PowerWorld Binary (most recent) (pwb).
+            * "PTI23": "PTI33" specific PTI version (raw).
+            * "GE14": "GE21" GE PSLF version (epc).
+            * "IEEE": IEEE common format (cf).
+            * "UCTE": UCTE Data Exchange (uct).
+            * "AUX": PowerWorld Auxiliary format (aux).
+            * "AUXSECOND": PowerWorld Auxiliary format (aux) using
+            secondary key fields.
+            * "AUXLABEL": PowerWorld Auxiliary format (aux) using
+            labels as key field identifiers.
+            * "AUXNETWORK": PowerWorld Auxiliary format (aux) saving
+            only network data.
+            * "PWB5" through "PWB20": specific PowerWorld Binary
+            version (pwb).
+            * "PWB":  PowerWorld Binary (most recent) (pwb).
         :param Overwrite: Whether (True) or not (False) to overwrite the
             file if it already exists. If False and the specified file
             already exists, an exception will be raised.
@@ -888,12 +888,12 @@ class SAW(object):
 
         :param SolMethod: Solution method to be used for the Power Flow
             calculation. Case insensitive. Valid options are:
-                'RECTNEWT' - Rectangular Newton-Raphson
-                'POLARNEWTON' - Polar Newton-Raphson
-                'GAUSSSEIDEL' - Gauss-Seidel
-                'FASTDEC' - Fast Decoupled
-                'ROBUST' - Attempt robust solution process
-                'DC' - DC power flow
+            'RECTNEWT' - Rectangular Newton-Raphson
+            'POLARNEWTON' - Polar Newton-Raphson
+            'GAUSSSEIDEL' - Gauss-Seidel
+            'FASTDEC' - Fast Decoupled
+            'ROBUST' - Attempt robust solution process
+            'DC' - DC power flow
 
         See
         `Auxiliary File Format.pdf
@@ -930,7 +930,9 @@ class SAW(object):
         This command allows manual control of the transient stability
         run. The simulation can be run until a specified time or number
         of times steps and then paused for further evaluation.
+
         :param ContingencyName: TODO
+
         :param RunOptions: '[StopTime(in seconds), StepSize(numbers),
             StepsInCycles='YES', ResetStartTime='NO',
             NumberOfTimeStepsToDo=0]'
