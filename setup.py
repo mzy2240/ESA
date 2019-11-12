@@ -6,7 +6,7 @@ with open("ReadMe.md", "r") as fh:
 
 setuptools.setup(
     name = 'esa',
-    version = '0.4.0',
+    version = '0.5.0',
     description = 'A python package that makes PowerWorld Simauto easier yet more powerful to use',
     long_description=long_description,
     long_description_content_type="text/markdown",
@@ -19,7 +19,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=['paho-mqtt', 'tqdm', 'psutil', 'pandas', 'numpy', 'pywin32', 'pypiwin32'],
+    install_requires=['tqdm', 'psutil', 'pandas', 'numpy', 'pywin32', 'pypiwin32', 'pathlib'],
     license='MIT',
     zip_safe=False
 )

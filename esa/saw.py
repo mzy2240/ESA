@@ -1,4 +1,4 @@
-"""saw is short for Sim Auto Wrapper. This module provides a class,
+"""saw is short for SimAuto Wrapper. This module provides a class,
 SAW, for interfacing with PowerWorld's Simulator Automation Server
 (aka SimAuto).
 

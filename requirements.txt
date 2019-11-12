@@ -1,5 +1,4 @@
 numpy
-paho-mqtt
 pandas
 psutil
 pywin32
