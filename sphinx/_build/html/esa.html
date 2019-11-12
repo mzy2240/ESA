@@ -1,0 +1,863 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>esa package &#8212; ESA  documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="esa" href="modules.html" />
+    <link rel="prev" title="Welcome to ESA’s documentation!" href="index.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="esa-package">
+<h1>esa package<a class="headerlink" href="#esa-package" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-esa.saw">
+<span id="esa-saw-module"></span><h2>esa.saw module<a class="headerlink" href="#module-esa.saw" title="Permalink to this headline">¶</a></h2>
+<p>saw is short for SimAuto Wrapper. This module provides a class,
+SAW, for interfacing with PowerWorld’s Simulator Automation Server
+(aka SimAuto).</p>
+<p>The documentation for SimAuto can be found
+<a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a></p>
+<dl class="exception">
+<dt id="esa.saw.COMError">
+<em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">COMError</code><a class="headerlink" href="#esa.saw.COMError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
+<p>Raised when attempting to call a SimAuto function results in an
+error.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esa.saw.CommandNotRespectedError">
+<em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">CommandNotRespectedError</code><a class="headerlink" href="#esa.saw.CommandNotRespectedError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
+<p>Raised if a command sent into PowerWorld is not respected, but
+PowerWorld itself does not raise an error. This exception should
+be used with helpers that double-check commands.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esa.saw.Error">
+<em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">Error</code><a class="headerlink" href="#esa.saw.Error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
+<p>Base class for exceptions in this module.</p>
+</dd></dl>
+
+<dl class="exception">
+<dt id="esa.saw.PowerWorldError">
+<em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">PowerWorldError</code><a class="headerlink" href="#esa.saw.PowerWorldError" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
+<p>Raised when PowerWorld reports an error following a SimAuto call.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="esa.saw.SAW">
+<em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=True</em>, <em class="sig-param">visible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A SimAuto Wrapper in Python</p>
+<dl class="method">
+<dt id="esa.saw.SAW.CalculateLODF">
+<code class="sig-name descname">CalculateLODF</code><span class="sig-paren">(</span><em class="sig-param">Branch</em>, <em class="sig-param">LinearMethod='DC'</em>, <em class="sig-param">PostClosureLCDF='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CalculateLODF" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to calculate the Line Outage Distribution
+Factors (or the Line Closure Distribution Factors) for a
+particular branch. If the branch is presently closed, then the
+LODF values will be calculated, otherwise the LCDF values will
+be calculated. You may optionally specify the linear calculation
+method as well. If no Linear Method is specified, Lossless DC
+will be used. The LODF results will be sent to excel</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ChangeParameters">
+<code class="sig-name descname">ChangeParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjType</em>, <em class="sig-param">ParamList</em>, <em class="sig-param">ValueArray</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>ChangeParameters is used to change single or multiple parameters
+of a single object. ParamList is a variant array storing strings
+that are Simulator object field variables, and must contain the
+key fields for the objecttype. Create variant arrays (one for
+each element being changed) with values corresponding to the
+fields in ParamList.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ChangeParametersMultipleElement">
+<code class="sig-name descname">ChangeParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set parameters for multiple objects of the same type.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you are changing
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – Listing of object field variable names. Note
+this MUST include the key fields for the given ObjectType
+(which you can get via the get_key_fields_for_object_type
+method).</p></li>
+<li><p><strong>ValueList</strong> – List of lists corresponding to the ParamList.
+Should have length n, where n is the number of elements you
+with to change parameters for. Each sub-list should have
+the same length as ParamList, and the items in the sub-list
+should correspond 1:1 with ParamList.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Result from calling SimAuto, which should always
+simply be None.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#esa.saw.PowerWorldError" title="esa.saw.PowerWorldError"><strong>PowerWorldError</strong></a> – if PowerWorld reports an error.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ChangeParametersMultipleElementFlatInput">
+<code class="sig-name descname">ChangeParametersMultipleElementFlatInput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ChangeParametersSingleElement">
+<code class="sig-name descname">ChangeParametersSingleElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.CloseCase">
+<code class="sig-name descname">CloseCase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CloseCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Closes case without saving changes.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.CreateData">
+<code class="sig-name descname">CreateData</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FieldList: str</em>, <em class="sig-param">ValueList: str</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CreateData" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.CurrentDir">
+<em class="property">property </em><code class="sig-name descname">CurrentDir</code><a class="headerlink" href="#esa.saw.SAW.CurrentDir" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.Delete">
+<code class="sig-name descname">Delete</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.Delete" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.EnterMode">
+<code class="sig-name descname">EnterMode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.EnterMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="esa.saw.SAW.FIELD_LIST_COLUMNS">
+<code class="sig-name descname">FIELD_LIST_COLUMNS</code><em class="property"> = ['key_field', 'internal_field_name', 'field_data_type', 'description', 'display_name']</em><a class="headerlink" href="#esa.saw.SAW.FIELD_LIST_COLUMNS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetCaseHeader">
+<code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetFieldList">
+<code class="sig-name descname">GetFieldList</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">copy=False</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetFieldList" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get all fields associated with a given ObjectType.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object for which the fields are
+requested.</p></li>
+<li><p><strong>copy</strong> – Whether or not to return a copy of the DataFrame.
+You may want a copy if you plan to make any modifications.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas DataFrame with columns ‘key_field,’
+‘internal_field_name,’ ‘field_data_type,’ ‘description,’
+and ‘display_name.’</p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm">PowerWorld Documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetParameters">
+<code class="sig-name descname">GetParameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetParametersMultipleElement">
+<code class="sig-name descname">GetParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">FilterName: str = ''</em><span class="sig-paren">)</span> &#x2192; Optional[pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request values of specified fields for a set of objects in
+the load flow case.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – Type of object to get parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of variables to obtain for the given
+object type. E.g. [‘BusNum’, ‘GenID’, ‘GenMW’]. One
+can use the method GetFieldList to get a listing of all
+available fields. Additionally, you’ll likely want to always
+return the key fields associated with the objects. These
+key fields can be obtained via the
+get_key_fields_for_object_type method.</p></li>
+<li><p><strong>FilterName</strong> – Name of an advanced filter defined in the
+load flow case.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas DataFrame with columns matching the given
+ParamList. If the provided ObjectType is not present in the
+case, None will be returned.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#esa.saw.PowerWorldError" title="esa.saw.PowerWorldError"><strong>PowerWorldError</strong></a> – if PowerWorld reports an error.</p></li>
+<li><p><strong>ValueError</strong> – if any parameters given in the ParamList
+are not valid for the given object type.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="simple">
+<dt>TODO: Should we cast None to NaN to be consistent with how</dt><dd><p>Pandas/Numpy handle bad/missing data?</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetParametersMultipleElementFlatOutput">
+<code class="sig-name descname">GetParametersMultipleElementFlatOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetParametersSingleElement">
+<code class="sig-name descname">GetParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request values of specified fields for a particular object.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you’re retrieving
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of strings indicating parameters to
+retrieve. Note the key fields MUST be present. One can
+obtain key fields for an object type via the
+get_key_fields_for_object_type method.</p></li>
+<li><p><strong>Values</strong> – List of values corresponding 1:1 to parameters in
+the ParamList. Values must be included for the key fields,
+and the remaining values should be set to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas Series indexed by the given ParamList. This
+Series will be cleaned by _clean_df_or_series, so data will
+be of the appropriate type and strings are cleaned up.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#esa.saw.PowerWorldError" title="esa.saw.PowerWorldError"><strong>PowerWorldError</strong></a> – if the object cannot be found.</p></li>
+<li><p><strong>ValueError</strong> – if any given element in ParamList is not
+valid for the given ObjectType.</p></li>
+<li><p><strong>AssertionError</strong> – if the given ParamList and Values do
+not have the same length.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetSpecificFieldList">
+<code class="sig-name descname">GetSpecificFieldList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.GetSpecificFieldMaxNum">
+<code class="sig-name descname">GetSpecificFieldMaxNum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ListOfDevices">
+<code class="sig-name descname">ListOfDevices</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.ListOfDevices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Request a list of objects and their key fields. This function
+is general, and you may be better off running more specific
+methods like “get_gens”</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjType</strong> – The type of object for which you are acquiring
+the list of devices. E.g. “Shunt,” “Gen,” “Bus,” “Branch,”
+etc.</p></li>
+<li><p><strong>FilterName</strong> – Name of an advanced filter defined in the
+load flow case open in the automation server. Use the
+empty string (default) if no filter is desired. If the
+given filter cannot be found, the server will default to
+returning all objects in the case of type ObjectType.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if there are no objects of the given type in the
+model. Otherwise, a DataFrame of key fields will be
+returned. There will be a row for each object of the given
+type, and columns for each key field. If the “BusNum”
+key field is present, the data will be sorted by BusNum.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ListOfDevicesAsVariantStrings">
+<code class="sig-name descname">ListOfDevicesAsVariantStrings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ListOfDevicesFlatOutput">
+<code class="sig-name descname">ListOfDevicesFlatOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.LoadState">
+<code class="sig-name descname">LoadState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>LoadState is used to load the system state previously saved
+with the SaveState function. Note that LoadState will not
+properly function if the system topology has changed due to the
+addition or removal of the system elements.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.OpenCase">
+<code class="sig-name descname">OpenCase</code><span class="sig-paren">(</span><em class="sig-param">FileName: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Load PowerWorld case into the automation server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>FileName</strong> – Full path to the case file to be loaded. If
+None, this method will attempt to use the last FileName
+used to open a case.</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>TypeError</strong> – if FileName is None, and OpenCase has never
+been called before.</p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/OpenCase_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.OpenCaseType">
+<code class="sig-name descname">OpenCaseType</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.OpenOneLine">
+<code class="sig-name descname">OpenOneLine</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">view=''</em>, <em class="sig-param">fullscreen='NO'</em>, <em class="sig-param">showfull='NO'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="esa.saw.SAW.POWER_FLOW_FIELDS">
+<code class="sig-name descname">POWER_FLOW_FIELDS</code><em class="property"> = {'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1'], 'bus': ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR'], 'gen': ['BusNum', 'GenID', 'GenMW', 'GenMVR'], 'load': ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR'], 'shunt': ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']}</em><a class="headerlink" href="#esa.saw.SAW.POWER_FLOW_FIELDS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ProcessAuxFile">
+<code class="sig-name descname">ProcessAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ProcessAuxFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Load a PowerWorld Auxiliary file into SimAuto. This allows
+you to create a text file (conforming to the PowerWorld
+Auxiliary file format) that can list a set of data changes and
+other information for making batch changes in Simulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>FileName</strong> – Name of auxiliary file to load. Should be a
+full path.</p>
+</dd>
+</dl>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ProcessID">
+<em class="property">property </em><code class="sig-name descname">ProcessID</code><a class="headerlink" href="#esa.saw.SAW.ProcessID" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the process ID of the currently running
+SimulatorAuto process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.RequestBuildDate">
+<em class="property">property </em><code class="sig-name descname">RequestBuildDate</code><a class="headerlink" href="#esa.saw.SAW.RequestBuildDate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Retrieve the build date of the PowerWorld Simulator
+executable currently running with the SimulatorAuto process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.RunScriptCommand">
+<code class="sig-name descname">RunScriptCommand</code><span class="sig-paren">(</span><em class="sig-param">Statements</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.RunScriptCommand" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute a list of script statements. The script actions are
+those included in the script sections of auxiliary files.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand_Function.htm">PowerWorld documentation</a></p>
+<p><a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SaveCase">
+<code class="sig-name descname">SaveCase</code><span class="sig-paren">(</span><em class="sig-param">FileName=None</em>, <em class="sig-param">FileType='PWB'</em>, <em class="sig-param">Overwrite=True</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveCase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Save the current case to file.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/SaveCase_Function.htm">PowerWorld documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileName</strong> – The name of the file you wish to save as,
+including file path. If None, the original path which was
+used to open the case (passed to this class’s initializer)
+will be used.</p></li>
+<li><p><strong>FileType</strong> – String indicating the format of the case file
+to write out. Here’s what PowerWorld currently supports:
+* “PTI23”: “PTI33” specific PTI version (raw).
+* “GE14”: “GE21” GE PSLF version (epc).
+* “IEEE”: IEEE common format (cf).
+* “UCTE”: UCTE Data Exchange (uct).
+* “AUX”: PowerWorld Auxiliary format (aux).
+* “AUXSECOND”: PowerWorld Auxiliary format (aux) using
+secondary key fields.
+* “AUXLABEL”: PowerWorld Auxiliary format (aux) using
+labels as key field identifiers.
+* “AUXNETWORK”: PowerWorld Auxiliary format (aux) saving
+only network data.
+* “PWB5” through “PWB20”: specific PowerWorld Binary
+version (pwb).
+* “PWB”:  PowerWorld Binary (most recent) (pwb).</p></li>
+<li><p><strong>Overwrite</strong> – Whether (True) or not (False) to overwrite the
+file if it already exists. If False and the specified file
+already exists, an exception will be raised.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SaveJacobian">
+<code class="sig-name descname">SaveJacobian</code><span class="sig-paren">(</span><em class="sig-param">JacFileName</em>, <em class="sig-param">JIDFileName</em>, <em class="sig-param">FileType</em>, <em class="sig-param">JacForm</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveJacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to save the Jacobian Matrix to a text file or a
+file formatted for use with MATLAB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SaveState">
+<code class="sig-name descname">SaveState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>SaveState is used to save the current state of the power
+system. This can be useful if you are interested in comparing
+various cases, much as the “Difference Flows” feature works in
+the Simulator application.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SaveYbusInMatlabFormat">
+<code class="sig-name descname">SaveYbusInMatlabFormat</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">IncludeVoltages='Yes'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveYbusInMatlabFormat" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to save the YBus to a file formatted for use
+with MATLAB</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SendToExcel">
+<code class="sig-name descname">SendToExcel</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FilterName: str</em>, <em class="sig-param">FieldList</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Send data from SimAuto to an Excel spreadsheet.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SetData">
+<code class="sig-name descname">SetData</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FieldList: str</em>, <em class="sig-param">ValueList: str</em>, <em class="sig-param">Filter=''</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SetData" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to set fields for particular objects. If a
+filter is specified, then it will set the respective fields for
+all objects which meet this filter. Otherwise, if no filter is
+specified, then the keyfields must be included in the field
+list so that the object can be found. e.g.
+FieldList = ‘[Number,NomkV]’</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SetParticipationFactors">
+<code class="sig-name descname">SetParticipationFactors</code><span class="sig-paren">(</span><em class="sig-param">Method</em>, <em class="sig-param">ConstantValue</em>, <em class="sig-param">Object</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SetParticipationFactors" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to modify the generator participation factors in
+the case.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.SolvePowerFlow">
+<code class="sig-name descname">SolvePowerFlow</code><span class="sig-paren">(</span><em class="sig-param">SolMethod: str = 'RECTNEWT'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
+<dd><p>Run the SolvePowerFlow command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>SolMethod</strong> – Solution method to be used for the Power Flow
+calculation. Case insensitive. Valid options are:
+‘RECTNEWT’ - Rectangular Newton-Raphson
+‘POLARNEWTON’ - Polar Newton-Raphson
+‘GAUSSSEIDEL’ - Gauss-Seidel
+‘FASTDEC’ - Fast Decoupled
+‘ROBUST’ - Attempt robust solution process
+‘DC’ - DC power flow</p>
+</dd>
+</dl>
+<p>See
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format.pdf</a>
+for more details.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSCalculateCriticalClearTime">
+<code class="sig-name descname">TSCalculateCriticalClearTime</code><span class="sig-paren">(</span><em class="sig-param">Branch</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSCalculateCriticalClearTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Use this action to calculate critical clearing time for faults
+on the lines that meet the specified filter. A single line can
+be specified in the format [BRANCH keyfield1 keyfield2 ckt] or
+[BRANCH label]. Multiple lines can be selected by specifying a
+filter. For the specified lines, this calculation will determine
+the first time a violation is reached (critical clearing time),
+where a violation is determined based on all enabled Transient
+Limit Monitors. For each line, results are saved as a new
+Transient Contingency on a line, with the fault duration equal
+to the critical clearing time.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSGetContingencyResults">
+<code class="sig-name descname">TSGetContingencyResults</code><span class="sig-paren">(</span><em class="sig-param">CtgName</em>, <em class="sig-param">ObjFieldList</em>, <em class="sig-param">StartTime=None</em>, <em class="sig-param">StopTime=None</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Read transient stability results directly into the SimAuto COM
+object and be further used.
+!!!!! This function should ONLY be used after the simulation is run
+(for example, use this after running script commands tsSolveAll
+or tsSolve).
+ObjFieldList = [‘“Plot ‘’Bus_4_Frequency’’”’] or
+ObjFieldList = [‘“Bus 4 | frequency”’]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSResultStorageSetAll">
+<code class="sig-name descname">TSResultStorageSetAll</code><span class="sig-paren">(</span><em class="sig-param">ObjectType</em>, <em class="sig-param">Choice</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSResultStorageSetAll" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSRunUntilSpecifiedTime">
+<code class="sig-name descname">TSRunUntilSpecifiedTime</code><span class="sig-paren">(</span><em class="sig-param">ContingencyName</em>, <em class="sig-param">RunOptions</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSRunUntilSpecifiedTime" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>This command allows manual control of the transient stability
+run. The simulation can be run until a specified time or number
+of times steps and then paused for further evaluation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ContingencyName</strong> – TODO</p></li>
+<li><p><strong>RunOptions</strong> – ‘[StopTime(in seconds), StepSize(numbers),
+StepsInCycles=’YES’, ResetStartTime=’NO’,
+NumberOfTimeStepsToDo=0]’</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSSolve">
+<code class="sig-name descname">TSSolve</code><span class="sig-paren">(</span><em class="sig-param">ContingencyName</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSSolve" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Solves only the specified contingency</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.TSWriteOptions">
+<code class="sig-name descname">TSWriteOptions</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">Options</em>, <em class="sig-param">KeyField=' Primary'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSWriteOptions" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Save the transient stability option settings to an auxiliary
+file.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileName</strong> – TODO</p></li>
+<li><p><strong>Options</strong> – <p>[SaveDynamicModel, SaveStabilityOptions,
+SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]</p>
+<p>SaveDynamicModel : (optional) NO doesn’t save dynamic model
+(default YES)</p>
+<p>SaveStabilityOptions : (optional) NO doesn’t save stability
+options (default YES)</p>
+<p>SaveStabilityEvents : (optional) NO doesn’t save stability
+events (default YES)</p>
+<p>SaveResultsSettings : (optional) NO doesn’t save results
+settings (default YES)</p>
+<p>SavePlotDefinitions : (optional) NO doesn’t save plot
+definitions (default YES)</p>
+</p></li>
+<li><p><strong>KeyField</strong> – (optional) Specifies key: can be Primary,
+Secondary, or Label (default Primary)</p></li>
+</ul>
+</dd>
+</dl>
+<p>TODO: KeyField isn’t currently used?</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.UIVisible">
+<em class="property">property </em><code class="sig-name descname">UIVisible</code><a class="headerlink" href="#esa.saw.SAW.UIVisible" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.WriteAuxFile">
+<code class="sig-name descname">WriteAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">FilterName</em>, <em class="sig-param">ObjectType</em>, <em class="sig-param">FieldList</em>, <em class="sig-param">ToAppend=True</em>, <em class="sig-param">EString=None</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.WriteAuxFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>The WriteAuxFile function can be used to write data from the
+case in the Simulator Automation Server to a PowerWorld
+Auxiliary file. The name of an advanced filter which was
+PREVIOUSLY DEFINED in the case before being loaded in the
+Simulator Automation Server. If no filter is desired, then
+simply pass an empty string. If a filter name is passed but the
+filter cannot be found in the loaded case, no filter is used.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.change_and_confirm_params_multiple_element">
+<code class="sig-name descname">change_and_confirm_params_multiple_element</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">command_df: pandas.core.frame.DataFrame</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_and_confirm_params_multiple_element" title="Permalink to this definition">¶</a></dt>
+<dd><p>Change parameters for multiple objects of the same type, and
+confirm that the change was respected by PowerWorld.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of objects you are changing
+parameters for.</p></li>
+<li><p><strong>command_df</strong> – Pandas DataFrame representing the objects
+which will have their parameters changed. The columns should
+be object field variable names, and MUST include the key
+fields for the given ObjectType (which you can get via the
+get_key_fields_for_object_type method). Columns which are not
+key fields indicate parameters to be changed, while the key
+fields are used internally by PowerWorld to look up objects.
+Each row of the DataFrame represents a single element.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><a class="reference internal" href="#esa.saw.CommandNotRespectedError" title="esa.saw.CommandNotRespectedError"><strong>CommandNotRespectedError</strong></a> – if PowerWorld does not
+actually change the parameters.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p>PowerWorldError: if PowerWorld reports an error.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.create_filter">
+<code class="sig-name descname">create_filter</code><span class="sig-paren">(</span><em class="sig-param">condition</em>, <em class="sig-param">object_type</em>, <em class="sig-param">filter_name</em>, <em class="sig-param">filter_logic='AND'</em>, <em class="sig-param">filter_pre='NO'</em>, <em class="sig-param">enabled='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.create_filter" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Creates a filter in PowerWorld. The attempt is to reduce the
+clunkiness of creating a filter in the API, which entails
+creating an aux data file.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.exit">
+<code class="sig-name descname">exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clean up for the PowerWorld COM object</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.get_key_fields_for_object_type">
+<code class="sig-name descname">get_key_fields_for_object_type</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get all key fields for an object type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ObjectType</strong> – The type of the object to get key fields for.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>DataFrame with the following columns:
+‘internal_field_name’, ‘field_data_type’, ‘description’, and
+‘display_name’. The DataFrame will be indexed based on the key
+field returned by the Simulator, but modified to be 0-based.</p>
+</dd>
+</dl>
+<p>This method uses the GetFieldList function, documented
+<a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____14">here</a>.</p>
+<p>It’s also worth looking at the key fields documentation
+<a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm">here</a>.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.get_power_flow_results">
+<code class="sig-name descname">get_power_flow_results</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the power flow results from SimAuto server.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ObjectType</strong> – Object type to get results for. Valid types
+are the keys in the POWER_FLOW_FIELDS class attribute (case
+insensitive).</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas DataFrame with the corresponding results, or
+None if the given ObjectType is not present in the model.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>ValueError</strong> – if given ObjectType is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.get_three_phase_bolted_fault_current">
+<code class="sig-name descname">get_three_phase_bolted_fault_current</code><span class="sig-paren">(</span><em class="sig-param">bus_num</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_three_phase_bolted_fault_current" title="Permalink to this definition">¶</a></dt>
+<dd><p>NOT IMPLEMENTED.</p>
+<p>Calculates the three phase fault; this can be done even with
+cases which only contain positive sequence impedances</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="esa.saw.convert_to_posix_path">
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_posix_path</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_posix_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a path, p, convert it to a Posix path.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="esa.saw.convert_to_windows_path">
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_windows_path</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_windows_path" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a path, p, convert it to a Windows path.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-esa.version">
+<span id="esa-version-module"></span><h2>esa.version module<a class="headerlink" href="#module-esa.version" title="Permalink to this headline">¶</a></h2>
+</div>
+<div class="section" id="module-esa">
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-esa" title="Permalink to this headline">¶</a></h2>
+<p>TODO: Document your package.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ESA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">esa package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esa.saw">esa.saw module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esa.version">esa.version module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esa">Module contents</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">esa</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">esa package</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="index.html" title="previous chapter">Welcome to ESA’s documentation!</a></li>
+      <li>Next: <a href="modules.html" title="next chapter">esa</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, Zeyu Mao, Brandon Thayer.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/esa.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
