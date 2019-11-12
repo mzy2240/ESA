@@ -205,7 +205,10 @@ class SAW(object):
 
     def create_filter(self, condition, object_type, filter_name,
                       filter_logic='AND', filter_pre='NO', enabled='YES'):
-        """Creates a filter in PowerWorld. The attempt is to reduce the
+        """
+        NOT IMPLEMENTED.
+
+        Creates a filter in PowerWorld. The attempt is to reduce the
         clunkiness of creating a filter in the API, which entails
         creating an aux data file.
         """
@@ -333,7 +336,10 @@ class SAW(object):
                                                  ParamList=field_list)
 
     def get_three_phase_bolted_fault_current(self, bus_num):
-        """Calculates the three phase fault; this can be done even with
+        """
+        NOT IMPLEMENTED.
+
+        Calculates the three phase fault; this can be done even with
         cases which only contain positive sequence impedances"""
         raise NotImplementedError(NIE_MSG)
         # script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
@@ -347,6 +353,8 @@ class SAW(object):
 
     def ChangeParameters(self, ObjType, ParamList, ValueArray):
         """
+        NOT IMPLEMENTED.
+
         ChangeParameters is used to change single or multiple parameters
         of a single object. ParamList is a variant array storing strings
         that are Simulator object field variables, and must contain the
@@ -360,6 +368,7 @@ class SAW(object):
         # return output
 
     def ChangeParametersSingleElement(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,
@@ -402,6 +411,7 @@ class SAW(object):
                                   ObjectType, param_array, value_array)
 
     def ChangeParametersMultipleElementFlatInput(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def CloseCase(self):
@@ -413,6 +423,7 @@ class SAW(object):
         return self._call_simauto('CloseCase')
 
     def GetCaseHeader(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def GetFieldList(self, ObjectType: str, copy=False) -> pd.DataFrame:
@@ -553,15 +564,19 @@ class SAW(object):
         return self._clean_df_or_series(obj=df, ObjectType=ObjectType)
 
     def GetParametersMultipleElementFlatOutput(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def GetParameters(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def GetSpecificFieldList(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def GetSpecificFieldMaxNum(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def ListOfDevices(self, ObjType: str, FilterName='') -> \
@@ -618,13 +633,17 @@ class SAW(object):
         return df
 
     def ListOfDevicesAsVariantStrings(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def ListOfDevicesFlatOutput(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def LoadState(self):
-        """LoadState is used to load the system state previously saved
+        """NOT IMPLEMENTED.
+
+        LoadState is used to load the system state previously saved
         with the SaveState function. Note that LoadState will not
         properly function if the system topology has changed due to the
         addition or removal of the system elements.
@@ -661,10 +680,13 @@ class SAW(object):
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
     def OpenCaseType(self):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
     def ProcessAuxFile(self, FileName):
-        """Load a PowerWorld Auxiliary file into SimAuto. This allows
+        """NOT IMPLEMENTED.
+
+        Load a PowerWorld Auxiliary file into SimAuto. This allows
         you to create a text file (conforming to the PowerWorld
         Auxiliary file format) that can list a set of data changes and
         other information for making batch changes in Simulator.
@@ -735,7 +757,9 @@ class SAW(object):
         return self._call_simauto('SaveCase', f, FileType, Overwrite)
 
     def SaveState(self):
-        """SaveState is used to save the current state of the power
+        """NOT IMPLEMENTED.
+
+        SaveState is used to save the current state of the power
         system. This can be useful if you are interested in comparing
         various cases, much as the "Difference Flows" feature works in
         the Simulator application.
@@ -744,7 +768,9 @@ class SAW(object):
         # return self._call_simauto('SaveState')
 
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """Send data from SimAuto to an Excel spreadsheet.
+        """NOT IMPLEMENTED.
+
+        Send data from SimAuto to an Excel spreadsheet.
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`_
@@ -755,7 +781,8 @@ class SAW(object):
 
     def TSGetContingencyResults(self, CtgName, ObjFieldList,
                                 StartTime=None, StopTime=None):
-        """
+        """NOT IMPLEMENTED.
+
         Read transient stability results directly into the SimAuto COM
         object and be further used.
         !!!!! This function should ONLY be used after the simulation is run
@@ -771,7 +798,8 @@ class SAW(object):
 
     def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
                      ToAppend=True, EString=None):
-        """
+        """NOT IMPLEMENTED.
+
         The WriteAuxFile function can be used to write data from the
         case in the Simulator Automation Server to a PowerWorld
         Auxiliary file. The name of an advanced filter which was
@@ -793,7 +821,8 @@ class SAW(object):
     # PowerWorld ScriptCommand helper functions
     ####################################################################
     def CalculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to calculate the Line Outage Distribution
         Factors (or the Line Closure Distribution Factors) for a
         particular branch. If the branch is presently closed, then the
@@ -808,19 +837,23 @@ class SAW(object):
         #                                      PostClosureLCDF))
 
     def CreateData(self, ObjectType: str, FieldList: str, ValueList: str):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand("CreateData({},{},{})"
         #                              .format(ObjectType, FieldList, ValueList))
 
     def Delete(self, ObjectType: str):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand("Delete(%s)" % ObjectType)
 
     def EnterMode(self, mode):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand("EnterMode(%s)" % mode)
 
     def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
         # filename = Path(filename)
         # script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
@@ -829,7 +862,8 @@ class SAW(object):
         # return output
 
     def SaveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to save the Jacobian Matrix to a text file or a
         file formatted for use with MATLAB
         """
@@ -839,7 +873,8 @@ class SAW(object):
         #                                      FileType, JacForm))
 
     def SaveYbusInMatlabFormat(self, FileName, IncludeVoltages='Yes'):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to save the YBus to a file formatted for use
         with MATLAB
         """
@@ -849,7 +884,8 @@ class SAW(object):
 
     def SetData(self, ObjectType: str, FieldList: str, ValueList: str,
                 Filter=''):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to set fields for particular objects. If a
         filter is specified, then it will set the respective fields for
         all objects which meet this filter. Otherwise, if no filter is
@@ -863,7 +899,8 @@ class SAW(object):
         #                                      Filter))
 
     def SetParticipationFactors(self, Method, ConstantValue, Object):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to modify the generator participation factors in
         the case.
 
@@ -904,7 +941,8 @@ class SAW(object):
         return self.RunScriptCommand(script_command)
 
     def TSCalculateCriticalClearTime(self, Branch):
-        """
+        """NOT IMPLEMENTED.
+
         Use this action to calculate critical clearing time for faults
         on the lines that meet the specified filter. A single line can
         be specified in the format [BRANCH keyfield1 keyfield2 ckt] or
@@ -921,12 +959,14 @@ class SAW(object):
         #     "TSCalculateCriticalClearTime (%s)" % Branch)
 
     def TSResultStorageSetAll(self, ObjectType, Choice):
+        """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand(
         #     "TSResultStorageSetAll (%s) (%s)" % (ObjectType, Choice))
 
     def TSRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
-        """
+        """NOT IMPLEMENTED.
+
         This command allows manual control of the transient stability
         run. The simulation can be run until a specified time or number
         of times steps and then paused for further evaluation.
@@ -942,14 +982,16 @@ class SAW(object):
         #                              .format(ContingencyName, RunOptions))
 
     def TSSolve(self, ContingencyName):
-        """
+        """NOT IMPLEMENTED.
+
         Solves only the specified contingency
         """
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand("TSSolve (%s)" % ContingencyName)
 
     def TSWriteOptions(self, FileName, Options, KeyField=' Primary'):
-        """
+        """NOT IMPLEMENTED.
+
         Save the transient stability option settings to an auxiliary
         file.
 
