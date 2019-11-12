@@ -4,7 +4,7 @@ SAW, for interfacing with PowerWorld's Simulator Automation Server
 
 The documentation for SimAuto can be found
 `here
-<https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`_
+<https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
 import pandas as pd
 import numpy as np
@@ -74,7 +74,7 @@ class SAW(object):
 
         Note that
         `Microsoft recommends
-        <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`_
+        <https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients>`__
         early binding in most cases.
         """
         # Initialize logger.
@@ -244,11 +244,11 @@ class SAW(object):
 
         This method uses the GetFieldList function, documented
         `here
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____14>`_.
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____14>`__.
 
         It's also worth looking at the key fields documentation
         `here
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`_.
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm>`__.
         """
         # Cast to lower case.
         obj_type = ObjectType.lower()
@@ -376,7 +376,7 @@ class SAW(object):
         """Set parameters for multiple objects of the same type.
 
         `PowerWorld Documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm>`__
 
         :param ObjectType: The type of object you are changing
             parameters for.
@@ -418,7 +418,7 @@ class SAW(object):
         """Closes case without saving changes.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
         """
         return self._call_simauto('CloseCase')
 
@@ -439,7 +439,7 @@ class SAW(object):
             and 'display_name.'
 
         `PowerWorld Documentation
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm>`__
         """
         # Get the ObjectType in lower case.
         object_type = ObjectType.lower()
@@ -472,7 +472,7 @@ class SAW(object):
         """Request values of specified fields for a particular object.
 
         `PowerWorld Documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm>`__
 
         :param ObjectType: The type of object you're retrieving
             parameters for.
@@ -523,7 +523,7 @@ class SAW(object):
         the load flow case.
 
         `PowerWorld Documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersMultipleElement_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersMultipleElement_Function.htm>`__
 
         :param ObjectType: Type of object to get parameters for.
         :param ParamList: List of variables to obtain for the given
@@ -649,7 +649,7 @@ class SAW(object):
         addition or removal of the system elements.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm>`__
         """
         raise NotImplementedError(NIE_MSG)
         # return self._call_simauto('LoadState')
@@ -665,7 +665,7 @@ class SAW(object):
             been called before.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/OpenCase_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/OpenCase_Function.htm>`__
         """
         # If not given a file name, ensure the pwb_file_path is valid.
         if FileName is None:
@@ -695,7 +695,7 @@ class SAW(object):
             full path.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm>`__
         """
         raise NotImplementedError(NIE_MSG)
         # f = convert_to_posix_path(FileName)
@@ -707,10 +707,10 @@ class SAW(object):
         those included in the script sections of auxiliary files.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand_Function.htm>`__
 
         `Auxiliary File Format
-        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`_
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
         """
         output = self._call_simauto('RunScriptCommand', Statements)
         return output
@@ -719,7 +719,7 @@ class SAW(object):
         """Save the current case to file.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/SaveCase_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/SaveCase_Function.htm>`__
 
         :param FileName: The name of the file you wish to save as,
             including file path. If None, the original path which was
@@ -773,7 +773,7 @@ class SAW(object):
         Send data from SimAuto to an Excel spreadsheet.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
         """
         raise NotImplementedError(NIE_MSG)
         # return self._call_simauto('SendToExcel', ObjectType, FilterName,
@@ -809,7 +809,7 @@ class SAW(object):
         filter cannot be found in the loaded case, no filter is used.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm>`_
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm>`__
         """
         raise NotImplementedError(NIE_MSG)
         # aux_file = convert_to_posix_path(FileName)
@@ -934,7 +934,7 @@ class SAW(object):
 
         See
         `Auxiliary File Format.pdf
-        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`_
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
         for more details.
         """
         script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
@@ -1076,7 +1076,7 @@ class SAW(object):
             results in an error.
 
         The listing of valid functions can be found `here
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`_.
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`__.
         """
         # Get a reference to the SimAuto function from the COM object.
         try:
