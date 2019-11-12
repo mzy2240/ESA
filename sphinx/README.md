@@ -6,7 +6,7 @@ which we'll use to auto-generate our documentation.
 ## Build the Documentation
 Note you'll need to substitute for your own paths. These directions 
 assume you have the repository cloned into `C:\Users\blthayer\git\ESA` and your virtual 
-environment exists at `C:\Users\blthayer\git\ESA\vent`
+environment exists at `C:\Users\blthayer\git\ESA\venv`
 
 ### Activate Your Virtual Environment
 Do this each time.
@@ -28,4 +28,12 @@ activated), change directories to `sphix`: `cd sphinx`.
 2. Execute `make html`
 
 ## One Time Setup (DO NOT RUN THIS)
-The following is just for recording what was done to 
+The following is just for recording what was done to set things up 
+initially. All commands were run with an activated virtual environment
+within the sphinx directory.
+
+1. Run `sphinx-quickstart`
+2. Run `sphinx-apidoc -o . ../esa`
+3. Add `esa` and `modules` lines to `index.rst`.
+4. Add `'spinx.ext.autodoc'` extension in conf.py.
+5. Uncomment and modify the `# -- Path setup` section of conf.py
