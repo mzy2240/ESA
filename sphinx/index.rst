@@ -10,6 +10,8 @@ Welcome to ESA's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+   esa
+   modules
 
 
 Indices and tables
