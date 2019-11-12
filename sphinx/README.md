@@ -6,7 +6,7 @@ which we'll use to auto-generate our documentation.
 ## Build the Documentation
 Note you'll need to substitute for your own paths. These directions 
 assume you have the repository cloned into `C:\Users\blthayer\git\ESA` and your virtual 
-environment exists at `C:\Users\blthayer\git\ESA\vent`
+environment exists at `C:\Users\blthayer\git\ESA\venv`
 
 ### Activate Your Virtual Environment
 Do this each time.
