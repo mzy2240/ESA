@@ -37,7 +37,7 @@ name as defined [here](https://www.powerworld.com/WebHelp/Default.htm#MainDocume
 
 #### Script commands
 Most of the script commands are supported by using the RunScriptCommand function. For more details, please check the 
-[Auxiliary File Format](docs/Auxiliary File Format.pdf). Here is one example:
+[Auxiliary File Format](https://www.powerworld.com/WebHelp/Default.htm#Other_Documents/Auxiliary-File-Format.pdf%3FTocPath%3DAuxiliary%2520Script%252FData%2520Files%7C_____2). Here is one example:
 ```python
 op = pw.RunScriptCommand("EnterMode(EDIT)")     # Enter the edit mode
 ```
@@ -48,8 +48,7 @@ the programming logics and have a better formatted output. Here are the list:
 
 |  Function   |      Action      |        Argument      |
 |-------------|----------------|-----------------------|
-| change_and_confirm_params_multiple_element |  Change parameters for multiple objects of the same type, and
-        confirm that the change was respected by PowerWorld. | *ObjectType*: string (Required). *command_df*: DataFrame (Required). |
+| change_and_confirm_params_multiple_element |  Change parameters for multiple objects of the same type, and confirm that the change was respected by PowerWorld. | *ObjectType*: string (Required). *command_df*: DataFrame (Required). |
 | exit |    Manually close the PowerWorld COM object.   |  |
 | get_key_fields_for_object_type | Helper function to get all key fields for an object type. | *ObjectType*: string (Required).  |
 | get_power_flow_results |Get the power flow results from SimAuto server.|*ObjectType*: string (Required)
