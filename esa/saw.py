@@ -903,18 +903,6 @@ class SAW(object):
 
         Use this action to modify the generator participation factors in
         the case.
-
-        :param Method: 'MAXMWRAT'or 'RESERVE' or 'CONSTANT'
-        :param ConstantValue : The value used if CONSTANT method is
-            specified. If CONSTANT method is not specified, enter 0
-            (zero).
-        :param Object : Specify which generators to set the
-            participation factor for.
-
-        [Area Num], [Area "name"], [Area "label"]
-        [Zone Num], [Zone "name"], [Zone "label"]
-        SYSTEM
-        AREAZONE or DISPLAYFILTERS
         """
         raise NotImplementedError(NIE_MSG)
         # return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
@@ -1000,17 +988,23 @@ class SAW(object):
             SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]
 
             SaveDynamicModel : (optional) NO doesn't save dynamic model
-                (default YES)
+            (default YES)
+
             SaveStabilityOptions : (optional) NO doesn't save stability
-                options (default YES)
+            options (default YES)
+
             SaveStabilityEvents : (optional) NO doesn't save stability
-                events (default YES)
+            events (default YES)
+
             SaveResultsSettings : (optional) NO doesn't save results
-                settings (default YES)
+            settings (default YES)
+
             SavePlotDefinitions : (optional) NO doesn't save plot
-                definitions (default YES)
+            definitions (default YES)
+
         :param KeyField: (optional) Specifies key: can be Primary,
             Secondary, or Label (default Primary)
+
         TODO: KeyField isn't currently used?
         """
         raise NotImplementedError(NIE_MSG)
