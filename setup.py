@@ -19,7 +19,7 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    install_requires=['tqdm', 'psutil', 'pandas', 'numpy', 'pywin32', 'pypiwin32', 'pathlib'],
+    install_requires=['pandas', 'numpy', 'pywin32', 'pypiwin32'],
     license='MIT',
     zip_safe=False
 )
