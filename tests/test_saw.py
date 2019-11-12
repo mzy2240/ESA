@@ -31,7 +31,7 @@ import os
 import numpy as np
 import pandas as pd
 from esa import SAW
-from esa.saw import COMError, PowerWorldError,\
+from esa.saw import COMError, PowerWorldError, \
     convert_to_posix_path, convert_to_windows_path, CommandNotRespectedError
 import logging
 
@@ -67,6 +67,7 @@ def tearDownModule():
     saw_14.exit()
     del saw_14
 
+
 ########################################################################
 # Misc tests
 ########################################################################
@@ -101,6 +102,7 @@ class InitializationTestCase(unittest.TestCase):
                                  'field_data_type', 'description',
                                  'display_name'},
                                 set(df.columns.values))
+
 
 ########################################################################
 # Helper function tests
@@ -266,6 +268,7 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         """There are no shunts in the IEEE 14 bus model."""
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
+
 ########################################################################
 # SimAuto functions tests
 ########################################################################
@@ -273,6 +276,7 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
 
 class ChangeParametersMultipleElementTestCase(unittest.TestCase):
     """Test ChangeParametersMultipleElement"""
+
     @classmethod
     def setUpClass(cls) -> None:
         # Get generator key fields.
@@ -303,11 +307,13 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
         value_list = self.gen_v_pu.values.tolist()
 
         # Loop over the values, set to 1.
+        # noinspection PyTypeChecker
         for v in value_list:
             # Set voltage at 1.
             v[-1] = 1.0
 
         # Send in the command.
+        # noinspection PyTypeChecker
         result = saw_14.ChangeParametersMultipleElement(
             ObjectType='gen', ParamList=self.params, ValueList=value_list)
 
@@ -360,10 +366,12 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
         value_list = self.gen_v_pu.values.tolist()
 
         # Delete an entry.
+        # noinspection PyUnresolvedReferences
         del value_list[1][-1]
 
         m = 'Number of fields and number of values given are not equal'
         with self.assertRaisesRegex(PowerWorldError, m):
+            # noinspection PyTypeChecker
             saw_14.ChangeParametersMultipleElement(
                 ObjectType='gen', ParamList=self.params,
                 ValueList=value_list
@@ -400,11 +408,13 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         value_list = self.gen_v_pu.values.tolist()
 
         # Loop over the values, set to 1.
+        # noinspection PyTypeChecker
         for v in value_list:
             # Set voltage at 1.
             v[-1] = 1.0
 
         # Send in the command.
+        # noinspection PyTypeChecker
         result = saw_14.ChangeParametersMultipleElement(
             ObjectType='gen', ParamList=self.params, ValueList=value_list)
 
@@ -431,6 +441,7 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         command_df = self.gen_v_pu.copy(deep=True)
         command_df['GenRegPUVolt'] = 1.0
 
+        # noinspection PyNoneFunctionAssignment
         result = saw_14.change_and_confirm_params_multiple_element(
             ObjectType='gen', command_df=command_df)
 
@@ -666,6 +677,7 @@ class RunScriptCommandTestCase(unittest.TestCase):
 
 class SaveCaseTestCase(unittest.TestCase):
     """Test SaveCase."""
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.out_file = os.path.join(THIS_DIR, 'tmp.pwb')
@@ -705,6 +717,7 @@ class SaveCaseTestCase(unittest.TestCase):
             'SaveCase', convert_to_windows_path(saw_14.pwb_file_path),
             'PWB', True)
 
+
 ########################################################################
 # ScriptCommand helper tests
 ########################################################################
@@ -727,6 +740,7 @@ class SolvePowerFlowTestCase(unittest.TestCase):
         with self.assertRaisesRegex(PowerWorldError,
                                     'Invalid solution method'):
             saw_14.SolvePowerFlow(SolMethod='junk')
+
 
 ########################################################################
 # Private method tests
@@ -766,6 +780,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
     def test_bad_type(self):
         """Ensure a TypeError is raised if 'obj' is a bad type."""
         with self.assertRaisesRegex(TypeError, 'The given object is not a Da'):
+            # noinspection PyTypeChecker
             saw_14._clean_df_or_series(obj=42, ObjectType='shunt')
 
     def test_series_bad_index(self):
