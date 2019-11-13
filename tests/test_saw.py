@@ -751,13 +751,13 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         """
         bad_df = pd.DataFrame([[1, 'bleh']], columns=['BusNum', 'bleh'])
         with self.assertRaisesRegex(ValueError, 'The given object has fields'):
-            saw_14._clean_df_or_series(obj=bad_df, ObjectType='gen')
+            saw_14.clean_df_or_series(obj=bad_df, ObjectType='gen')
 
     def test_bad_df_columns_2(self):
         """This time, use upper-case so we don't get an index error."""
         bad_df = pd.DataFrame([[1, 'bleh']], columns=['BusNum', 'Bleh'])
         with self.assertRaisesRegex(ValueError, 'The given object has fields'):
-            saw_14._clean_df_or_series(obj=bad_df, ObjectType='gen')
+            saw_14.clean_df_or_series(obj=bad_df, ObjectType='gen')
 
     # noinspection PyMethodMayBeStatic
     def test_works_df(self):
@@ -770,7 +770,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         df_expected = pd.DataFrame([[3, 11.0, 'no'], [6, 7.2234, 'yes']],
                                    columns=['BusNum', 'GenMW', 'GenAGCAble'])
 
-        df_actual = saw_14._clean_df_or_series(obj=df_in, ObjectType='gen')
+        df_actual = saw_14.clean_df_or_series(obj=df_in, ObjectType='gen')
 
         pd.testing.assert_frame_equal(df_actual, df_expected)
 
@@ -778,7 +778,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         """Ensure a TypeError is raised if 'obj' is a bad type."""
         with self.assertRaisesRegex(TypeError, 'The given object is not a Da'):
             # noinspection PyTypeChecker
-            saw_14._clean_df_or_series(obj=42, ObjectType='shunt')
+            saw_14.clean_df_or_series(obj=42, ObjectType='shunt')
 
     def test_series_bad_index(self):
         """If a Series has an Index that doesn't match known fields, we
@@ -786,7 +786,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         """
         bad_series = pd.Series([1, 'a'], index=['BusNum', 'Bad_Field'])
         with self.assertRaisesRegex(ValueError, 'The given object has fields'):
-            saw_14._clean_df_or_series(obj=bad_series, ObjectType='gen')
+            saw_14.clean_df_or_series(obj=bad_series, ObjectType='gen')
 
 
 if __name__ == '__main__':

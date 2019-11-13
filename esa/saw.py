@@ -160,8 +160,8 @@ class SAW(object):
         """
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
-        cleaned_df = self._clean_df_or_series(obj=command_df,
-                                              ObjectType=ObjectType)
+        cleaned_df = self.clean_df_or_series(obj=command_df,
+                                             ObjectType=ObjectType)
 
         # Convert the DataFrame to a list.
         value_list = cleaned_df.values.tolist()
@@ -485,7 +485,7 @@ class SAW(object):
             and the remaining values should be set to 0.
 
         :returns: Pandas Series indexed by the given ParamList. This
-            Series will be cleaned by _clean_df_or_series, so data will
+            Series will be cleaned by clean_df_or_series, so data will
             be of the appropriate type and strings are cleaned up.
 
         :raises PowerWorldError: if the object cannot be found.
@@ -514,7 +514,7 @@ class SAW(object):
         s = pd.Series(output, index=ParamList)
 
         # Clean the Series and return.
-        return self._clean_df_or_series(obj=s, ObjectType=ObjectType)
+        return self.clean_df_or_series(obj=s, ObjectType=ObjectType)
 
     def GetParametersMultipleElement(self, ObjectType: str, ParamList: list,
                                      FilterName: str = '') -> \
@@ -561,7 +561,7 @@ class SAW(object):
                           columns=ParamList)
 
         # Clean DataFrame and return it.
-        return self._clean_df_or_series(obj=df, ObjectType=ObjectType)
+        return self.clean_df_or_series(obj=df, ObjectType=ObjectType)
 
     def GetParametersMultipleElementFlatOutput(self):
         """NOT IMPLEMENTED."""
@@ -627,7 +627,7 @@ class SAW(object):
 
         # Ensure the DataFrame has the correct types, is sorted by
         # BusNum, and has leading/trailing white space stripped.
-        df = self._clean_df_or_series(obj=df, ObjectType=ObjType)
+        df = self.clean_df_or_series(obj=df, ObjectType=ObjType)
 
         # All done.
         return df
@@ -908,7 +908,7 @@ class SAW(object):
         # return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
         #                              .format(Method, ConstantValue, Object))
 
-    def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT'):
+    def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT') -> None:
         """Run the SolvePowerFlow command.
 
         :param SolMethod: Solution method to be used for the Power Flow
@@ -1104,8 +1104,8 @@ class SAW(object):
         # position 1 of the tuple).
         return output[1]
 
-    def _clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
-                            ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
+    def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
+                           ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
         """Helper to cast data to the correct types, clean up strings,
         and sort DataFrame by BusNum (if applicable/present).
 
