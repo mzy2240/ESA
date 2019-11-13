@@ -15,7 +15,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="esa" href="modules.html" />
-    <link rel="prev" title="Welcome to ESA’s documentation!" href="index.html" />
+    <link rel="prev" title="Introduction" href="intro.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -284,7 +284,7 @@ and the remaining values should be set to 0.</p></li>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Pandas Series indexed by the given ParamList. This
-Series will be cleaned by _clean_df_or_series, so data will
+Series will be cleaned by clean_df_or_series, so data will
 be of the appropriate type and strings are cleaned up.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
@@ -530,7 +530,7 @@ the case.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.SolvePowerFlow">
-<code class="sig-name descname">SolvePowerFlow</code><span class="sig-paren">(</span><em class="sig-param">SolMethod: str = 'RECTNEWT'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SolvePowerFlow</code><span class="sig-paren">(</span><em class="sig-param">SolMethod: str = 'RECTNEWT'</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the SolvePowerFlow command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -694,6 +694,39 @@ actually change the parameters.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="esa.saw.SAW.clean_df_or_series">
+<code class="sig-name descname">clean_df_or_series</code><span class="sig-paren">(</span><em class="sig-param">obj: Union[pandas.core.frame.DataFrame, pandas.core.series.Series], ObjectType: str</em><span class="sig-paren">)</span> &#x2192; Union[pandas.core.frame.DataFrame, pandas.core.series.Series]<a class="headerlink" href="#esa.saw.SAW.clean_df_or_series" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to cast data to the correct types, clean up strings,
+and sort DataFrame by BusNum (if applicable/present).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>obj</strong> – DataFrame or Series to clean up. It’s assumed that
+the object came more or less directly from placing results
+from calling SimAuto into a DataFrame or Series. This means
+all data will be strings (even if they should be numeric)
+and data which should be strings often have unnecessary
+white space. If obj is a DataFrame (Series), the columns
+(index) must be existing fields for the given object type
+(i.e. are present in the ‘internal_field_name’ column of the
+corresponding DataFrame which comes from calling
+GetFieldList for the given object type).</p></li>
+<li><p><strong>ObjectType</strong> – Object type the data in the DataFrame relates
+to. E.g. ‘gen’</p></li>
+</ul>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>ValueError</strong> – if the DataFrame (Series) columns (index)
+are not valid fields for the given object type.</p></li>
+<li><p><strong>TypeError</strong> – if the input ‘obj’ is not a DataFrame or
+Series.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="esa.saw.SAW.create_filter">
 <code class="sig-name descname">create_filter</code><span class="sig-paren">(</span><em class="sig-param">condition</em>, <em class="sig-param">object_type</em>, <em class="sig-param">filter_name</em>, <em class="sig-param">filter_logic='AND'</em>, <em class="sig-param">filter_pre='NO'</em>, <em class="sig-param">enabled='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.create_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>NOT IMPLEMENTED.</p>
@@ -800,6 +833,7 @@ cases which only contain positive sequence impedances</p>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">esa package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#module-esa.saw">esa.saw module</a></li>
@@ -817,7 +851,7 @@ cases which only contain positive sequence impedances</p>
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="index.html" title="previous chapter">Welcome to ESA’s documentation!</a></li>
+      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
       <li>Next: <a href="modules.html" title="next chapter">esa</a></li>
   </ul></li>
 </ul>
