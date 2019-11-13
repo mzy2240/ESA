@@ -269,7 +269,7 @@ where your Python packages are installed. If you followed along in the
 "Installation from Source" example, this `Scripts` directory would be
 found at `C:\Users\myuser\git\myproject\venv`.)
 
-## Usage
+## Usage ([document](https://mzy2240.github.io/ESA/))
 Before using the package, make sure you have PowerWorld Simulator with SimAuto add-on installed.
 
 ```python
