@@ -2,7 +2,16 @@
 This Python package provides an easy to use and light-weight wrapper for
 interfacing with PowerWorld's Simulator Automation Server (SimAuto). 
 
-TODO: highlights
+## Why Use ESA?
+Directly interacting with PowerWorld via the Windows COM object can be
+quite cumbersome. Data type inputs and outputs can be odd, and returns
+come back unlabeled, and you have to use pywin32 to interface with
+SimAuto. 
+
+ESA makes all these tasks quick and easy, is well documented, 
+automatically translates data to the appropriate types, and uses 
+Pandas DataFrames and Series where possible. For some motivating 
+examples, please the the "Quick Start" section of this document.
 
 ## Citation
 If you use ESA in any of your work, please use the following citation:
@@ -22,6 +31,8 @@ If you use ESA in any of your work, please use the following citation:
 The following quick start example uses the IEEE 14 bus case, which can
 be found [in the repository](https://github.com/mzy2240/ESA/tree/master/tests/cases/ieee_14)
 or from [Texas A&M](https://electricgrids.engr.tamu.edu/electric-grid-test-cases/ieee-14-bus-system/).
+
+You can find API documentation [here](https://mzy2240.github.io/ESA/html/index.html).
 ```python
 # Import the SimAuto Wrapper (SAW)
 >>> from esa import SAW
@@ -192,24 +203,35 @@ NotImplementedError: This method is either not complete or untested. We apprecia
 # function, it will raise a NotImplementedError.
 ```
 
-## Environment
-Python 3.5 and above. Note that the authors of ESA have only tested with
-Python 3.6. Many users may find it easiest to use Anaconda (Python 3.6),
-but this is not recommended for users familiar with using Pip directly. 
-
 ## Pre-requisites
-- Microsoft Windows Operating System (PowerWorld is Windows only)
-- PowerWorld Simulator with SimAuto add-on installed
+- Microsoft Windows 10 Operating System (PowerWorld is Windows only).
+- PowerWorld Simulator with SimAuto add-on installed.
 - [Git Large File Storage (LFS)](https://git-lfs.github.com/)
 (**OPTIONAL**: required to download case files and run tests). After
 installing Git LFS, simply change directories to this repository, and
 run `git lfs install`. You will likely need to run a `git pull` or
 `git lfs pull` after installing and setting up Git LFS. After initial
 setup, you shouldn't need to do anything else with Git LFS.
+- Python >=3.5.
+
+### Notes on Python versions
+The authors of ESA have tested with Python 3.5,
+3.6, 3.7, and 3.8. Many users may find it easiest to use Anaconda,
+but this is not recommended for users familiar with using Pip and/or
+virtual environments directly (or via PyCharm), as Anaconda provides an
+unnecessarily bloated installation.
+
+#### Important Notes for PyCharm + Python 3.8
+If you use PyCharm to automatically create virtual environments for you,
+there's a little extra work to do to get everything working for Python
+3.8. Start up a terminal *inside* PyCharm (click on the `Terminal` 
+button which defaults to the lower left area). In the terminal, run:
+`python -m pip install -U --force-reinstall pip`. Note you may need to
+run this command twice - mine failed the first time.
 
 ## Installation
 This section covers installation via Pip, installation from source, and
-some __important__ post installation steps that must be taken.
+some __important__ post installation steps that **must** be taken.
 
 ### Installation with Pip (easiest)
 Use the Python package manager [pip](https://pip.pypa.io/en/stable/) to
@@ -253,15 +275,13 @@ python -m pip install .
 ```
 
 ### Post-Installation
-**NOTE**: The authors are still investigating under what conditions
-these steps are necessary versus required. They do not seem to be
-necessary for Python 3.6.
-
 You need to run a post-installation script related to a
 pre-requisite Python package, [pywin32](https://github.com/mhammond/pywin32).
 As per pywin32's directions, you'll need to run the following with
-an __elevated__ (administrator) command prompt:
+an __elevated__ (administrator) command prompt after navigating to your
+virtual environment's directory:
 ```cmd
+Scripts\activate.bat
 python Scripts/pywin32_postinstall.py -install
 ```
 (this `Scripts` directory can be found within your virtual environment
@@ -269,37 +289,8 @@ where your Python packages are installed. If you followed along in the
 "Installation from Source" example, this `Scripts` directory would be
 found at `C:\Users\myuser\git\myproject\venv`.)
 
-## Usage ([document](https://mzy2240.github.io/ESA/))
-Before using the package, make sure you have PowerWorld Simulator with SimAuto add-on installed.
-
-```python
-from esa import SAW
-pw = SAW("pwb_file_path")               # initialize the simauto object
-fl = pw.GetFieldList("Bus")             # get a list of all the available fields for bus object
-op = pw.SolvePowerFlow()                # solve the power flow
-op = pw.get_power_flow_results("Bus")   # retrieve the power flow result
-```
-#### Simauto functions
-We have implemented most of the native simauto functions. To call these functions, you can use the exact same function
-name as defined [here](https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3).
-
-#### Script commands
-Most of the script commands are supported by using the RunScriptCommand function. For more details, please check the 
-[Auxiliary File Format](https://www.powerworld.com/WebHelp/Default.htm#Other_Documents/Auxiliary-File-Format.pdf%3FTocPath%3DAuxiliary%2520Script%252FData%2520Files%7C_____2). Here is one example:
-```python
-op = pw.RunScriptCommand("EnterMode(EDIT)")     # Enter the edit mode
-```
-
-#### Native functions
-Besides the simauto functions and the script commands, we also implement some high-level functions in order to simplify
-the programming logics and have a better formatted output. Here are the list: 
-
-|  Function   |      Action      |        Argument      |
-|-------------|----------------|-----------------------|
-| change_and_confirm_params_multiple_element |  Change parameters for multiple objects of the same type, and confirm that the change was respected by PowerWorld. | *ObjectType*: string (Required). *command_df*: DataFrame (Required). |
-| exit |    Manually close the PowerWorld COM object.   |  |
-| get_key_fields_for_object_type | Helper function to get all key fields for an object type. | *ObjectType*: string (Required).  |
-| get_power_flow_results |Get the power flow results from SimAuto server.|*ObjectType*: string (Required)
+## Documentation
+ESA is documented [here](https://mzy2240.github.io/ESA/).
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
