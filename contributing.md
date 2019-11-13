@@ -108,4 +108,4 @@ designed to make development easy.
 Never call SimAuto directly - always use the `_call_simauto` helper.
 
 Any and all DataFrames/Series that are created via output from
-PowerWorld should be passed through the `_clean_df_or_series` method.
+PowerWorld should be passed through the `clean_df_or_series` method.
