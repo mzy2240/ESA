@@ -151,7 +151,7 @@ Name: internal_field_name, dtype: object
 # if you directly use ChangeParametersMultipleElements, PowerWorld may
 # unexpectedly not update the parameter you tried to change! If the 
 # following does not raise an exception, we're in good shape (it doesn't)!
-saw.change_and_confirm_params_multiple_element(ObjectType='gen', command_df=gen_copy.drop('GenMVR', axis=1))
+>>> saw.change_and_confirm_params_multiple_element(ObjectType='gen', command_df=gen_copy.drop('GenMVR', axis=1))
 
 # Run the power flow and observe the change in generation at the slack
 # bus (bus 1).
