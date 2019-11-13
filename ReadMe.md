@@ -42,7 +42,7 @@ You can find API documentation [here](https://mzy2240.github.io/ESA/html/index.h
 
 # Initialize SAW instance using 14 bus test case. Adapt path as needed
 # for your file system.
->>> saw = SAW(FileName=r'C:\Users\blthayer\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb')
+>>> saw = SAW(FileName=r'C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb')
 
 # Solve the power flow.
 >>> saw.SolvePowerFlow()
@@ -274,10 +274,10 @@ your virtual environment has been activated. Now, perform the following:
 
 ```cmd
 cd ../ESA
-python -m pip install .
+python setup.py install
 ```
 
-### Post-Installation
+### Post-Installation (optional)
 You need to run a post-installation script related to a
 pre-requisite Python package, [pywin32](https://github.com/mhammond/pywin32).
 As per pywin32's directions, you'll need to run the following with
