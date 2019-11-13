@@ -44,7 +44,7 @@ PATH_14 = os.path.join(THIS_DIR, 'cases', 'ieee_14', 'IEEE 14 bus.pwb')
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
 # noinspection PyTypeChecker
-saw_14: SAW = None
+saw_14 = None  # type: SAW
 
 
 # noinspection PyPep8Naming
@@ -662,11 +662,9 @@ class RunScriptCommandTestCase(unittest.TestCase):
         with patch.object(saw_14, '_call_simauto') as p:
             saw_14.RunScriptCommand(Statements='Some stuff')
 
-        # _call_simauto should have been called once.
-        p.assert_called_once()
-
-        # The Statements should simply be passed through.
-        p.assert_called_with('RunScriptCommand', 'Some stuff')
+        # _call_simauto should have been called once and the statements
+        # should simply be passed through.
+        p.assert_called_once_with('RunScriptCommand', 'Some stuff')
 
     def test_exception_for_bad_statement(self):
         """Ensure an exception is thrown for a bad statement."""
@@ -712,8 +710,7 @@ class SaveCaseTestCase(unittest.TestCase):
         with patch.object(saw_14, '_call_simauto') as p:
             saw_14.SaveCase()
 
-        p.assert_called_once()
-        p.assert_called_with(
+        p.assert_called_once_with(
             'SaveCase', convert_to_windows_path(saw_14.pwb_file_path),
             'PWB', True)
 

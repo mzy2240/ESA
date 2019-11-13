@@ -1083,7 +1083,8 @@ class SAW(object):
         try:
             output = f(*args)
         except Exception:
-            m = f'An error occurred when trying to call {func} with {args}'
+            m = ('An error occurred when trying to call {} with '
+                 '{}').format(func, args)
             self.log.exception(m)
             raise COMError(m)
 
