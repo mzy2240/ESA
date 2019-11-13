@@ -9,7 +9,7 @@ come back unlabeled, and you have to use pywin32 to interface with
 SimAuto. 
 
 ESA makes all these tasks quick and easy, is well documented, 
-automatically translates data to the appropriate types, and uses 
+automagically translates data to the appropriate types, and uses 
 Pandas DataFrames and Series where possible. For some motivating 
 examples, please the the "Quick Start" section of this document.
 
