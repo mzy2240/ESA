@@ -27,6 +27,9 @@ If you use ESA in any of your work, please use the following citation:
 }
 ```
 
+## Documentation
+ESA is documented [here](https://mzy2240.github.io/ESA/).
+
 ## Quick Start
 The following quick start example uses the IEEE 14 bus case, which can
 be found [in the repository](https://github.com/mzy2240/ESA/tree/master/tests/cases/ieee_14)
@@ -288,9 +291,6 @@ python Scripts/pywin32_postinstall.py -install
 where your Python packages are installed. If you followed along in the
 "Installation from Source" example, this `Scripts` directory would be
 found at `C:\Users\myuser\git\myproject\venv`.)
-
-## Documentation
-ESA is documented [here](https://mzy2240.github.io/ESA/).
 
 ## License
 [MIT](https://choosealicense.com/licenses/mit/)
