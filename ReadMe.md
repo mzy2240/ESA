@@ -4,7 +4,7 @@ interfacing with PowerWorld's Simulator Automation Server (SimAuto).
 
 ## Why Use ESA?
 Directly interacting with PowerWorld via the Windows COM object can be
-quite cumbersome. Data type inputs and outputs can be odd, and returns
+quite cumbersome. Data type inputs and outputs can be odd, returns
 come back unlabeled, and you have to use pywin32 to interface with
 SimAuto. 
 
