@@ -56,7 +56,7 @@ class SAW(object):
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
 
-    def __init__(self, FileName, early_bind=True, visible=False,
+    def __init__(self, FileName, early_bind=False, visible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch')):
         """Initialize SimAuto wrapper. The case will be opened, and
