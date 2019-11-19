@@ -204,6 +204,10 @@ NotImplementedError: This method is either not complete or untested. We apprecia
 
 # This behavior is expected - if we have not implemented/tested a SimAuto
 # function, it will raise a NotImplementedError.
+
+# Finally, make sure to clean up after yourself so you don't have COM
+# objects hanging around.
+saw.exit()
 ```
 
 ## Pre-requisites
