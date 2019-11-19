@@ -80,6 +80,26 @@ be used with helpers that double-check commands.</p>
 <em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=False</em>, <em class="sig-param">visible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A SimAuto Wrapper in Python</p>
+<p>Initialize SimAuto wrapper. The case will be opened, and
+object fields given in object_field_lookup will be retrieved.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileName</strong> – Full file path to .pwb file to open. This will
+be passed to the SimAuto function OpenCase.</p></li>
+<li><p><strong>early_bind</strong> – Whether (True) or not (False) to connect to
+SimAuto via early binding.</p></li>
+<li><p><strong>visible</strong> – Whether or not to display the PowerWorld UI.</p></li>
+<li><p><strong>object_field_lookup</strong> – Listing of PowerWorld objects to
+initially look up available fields for. Objects not
+specified for lookup here will be looked up later as
+necessary.</p></li>
+</ul>
+</dd>
+</dl>
+<p>Note that
+<a class="reference external" href="https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients">Microsoft recommends</a>
+early binding in most cases.</p>
 <dl class="method">
 <dt id="esa.saw.SAW.CalculateLODF">
 <code class="sig-name descname">CalculateLODF</code><span class="sig-paren">(</span><em class="sig-param">Branch</em>, <em class="sig-param">LinearMethod='DC'</em>, <em class="sig-param">PostClosureLCDF='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CalculateLODF" title="Permalink to this definition">¶</a></dt>
@@ -658,31 +678,6 @@ Simulator Automation Server. If no filter is desired, then
 simply pass an empty string. If a filter name is passed but the
 filter cannot be found in the loaded case, no filter is used.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm">PowerWorld documentation</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.__init__">
-<code class="sig-name descname">__init__</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=False</em>, <em class="sig-param">visible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.__init__" title="Permalink to this definition">¶</a></dt>
-<dd><p>Initialize SimAuto wrapper. The case will be opened, and
-object fields given in object_field_lookup will be retrieved.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>FileName</strong> – Full file path to .pwb file to open. This will
-be passed to the SimAuto function OpenCase.</p></li>
-<li><p><strong>early_bind</strong> – Whether (True) or not (False) to connect to
-SimAuto via early binding.</p></li>
-<li><p><strong>visible</strong> – Whether or not to display the PowerWorld UI.</p></li>
-<li><p><strong>object_field_lookup</strong> – Listing of PowerWorld objects to
-initially look up available fields for. Objects not
-specified for lookup here will be looked up later as
-necessary.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Note that
-<a class="reference external" href="https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients">Microsoft recommends</a>
-early binding in most cases.</p>
 </dd></dl>
 
 <dl class="method">
