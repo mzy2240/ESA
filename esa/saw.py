@@ -11,9 +11,11 @@ import numpy as np
 import win32com
 from win32com.client import VARIANT
 import pythoncom
+import pywintypes
 from typing import Union
 from pathlib import Path, PureWindowsPath
 import logging
+import os
 
 # TODO: Make logging more configurable.
 logging.basicConfig(
@@ -56,7 +58,12 @@ class SAW(object):
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
 
-    def __init__(self, FileName, early_bind=False, visible=False,
+    # SimAuto properties that we allow users to set via the
+    # set_simauto_property method.
+    SIMAUTO_PROPERTIES = {'CreateIfNotFound': bool, 'CurrentDir': str,
+                          'UIVisible': bool}
+
+    def __init__(self, FileName, early_bind=False, UIVisible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch'),
                  CreateIfNotFound=False):
@@ -67,7 +74,7 @@ class SAW(object):
             be passed to the SimAuto function OpenCase.
         :param early_bind: Whether (True) or not (False) to connect to
             SimAuto via early binding.
-        :param visible: Whether or not to display the PowerWorld UI.
+        :param UIVisible: Whether or not to display the PowerWorld UI.
         :param CreateIfNotFound: Set CreateIfNotFound = True if objects
             that are updated through the ChangeParameters functions
             should be created if they do not already exist in the case.
@@ -112,10 +119,9 @@ class SAW(object):
         # Initialize self.pwb_file_path. It will be set in the OpenCase
         # method.
         self.pwb_file_path = None
-        # Set the CreateIfNotFound property.
-        self._pwcom.CreateIfNotFound = CreateIfNotFound
-        # Set the visible attribute.
-        self._pwcom.UIVisible = visible
+        # Set the CreateIfNotFound and UIVisible properties.
+        self.set_simauto_property('CreateIfNotFound', CreateIfNotFound)
+        self.set_simauto_property('UIVisible', UIVisible)
         # Open the case.
         self.OpenCase(FileName=FileName)
 
@@ -355,6 +361,51 @@ class SAW(object):
         # result = self.RunScriptCommand(script_cmd)
         # field_list = ['BusNum', 'FaultCurMag']
         # return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
+
+    def set_simauto_property(self, property_name: str,
+                             property_value: Union[str, bool]):
+        """Set a SimAuto property, e.g. CreateIfNotFound. The currently
+        supported properties are listed in the SAW.SIMAUTO_PROPERTIES
+        class constant.
+
+        `PowerWorld Docuemntation <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1>`__
+
+        :param property_name: Name of the property to set, e.g.
+            UIVisible.
+        :param property_value: Value to set the property to, e.g. False.
+        """
+        # Ensure the given property name is valid.
+        if property_name not in self.SIMAUTO_PROPERTIES:
+            raise ValueError(('The given property_name, {}, is not currently '
+                              'supported. Valid properties are: {}')
+                             .format(property_name,
+                                     list(self.SIMAUTO_PROPERTIES.keys())))
+
+        # Ensure the given property value has a valid type.
+        # noinspection PyTypeHints
+        if not isinstance(property_value,
+                          self.SIMAUTO_PROPERTIES[property_name]):
+            m = ('The given property_value, {}, is invalid. It must be '
+                 'of type {}.').format(property_value,
+                                       self.SIMAUTO_PROPERTIES[property_name])
+            raise ValueError(m)
+
+        # If we're setting CurrentDir, ensure the path is valid.
+        # It seems PowerWorld does not check this.
+        if property_name == 'CurrentDir':
+            if not os.path.isdir(property_value):
+                raise ValueError('The given path for CurrentDir, {}, is '
+                                 'not a valid path!'.format(property_value))
+
+        # Set the property.
+        # noinspection PyUnresolvedReferences
+        try:
+            setattr(self._pwcom, property_name, property_value)
+        except pywintypes.com_error:
+            # Well, this is unexpected.
+            raise ValueError('The given property_name, property_value '
+                             'pair ({}, {}), resulted in an error. Please '
+                             'help us out by filing an issue on GitHub.')
 
     ####################################################################
     # SimAuto Server Functions
