@@ -58,7 +58,8 @@ class SAW(object):
 
     def __init__(self, FileName, early_bind=False, visible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
-                                      'branch')):
+                                      'branch'),
+                 CreateIfNotFound=True):
         """Initialize SimAuto wrapper. The case will be opened, and
         object fields given in object_field_lookup will be retrieved.
 
@@ -67,6 +68,12 @@ class SAW(object):
         :param early_bind: Whether (True) or not (False) to connect to
             SimAuto via early binding.
         :param visible: Whether or not to display the PowerWorld UI.
+        :param CreateIfNotFound: Set CreateIfNotFound = True if objects
+            that are updated through the ChangeParameters functions
+            should be created if they do not already exist in the case.
+            Objects that already exist will be updated.
+            Set CreateIfNotFound = False to not create new objects
+            and only update existing ones.
         :param object_field_lookup: Listing of PowerWorld objects to
             initially look up available fields for. Objects not
             specified for lookup here will be looked up later as
@@ -105,6 +112,8 @@ class SAW(object):
         # Initialize self.pwb_file_path. It will be set in the OpenCase
         # method.
         self.pwb_file_path = None
+        # Set the CreateIfNotFound property.
+        self._pwcom.CreateIfNotFound = CreateIfNotFound
         # Set the visible attribute.
         self._pwcom.UIVisible = visible
         # Open the case.
