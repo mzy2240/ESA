@@ -319,6 +319,58 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
 
+class SetSimAutoPropertyTestCase(unittest.TestCase):
+    """Test the set_simauto_property method. To avoid conflicts with
+    other tests we'll create a fresh SAW instance here.
+    """
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_set_create_if_not_found_true(self):
+        self.saw.set_simauto_property('CreateIfNotFound', True)
+        self.assertTrue(self.saw._pwcom.CreateIfNotFound)
+
+    def test_set_create_if_not_found_false(self):
+        self.saw.set_simauto_property('CreateIfNotFound', False)
+        self.assertFalse(self.saw._pwcom.CreateIfNotFound)
+
+    def test_set_create_if_not_found_bad_value(self):
+        with self.assertRaisesRegex(
+                ValueError, 'The given property_value, bad, is invalid'):
+            self.saw.set_simauto_property('CreateIfNotFound', 'bad')
+
+    def test_set_ui_visible_true(self):
+        self.saw.set_simauto_property('UIVisible', True)
+        self.assertTrue(self.saw._pwcom.UIVisible)
+
+    def test_set_ui_visible_false(self):
+        self.saw.set_simauto_property('UIVisible', False)
+        self.assertFalse(self.saw._pwcom.UIVisible)
+
+    def test_set_ui_visible_bad_value(self):
+        with self.assertRaisesRegex(
+                ValueError, 'The given property_value, bad, is invalid'):
+            self.saw.set_simauto_property('UIVisible', 'bad')
+
+    def test_set_current_dir_here(self):
+        self.saw.set_simauto_property(property_name='CurrentDir',
+                                      property_value=THIS_DIR)
+        self.assertEqual(self.saw._pwcom.CurrentDir, THIS_DIR)
+
+    def test_set_current_dir_bad(self):
+        with self.assertRaisesRegex(ValueError, 'The given path for Current'):
+            self.saw.set_simauto_property(property_name='CurrentDir',
+                                          property_value=r'C:\bad\path')
+
+
+
+
 ########################################################################
 # SimAuto functions tests
 ########################################################################
