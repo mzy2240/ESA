@@ -59,7 +59,7 @@ class SAW(object):
     def __init__(self, FileName, early_bind=False, visible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch'),
-                 CreateIfNotFound=True):
+                 CreateIfNotFound=False):
         """Initialize SimAuto wrapper. The case will be opened, and
         object fields given in object_field_lookup will be retrieved.
 
