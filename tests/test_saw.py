@@ -37,9 +37,14 @@ import logging
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
+CASE_DIR = os.path.join(THIS_DIR, 'cases')
+DATA_DIR = os.path.join(THIS_DIR, 'data')
 
 # Path to IEEE 14 bus model.
-PATH_14 = os.path.join(THIS_DIR, 'cases', 'ieee_14', 'IEEE 14 bus.pwb')
+PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
+
+# Path to the Texas 2000 bus model.
+PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -785,9 +790,49 @@ class SolvePowerFlowTestCase(unittest.TestCase):
 
 
 ########################################################################
-# Private method tests
+# Misc tests
 ########################################################################
 
+
+class TestPossibleBadStringConversion(unittest.TestCase):
+    """Test for looking into
+    https://github.com/mzy2240/ESA/issues/4#issue-526268959
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(FileName=PATH_2000, CreateIfNotFound=True,
+                      early_bind=True)
+        cls.line_df = pd.read_csv(os.path.join(DATA_DIR, 'CandidateLines.csv'))
+
+    def test_change_params(self):
+        # Rename columns to match PowerWorld variables.
+        self.line_df.rename(
+            # TODO: Will need to update this renaming once
+            #   https://github.com/mzy2240/ESA/issues/1#issue-525219427
+            #   is addressed.
+            columns={
+                'From Number': 'BusNum',
+                'To Number': 'BusNum:1',
+                'Ckt': 'LineCircuit',
+                'R': 'LineR',
+                'X': 'LineX',
+                'B': 'LineC'
+            },
+            inplace=True)
+
+        # Extract just a few columns we care about.
+        columns = ["BusNum", "BusNum:1", "LineCircuit", "LineR", "LineX",
+                   "LineC"]
+        sub_df = self.line_df[columns]
+
+        # Move into edit mode so we can add lines.
+        self.saw.RunScriptCommand("EnterMode(EDIT);")
+
+        # Create the lines.
+        self.saw._pwcom.CreateIfNotFound = True
+        self.saw.change_and_confirm_params_multiple_element(
+            ObjectType='branch', command_df=sub_df)
 
 
 if __name__ == '__main__':
