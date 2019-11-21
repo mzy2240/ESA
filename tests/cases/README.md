@@ -5,3 +5,10 @@ cases are public - don't share any private cases!
 ## ieee_14
 IEEE 14-bus test case downloaded from [here](https://electricgrids.engr.tamu.edu/electric-grid-test-cases/ieee-14-bus-system/)
 on 2019-09-25.
+
+## tx2000
+This directory contains a variant of the Texas 2000 bus synthetic 
+grid. You can find a version of this model (though possibly not
+identical) on Texas A&M's [website](https://electricgrids.engr.tamu.edu/electric-grid-test-cases/).
+This particular case was provided by [Adam Birchfield](http://adambirchfield.com/)
+on 2019-11-21.
