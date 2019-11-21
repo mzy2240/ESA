@@ -1190,6 +1190,9 @@ class SAW(object):
         # Now handle the non-numeric cols.
         nn_cols = ifn[~numeric]
 
+        # Start by ensuring the non-numeric columns are indeed strings.
+        obj[nn_cols] = obj[nn_cols].astype(str)
+
         # Here we'll strip off the white space.
         if df_flag:
             # Need to use apply to strip strings from multiple columns.
