@@ -794,18 +794,25 @@ class SolvePowerFlowTestCase(unittest.TestCase):
 ########################################################################
 
 
-class TestPossibleBadStringConversion(unittest.TestCase):
+class TestCreateNewLinesFromFile2000Bus(unittest.TestCase):
     """Test for looking into
     https://github.com/mzy2240/ESA/issues/4#issue-526268959
     """
 
     @classmethod
     def setUpClass(cls) -> None:
+        # We're creating lines, so we want CreateIfNotFound to be
+        # true.
         cls.saw = SAW(FileName=PATH_2000, CreateIfNotFound=True,
                       early_bind=True)
         cls.line_df = pd.read_csv(os.path.join(DATA_DIR, 'CandidateLines.csv'))
 
-    def test_change_params(self):
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_create_lines(self):
         # Rename columns to match PowerWorld variables.
         self.line_df.rename(
             # TODO: Will need to update this renaming once
@@ -817,22 +824,21 @@ class TestPossibleBadStringConversion(unittest.TestCase):
                 'Ckt': 'LineCircuit',
                 'R': 'LineR',
                 'X': 'LineX',
-                'B': 'LineC'
+                'B': 'LineC',
+                'Lim MVA A': 'LineAMVA'
             },
             inplace=True)
 
-        # Extract just a few columns we care about.
-        columns = ["BusNum", "BusNum:1", "LineCircuit", "LineR", "LineX",
-                   "LineC"]
-        sub_df = self.line_df[columns]
+        # We're required to set other limits too.
+        self.line_df['LineAMVA:1'] = 0.0
+        self.line_df['LineAMVA:2'] = 0.0
 
         # Move into edit mode so we can add lines.
         self.saw.RunScriptCommand("EnterMode(EDIT);")
 
         # Create the lines.
-        self.saw._pwcom.CreateIfNotFound = True
         self.saw.change_and_confirm_params_multiple_element(
-            ObjectType='branch', command_df=sub_df)
+            ObjectType='branch', command_df=self.line_df)
 
 
 if __name__ == '__main__':
