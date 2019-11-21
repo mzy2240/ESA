@@ -418,4 +418,7 @@ saw.RunScriptCommand("EnterMode(EDIT);")
 # Create the lines.
 saw.change_and_confirm_params_multiple_element(
     ObjectType='branch', command_df=line_df)
+
+# Close the object so we don't get COM objects hanging around.
+saw.exit()
 ```
