@@ -77,7 +77,7 @@ be used with helpers that double-check commands.</p>
 
 <dl class="class">
 <dt id="esa.saw.SAW">
-<em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=False</em>, <em class="sig-param">visible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=False</em>, <em class="sig-param">UIVisible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em>, <em class="sig-param">CreateIfNotFound=False</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A SimAuto Wrapper in Python</p>
 <p>Initialize SimAuto wrapper. The case will be opened, and
@@ -89,7 +89,13 @@ object fields given in object_field_lookup will be retrieved.</p>
 be passed to the SimAuto function OpenCase.</p></li>
 <li><p><strong>early_bind</strong> – Whether (True) or not (False) to connect to
 SimAuto via early binding.</p></li>
-<li><p><strong>visible</strong> – Whether or not to display the PowerWorld UI.</p></li>
+<li><p><strong>UIVisible</strong> – Whether or not to display the PowerWorld UI.</p></li>
+<li><p><strong>CreateIfNotFound</strong> – Set CreateIfNotFound = True if objects
+that are updated through the ChangeParameters functions
+should be created if they do not already exist in the case.
+Objects that already exist will be updated.
+Set CreateIfNotFound = False to not create new objects
+and only update existing ones.</p></li>
 <li><p><strong>object_field_lookup</strong> – Listing of PowerWorld objects to
 initially look up available fields for. Objects not
 specified for lookup here will be looked up later as
@@ -127,7 +133,7 @@ fields in ParamList.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.ChangeParametersMultipleElement">
-<code class="sig-name descname">ChangeParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ChangeParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set parameters for multiple objects of the same type.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -164,8 +170,23 @@ simply be None.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.ChangeParametersSingleElement">
-<code class="sig-name descname">ChangeParametersSingleElement</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">ChangeParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a list of parameters for a single object.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you are changing
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of object field variable names. Note this
+MUST include the key fields for the given ObjectType
+(which you can get via the get_key_fields_for_object_type
+method).</p></li>
+<li><p><strong>Values</strong> – List of values corresponding to the parameters in
+the ParamList.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -457,6 +478,11 @@ those included in the script sections of auxiliary files.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand_Function.htm">PowerWorld documentation</a></p>
 <p><a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format</a></p>
 </dd></dl>
+
+<dl class="attribute">
+<dt id="esa.saw.SAW.SIMAUTO_PROPERTIES">
+<code class="sig-name descname">SIMAUTO_PROPERTIES</code><em class="property"> = {'CreateIfNotFound': &lt;class 'bool'&gt;, 'CurrentDir': &lt;class 'str'&gt;, 'UIVisible': &lt;class 'bool'&gt;}</em><a class="headerlink" href="#esa.saw.SAW.SIMAUTO_PROPERTIES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="method">
 <dt id="esa.saw.SAW.SaveCase">
@@ -810,6 +836,46 @@ None if the given ObjectType is not present in the model.</p>
 cases which only contain positive sequence impedances</p>
 </dd></dl>
 
+<dl class="method">
+<dt id="esa.saw.SAW.set_simauto_property">
+<code class="sig-name descname">set_simauto_property</code><span class="sig-paren">(</span><em class="sig-param">property_name: str, property_value: Union[str, bool]</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.set_simauto_property" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a SimAuto property, e.g. CreateIfNotFound. The currently
+supported properties are listed in the SAW.SIMAUTO_PROPERTIES
+class constant.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1">PowerWorld Docuemntation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>property_name</strong> – Name of the property to set, e.g.
+UIVisible.</p></li>
+<li><p><strong>property_value</strong> – Value to set the property to, e.g. False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="esa.saw.convert_list_to_variant">
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param">list_in: list</em><span class="sig-paren">)</span> &#x2192; win32com.client.VARIANT<a class="headerlink" href="#esa.saw.convert_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list, convert to a variant array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_in</strong> – Simple one-dimensional Python list, e.g. [1, ‘a’, 7]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="esa.saw.convert_nested_list_to_variant">
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_nested_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param">list_in: list</em><span class="sig-paren">)</span> &#x2192; List[win32com.client.VARIANT]<a class="headerlink" href="#esa.saw.convert_nested_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given a list of lists, convert to a variant array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>list_in</strong> – List of lists, e.g. [[1, ‘1’], [1, ‘2’], [2, ‘1’]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="function">
@@ -902,7 +968,7 @@ cases which only contain positive sequence impedances</p>
       &copy;2019, Zeyu Mao, Brandon Thayer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
