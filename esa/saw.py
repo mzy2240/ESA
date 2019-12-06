@@ -427,9 +427,26 @@ class SAW(object):
         #                             ValueArray)
         # return output
 
-    def ChangeParametersSingleElement(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def ChangeParametersSingleElement(self, ObjectType: str, ParamList: list,
+                                      Values: list) -> None:
+        """Set a list of parameters for a single object.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersSingleElement_Function.htm>`__
+
+        :param ObjectType: The type of object you are changing
+            parameters for.
+        :param ParamList: List of object field variable names. Note this
+            MUST include the key fields for the given ObjectType
+            (which you can get via the get_key_fields_for_object_type
+            method).
+        :param Values: List of values corresponding to the parameters in
+            the ParamList.
+        """
+        return self._call_simauto('ChangeParametersSingleElement',
+                                  ObjectType,
+                                  convert_list_to_variant(ParamList),
+                                  convert_list_to_variant(Values))
 
     def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,
                                         ValueList: list) -> None:
