@@ -12,7 +12,7 @@ import win32com
 from win32com.client import VARIANT
 import pythoncom
 import pywintypes
-from typing import Union
+from typing import Union, List
 from pathlib import Path, PureWindowsPath
 import logging
 import os
@@ -432,7 +432,7 @@ class SAW(object):
         raise NotImplementedError(NIE_MSG)
 
     def ChangeParametersMultipleElement(self, ObjectType: str, ParamList: list,
-                                        ValueList: list):
+                                        ValueList: list) -> None:
         """Set parameters for multiple objects of the same type.
 
         `PowerWorld Documentation
@@ -454,21 +454,11 @@ class SAW(object):
 
         :raises PowerWorldError: if PowerWorld reports an error.
         """
-        # Massage both the ParamList and ValueList into variant arrays.
-        # Example from PowerWorld:
-        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
-
-        # Convert arrays to variants.
-        # noinspection PyUnresolvedReferences
-        param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              ParamList)
-        # noinspection PyUnresolvedReferences
-        value_array = [VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                               sub_array) for sub_array in ValueList]
-
         # Call SimAuto and return the result (should just be None)
         return self._call_simauto('ChangeParametersMultipleElement',
-                                  ObjectType, param_array, value_array)
+                                  ObjectType,
+                                  convert_list_to_variant(ParamList),
+                                  convert_nested_list_to_variant(ValueList))
 
     def ChangeParametersMultipleElementFlatInput(self):
         """NOT IMPLEMENTED."""
@@ -558,17 +548,10 @@ class SAW(object):
         assert len(ParamList) == len(Values), \
             'The given ParamList and Values must have the same length.'
 
-        # Get arrays as variants.
-        # noinspection PyUnresolvedReferences
-        field_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              ParamList)
-        # noinspection PyUnresolvedReferences
-        value_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              Values)
-
         # Call PowerWorld.
         output = self._call_simauto('GetParametersSingleElement', ObjectType,
-                                    field_array, value_array)
+                                    convert_list_to_variant(ParamList),
+                                    convert_list_to_variant(Values))
 
         # Convert to Series.
         s = pd.Series(output, index=ParamList)
@@ -607,11 +590,10 @@ class SAW(object):
         TODO: Should we cast None to NaN to be consistent with how
             Pandas/Numpy handle bad/missing data?
         """
-        # noinspection PyUnresolvedReferences
-        param_array = VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY,
-                              ParamList)
         output = self._call_simauto('GetParametersMultipleElement',
-                                    ObjectType, param_array, FilterName)
+                                    ObjectType,
+                                    convert_list_to_variant(ParamList),
+                                    FilterName)
         if output is None:
             # Given object isn't present.
             return output
@@ -1275,6 +1257,23 @@ def convert_to_posix_path(p):
 def convert_to_windows_path(p):
     """Given a path, p, convert it to a Windows path."""
     return str(PureWindowsPath(p))
+
+
+def convert_list_to_variant(list_in: list) -> VARIANT:
+    """Given a list, convert to a variant array.
+
+    :param list_in: Simple one-dimensional Python list, e.g. [1, 'a', 7]
+    """
+    # noinspection PyUnresolvedReferences
+    return VARIANT(pythoncom.VT_VARIANT | pythoncom.VT_ARRAY, list_in)
+
+
+def convert_nested_list_to_variant(list_in: list) -> List[VARIANT]:
+    """Given a list of lists, convert to a variant array.
+
+    :param list_in: List of lists, e.g. [[1, '1'], [1, '2'], [2, '1']]
+    """
+    return [convert_list_to_variant(sub_array) for sub_array in list_in]
 
 
 class Error(Exception):
