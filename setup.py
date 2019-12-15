@@ -22,7 +22,8 @@ setuptools.setup(
         "License :: OSI Approved :: MIT License",
         "Operating System :: Microsoft :: Windows :: Windows 10",
     ],
-    install_requires=['pandas', 'numpy', 'pywin32', 'pypiwin32'],
+    install_requires=['pandas >= 0.24', 'numpy', 'pywin32', 'pypiwin32'],
+    python_requires='>=3.5',
     license='MIT',
     zip_safe=False
 )
