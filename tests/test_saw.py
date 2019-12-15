@@ -106,7 +106,7 @@ class InitializationTestCase(unittest.TestCase):
             self.assertSetEqual({'key_field', 'internal_field_name',
                                  'field_data_type', 'description',
                                  'display_name'},
-                                set(df.columns.values))
+                                set(df.columns.to_numpy()))
 
 
 ########################################################################
@@ -140,10 +140,9 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
 
         # Patch the call to ChangeParametersMultipleElement.
         with patch.object(saw_14, 'ChangeParametersMultipleElement'):
-            result = saw_14.change_and_confirm_params_multiple_element(
-                ObjectType='load', command_df=command_df)
-
-        self.assertIsNone(result)
+            self.assertIsNone(
+                saw_14.change_and_confirm_params_multiple_element(
+                    ObjectType='load', command_df=command_df))
 
     def test_failure(self):
         """Don't actually send in a command, and ensure that we get
@@ -309,7 +308,7 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
                 # We should get a DataFrame back.
                 self.assertIsInstance(result, pd.DataFrame)
                 # Ensure the DataFrame has all the columns we expect.
-                self.assertSetEqual(set(result.columns.values),
+                self.assertSetEqual(set(result.columns.to_numpy()),
                                     set(object_fields))
                 # No NaNs.
                 self.assertFalse(result.isna().any().any())
@@ -375,8 +374,6 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
                                           property_value=r'C:\bad\path')
 
 
-
-
 ########################################################################
 # SimAuto functions tests
 ########################################################################
@@ -390,7 +387,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
         # Get generator key fields.
         cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
         cls.params = \
-            cls.key_field_df_gens['internal_field_name'].values.tolist()
+            cls.key_field_df_gens['internal_field_name'].to_numpy().tolist()
         # Combine key fields with our desired attribute.
         cls.params.append('GenVoltSet')
         cls.gen_v_pu = saw_14.GetParametersMultipleElement(
@@ -401,7 +398,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
     def tearDownClass(cls) -> None:
         """Always be nice and clean up after yourself and put your toys
         away. No, but seriously, put the voltage set points back."""
-        value_list = cls.gen_v_pu.values.tolist()
+        value_list = cls.gen_v_pu.to_numpy().tolist()
         saw_14.ChangeParametersMultipleElement(
             ObjectType='gen', ParamList=cls.params, ValueList=value_list)
 
@@ -412,7 +409,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
         """
         # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
         # Start by converting our generator data to a list of lists.
-        value_list = self.gen_v_pu.values.tolist()
+        value_list = self.gen_v_pu.to_numpy().tolist()
 
         # Loop over the values, set to 1.
         # noinspection PyTypeChecker
@@ -422,10 +419,8 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
 
         # Send in the command.
         # noinspection PyTypeChecker
-        result = saw_14.ChangeParametersMultipleElement(
-            ObjectType='gen', ParamList=self.params, ValueList=value_list)
-
-        self.assertIsNone(result)
+        self.assertIsNone(saw_14.ChangeParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params, ValueList=value_list))
 
         # Check results.
         gen_v = saw_14.GetParametersMultipleElement(
@@ -442,8 +437,8 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
 
         # Our current results should have all 1's for the GenRegPUVolt
         # column.
-        # actual = pd.to_numeric(gen_v['GenRegPUVolt']).values
-        actual = pd.to_numeric(gen_v['GenVoltSet']).values
+        # actual = pd.to_numeric(gen_v['GenRegPUVolt']).to_numpy()
+        actual = pd.to_numeric(gen_v['GenVoltSet']).to_numpy()
         expected = np.array([1.0] * actual.shape[0])
 
         np.testing.assert_array_equal(actual, expected)
@@ -454,7 +449,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
         df = self.gen_v_pu[['BusNum', 'GenVoltSet']]
 
         # Convert to list.
-        value_list = df.values.tolist()
+        value_list = df.to_numpy().tolist()
 
         with self.assertRaisesRegex(PowerWorldError,
                                     'does not adequately define each object'):
@@ -471,7 +466,7 @@ class ChangeParametersMultipleElementTestCase(unittest.TestCase):
 
     def test_mismatched_list_lengths(self):
         # Start by converting our generator data to a list of lists.
-        value_list = self.gen_v_pu.values.tolist()
+        value_list = self.gen_v_pu.to_numpy().tolist()
 
         # Delete an entry.
         # noinspection PyUnresolvedReferences
@@ -499,7 +494,7 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         # Get generator key fields.
         cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
         cls.params = \
-            cls.key_field_df_gens['internal_field_name'].values.tolist()
+            cls.key_field_df_gens['internal_field_name'].to_numpy().tolist()
         # Combine key fields with our desired attribute.
         cls.params.append('GenRegPUVolt')
         cls.gen_v_pu = saw_14.GetParametersMultipleElement(
@@ -513,7 +508,7 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         """
         # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
         # Start by converting our generator data to a list of lists.
-        value_list = self.gen_v_pu.values.tolist()
+        value_list = self.gen_v_pu.to_numpy().tolist()
 
         # Loop over the values, set to 1.
         # noinspection PyTypeChecker
@@ -523,10 +518,8 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
 
         # Send in the command.
         # noinspection PyTypeChecker
-        result = saw_14.ChangeParametersMultipleElement(
-            ObjectType='gen', ParamList=self.params, ValueList=value_list)
-
-        self.assertIsNone(result)
+        self.assertIsNone(saw_14.ChangeParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params, ValueList=value_list))
 
         # Check results.
         gen_v = saw_14.GetParametersMultipleElement(
@@ -606,7 +599,7 @@ class GetFieldListTestCase(unittest.TestCase):
         """Helper to check a returned field list DataFrame."""
         self.assertIsInstance(field_list, pd.DataFrame)
         self.assertEqual(saw_14.FIELD_LIST_COLUMNS,
-                         field_list.columns.values.tolist())
+                         field_list.columns.to_numpy().tolist())
         pd.testing.assert_frame_equal(
             field_list, field_list.sort_values(by=['internal_field_name']))
 
@@ -686,7 +679,7 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
             ObjectType='gen', ParamList=params)
 
         self.assertIsInstance(results, pd.DataFrame)
-        self.assertSetEqual(set(params), set(results.columns.values))
+        self.assertSetEqual(set(params), set(results.columns.to_numpy()))
 
     def test_shunts_returns_none(self):
         """There are no shunts in the 14 bus model."""
@@ -772,9 +765,9 @@ class ListOfDevicesTestCase(unittest.TestCase):
         # 3 transformers, 17 lines.
         self.assertEqual(20, result.shape[0])
         # Check columns.
-        self.assertIn('BusNum', result.columns.values)
-        self.assertIn('BusNum:1', result.columns.values)
-        self.assertIn('LineCircuit', result.columns.values)
+        self.assertIn('BusNum', result.columns.to_numpy())
+        self.assertIn('BusNum:1', result.columns.to_numpy())
+        self.assertIn('LineCircuit', result.columns.to_numpy())
 
         # Ensure our BusNum columns are numeric.
         # noinspection PyUnresolvedReferences
@@ -880,8 +873,7 @@ class SolvePowerFlowTestCase(unittest.TestCase):
     def test_solve_defaults(self):
         """Solving the power flow with default options should just work.
         """
-        result = saw_14.SolvePowerFlow()
-        self.assertIsNone(result)
+        self.assertIsNone(saw_14.SolvePowerFlow())
 
     def test_solve_bad_method(self):
         """Given a bad solver, we should expect an exception."""

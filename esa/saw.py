@@ -179,10 +179,10 @@ class SAW(object):
                                              ObjectType=ObjectType)
 
         # Convert the DataFrame to a list.
-        value_list = cleaned_df.values.tolist()
+        value_list = cleaned_df.to_numpy().tolist()
 
         # Get the columns as a list.
-        param_list = cleaned_df.columns.values.tolist()
+        param_list = cleaned_df.columns.to_numpy().tolist()
 
         # Send in the command.
         # noinspection PyTypeChecker
@@ -198,7 +198,7 @@ class SAW(object):
 
         # Merge the DataFrames on the key fields.
         merged = pd.merge(left=cleaned_df, right=df, how='inner',
-                          on=kf['internal_field_name'].values.tolist(),
+                          on=kf['internal_field_name'].to_numpy().tolist(),
                           suffixes=('_in', '_out'), copy=False)
 
         # Time to check if our input and output values match. Note this
@@ -207,7 +207,8 @@ class SAW(object):
         cols_out = merged.columns[merged.columns.str.endswith('_out')]
 
         # Check. Use allclose to avoid rounding error.
-        if not np.allclose(merged[cols_in].values, merged[cols_out].values):
+        if not np.allclose(merged[cols_in].to_numpy(),
+                           merged[cols_out].to_numpy()):
             # TODO: add some debug logging here to see what's different.
             m = ('After calling ChangeParametersMultipleElement, not all '
                  'parameters were actually changed within PowerWorld. Try '
@@ -292,7 +293,7 @@ class SAW(object):
 
         # Extract key fields.
         key_field_mask = \
-            field_list['key_field'].str.match(r'\*[0-9]+[A-Z]*\*').values
+            field_list['key_field'].str.match(r'\*[0-9]+[A-Z]*\*').to_numpy()
         # Making a copy isn't egregious here because there are a
         # limited number of key fields, so this will be a small frame.
         key_field_df = field_list.loc[key_field_mask].copy()
@@ -321,8 +322,9 @@ class SAW(object):
         key_field_df.sort_index(axis=0, inplace=True)
 
         # Ensure the index is as expected (0, 1, 2, 3, etc.)
-        assert np.array_equal(key_field_df.index.values,
-                              np.arange(0, key_field_df.index.values[-1] + 1))
+        assert np.array_equal(
+            key_field_df.index.to_numpy(),
+            np.arange(0, key_field_df.index.to_numpy()[-1] + 1))
 
         return key_field_df
 
@@ -682,7 +684,7 @@ class SAW(object):
         df = pd.DataFrame(output).transpose()
         # The return from get_key_fields_for_object_type is designed to
         # match up 1:1 with values here. Set columns.
-        df.columns = kf['internal_field_name'].values
+        df.columns = kf['internal_field_name'].to_numpy()
 
         # Ensure the DataFrame has the correct types, is sorted by
         # BusNum, and has leading/trailing white space stripped.
@@ -898,8 +900,8 @@ class SAW(object):
     def CreateData(self, ObjectType: str, FieldList: str, ValueList: str):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("CreateData({},{},{})"
-        #                              .format(ObjectType, FieldList, ValueList))
+        # return self.RunScriptCommand(
+        #     "CreateData({},{},{})".format(ObjectType, FieldList, ValueList))
 
     def Delete(self, ObjectType: str):
         """NOT IMPLEMENTED."""
@@ -953,9 +955,9 @@ class SAW(object):
         FieldList = '[Number,NomkV]'
         """
         raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("SetData({},{},{},{})"
-        #                              .format(ObjectType, FieldList, ValueList,
-        #                                      Filter))
+        # return self.RunScriptCommand(
+        #     "SetData({},{},{},{})".format(ObjectType, FieldList, ValueList,
+        #                                   Filter))
 
     def SetParticipationFactors(self, Method, ConstantValue, Object):
         """NOT IMPLEMENTED.
@@ -1190,10 +1192,10 @@ class SAW(object):
         # Get the type of the obj.
         if isinstance(obj, pd.DataFrame):
             df_flag = True
-            fields = obj.columns.values
+            fields = obj.columns.to_numpy()
         elif isinstance(obj, pd.Series):
             df_flag = False
-            fields = obj.index.values
+            fields = obj.index.to_numpy()
         else:
             raise TypeError('The given object is not a DataFrame or '
                             'Series!')
@@ -1206,7 +1208,7 @@ class SAW(object):
         # Rely on the fact that the field_list is already sorted by
         # internal_field_name to get indices related to the given
         # internal field names.
-        idx = field_list['internal_field_name'].values.searchsorted(fields)
+        idx = field_list['internal_field_name'].to_numpy().searchsorted(fields)
 
         # Ensure the columns are actually in the field_list. This is
         # necessary because search sorted gives the index of where the
@@ -1216,7 +1218,7 @@ class SAW(object):
         # already sorted.
         try:
             # ifn for "internal_field_name."
-            ifn = field_list['internal_field_name'].values[idx]
+            ifn = field_list['internal_field_name'].to_numpy()[idx]
 
             # Ensure given fields are present in the field list.
             if set(ifn) != set(fields):
@@ -1228,7 +1230,7 @@ class SAW(object):
                              ' match a PowerWorld internal field name!')
 
         # Now extract the corresponding data types.
-        data_types = field_list['field_data_type'].values[idx]
+        data_types = field_list['field_data_type'].to_numpy()[idx]
 
         # Determine which types are numeric.
         numeric = np.isin(data_types, NUMERIC_TYPES)
