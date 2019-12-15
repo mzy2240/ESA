@@ -346,8 +346,14 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
             self.saw.set_simauto_property('CreateIfNotFound', 'bad')
 
     def test_set_ui_visible_true(self):
-        self.saw.set_simauto_property('UIVisible', True)
-        self.assertTrue(self.saw._pwcom.UIVisible)
+        # Patch the _pwcom object so we don't actually activate the UI.
+        # If we actually activate the UI, it can cause the tests to
+        # hang. E.g., if an update is available which requires user
+        # input as to whether to download or wait.
+        with patch.object(self.saw, '_pwcom') as p:
+            self.saw.set_simauto_property('UIVisible', True)
+
+        self.assertTrue(p.UIVisible)
 
     def test_set_ui_visible_false(self):
         self.saw.set_simauto_property('UIVisible', False)
