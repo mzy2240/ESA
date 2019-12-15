@@ -362,7 +362,8 @@ class SAW(object):
         # script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
         # result = self.RunScriptCommand(script_cmd)
         # field_list = ['BusNum', 'FaultCurMag']
-        # return self.GetParametersSingleElement('BUS', field_list, [bus_num, 0])
+        # return self.GetParametersSingleElement('BUS', field_list,
+        #                                        [bus_num, 0])
 
     def set_simauto_property(self, property_name: str,
                              property_value: Union[str, bool]):
@@ -370,7 +371,7 @@ class SAW(object):
         supported properties are listed in the SAW.SIMAUTO_PROPERTIES
         class constant.
 
-        `PowerWorld Docuemntation <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1>`__
+        `PowerWorld Documentation <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1>`__
 
         :param property_name: Name of the property to set, e.g.
             UIVisible.
@@ -1200,6 +1201,53 @@ class SAW(object):
             raise TypeError('The given object is not a DataFrame or '
                             'Series!')
 
+        # Determine which types are numeric.
+        numeric = self.identify_numeric_fields(ObjectType=ObjectType,
+                                               fields=fields)
+        numeric_fields = fields[numeric]
+
+        # Make the numeric fields, well, numeric.
+        obj[numeric_fields] = obj[numeric_fields].apply(pd.to_numeric)
+
+        # Now handle the non-numeric cols.
+        nn_cols = fields[~numeric]
+
+        # Start by ensuring the non-numeric columns are indeed strings.
+        obj[nn_cols] = obj[nn_cols].astype(str)
+
+        # Here we'll strip off the white space.
+        if df_flag:
+            # Need to use apply to strip strings from multiple columns.
+            obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
+        else:
+            # A series is much simpler, and the .str.strip() method can
+            # be used directly.
+            obj[nn_cols] = obj[nn_cols].str.strip()
+
+        # Sort by BusNum if present.
+        if df_flag:
+            try:
+                obj.sort_values(by='BusNum', axis=0, inplace=True)
+            except KeyError:
+                # If there's no BusNum don't sort the DataFrame.
+                pass
+            else:
+                # Re-index with simple monotonically increasing values.
+                obj.index = np.arange(start=0, stop=obj.shape[0])
+
+        return obj
+
+    def identify_numeric_fields(self, ObjectType: str,
+                                fields: Union[List, np.ndarray]):
+        """Helper which looks up PowerWorld internal field names to
+        determine if they're numeric (True) or not (False).
+
+        :param ObjectType: Type of object for which we're identifying
+            numeric fields. E.g. "Branch" or "gen"
+        :param fields: List of PowerWorld internal fields names for
+            which we're identifying if they are or aren't numeric.
+            E.g. ['BusNum', 'BusNum:1', 'LineCircuit', 'LineStatus']
+        """
         # Start by getting the field list for this ObjectType. Note
         # that in most cases this will be cached and thus be quite
         # fast. If it isn't cached now, it will be after calling this.
@@ -1232,40 +1280,8 @@ class SAW(object):
         # Now extract the corresponding data types.
         data_types = field_list['field_data_type'].to_numpy()[idx]
 
-        # Determine which types are numeric.
-        numeric = np.isin(data_types, NUMERIC_TYPES)
-        numeric_fields = ifn[numeric]
-
-        # Make the numeric fields, well, numeric.
-        obj[numeric_fields] = obj[numeric_fields].apply(pd.to_numeric)
-
-        # Now handle the non-numeric cols.
-        nn_cols = ifn[~numeric]
-
-        # Start by ensuring the non-numeric columns are indeed strings.
-        obj[nn_cols] = obj[nn_cols].astype(str)
-
-        # Here we'll strip off the white space.
-        if df_flag:
-            # Need to use apply to strip strings from multiple columns.
-            obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
-        else:
-            # A series is much simpler, and the .str.strip() method can
-            # be used directly.
-            obj[nn_cols] = obj[nn_cols].str.strip()
-
-        # Sort by BusNum if present.
-        if df_flag:
-            try:
-                obj.sort_values(by='BusNum', axis=0, inplace=True)
-            except KeyError:
-                # If there's no BusNum don't sort the DataFrame.
-                pass
-            else:
-                # Re-index with simple monotonically increasing values.
-                obj.index = np.arange(start=0, stop=obj.shape[0])
-
-        return obj
+        # Determine which types are numeric and return.
+        return np.isin(data_types, NUMERIC_TYPES)
 
 
 def convert_to_posix_path(p):

@@ -318,6 +318,20 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
 
+class IdentifyNumericFieldsTestCase(unittest.TestCase):
+    """Test identify_numeric_fields."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_correct(self):
+        # Intentionally make the fields out of alphabetical order.
+        fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
+        np.testing.assert_array_equal(
+            saw_14.identify_numeric_fields(
+                ObjectType='Branch', fields=fields),
+            np.array([False, False, True, True, True])
+        )
+
+
 class SetSimAutoPropertyTestCase(unittest.TestCase):
     """Test the set_simauto_property method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.
