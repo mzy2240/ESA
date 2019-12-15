@@ -182,7 +182,7 @@ class SAW(object):
         value_list = cleaned_df.to_numpy().tolist()
 
         # Get the columns as a list.
-        param_list = cleaned_df.columns.to_numpy().tolist()
+        param_list = cleaned_df.columns.tolist()
 
         # Send in the command.
         # noinspection PyTypeChecker
@@ -198,7 +198,7 @@ class SAW(object):
 
         # Merge the DataFrames on the key fields.
         merged = pd.merge(left=cleaned_df, right=df, how='inner',
-                          on=kf['internal_field_name'].to_numpy().tolist(),
+                          on=kf['internal_field_name'].tolist(),
                           suffixes=('_in', '_out'), copy=False)
 
         # Time to check if our input and output values match. Note this
@@ -206,9 +206,26 @@ class SAW(object):
         cols_in = merged.columns[merged.columns.str.endswith('_in')]
         cols_out = merged.columns[merged.columns.str.endswith('_out')]
 
+        # We'll be comparing string and numeric columns separately. The
+        # numeric columns must use np.allclose to avoid rounding error,
+        # while the strings should use array_equal as the strings should
+        # exactly match.
+        cols = cols_in.str.replace('_in', '')
+        numeric_cols = self.identify_numeric_fields(ObjectType=ObjectType,
+                                                    fields=cols)
+        str_cols = ~numeric_cols
+
         # Check. Use allclose to avoid rounding error.
-        if not np.allclose(merged[cols_in].to_numpy(),
-                           merged[cols_out].to_numpy()):
+        if not \
+                np.allclose(
+                    merged[cols_in[numeric_cols]].to_numpy(),
+                    merged[cols_out[numeric_cols]].to_numpy()) \
+                \
+                or not \
+                np.array_equal(
+                    merged[cols_in[str_cols]].to_numpy(),
+                    merged[cols_out[str_cols]].to_numpy()
+                ):
             # TODO: add some debug logging here to see what's different.
             m = ('After calling ChangeParametersMultipleElement, not all '
                  'parameters were actually changed within PowerWorld. Try '

@@ -117,6 +117,42 @@ class InitializationTestCase(unittest.TestCase):
 class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
     """Test change_and_confirm_params_multiple_element."""
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Get branch data, including LineStatus, which is a string.
+        branch_key_fields = \
+            saw_14.get_key_fields_for_object_type('branch')
+        cls.branch_data = saw_14.GetParametersMultipleElement(
+            ObjectType='branch',
+            ParamList=branch_key_fields['internal_field_name'].tolist()
+                       + ['LineStatus'])
+        # Make a copy so we can modify it without affecting the original
+        # DataFrame.
+        cls.branch_data_copy = cls.branch_data.copy()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # Put the branches back as they were.
+        # noinspection PyUnresolvedReferences
+        saw_14.ChangeParametersMultipleElement(
+            ObjectType='Branch', ParamList=cls.branch_data.columns.tolist(),
+            ValueList=cls.branch_data.to_numpy().tolist())
+
+    def test_with_string_value(self):
+        """This test will prove the following has been resolved if this
+        test passes:
+        https://github.com/mzy2240/ESA/issues/8#issue-537818522
+        """
+        # Open the line from bus 6 to 13.
+        from_6 = self.branch_data_copy['BusNum'] == 6
+        to_13 = self.branch_data_copy['BusNum:1'] == 13
+        self.branch_data_copy.loc[from_6 & to_13, 'LineStatus'] = 'Open'
+
+        # Change and confirm.
+        self.assertIsNone(
+            saw_14.change_and_confirm_params_multiple_element(
+                ObjectType='Branch', command_df=self.branch_data_copy))
+
     def test_success(self):
         """Send in a simple command that matches what's already in the
         case and ensure the output from PowerWorld matches.
@@ -144,7 +180,7 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
                 saw_14.change_and_confirm_params_multiple_element(
                     ObjectType='load', command_df=command_df))
 
-    def test_failure(self):
+    def test_failure_numeric(self):
         """Don't actually send in a command, and ensure that we get
         an exception.
         """
@@ -154,6 +190,25 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
             [[13, '1', 130.5, '5.8'],
              [3, ' 1 ', '94.2', '19.0']],
             columns=['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        )
+
+        # Patch the call to ChangeParametersMultipleElement.
+        with patch.object(saw_14, 'ChangeParametersMultipleElement'):
+            with self.assertRaisesRegex(CommandNotRespectedError,
+                                        'After calling .* not all parameters'):
+                saw_14.change_and_confirm_params_multiple_element(
+                    ObjectType='load', command_df=command_df)
+
+    def test_failure_string(self):
+        """Don't actually send in a command, and ensure that we get
+        an exception.
+        """
+        # Note this DataFrame is only one value off from what's in the
+        # base case model (all loads are in).
+        command_df = pd.DataFrame(
+            [[13, '1', 'Closed'],
+             [3, ' 1 ', 'Open']],
+            columns=['BusNum', 'LoadID', 'LoadStatus']
         )
 
         # Patch the call to ChangeParametersMultipleElement.
