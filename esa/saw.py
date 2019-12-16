@@ -125,27 +125,22 @@ class SAW(object):
         # Open the case.
         self.OpenCase(FileName=FileName)
 
-        # Look up fields for given object types in field_lookup.
-        self.object_fields = dict()
-        self.object_key_fields = dict()
+        # Look up and cache field listing and key fields for the given
+        # object types in object_field_lookup.
+        self._object_fields = dict()
+        self._object_key_fields = dict()
+
         for obj in object_field_lookup:
             # Always use lower case.
             o = obj.lower()
 
-            # Get the field listing.
-            result = self.GetFieldList(o)
+            # Get the field listing. This will store the resulting
+            # field list in self._object_fields[o].
+            self.GetFieldList(o)
 
-            # Simply store the whole result. This will be used for
-            # a) type casting for other SimAuto calls, and b) avoiding
-            # future SimAuto calls to GetFieldList for this object
-            # type.
-            self.object_fields[o] = result
-
-            # Get the key fields for this object.
-            kf = self.get_key_fields_for_object_type(ObjectType=o)
-
-            # Store the result.
-            self.object_key_fields[o] = kf
+            # Get the key fields for this object. This will store the
+            # results in self._object_key_fields[o]
+            self.get_key_fields_for_object_type(ObjectType=o)
 
     ####################################################################
     # Helper Functions
@@ -289,7 +284,7 @@ class SAW(object):
         # See if we've already looked up the key fields for this object.
         # If we have, just return the cached results.
         try:
-            key_field_df = self.object_key_fields[obj_type]
+            key_field_df = self._object_key_fields[obj_type]
         except KeyError:
             # We haven't looked up key fields for this object yet.
             pass
@@ -343,6 +338,9 @@ class SAW(object):
             key_field_df.index.to_numpy(),
             np.arange(0, key_field_df.index.to_numpy()[-1] + 1))
 
+        # Track for later.
+        self._object_key_fields[obj_type] = key_field_df
+
         return key_field_df
 
     def get_power_flow_results(self, ObjectType: str) -> \
@@ -388,7 +386,8 @@ class SAW(object):
         supported properties are listed in the SAW.SIMAUTO_PROPERTIES
         class constant.
 
-        `PowerWorld Documentation <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1>`__
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1>`__
 
         :param property_name: Name of the property to set, e.g.
             UIVisible.
@@ -533,7 +532,7 @@ class SAW(object):
 
         # Either look up stored DataFrame, or call SimAuto.
         try:
-            output = self.object_fields[object_type]
+            output = self._object_fields[object_type]
         except KeyError:
             # We haven't looked up fields for this object yet.
             # Call SimAuto, and place results into a DataFrame.
@@ -546,7 +545,7 @@ class SAW(object):
             output.sort_values(by=['internal_field_name'], inplace=True)
 
             # Store this for later.
-            self.object_fields[object_type] = output
+            self._object_fields[object_type] = output
 
         # Either return a copy or not.
         if copy:
