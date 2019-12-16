@@ -453,7 +453,8 @@ class SAW(object):
         #                                        [bus_num, 0])
 
     def identify_numeric_fields(self, ObjectType: str,
-                                fields: Union[List, np.ndarray]):
+                                fields: Union[List, np.ndarray]) -> \
+            np.ndarray:
         """Helper which looks up PowerWorld internal field names to
         determine if they're numeric (True) or not (False).
 
@@ -462,6 +463,10 @@ class SAW(object):
         :param fields: List of PowerWorld internal fields names for
             which we're identifying if they are or aren't numeric.
             E.g. ['BusNum', 'BusNum:1', 'LineCircuit', 'LineStatus']
+
+        :returns: Numpy boolean array indicating which of the given
+            fields are numeric. Going along with the example given for
+            "fields": np.array([True, True, False, False])
         """
         # Start by getting the field list for this ObjectType. Note
         # that in most cases this will be cached and thus be quite
