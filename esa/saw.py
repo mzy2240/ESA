@@ -158,10 +158,11 @@ class SAW(object):
             which will have their parameters changed. The columns should
             be object field variable names, and MUST include the key
             fields for the given ObjectType (which you can get via the
-            get_key_fields_for_object_type method). Columns which are not
-            key fields indicate parameters to be changed, while the key
-            fields are used internally by PowerWorld to look up objects.
-            Each row of the DataFrame represents a single element.
+            get_key_fields_for_object_type method). Columns which are
+            not key fields indicate parameters to be changed, while the
+            key fields are used internally by PowerWorld to look up
+            objects. Each row of the DataFrame represents a single
+            element.
 
         :raises CommandNotRespectedError: if PowerWorld does not
             actually change the parameters.
