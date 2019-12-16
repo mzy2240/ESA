@@ -335,6 +335,38 @@ class GetKeyFieldsForObjectType(unittest.TestCase):
         self.assertEqual(1, p.call_count)
 
 
+class GetKeyFieldListTestCase(unittest.TestCase):
+    """Test get_key_field_list."""
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # Remove the cached three winding transformer from saw_14 to
+        # avoid screwing up state for other tests.
+        del saw_14._object_key_fields['3wxformer']
+        del saw_14._object_fields['3wxformer']
+
+    def test_gen(self):
+        """Ensure generator listing matches."""
+        # Ensure this one is cached.
+        self.assertIn('gen', saw_14._object_key_fields)
+
+        # Ensure the list comes back correctly.
+        self.assertListEqual(['BusNum', 'GenID'],
+                             saw_14.get_key_field_list('Gen'))
+
+    def test_3wxformer(self):
+        """Ensure 3WXFormer listing matches."""
+        # Ensure this is NOT cached.
+        self.assertNotIn('3wxformer', saw_14._object_key_fields)
+
+        # Ensure the list comes back correctly.
+        self.assertListEqual(
+            ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
+             'LineCircuit'],
+            saw_14.get_key_field_list('3WXFormer')
+        )
+
+
 class GetPowerFlowResultsTestCase(unittest.TestCase):
     """Test get_power_flow_result"""
 
