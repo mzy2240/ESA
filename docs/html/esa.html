@@ -788,6 +788,23 @@ creating an aux data file.</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="esa.saw.SAW.get_key_field_list">
+<code class="sig-name descname">get_key_field_list</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convenience function to get a list of key fields for a given
+object type.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>ObjectType</strong> – PowerWorld object type for which you would
+like a list of key fields. E.g. ‘gen’.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of key fields for the given object type. E.g.
+[‘BusNum’, ‘GenID’]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="esa.saw.SAW.get_key_fields_for_object_type">
 <code class="sig-name descname">get_key_fields_for_object_type</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get all key fields for an object type.</p>
@@ -837,12 +854,35 @@ cases which only contain positive sequence impedances</p>
 </dd></dl>
 
 <dl class="method">
+<dt id="esa.saw.SAW.identify_numeric_fields">
+<code class="sig-name descname">identify_numeric_fields</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str, fields: Union[List, numpy.ndarray]</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#esa.saw.SAW.identify_numeric_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper which looks up PowerWorld internal field names to
+determine if they’re numeric (True) or not (False).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – Type of object for which we’re identifying
+numeric fields. E.g. “Branch” or “gen”</p></li>
+<li><p><strong>fields</strong> – List of PowerWorld internal fields names for
+which we’re identifying if they are or aren’t numeric.
+E.g. [‘BusNum’, ‘BusNum:1’, ‘LineCircuit’, ‘LineStatus’]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Numpy boolean array indicating which of the given
+fields are numeric. Going along with the example given for
+“fields”: np.array([True, True, False, False])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
 <dt id="esa.saw.SAW.set_simauto_property">
 <code class="sig-name descname">set_simauto_property</code><span class="sig-paren">(</span><em class="sig-param">property_name: str, property_value: Union[str, bool]</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.set_simauto_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a SimAuto property, e.g. CreateIfNotFound. The currently
 supported properties are listed in the SAW.SIMAUTO_PROPERTIES
 class constant.</p>
-<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1">PowerWorld Docuemntation</a></p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Properties.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Properties%7C_____1">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -968,7 +1008,7 @@ UIVisible.</p></li>
       &copy;2019, Zeyu Mao, Brandon Thayer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
