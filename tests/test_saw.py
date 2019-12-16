@@ -98,10 +98,10 @@ class InitializationTestCase(unittest.TestCase):
                          my_saw_14.pwb_file_path)
 
         # Ensure we have the expected object_fields.
-        self.assertEqual(2, len(my_saw_14.object_fields))
+        self.assertEqual(2, len(my_saw_14._object_fields))
 
         for f in ['bus', 'shunt']:
-            df = my_saw_14.object_fields[f]
+            df = my_saw_14._object_fields[f]
             self.assertIsInstance(df, pd.DataFrame)
             self.assertSetEqual({'key_field', 'internal_field_name',
                                  'field_data_type', 'description',
@@ -696,7 +696,7 @@ class GetFieldListTestCase(unittest.TestCase):
 
         # Start by ensuring we don't currently have this in the
         # dictionary.
-        self.assertNotIn(obj_type, saw_14.object_fields)
+        self.assertNotIn(obj_type, saw_14._object_fields)
 
         # Call GetFieldList.
         try:
@@ -713,22 +713,22 @@ class GetFieldListTestCase(unittest.TestCase):
 
             # We should now have the object type in the object_fields
             # attribute.
-            self.assertIn(obj_type, saw_14.object_fields)
+            self.assertIn(obj_type, saw_14._object_fields)
 
         finally:
             # Always remove from the object_fields dictionary to avoid
             # state changes that could impact other tests.
-            del saw_14.object_fields[obj_type]
+            del saw_14._object_fields[obj_type]
 
     def test_copy_true(self):
         """Ensure we get a copy when asked for."""
         field_list = saw_14.GetFieldList('gen', copy=True)
-        self.assertIsNot(field_list, saw_14.object_fields['gen'])
+        self.assertIsNot(field_list, saw_14._object_fields['gen'])
 
     def test_copy_false(self):
         """Ensure we don't get a copy when we don't ask for it."""
         field_list = saw_14.GetFieldList('branch')
-        self.assertIs(field_list, saw_14.object_fields['branch'])
+        self.assertIs(field_list, saw_14._object_fields['branch'])
 
     def test_works_if_object_type_not_in_model(self):
         """Ensure we still get a valid field listing even if the given
