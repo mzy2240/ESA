@@ -415,6 +415,30 @@ class SAW(object):
 
         return key_field_df
 
+    def get_key_field_list(self, ObjectType: str) -> List[str]:
+        """Convenience function to get a list of key fields for a given
+        object type.
+
+        :param ObjectType: PowerWorld object type for which you would
+            like a list of key fields. E.g. 'gen'.
+
+        :returns: List of key fields for the given object type. E.g.
+            ['BusNum', 'GenID']
+        """
+        # Lower case only.
+        obj_type = ObjectType.lower()
+
+        # Attempt to get the key field DataFrame from our cached
+        # dictionary.
+        try:
+            key_field_df = self._object_key_fields[obj_type]
+        except KeyError:
+            # DataFrame isn't cached. Get it.
+            key_field_df = self.get_key_fields_for_object_type(obj_type)
+
+        # Return a listing of the internal field name.
+        return key_field_df['internal_field_name'].tolist()
+
     def get_power_flow_results(self, ObjectType: str) -> \
             Union[None, pd.DataFrame]:
         """Get the power flow results from SimAuto server.
