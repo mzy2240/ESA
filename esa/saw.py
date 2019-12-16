@@ -145,6 +145,7 @@ class SAW(object):
     ####################################################################
     # Helper Functions
     ####################################################################
+
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
                                                    command_df: pd.DataFrame) \
             -> None:
@@ -230,6 +231,77 @@ class SAW(object):
 
         # All done.
         return None
+
+    def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
+                           ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
+        """Helper to cast data to the correct types, clean up strings,
+        and sort DataFrame by BusNum (if applicable/present).
+
+        :param obj: DataFrame or Series to clean up. It's assumed that
+            the object came more or less directly from placing results
+            from calling SimAuto into a DataFrame or Series. This means
+            all data will be strings (even if they should be numeric)
+            and data which should be strings often have unnecessary
+            white space. If obj is a DataFrame (Series), the columns
+            (index) must be existing fields for the given object type
+            (i.e. are present in the 'internal_field_name' column of the
+            corresponding DataFrame which comes from calling
+            GetFieldList for the given object type).
+        :param ObjectType: Object type the data in the DataFrame relates
+            to. E.g. 'gen'
+
+        :raises ValueError: if the DataFrame (Series) columns (index)
+            are not valid fields for the given object type.
+
+        :raises TypeError: if the input 'obj' is not a DataFrame or
+            Series.
+        """
+        # Get the type of the obj.
+        if isinstance(obj, pd.DataFrame):
+            df_flag = True
+            fields = obj.columns.to_numpy()
+        elif isinstance(obj, pd.Series):
+            df_flag = False
+            fields = obj.index.to_numpy()
+        else:
+            raise TypeError('The given object is not a DataFrame or '
+                            'Series!')
+
+        # Determine which types are numeric.
+        numeric = self.identify_numeric_fields(ObjectType=ObjectType,
+                                               fields=fields)
+        numeric_fields = fields[numeric]
+
+        # Make the numeric fields, well, numeric.
+        obj[numeric_fields] = obj[numeric_fields].apply(pd.to_numeric)
+
+        # Now handle the non-numeric cols.
+        nn_cols = fields[~numeric]
+
+        # Start by ensuring the non-numeric columns are indeed strings.
+        obj[nn_cols] = obj[nn_cols].astype(str)
+
+        # Here we'll strip off the white space.
+        if df_flag:
+            # Need to use apply to strip strings from multiple columns.
+            obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
+        else:
+            # A series is much simpler, and the .str.strip() method can
+            # be used directly.
+            obj[nn_cols] = obj[nn_cols].str.strip()
+
+        # Sort by BusNum if present.
+        if df_flag:
+            try:
+                obj.sort_values(by='BusNum', axis=0, inplace=True)
+            except KeyError:
+                # If there's no BusNum don't sort the DataFrame.
+                pass
+            else:
+                # Re-index with simple monotonically increasing values.
+                obj.index = np.arange(start=0, stop=obj.shape[0])
+
+        return obj
 
     def create_filter(self, condition, object_type, filter_name,
                       filter_logic='AND', filter_pre='NO', enabled='YES'):
@@ -379,6 +451,52 @@ class SAW(object):
         # field_list = ['BusNum', 'FaultCurMag']
         # return self.GetParametersSingleElement('BUS', field_list,
         #                                        [bus_num, 0])
+
+    def identify_numeric_fields(self, ObjectType: str,
+                                fields: Union[List, np.ndarray]):
+        """Helper which looks up PowerWorld internal field names to
+        determine if they're numeric (True) or not (False).
+
+        :param ObjectType: Type of object for which we're identifying
+            numeric fields. E.g. "Branch" or "gen"
+        :param fields: List of PowerWorld internal fields names for
+            which we're identifying if they are or aren't numeric.
+            E.g. ['BusNum', 'BusNum:1', 'LineCircuit', 'LineStatus']
+        """
+        # Start by getting the field list for this ObjectType. Note
+        # that in most cases this will be cached and thus be quite
+        # fast. If it isn't cached now, it will be after calling this.
+        field_list = self.GetFieldList(ObjectType=ObjectType, copy=False)
+
+        # Rely on the fact that the field_list is already sorted by
+        # internal_field_name to get indices related to the given
+        # internal field names.
+        idx = field_list['internal_field_name'].to_numpy().searchsorted(fields)
+
+        # Ensure the columns are actually in the field_list. This is
+        # necessary because search sorted gives the index of where the
+        # given values would go, and doesn't guarantee the values are
+        # actually present. However, we want to use searchsorted for its
+        # speed and leverage the fact that our field_list DataFrame is
+        # already sorted.
+        try:
+            # ifn for "internal_field_name."
+            ifn = field_list['internal_field_name'].to_numpy()[idx]
+
+            # Ensure given fields are present in the field list.
+            if set(ifn) != set(fields):
+                raise ValueError('The given object has fields which do not'
+                                 ' match a PowerWorld internal field name!')
+        except IndexError:
+            # An index error also indicates failure.
+            raise ValueError('The given object has fields which do not'
+                             ' match a PowerWorld internal field name!')
+
+        # Now extract the corresponding data types.
+        data_types = field_list['field_data_type'].to_numpy()[idx]
+
+        # Determine which types are numeric and return.
+        return np.isin(data_types, NUMERIC_TYPES)
 
     def set_simauto_property(self, property_name: str,
                              property_value: Union[str, bool]):
@@ -1181,123 +1299,6 @@ class SAW(object):
         # After errors have been handled, return the data (which is in
         # position 1 of the tuple).
         return output[1]
-
-    def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
-                           ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
-        """Helper to cast data to the correct types, clean up strings,
-        and sort DataFrame by BusNum (if applicable/present).
-
-        :param obj: DataFrame or Series to clean up. It's assumed that
-            the object came more or less directly from placing results
-            from calling SimAuto into a DataFrame or Series. This means
-            all data will be strings (even if they should be numeric)
-            and data which should be strings often have unnecessary
-            white space. If obj is a DataFrame (Series), the columns
-            (index) must be existing fields for the given object type
-            (i.e. are present in the 'internal_field_name' column of the
-            corresponding DataFrame which comes from calling
-            GetFieldList for the given object type).
-        :param ObjectType: Object type the data in the DataFrame relates
-            to. E.g. 'gen'
-
-        :raises ValueError: if the DataFrame (Series) columns (index)
-            are not valid fields for the given object type.
-
-        :raises TypeError: if the input 'obj' is not a DataFrame or
-            Series.
-        """
-        # Get the type of the obj.
-        if isinstance(obj, pd.DataFrame):
-            df_flag = True
-            fields = obj.columns.to_numpy()
-        elif isinstance(obj, pd.Series):
-            df_flag = False
-            fields = obj.index.to_numpy()
-        else:
-            raise TypeError('The given object is not a DataFrame or '
-                            'Series!')
-
-        # Determine which types are numeric.
-        numeric = self.identify_numeric_fields(ObjectType=ObjectType,
-                                               fields=fields)
-        numeric_fields = fields[numeric]
-
-        # Make the numeric fields, well, numeric.
-        obj[numeric_fields] = obj[numeric_fields].apply(pd.to_numeric)
-
-        # Now handle the non-numeric cols.
-        nn_cols = fields[~numeric]
-
-        # Start by ensuring the non-numeric columns are indeed strings.
-        obj[nn_cols] = obj[nn_cols].astype(str)
-
-        # Here we'll strip off the white space.
-        if df_flag:
-            # Need to use apply to strip strings from multiple columns.
-            obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
-        else:
-            # A series is much simpler, and the .str.strip() method can
-            # be used directly.
-            obj[nn_cols] = obj[nn_cols].str.strip()
-
-        # Sort by BusNum if present.
-        if df_flag:
-            try:
-                obj.sort_values(by='BusNum', axis=0, inplace=True)
-            except KeyError:
-                # If there's no BusNum don't sort the DataFrame.
-                pass
-            else:
-                # Re-index with simple monotonically increasing values.
-                obj.index = np.arange(start=0, stop=obj.shape[0])
-
-        return obj
-
-    def identify_numeric_fields(self, ObjectType: str,
-                                fields: Union[List, np.ndarray]):
-        """Helper which looks up PowerWorld internal field names to
-        determine if they're numeric (True) or not (False).
-
-        :param ObjectType: Type of object for which we're identifying
-            numeric fields. E.g. "Branch" or "gen"
-        :param fields: List of PowerWorld internal fields names for
-            which we're identifying if they are or aren't numeric.
-            E.g. ['BusNum', 'BusNum:1', 'LineCircuit', 'LineStatus']
-        """
-        # Start by getting the field list for this ObjectType. Note
-        # that in most cases this will be cached and thus be quite
-        # fast. If it isn't cached now, it will be after calling this.
-        field_list = self.GetFieldList(ObjectType=ObjectType, copy=False)
-
-        # Rely on the fact that the field_list is already sorted by
-        # internal_field_name to get indices related to the given
-        # internal field names.
-        idx = field_list['internal_field_name'].to_numpy().searchsorted(fields)
-
-        # Ensure the columns are actually in the field_list. This is
-        # necessary because search sorted gives the index of where the
-        # given values would go, and doesn't guarantee the values are
-        # actually present. However, we want to use searchsorted for its
-        # speed and leverage the fact that our field_list DataFrame is
-        # already sorted.
-        try:
-            # ifn for "internal_field_name."
-            ifn = field_list['internal_field_name'].to_numpy()[idx]
-
-            # Ensure given fields are present in the field list.
-            if set(ifn) != set(fields):
-                raise ValueError('The given object has fields which do not'
-                                 ' match a PowerWorld internal field name!')
-        except IndexError:
-            # An index error also indicates failure.
-            raise ValueError('The given object has fields which do not'
-                             ' match a PowerWorld internal field name!')
-
-        # Now extract the corresponding data types.
-        data_types = field_list['field_data_type'].to_numpy()[idx]
-
-        # Determine which types are numeric and return.
-        return np.isin(data_types, NUMERIC_TYPES)
 
 
 def convert_to_posix_path(p):
