@@ -30,9 +30,8 @@ from unittest.mock import patch
 import os
 import numpy as np
 import pandas as pd
-from esa import SAW
-from esa.saw import COMError, PowerWorldError, \
-    convert_to_posix_path, convert_to_windows_path, CommandNotRespectedError
+from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError
+from esa.saw import convert_to_posix_path, convert_to_windows_path
 import logging
 
 # Handle pathing.
@@ -896,6 +895,63 @@ class ListOfDevicesTestCase(unittest.TestCase):
             index=np.arange(0, 14),
             columns=['BusNum'])
         pd.testing.assert_frame_equal(expected, result)
+
+
+class LoadStateErrorTestCase(unittest.TestCase):
+    """Test LoadState without calling SaveState, and ensure we get an
+    error from PowerWorld.
+
+    We'll spin up a new SAW instance so as to have state independence
+    from other tests, at the cost of increasing test run time by
+    several seconds.
+    """
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+        del cls.saw
+
+    def test_load_state_errors(self):
+        """Call LoadState without calling SaveState."""
+        with self.assertRaisesRegex(
+                PowerWorldError, "State hasn't been previously stored."):
+            self.saw.LoadState()
+
+
+class LoadStateSaveStateTestCase(unittest.TestCase):
+    """Test that LoadState works after calling SaveState."""
+
+    def test_save_change_load(self):
+        """Save the state, make a change, load the state, ensure changes
+        were reverted.
+        """
+        # Get branch data.
+        branch_key_fields = saw_14.get_key_field_list('branch')
+        branch_data = saw_14.GetParametersMultipleElement(
+            'branch', branch_key_fields + ['LineStatus'])
+
+        # Save the state.
+        self.assertIsNone(saw_14.SaveState())
+
+        # Open a line.
+        branch_data_copy = branch_data.copy(deep=True)
+        self.assertEqual('Closed', branch_data_copy.loc[3, 'LineStatus'])
+        branch_data_copy.loc[3, 'LineStatus'] = 'Open'
+        saw_14.change_and_confirm_params_multiple_element(
+            'branch', branch_data_copy)
+
+        # Load the saved state.
+        self.assertIsNone(saw_14.LoadState())
+
+        # Ensure that new branch data equals original.
+        branch_data_new = saw_14.GetParametersMultipleElement(
+            'branch', branch_key_fields + ['LineStatus'])
+
+        pd.testing.assert_frame_equal(branch_data, branch_data_new)
 
 
 class RunScriptCommandTestCase(unittest.TestCase):

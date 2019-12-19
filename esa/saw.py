@@ -866,10 +866,8 @@ class SAW(object):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
-    def LoadState(self):
-        """NOT IMPLEMENTED.
-
-        LoadState is used to load the system state previously saved
+    def LoadState(self) -> None:
+        """LoadState is used to load the system state previously saved
         with the SaveState function. Note that LoadState will not
         properly function if the system topology has changed due to the
         addition or removal of the system elements.
@@ -877,8 +875,7 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm>`__
         """
-        raise NotImplementedError(NIE_MSG)
-        # return self._call_simauto('LoadState')
+        return self._call_simauto('LoadState')
 
     def OpenCase(self, FileName: Union[str, None] = None) -> None:
         """Load PowerWorld case into the automation server.
@@ -982,16 +979,16 @@ class SAW(object):
 
         return self._call_simauto('SaveCase', f, FileType, Overwrite)
 
-    def SaveState(self):
-        """NOT IMPLEMENTED.
-
-        SaveState is used to save the current state of the power
+    def SaveState(self) -> None:
+        """SaveState is used to save the current state of the power
         system. This can be useful if you are interested in comparing
         various cases, much as the "Difference Flows" feature works in
         the Simulator application.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SaveState_Function.htm>`__
         """
-        raise NotImplementedError(NIE_MSG)
-        # return self._call_simauto('SaveState')
+        return self._call_simauto('SaveState')
 
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
         """NOT IMPLEMENTED.
