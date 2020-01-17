@@ -218,6 +218,38 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
                     ObjectType='load', command_df=command_df)
 
 
+class ChangeParametersMultipleElementDFTestCase(unittest.TestCase):
+    """Test change_parameters_multiple_element_df."""
+
+    def test_success(self):
+        """Send in a simple command that matches what's already in the
+        case and ensure the output from PowerWorld matches.
+        """
+        # Create DataFrame for sending in commands, and ensure that
+        # ChangeParametersMultipleElement is called correctly.
+        cols = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        command_df = pd.DataFrame(
+            [[13, '1', 13.8, '5.1'],
+             [3, ' 1 ', '94.9', '29.0']],
+            columns=cols
+        )
+
+        # Patch the call to ChangeParametersMultipleElement.
+        with patch.object(saw_14, 'ChangeParametersMultipleElement') as p:
+            self.assertIsNone(
+                saw_14.change_parameters_multiple_element_df(
+                    ObjectType='load', command_df=command_df))
+
+        p.assert_called_once()
+        self.assertDictEqual(
+            p.mock_calls[0][2],
+            {'ObjectType': 'load', 'ParamList': cols,
+             # Note the DataFrame will get sorted by bus number, and
+             # type casting will be applied.
+             'ValueList': [[3, '1', 94.9, 29.0], [13, '1', 13.8, 5.1]]}
+        )
+
+
 class CleanDFOrSeriesTestCase(unittest.TestCase):
     def test_bad_df_columns(self):
         """If the DataFrame columns are not valid fields, we should get

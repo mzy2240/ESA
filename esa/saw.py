@@ -145,7 +145,6 @@ class SAW(object):
     ####################################################################
     # Helper Functions
     ####################################################################
-
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
                                                    command_df: pd.DataFrame) \
             -> None:
@@ -172,58 +171,20 @@ class SAW(object):
         """
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
-        cleaned_df = self.clean_df_or_series(obj=command_df,
-                                             ObjectType=ObjectType)
-
-        # Convert the DataFrame to a list.
-        value_list = cleaned_df.to_numpy().tolist()
-
-        # Get the columns as a list.
-        param_list = cleaned_df.columns.tolist()
-
-        # Send in the command.
-        # noinspection PyTypeChecker
-        self.ChangeParametersMultipleElement(
-            ObjectType=ObjectType, ParamList=param_list, ValueList=value_list)
+        cleaned_df = self._change_parameters_multiple_element_df(
+                ObjectType=ObjectType, command_df=command_df)
 
         # Now, query for the given parameters.
-        df = self.GetParametersMultipleElement(ObjectType=ObjectType,
-                                               ParamList=param_list)
+        df = self.GetParametersMultipleElement(
+            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist())
 
-        # Get the key fields for this ObjectType.
-        kf = self.get_key_fields_for_object_type(ObjectType=ObjectType)
+        # Check to see if the two DataFrames are equivalent.
+        eq = self._df_equiv_subset_of_other(df1=cleaned_df, df2=df,
+                                            ObjectType=ObjectType)
 
-        # Merge the DataFrames on the key fields.
-        merged = pd.merge(left=cleaned_df, right=df, how='inner',
-                          on=kf['internal_field_name'].tolist(),
-                          suffixes=('_in', '_out'), copy=False)
-
-        # Time to check if our input and output values match. Note this
-        # relies on our use of "_in" and "_out" suffixes above.
-        cols_in = merged.columns[merged.columns.str.endswith('_in')]
-        cols_out = merged.columns[merged.columns.str.endswith('_out')]
-
-        # We'll be comparing string and numeric columns separately. The
-        # numeric columns must use np.allclose to avoid rounding error,
-        # while the strings should use array_equal as the strings should
-        # exactly match.
-        cols = cols_in.str.replace('_in', '')
-        numeric_cols = self.identify_numeric_fields(ObjectType=ObjectType,
-                                                    fields=cols)
-        str_cols = ~numeric_cols
-
-        # Check. Use allclose to avoid rounding error.
-        if not \
-                np.allclose(
-                    merged[cols_in[numeric_cols]].to_numpy(),
-                    merged[cols_out[numeric_cols]].to_numpy()) \
-                \
-                or not \
-                np.array_equal(
-                    merged[cols_in[str_cols]].to_numpy(),
-                    merged[cols_out[str_cols]].to_numpy()
-                ):
-            # TODO: add some debug logging here to see what's different.
+        # If DataFrames are not equivalent, raise a
+        # CommandNotRespectedError.
+        if not eq:
             m = ('After calling ChangeParametersMultipleElement, not all '
                  'parameters were actually changed within PowerWorld. Try '
                  'again with a different parameter (e.g. use GenVoltSet '
@@ -232,6 +193,30 @@ class SAW(object):
 
         # All done.
         return None
+
+    def change_parameters_multiple_element_df(
+            self, ObjectType: str, command_df: pd.DataFrame) -> None:
+        """Helper to call ChangeParametersMultipleElement, but uses a
+        DataFrame to determine parameters and values. This method is
+        lighter weight but perhaps "riskier" than the
+        "change_and_confirm_params_multiple_element" method, as no
+        effort is made to ensure PowerWorld respected the given command.
+
+        :param ObjectType: The type of objects you are changing
+            parameters for.
+        :param command_df: Pandas DataFrame representing the objects
+            which will have their parameters changed. The columns should
+            be object field variable names, and MUST include the key
+            fields for the given ObjectType (which you can get via the
+            get_key_fields_for_object_type method). Columns which are
+            not key fields indicate parameters to be changed, while the
+            key fields are used internally by PowerWorld to look up
+            objects. Each row of the DataFrame represents a single
+            element.
+        """
+        # Simply call the helper function.
+        self._change_parameters_multiple_element_df(
+            ObjectType=ObjectType, command_df=command_df)
 
     def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
                            ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
@@ -1326,6 +1311,86 @@ class SAW(object):
         # After errors have been handled, return the data (which is in
         # position 1 of the tuple).
         return output[1]
+
+    def _change_parameters_multiple_element_df(
+            self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
+        """Private helper for changing parameters for multiple elements
+        with a command DataFrame as input. See docstring for public
+        method "change_parameters_multiple_element_df" for more details.
+
+        :returns: "Cleaned" version of command_df (passed through
+            clean_df_or_series).
+        """
+        # Start by cleaning up the DataFrame. This will avoid silly
+        # issues later (e.g. comparing ' 1 ' and '1').
+        cleaned_df = self.clean_df_or_series(obj=command_df,
+                                             ObjectType=ObjectType)
+
+        # Convert columns and data to lists and call PowerWorld.
+        # noinspection PyTypeChecker
+        self.ChangeParametersMultipleElement(
+            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist(),
+            ValueList=cleaned_df.to_numpy().tolist())
+
+        return cleaned_df
+
+    def _df_equiv_subset_of_other(self, df1: pd.DataFrame, df2: pd.DataFrame,
+                                  ObjectType: str) -> bool:
+        """Helper to indicate if one DataFrame is an equivalent subset
+        of another (True) or not (False) for a given PowerWorld object
+        type. Here, we're defining "equivalent subset" as all of df1
+        being present in df2 (e.g. columns, index, values, etc.), and
+        all data are "equivalent." Numeric data will be compared with
+        Numpy's "allclose" function, and string data will be compared
+        with Numpy's "array_equal" function. Types will be cast based on
+        the given parameters (columns in the DataFrame).
+
+        :param df1: First DataFrame. Could possibly originate from a
+            method such as "GetParametersMultipleElement." Column names
+            should be PowerWorld variable names, and the key fields
+            should be included.
+        :param df2: Second DataFrame. See description of df1.
+        :param ObjectType: PowerWorld object type for which the
+            DataFrames represent data for. E.g. 'gen' or 'load'.
+
+        :returns: True if DataFrames are "equivalent," False otherwise.
+        """
+        # Get the key fields for this ObjectType.
+        kf = self.get_key_fields_for_object_type(ObjectType=ObjectType)
+
+        # Merge the DataFrames on the key fields.
+        merged = pd.merge(left=df1, right=df2, how='inner',
+                          on=kf['internal_field_name'].tolist(),
+                          suffixes=('_in', '_out'), copy=False)
+
+        # Time to check if our input and output values match. Note this
+        # relies on our use of "_in" and "_out" suffixes above.
+        cols_in = merged.columns[merged.columns.str.endswith('_in')]
+        cols_out = merged.columns[merged.columns.str.endswith('_out')]
+
+        # We'll be comparing string and numeric columns separately. The
+        # numeric columns must use np.allclose to avoid rounding error,
+        # while the strings should use array_equal as the strings should
+        # exactly match.
+        cols = cols_in.str.replace('_in', '')
+        numeric_cols = self.identify_numeric_fields(ObjectType=ObjectType,
+                                                    fields=cols)
+        str_cols = ~numeric_cols
+
+        # If all numeric data are "close" and all string data match
+        # exactly, this will return True. Otherwise, False will be
+        # returned.
+        return (
+                np.allclose(
+                    merged[cols_in[numeric_cols]].to_numpy(),
+                    merged[cols_out[numeric_cols]].to_numpy()
+                )
+                and
+                np.array_equal(
+                    merged[cols_in[str_cols]].to_numpy(),
+                    merged[cols_out[str_cols]].to_numpy()
+                )
+        )
 
 
 def convert_to_posix_path(p):
