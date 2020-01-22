@@ -395,9 +395,8 @@ key field is present, the data will be sorted by BusNum.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.LoadState">
-<code class="sig-name descname">LoadState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>LoadState is used to load the system state previously saved
+<code class="sig-name descname">LoadState</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
+<dd><p>LoadState is used to load the system state previously saved
 with the SaveState function. Note that LoadState will not
 properly function if the system topology has changed due to the
 addition or removal of the system elements.</p>
@@ -530,12 +529,12 @@ file formatted for use with MATLAB</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.SaveState">
-<code class="sig-name descname">SaveState</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>SaveState is used to save the current state of the power
+<code class="sig-name descname">SaveState</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
+<dd><p>SaveState is used to save the current state of the power
 system. This can be useful if you are interested in comparing
 various cases, much as the “Difference Flows” feature works in
 the Simulator application.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SaveState_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
 <dl class="method">
@@ -720,10 +719,11 @@ parameters for.</p></li>
 which will have their parameters changed. The columns should
 be object field variable names, and MUST include the key
 fields for the given ObjectType (which you can get via the
-get_key_fields_for_object_type method). Columns which are not
-key fields indicate parameters to be changed, while the key
-fields are used internally by PowerWorld to look up objects.
-Each row of the DataFrame represents a single element.</p></li>
+get_key_fields_for_object_type method). Columns which are
+not key fields indicate parameters to be changed, while the
+key fields are used internally by PowerWorld to look up
+objects. Each row of the DataFrame represents a single
+element.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Raises</dt>
@@ -735,6 +735,33 @@ actually change the parameters.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.change_parameters_multiple_element_df">
+<code class="sig-name descname">change_parameters_multiple_element_df</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">command_df: pandas.core.frame.DataFrame</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_parameters_multiple_element_df" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to call ChangeParametersMultipleElement, but uses a
+DataFrame to determine parameters and values. This method is
+lighter weight but perhaps “riskier” than the
+“change_and_confirm_params_multiple_element” method, as no
+effort is made to ensure PowerWorld respected the given command.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of objects you are changing
+parameters for.</p></li>
+<li><p><strong>command_df</strong> – Pandas DataFrame representing the objects
+which will have their parameters changed. The columns should
+be object field variable names, and MUST include the key
+fields for the given ObjectType (which you can get via the
+get_key_fields_for_object_type method). Columns which are
+not key fields indicate parameters to be changed, while the
+key fields are used internally by PowerWorld to look up
+objects. Each row of the DataFrame represents a single
+element.</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
@@ -1008,7 +1035,7 @@ UIVisible.</p></li>
       &copy;2019, Zeyu Mao, Brandon Thayer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.2.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
