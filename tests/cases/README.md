@@ -12,3 +12,8 @@ grid. You can find a version of this model (though possibly not
 identical) on Texas A&M's [website](https://electricgrids.engr.tamu.edu/electric-grid-test-cases/).
 This particular case was provided by [Adam Birchfield](http://adambirchfield.com/)
 on 2019-11-21.
+
+## tx2000_mod
+This directory contains a variant of the Texas 2000 bus synthetic grid
+modified for voltage control experiments. This case was provided by
+Diana Wallison (diwalli@tamu.edu).
