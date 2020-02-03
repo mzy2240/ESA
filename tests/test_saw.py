@@ -44,6 +44,11 @@ PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
 
 # Path to the Texas 2000 bus model.
 PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')
+PATH_2000_mod = os.path.join(
+    CASE_DIR, 'tx2000_mod', 'ACTIVSg2000_AUG-09-2018_Ride_version7.PWB')
+
+# Aux file for filtering transformers by LTC control.
+LTC_AUX_FILE = os.path.join(THIS_DIR, 'ltc_filter.aux')
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -984,6 +989,44 @@ class LoadStateSaveStateTestCase(unittest.TestCase):
             'branch', branch_key_fields + ['LineStatus'])
 
         pd.testing.assert_frame_equal(branch_data, branch_data_new)
+
+
+class ProcessAuxFileTestCase(unittest.TestCase):
+    """Light weight testing of ProcessAuxFile."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(FileName=PATH_2000_mod, early_bind=True, UIVisible=False)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_process_aux_ltc_filter(self):
+        # Process the aux file. Note the aux file has a named filter,
+        # "ltc_filter"
+        self.saw.ProcessAuxFile(FileName=LTC_AUX_FILE)
+
+        # Get branch key fields.
+        kf = self.saw.get_key_field_list('branch')
+
+        # Get transformer data, using the named filter.
+        ltc = self.saw.GetParametersMultipleElement(
+            ObjectType='branch', ParamList=kf, FilterName="ltc_filter"
+        )
+
+        # Check that the filter worked.
+        branch = self.saw.GetParametersMultipleElement(
+            ObjectType='branch', ParamList=kf + ['LineXFType']
+        )
+
+        # Ensure the branch data is not getting filtered.
+        self.assertNotEqual(ltc.shape[0], branch.shape[0])
+
+        # Ensure the number of LTC transformers matches up.
+        ltc_expected = branch['LineXFType'] == 'LTC'
+        self.assertEqual(ltc_expected.sum(), ltc.shape[0])
 
 
 class RunScriptCommandTestCase(unittest.TestCase):

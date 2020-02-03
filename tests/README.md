@@ -9,3 +9,8 @@ Use this directory to store PowerWorld cases.
 
 ## Data
 Use this directory to store other data needed for testing.
+
+## ltc_filter.aux
+PowerWorld auxiliary file that defines a filter which obtains only LTC 
+type transformers. Used for testing ProcessAuxFile, and is also a useful
+template for defining filters in aux files.
