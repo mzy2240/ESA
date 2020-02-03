@@ -905,10 +905,7 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm>`__
         """
-        raise NotImplementedError(NIE_MSG)
-        # f = convert_to_posix_path(FileName)
-        # output = self._call_simauto('ProcessAuxFile', f)
-        # return output
+        return self._call_simauto('ProcessAuxFile', FileName)
 
     def RunScriptCommand(self, Statements):
         """Execute a list of script statements. The script actions are
