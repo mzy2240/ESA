@@ -892,8 +892,7 @@ class SAW(object):
         raise NotImplementedError(NIE_MSG)
 
     def ProcessAuxFile(self, FileName):
-        """NOT IMPLEMENTED.
-
+        """
         Load a PowerWorld Auxiliary file into SimAuto. This allows
         you to create a text file (conforming to the PowerWorld
         Auxiliary file format) that can list a set of data changes and
