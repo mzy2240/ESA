@@ -423,7 +423,7 @@ saw.change_and_confirm_params_multiple_element(
 saw.exit()
 ```
 
-### From grid model to graph
+### From Grid Model to Graph
 This example shows how to easily transform a grid model into a graph supported by NetworkX.
 NetworkX is a popular Python package for analyzing graph structure, building network models
 and designing new network algorithms.
