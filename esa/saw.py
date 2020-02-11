@@ -8,10 +8,10 @@ The documentation for SimAuto can be found
 """
 import pandas as pd
 import numpy as np
+import pywintypes
+import pythoncom
 import win32com
 from win32com.client import VARIANT
-import pythoncom
-import pywintypes
 from typing import Union, List
 from pathlib import Path, PureWindowsPath
 import logging
