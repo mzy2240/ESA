@@ -25,6 +25,7 @@ main code body, initialize actual SAW object in setUpModule (don't
 forget to tag it as global!), and then call the object's exit() method
 in tearDownModule.
 """
+
 import unittest
 from unittest.mock import patch
 import os
