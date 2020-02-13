@@ -6,12 +6,12 @@ with open("ReadMe.md", "r") as fh:
 
 setuptools.setup(
     name = 'esa',
-    version = '0.6.2',
+    version = '0.6.3',
     description = 'A python package that makes PowerWorld Simauto easier yet more powerful to use',
     long_description=long_description,
     long_description_content_type="text/markdown",
-    author = 'Zeyu Mao, Brandon Thayer',
-    author_email = 'zeyumao2@tamu.edu, blthayer@tamu.edu',
+    author = 'Zeyu Mao, Brandon Thayer, Yijing Liu',
+    author_email = 'zeyumao2@tamu.edu, blthayer@tamu.edu, yiji21@tamu.edu',
     url = 'https://github.com/mzy2240/ESA',
     packages=setuptools.find_packages(),
     classifiers=[
