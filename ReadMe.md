@@ -369,6 +369,12 @@ again but set `early_bind=False`. While we're unsure of the root cause
 of this issue, it seems to be related to the fact that `early_bind=True`
 preemptively creates some Python files related to the SimAuto COM API.
 
+#### AttributeError: module 'win32com.gen_py.C99F1760-277E-11D5-A106-00C04F469176x0x20x0' has no attribute 'CLSIDToClassMap'
+If you see an error like that listed above, it's possible the pywin32
+cache has been somehow corrupted. Simply delete the following
+directory (the default):
+`C:\Users\<your user directory>\AppData\Local\Temp\gen_py`
+
 ## Examples and Snippets
 
 ### Add Lines to Model
