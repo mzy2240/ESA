@@ -440,7 +440,7 @@ saw = SAW(FileName=os.path.join(this_dir, 'tests', 'cases', 'tx2000',
           early_bind=True)
 
 # Get the branch information in the dataframe format.
-params= saw.get_key_fields_for_object_type('branch')['internal_field_name'].tolist()
+params = saw.get_key_field_list('branch')
 Branch = saw.GetParametersMultipleElement(ObjectType='branch', ParamList=params)
 
 # Create the graph from the branch dataframe. That's it!
