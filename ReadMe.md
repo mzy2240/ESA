@@ -20,7 +20,7 @@ examples, please the the "Quick Start" section of this document.
 If you use ESA in any of your work, please use the following citation:
 ```latex
 @misc{ESA,
-  author = {Zeyu Mao, Brandon Thayer and Yijing Liu},
+  author = {Zeyu Mao and Brandon Thayer and Yijing Liu},
   title = {Easy SimAuto (ESA)},
   year = {2019},
   publisher = {GitHub},
