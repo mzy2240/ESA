@@ -7,11 +7,11 @@
     <title>esa package &#8212; ESA  documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="esa" href="modules.html" />
@@ -194,6 +194,21 @@ the ParamList.</p></li>
 <code class="sig-name descname">CloseCase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CloseCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes case without saving changes.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm">PowerWorld documentation</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.CloseOneline">
+<code class="sig-name descname">CloseOneline</code><span class="sig-paren">(</span><em class="sig-param">OnelineName=''</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CloseOneline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this action to close an open oneline diagram without saving it. If the name is omitted, the last
+focused oneline diagram will be closed.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>OnelineName</strong> – The name of the oneline diagram to close.</p>
+</dd>
+</dl>
+<p>See
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format.pdf</a>
+for more details.</p>
 </dd></dl>
 
 <dl class="method">
@@ -430,7 +445,29 @@ been called before.</p>
 <dl class="method">
 <dt id="esa.saw.SAW.OpenOneLine">
 <code class="sig-name descname">OpenOneLine</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">view=''</em>, <em class="sig-param">fullscreen='NO'</em>, <em class="sig-param">showfull='NO'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<dd><p>Use this action to open a oneline diagram. When using SimAuto, this action cannot be used to actually
+view a oneline. This script can be used in SimAuto to associate onelines with a PWB file. Any oneline that
+is opened using the script command and while the case is saved will opened in the GUI once the case is
+reopened.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>filename</strong> – The file name of the oneline diagram to open. Wildcards are allowed
+when opening a DDL file type. This is useful for loading DDL files via
+browsing patch searches</p></li>
+<li><p><strong>view</strong> – The view name that should be opened. Pass an empty string to denote
+no specific view</p></li>
+<li><p><strong>fullscreen</strong> – Set to YES or NO. YES means that the oneline diagram will be open in
+full screen mode. If this parameter is not specified, then NO is assumed</p></li>
+<li><p><strong>showfull</strong> – Optional parameter. Set to YES to open the oneline and apply the Show
+Full option. Set to NO to open the oneline and leave the oneline as is.
+Default is NO if not specified</p></li>
+</ul>
+</dd>
+</dl>
+<p>See
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format.pdf</a>
+for more details.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -466,6 +503,32 @@ SimulatorAuto process</p>
 <em class="property">property </em><code class="sig-name descname">RequestBuildDate</code><a class="headerlink" href="#esa.saw.SAW.RequestBuildDate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Retrieve the build date of the PowerWorld Simulator
 executable currently running with the SimulatorAuto process</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="esa.saw.SAW.ResetToFlatStart">
+<code class="sig-name descname">ResetToFlatStart</code><span class="sig-paren">(</span><em class="sig-param">FlatVoltagesAngles='YES'</em>, <em class="sig-param">ShuntsToMax='NO'</em>, <em class="sig-param">LTCsToMiddle='NO'</em>, <em class="sig-param">PSAnglesToMiddle='NO'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ResetToFlatStart" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use this action to initialize the Power Flow Solution to a “flat start.” The parameters are all optional and
+specify a conditional response depending on whether the solution is successfully found. If parameters are
+not passed then default values will be used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FlatVoltagesAngles</strong> – Set to YES or NO. YES means setting all the voltage magnitudes and
+generator setpoint voltages to 1.0 per unit and all the voltage angles to
+zero. Default Value = YES.</p></li>
+<li><p><strong>ShuntsToMax</strong> – Set to YES or NO. YES means to increase Switched Shunts Mvar half way
+to maximum. Default Value = NO.</p></li>
+<li><p><strong>LTCsToMiddle</strong> – Set to YES or NO. YES means setting the LTC Transformer Taps to middle
+of range. Default Value = NO.</p></li>
+<li><p><strong>PSAnglesToMiddle</strong> – Set to YES or NO. YES means setting Phase Shifter angles to middle of
+range. Default Value = NO.</p></li>
+</ul>
+</dd>
+</dl>
+<p>See
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format.pdf</a>
+for more details.</p>
 </dd></dl>
 
 <dl class="method">
@@ -920,6 +983,12 @@ UIVisible.</p></li>
 </dl>
 </dd></dl>
 
+<dl class="method">
+<dt id="esa.saw.SAW.update_ui">
+<code class="sig-name descname">update_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.update_ui" title="Permalink to this definition">¶</a></dt>
+<dd><p>Re-render the PowerWorld interface. <em>Extremely experimental</em></p>
+</dd></dl>
+
 </dd></dl>
 
 <dl class="function">
@@ -1017,7 +1086,7 @@ UIVisible.</p></li>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -1034,7 +1103,7 @@ UIVisible.</p></li>
       &copy;2019, Zeyu Mao, Brandon Thayer.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

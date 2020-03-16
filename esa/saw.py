@@ -16,6 +16,8 @@ from typing import Union, List
 from pathlib import Path, PureWindowsPath
 import logging
 import os
+import time
+import tempfile
 
 # TODO: Make logging more configurable.
 logging.basicConfig(
@@ -122,6 +124,10 @@ class SAW(object):
         # Set the CreateIfNotFound and UIVisible properties.
         self.set_simauto_property('CreateIfNotFound', CreateIfNotFound)
         self.set_simauto_property('UIVisible', UIVisible)
+        # Prepare an empty auxiliary file
+        self.ntf = tempfile.NamedTemporaryFile(mode='w', suffix='.axd', delete=False)
+        self.empty_aux = Path(self.ntf.name).as_posix()
+        self.ntf.close()
         # Open the case.
         self.OpenCase(FileName=FileName)
 
@@ -313,6 +319,9 @@ class SAW(object):
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
+        # Clean the empty aux file
+        os.unlink(self.ntf.name)
+        # Close the case and delete the COM object
         self.CloseCase()
         del self._pwcom
         self._pwcom = None
@@ -449,6 +458,11 @@ class SAW(object):
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
 
+    def update_ui(self):
+        """Re-render the PowerWorld interface. *Extremely experimental*
+        """
+        return self.ProcessAuxFile(self.empty_aux)
+
     def get_three_phase_bolted_fault_current(self, bus_num):
         """
         NOT IMPLEMENTED.
@@ -558,6 +572,8 @@ class SAW(object):
             raise ValueError('The given property_name, property_value '
                              'pair ({}, {}), resulted in an error. Please '
                              'help us out by filing an issue on GitHub.')
+
+
 
     ####################################################################
     # SimAuto Server Functions
@@ -1057,13 +1073,68 @@ class SAW(object):
         # return self.RunScriptCommand("EnterMode(%s)" % mode)
 
     def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-        # filename = Path(filename)
-        # script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
-        #          f" {showfull})"
-        # output = self.RunScriptCommand(script)
-        # return output
+        """Use this action to open a oneline diagram. When using SimAuto, this action cannot be used to actually
+        view a oneline. This script can be used in SimAuto to associate onelines with a PWB file. Any oneline that
+        is opened using the script command and while the case is saved will opened in the GUI once the case is
+        reopened.
+
+        :param filename: The file name of the oneline diagram to open. Wildcards are allowed
+            when opening a DDL file type. This is useful for loading DDL files via
+            browsing patch searches
+        :param view: The view name that should be opened. Pass an empty string to denote
+            no specific view
+        :param fullscreen: Set to YES or NO. YES means that the oneline diagram will be open in
+            full screen mode. If this parameter is not specified, then NO is assumed
+        :param showfull: Optional parameter. Set to YES to open the oneline and apply the Show
+            Full option. Set to NO to open the oneline and leave the oneline as is.
+            Default is NO if not specified
+
+        See
+        `Auxiliary File Format.pdf
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
+        for more details.
+        """
+        filename = Path(filename)
+        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
+                 f" {showfull})"
+        return self.RunScriptCommand(script)
+
+    def CloseOneline(self, OnelineName=""):
+        """Use this action to close an open oneline diagram without saving it. If the name is omitted, the last
+        focused oneline diagram will be closed.
+
+        :param OnelineName: The name of the oneline diagram to close.
+
+        See
+        `Auxiliary File Format.pdf
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
+        for more details.
+        """
+        script = f"CloseOneline({OnelineName})"
+        return self.RunScriptCommand(script)
+
+    def ResetToFlatStart(self, FlatVoltagesAngles='YES', ShuntsToMax='NO', LTCsToMiddle='NO', PSAnglesToMiddle='NO'):
+        """Use this action to initialize the Power Flow Solution to a "flat start." The parameters are all optional and
+        specify a conditional response depending on whether the solution is successfully found. If parameters are
+        not passed then default values will be used
+
+        :param FlatVoltagesAngles: Set to YES or NO. YES means setting all the voltage magnitudes and
+            generator setpoint voltages to 1.0 per unit and all the voltage angles to
+            zero. Default Value = YES.
+        :param ShuntsToMax: Set to YES or NO. YES means to increase Switched Shunts Mvar half way
+            to maximum. Default Value = NO.
+        :param LTCsToMiddle: Set to YES or NO. YES means setting the LTC Transformer Taps to middle
+            of range. Default Value = NO.
+        :param PSAnglesToMiddle: Set to YES or NO. YES means setting Phase Shifter angles to middle of
+            range. Default Value = NO.
+
+        See
+        `Auxiliary File Format.pdf
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
+        for more details.
+        """
+        script = f"ResetToFlatStart({FlatVoltagesAngles},{ShuntsToMax},{LTCsToMiddle},{PSAnglesToMiddle})"
+        return self.RunScriptCommand(script)
 
     def SaveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
         """NOT IMPLEMENTED.
