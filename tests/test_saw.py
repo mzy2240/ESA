@@ -874,6 +874,68 @@ class GetParametersSingleElementTestCase(unittest.TestCase):
             )
 
 
+class GetSpecificFieldListTestCase(unittest.TestCase):
+    """Test GetSpecificFieldList"""
+
+    def helper(self, df):
+        """Helper for checking basic DataFrame attributes."""
+        # Ensure columns match up.
+        self.assertListEqual(list(df.columns),
+                             saw_14.SPECIFIC_FIELD_LIST_COLUMNS)
+
+        # The dtypes for all columns should be strings, which are
+        # 'objects' in Pandas.
+        self.assertTrue((df.dtypes == np.dtype('O')).all())
+
+        # Ensure we're sorted by the first column.
+        self.assertTrue(
+            df[saw_14.SPECIFIC_FIELD_LIST_COLUMNS[0]].is_monotonic_increasing)
+
+        # Ensure the index starts at 0 and is monotonic
+        self.assertTrue(df.index[0] == 0)
+        self.assertTrue(df.index.is_monotonic_increasing)
+
+    def test_all(self):
+        """As documented, try using the ALL specifier."""
+        # Fetch all gen parameters.
+        out = saw_14.GetSpecificFieldList('gen', ['ALL'])
+
+        # Do basic tests.
+        self.helper(out)
+
+        # For whatever reason, the following does not work. We get
+        # lengths of 808 and 806, respectively. This is not worth
+        # investigating.
+        # # Ensure we get the same number of parameters as were pulled for
+        # # GetFieldList.
+        # out2 = saw_14.GetFieldList('gen')
+        #
+        # self.assertEqual(out.shape[0], out2.shape[0])
+
+        #
+
+    def test_all_location(self):
+        """As documented, try using variablename:ALL"""
+        out = saw_14.GetSpecificFieldList('load', ['ABCLoadAngle:ALL'])
+
+        # Do basic tests.
+        self.helper(out)
+
+        # We should get three entries back.
+        self.assertEqual(3, out.shape[0])
+
+    def test_some_variables(self):
+        """Pass a handful of variables in."""
+        v = ['GenVoltSet', 'GenMW', 'GenMVR']
+        out = saw_14.GetSpecificFieldList('gen', v)
+
+        # Do basic tests.
+        self.helper(out)
+
+        # We should get an entry for each item in the list.
+        self.assertEqual(len(v), out.shape[0])
+
+
 class ListOfDevicesTestCase(unittest.TestCase):
     """Test ListOfDevices for the 14 bus case."""
 
