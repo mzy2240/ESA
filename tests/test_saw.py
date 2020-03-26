@@ -1011,6 +1011,19 @@ class ListOfDevicesTestCase(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, result)
 
 
+class ListOfDevicesAsVariantStrings(unittest.TestCase):
+    """Test ListOfDevicesAsVariantStrings"""
+    def test_buses(self):
+        # Call method.
+        out = saw_14.ListOfDevicesAsVariantStrings('bus')
+
+        # We should get a tuple of tuples.
+        self.assertEqual(1, len(out))
+
+        # 14 buses.
+        self.assertEqual(14, len(out[0]))
+
+
 class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
     """Test ListOfDevicesFlatOutput."""
     def test_buses(self):
