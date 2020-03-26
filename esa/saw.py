@@ -907,17 +907,50 @@ class SAW(object):
         # All done.
         return df
 
-    def ListOfDevicesAsVariantStrings(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-
-    def ListOfDevicesFlatOutput(self, ObjType: str, FilterName='') -> tuple:
+    def ListOfDevicesAsVariantStrings(self, ObjType: str, FilterName='') ->\
+            tuple:
         """While this method is implemented, you are almost certainly
         better off using ListOfDevices instead. Since this method isn't
         particularly useful, no type casting will be performed on the
         output array. Contrast the results of calling this method with
         the results of calling ListOfDevices to see just how helpful
         ESA is!
+
+        Description below if from
+        `PowerWorld
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesAsVariantStrings_Function.htm>`__:
+
+        This function operates the same as the ListOfDevices function,
+        only with one notable difference. The values returned as the
+        output of the function are returned as Variants of type String.
+        The ListOfDevices function was errantly released returning the
+        values strongly typed as Integers and Strings directly, whereas
+        all other SimAuto functions returned data as Variants of type
+        String. This function was added to also return the data in the
+        same manner. This solved some compatibility issues with some
+        software languages.
+
+        :param ObjType: The type of object for which you are acquiring
+            the list of devices.
+        :param FilterName: The name of an advanced filter defined in the
+            load flow case open in the Simulator Automation Server. If
+            no filter is desired, then simply pass an empty string. If
+            the filter cannot be found, the server will default to
+            returning all objects in the case of type ObjType.
+
+        :returns: Tuple of tuples as documented by PowerWorld for the
+            ListOfDevices function.
+        """
+        return self._call_simauto('ListOfDevicesAsVariantStrings',
+                                  ObjType, FilterName)
+
+    def ListOfDevicesFlatOutput(self, ObjType: str, FilterName='') -> tuple:
+        """While this method is implemented, you are almost certainly
+        better off using ListOfDevices instead. Since this method isn't
+        particularly useful, no type casting, data type changing, or
+        data rearranging will be performed on the output array.
+        Contrast the results of calling this method with the results of
+        calling ListOfDevices to see just how helpful ESA is!
 
         This function operates the same as the ListOfDevices
         function, only with one notable difference. The values returned
