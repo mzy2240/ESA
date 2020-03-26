@@ -295,28 +295,6 @@ class SAW(object):
 
         return obj
 
-    def create_filter(self, condition, object_type, filter_name,
-                      filter_logic='AND', filter_pre='NO', enabled='YES'):
-        """
-        NOT IMPLEMENTED.
-
-        Creates a filter in PowerWorld. The attempt is to reduce the
-        clunkiness of creating a filter in the API, which entails
-        creating an aux data file.
-        """
-        raise NotImplementedError(NIE_MSG)
-        # aux_text = '''
-        #     DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
-        #     {
-        #     "{objecttype}" "{filtername}" "{filterlogic}" "{filterpre}" "{enabled]"
-        #         <SUBDATA Condition>
-        #             {condition}
-        #         </SUBDATA>
-        #     }'''.format(condition=condition, objecttype=object_type,
-        #                 filtername=filter_name, filterlogic=filter_logic,
-        #                 filterpre=filter_pre, enabled=enabled)
-        # return self._call_simauto('LoadAux', aux_text)
-
     def exit(self):
         """Clean up for the PowerWorld COM object"""
         self.CloseCase()
@@ -454,19 +432,6 @@ class SAW(object):
 
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
-
-    def get_three_phase_bolted_fault_current(self, bus_num):
-        """
-        NOT IMPLEMENTED.
-
-        Calculates the three phase fault; this can be done even with
-        cases which only contain positive sequence impedances"""
-        raise NotImplementedError(NIE_MSG)
-        # script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
-        # result = self.RunScriptCommand(script_cmd)
-        # field_list = ['BusNum', 'FaultCurMag']
-        # return self.GetParametersSingleElement('BUS', field_list,
-        #                                        [bus_num, 0])
 
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
@@ -1120,23 +1085,6 @@ class SAW(object):
         raise NotImplementedError(NIE_MSG)
         # return self._call_simauto('SendToExcel', ObjectType, FilterName,
         #                           FieldList)
-
-    def TSGetContingencyResults(self, CtgName, ObjFieldList,
-                                StartTime=None, StopTime=None):
-        """NOT IMPLEMENTED.
-
-        Read transient stability results directly into the SimAuto COM
-        object and be further used.
-        !!!!! This function should ONLY be used after the simulation is run
-        (for example, use this after running script commands tsSolveAll
-        or tsSolve).
-        ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or
-        ObjFieldList = ['"Bus 4 | frequency"']
-        """
-        raise NotImplementedError(NIE_MSG)
-        # output = self._call_simauto('TSGetContingencyResults', CtgName,
-        #                             ObjFieldList, StartTime, StopTime)
-        # return output
 
     def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
                      ToAppend=True, EString=None):
