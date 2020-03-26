@@ -58,6 +58,12 @@ class SAW(object):
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
 
+    # Class level property defining columns used for
+    # GetSpecificFieldList method.
+    SPECIFIC_FIELD_LIST_COLUMNS = \
+        ['variablename:location', 'field', 'column header',
+         'field description']
+
     # SimAuto properties that we allow users to set via the
     # set_simauto_property method.
     SIMAUTO_PROPERTIES = {'CreateIfNotFound': bool, 'CurrentDir': str,
@@ -782,9 +788,41 @@ class SAW(object):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
-    def GetSpecificFieldList(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetSpecificFieldList(self, ObjectType: str, FieldList: List[str])\
+            -> pd.DataFrame:
+        """
+        The GetSpecificFieldList function is used to return identifying
+        information about specific fields used by an object type. Note
+        that in many cases simply using the GetFieldList method is
+        simpler and gives more information.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldList_Function.htm>`__
+
+        :param ObjectType: The type of object for which fields are
+            requested.
+        :param FieldList: A list of strings. Each string represents
+            object field variables, as defined in the section on
+            `PowerWorld Object Fields
+            <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/PowerWorld_Object_Variables.htm>`__.
+            Specific variablenames along with location numbers can be
+            specified. To return all fields using the same variablename,
+            use "variablename:ALL" instead of the location number that
+            would normally appear after the colon. If all fields should
+            be returned, a single parameter of "ALL" can be used instead
+            of specific variablenames.
+
+        :returns: A Pandas DataFrame with columns given by the class
+            constant SPECIFIC_FIELD_LIST_COLUMNS. There will be a row
+            for each element in the FieldList input unless 'ALL' is
+            used in the FieldList. The DataFrame will be sorted
+            alphabetically by the variablenames.
+        """
+        return pd.DataFrame(
+            self._call_simauto('GetSpecificFieldList', ObjectType,
+                               convert_list_to_variant(FieldList)),
+            columns=self.SPECIFIC_FIELD_LIST_COLUMNS).sort_values(
+            by=self.SPECIFIC_FIELD_LIST_COLUMNS[0]).reset_index(drop=True)
 
     def GetSpecificFieldMaxNum(self):
         """NOT IMPLEMENTED."""
