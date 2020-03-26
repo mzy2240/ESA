@@ -936,6 +936,20 @@ class GetSpecificFieldListTestCase(unittest.TestCase):
         self.assertEqual(len(v), out.shape[0])
 
 
+class GetSpecificFieldMaxNumTestCase(unittest.TestCase):
+    """Test GetSpecificFieldMaxNum."""
+    def test_load_angle(self):
+        # While there are 3 ABCLoadAngle variables, the maximum number
+        # is 2.
+        self.assertEqual(
+            2, saw_14.GetSpecificFieldMaxNum('load', 'ABCLoadAngle'))
+
+    def test_bad_input(self):
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'PowerWorld simply returned -1'):
+            saw_14.GetSpecificFieldMaxNum('bogus', 'bogus')
+
+
 class ListOfDevicesTestCase(unittest.TestCase):
     """Test ListOfDevices for the 14 bus case."""
 

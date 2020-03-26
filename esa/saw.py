@@ -804,8 +804,8 @@ class SAW(object):
         :param FieldList: A list of strings. Each string represents
             object field variables, as defined in the section on
             `PowerWorld Object Fields
-            <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/PowerWorld_Object_Variables.htm>`__.
-            Specific variablenames along with location numbers can be
+            <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/PowerWorld_Object_Variables.htm>`__
+            . Specific variablenames along with location numbers can be
             specified. To return all fields using the same variablename,
             use "variablename:ALL" instead of the location number that
             would normally appear after the colon. If all fields should
@@ -824,9 +824,35 @@ class SAW(object):
             columns=self.SPECIFIC_FIELD_LIST_COLUMNS).sort_values(
             by=self.SPECIFIC_FIELD_LIST_COLUMNS[0]).reset_index(drop=True)
 
-    def GetSpecificFieldMaxNum(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetSpecificFieldMaxNum(self, ObjectType: str, Field: str) -> int:
+        """The GetSpecificFieldMaxNum function is used to return the
+        maximum number of a fields that use a particular variablename
+        for a specific object type.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldMaxNum_Function.htm>`__
+
+        :param ObjectType: The type of object for which information is
+            being requested.
+        :param Field: The variablename for which the maximum number of
+            fields is being requested. This should just be the
+            variablename and should exclude the location number that can
+            be included to indicate different fields that use the same
+            variablename, i.e. do not include the colon and number that
+            can be included when identifying a field.
+
+        :returns: An integer that specifies the maximum number of fields
+            that use the same variablename for a particular object type.
+            Fields are identified in the format variablename:location
+            when multiple fields use the same variablename. The output
+            indicates the maximum number that the location can be.
+            Generally, fields are identified starting from 0 and going
+            up to the maximum number, but keep in mind that values
+            within this range might be skipped and not used to indicate
+            valid fields.
+        """
+        # Unfortunately, at the time of writing this method does not
+        return self._call_simauto('GetSpecificFieldMaxNum', ObjectType, Field)
 
     def ListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
@@ -1165,12 +1191,37 @@ class SAW(object):
             # If we just get a tuple with the empty string in it,
             # there's nothing to return.
             return None
-        if output is None or output[0] == '':
-            pass
-        elif 'No data' in output[0]:
-            pass
-        else:
-            raise PowerWorldError(output[0])
+
+        # There's one inconsistent method, GetFieldMaxNum, which
+        # appears to return -1 on error, otherwise simply an integer.
+        # Since that's an edge case, we'll use a try/except block.
+        try:
+            if output is None or output[0] == '':
+                pass
+            elif 'No data' in output[0]:
+                pass
+            else:
+                raise PowerWorldError(output[0])
+
+        except TypeError as e:
+            # We'll get 'is not subscriptable' if PowerWorld simply
+            # returned an integer, as will happen with GetFieldMaxNum.
+            if 'is not subscriptable' in e.args[0]:
+                if output == -1:
+                    # Apparently -1 is the signal for an error.
+                    m = (
+                        'PowerWorld simply returned -1 after calling '
+                        f"'{func}' with '{args}'. Unfortunately, that's all "
+                        "we can help you with. Perhaps the arguments are "
+                        "invalid or in the wrong order - double-check the "
+                        "documentation.")
+                    raise PowerWorldError(m)
+                elif isinstance(output, int):
+                    # Return the integer.
+                    return output
+
+            # If we made it here, simply re-raise the exception.
+            raise e
 
         # After errors have been handled, return the data (which is in
         # position 1 of the tuple).
