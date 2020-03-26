@@ -1011,6 +1011,19 @@ class ListOfDevicesTestCase(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, result)
 
 
+class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
+    """Test ListOfDevicesFlatOutput."""
+    def test_buses(self):
+        # Call method for buses.
+        out = saw_14.ListOfDevicesFlatOutput('bus')
+        self.assertTrue(isinstance(out, tuple))
+
+        # Since buses have a single key field (BusNum), we'll only get
+        # one return per bus. So, including the two fields at the
+        # beginning of the list, we'll have 16 elements.
+        self.assertEqual(16, len(out))
+
+
 class LoadStateErrorTestCase(unittest.TestCase):
     """Test LoadState without calling SaveState, and ensure we get an
     error from PowerWorld.

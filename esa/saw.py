@@ -911,9 +911,50 @@ class SAW(object):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
-    def ListOfDevicesFlatOutput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def ListOfDevicesFlatOutput(self, ObjType: str, FilterName='') -> tuple:
+        """While this method is implemented, you are almost certainly
+        better off using ListOfDevices instead. Since this method isn't
+        particularly useful, no type casting will be performed on the
+        output array. Contrast the results of calling this method with
+        the results of calling ListOfDevices to see just how helpful
+        ESA is!
+
+        This function operates the same as the ListOfDevices
+        function, only with one notable difference. The values returned
+        as the output of the function are returned in a
+        single-dimensional vector array, instead of the
+        multi-dimensional array as described in the ListOfDevices topic.
+        The function returns the key field values for the device,
+        typically in the order of bus number 1, bus number 2
+        (where applicable), and circuit identifier (where applicable).
+        These are the most common key fields, but some object types do
+        have other key fields as well.
+
+        `PowerWorld documentation:
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesFlatOutput_Function.htm>`__
+
+        :param ObjType: The type of object for which you are acquiring
+            the list of devices.
+        :param FilterName: The name of an advanced filter defined in the
+            load flow case open in the Simulator Automation Server. If
+            no filter is desired, then simply pass an empty string. If
+            the filter cannot be found, the server will default to
+            returning all objects in the case of type ObjType.
+
+        :returns: List in the following format:
+            [NumberOfObjectsReturned, NumberOfFieldsPerObject, Ob1Fld1,
+            Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)].
+            The data is thus returned in a single dimension array, where
+            the parameters NumberOfObjectsReturned and
+            NumberOfFieldsPerObject tell you how the rest of the array
+            is populated. Following the NumberOfObjectsReturned
+            parameter is the start of the data. The data is listed as
+            all fields for object 1, then all fields for object 2, and
+            so on. You can parse the array using the NumberOf…
+            parameters for objects and fields.
+        """
+        return self._call_simauto(
+            'ListOfDevicesFlatOutput', ObjType, FilterName)
 
     def LoadState(self) -> None:
         """LoadState is used to load the system state previously saved
@@ -1223,9 +1264,13 @@ class SAW(object):
             # If we made it here, simply re-raise the exception.
             raise e
 
-        # After errors have been handled, return the data (which is in
-        # position 1 of the tuple).
-        return output[1]
+        # After errors have been handled, return the data. Typically
+        # this is in position 1.
+        if len(output) == 2:
+            return output[1]
+        else:
+            # Return all the remaining data.
+            return output[1:]
 
     def _change_parameters_multiple_element_df(
             self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
