@@ -1001,6 +1001,41 @@ class GetParametersSingleElementTestCase(unittest.TestCase):
             )
 
 
+class GetParametersTestCase(unittest.TestCase):
+    """Test GetParameters method."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_expected_results(self):
+        fields = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineX']
+
+        actual = saw_14.GetParameters(
+            ObjectType='branch', ParamList=fields, Values=[4, 9, '1', 0])
+
+        expected = pd.Series([4, 9, '1', 0.556180], index=fields)
+
+        pd.testing.assert_series_equal(actual, expected)
+
+    def test_nonexistent_object(self):
+        """Ensure an exception is raised if the object cannot be found.
+        """
+        with self.assertRaisesRegex(PowerWorldError, 'Object not found'):
+            # 14 bus certainly does not have a 100th bus.
+            # noinspection PyUnusedLocal
+            actual = saw_14.GetParameters(
+                ObjectType='gen', ParamList=['BusNum', 'GenID', 'GenMW'],
+                Values=[100, '1', 0]
+            )
+
+    def test_bad_field(self):
+        """Ensure an exception is raised when a bad field is provided.
+        """
+        with self.assertRaisesRegex(ValueError, 'The given object has fields'):
+            saw_14.GetParameters(
+                ObjectType='gen', ParamList=['BusNum', 'GenID', 'BogusParam'],
+                Values=[1, '1', 0]
+            )
+
+
 class GetSpecificFieldListTestCase(unittest.TestCase):
     """Test GetSpecificFieldList"""
 
