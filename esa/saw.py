@@ -1105,20 +1105,21 @@ class SAW(object):
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
 
         :param ObjectType: A String describing the type of object for
-        which you are requesting data.
+            which you are requesting data.
         :param FilterName: String with the name of an advanced filter
-        which was previously defined in the case before being loaded in
-        the Simulator Automation Server. If no filter is desired, then
-        simply pass an empty string. If a filter name is passed but the
-        filter cannot be found in the loaded case, no filter is used.
+            which was previously defined in the case before being loaded
+            in the Simulator Automation Server. If no filter is desired,
+            then simply pass an empty string. If a filter name is passed
+            but the filter cannot be found in the loaded case, no filter
+            is used.
         :param FieldList: Variant parameter must either be an array of
-        fields for the given object or the string "ALL". As an array,
-        FieldList contains an array of strings, where each string
-        represents an object field variable, as defined in the section
-        on PowerWorld Object Variables. If, instead of an array of
-        strings, the single string "ALL" is passed, the Simulator
-        Automation Server will use predefined default fields when
-        exporting the data.
+            fields for the given object or the string "ALL". As an
+            array, FieldList contains an array of strings, where each
+            string represents an object field variable, as defined in
+            the section on PowerWorld Object Variables. If, instead of
+            an array of strings, the single string "ALL" is passed, the
+            Simulator Automation Server will use predefined default
+            fields when exporting the data.
         """
         return self._call_simauto('SendToExcel', ObjectType, FilterName,
                                    FieldList)
