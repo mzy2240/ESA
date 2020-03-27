@@ -810,9 +810,36 @@ class SAW(object):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
-    def GetParameters(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetParameters(self, ObjectType: str,
+                      ParamList: list, Values: list) -> pd.Series:
+        """This function is maintained in versions of Simulator later 
+        than version 9 for compatibility with Simulator version 9. This 
+        function will call the GetParametersSingleElement implicitly.
+        
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm>`__
+
+        :param ObjectType: The type of object you're retrieving
+            parameters for.
+        :param ParamList: List of strings indicating parameters to
+            retrieve. Note the key fields MUST be present. One can
+            obtain key fields for an object type via the
+            get_key_fields_for_object_type method.
+        :param Values: List of values corresponding 1:1 to parameters in
+            the ParamList. Values must be included for the key fields,
+            and the remaining values should be set to 0.
+
+        :returns: Pandas Series indexed by the given ParamList. This
+            Series will be cleaned by clean_df_or_series, so data will
+            be of the appropriate type and strings are cleaned up.
+
+        :raises PowerWorldError: if the object cannot be found.
+        :raises ValueError: if any given element in ParamList is not
+            valid for the given ObjectType.
+        :raises AssertionError: if the given ParamList and Values do
+            not have the same length.
+        """
+        return self.GetParametersSingleElement(ObjectType, ParamList, Values)
 
     def GetSpecificFieldList(self, ObjectType: str, FieldList: List[str]) \
             -> pd.DataFrame:
@@ -1166,7 +1193,7 @@ class SAW(object):
             fields when exporting the data.
         """
         return self._call_simauto('SendToExcel', ObjectType, FilterName,
-                                   FieldList)
+                                  FieldList)
 
     def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
                      ToAppend=True, EString=None):
