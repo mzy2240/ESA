@@ -806,9 +806,47 @@ class SAW(object):
         # Clean DataFrame and return it.
         return self.clean_df_or_series(obj=df, ObjectType=ObjectType)
 
-    def GetParametersMultipleElementFlatOutput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
+                                               ParamList: list,
+                                               FilterName: str = '') -> \
+            Union[str, None]:
+        """This function operates the same as the
+        GetParametersMultipleElement function, only with one notable
+        difference. The values returned as the output of the function
+        are returned in a single-dimensional vector array, instead of
+        the multi-dimensional array as described in the
+        GetParametersMultipleElement topic.
+
+        Recommend to use GetParametersMultipleElement instead, for
+        automatic dataframe conversion and better type/output check.
+
+        :param ObjectType: Type of object to get parameters for.
+        :param ParamList: List of variables to obtain for the given
+            object type. E.g. ['BusNum', 'GenID', 'GenMW']. One
+            can use the method GetFieldList to get a listing of all
+            available fields. Additionally, you'll likely want to always
+            return the key fields associated with the objects. These
+            key fields can be obtained via the
+            get_key_fields_for_object_type method.
+        :param FilterName: Name of an advanced filter defined in the
+            load flow case.
+
+        :return:The format of the output array is the following: [
+            errorString, NumberOfObjectsReturned, NumberOfFieldsPerObject,
+            Ob1Fld1, Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)]
+            The data is thus returned in a single dimension array, where
+            the parameters NumberOfObjectsReturned and
+            NumberOfFieldsPerObject tell you how the rest of the array
+            is populated. Following the NumberOfObjectsReturned
+            parameter is the start of the data. The data is listed as
+            all fields for object 1, then all fields for object 2, and
+            so on. You can parse the array using the NumberOf…
+            parameters for objects and fields.
+        """
+        return self._call_simauto(
+            'GetParametersMultipleElementFlatOutput', ObjectType,
+            convert_list_to_variant(ParamList),
+            FilterName)
 
     def GetParameters(self, ObjectType: str,
                       ParamList: list, Values: list) -> pd.Series:
