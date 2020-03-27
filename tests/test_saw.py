@@ -966,6 +966,17 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
             )
 
 
+class GetParametersMultipleElementFlatOutput(unittest.TestCase):
+    """Test GetParametersMultipleElementFlatOutput"""
+
+    def test_get_gen_voltage_set_points(self):
+        params = ['BusNum', 'GenID', 'GenRegPUVolt']
+        results = saw_14.GetParametersMultipleElementFlatOutput(
+            ObjectType='gen', ParamList=params)
+
+        self.assertIsInstance(results, tuple)
+
+
 class GetParametersSingleElementTestCase(unittest.TestCase):
     """Test GetParameterSingleElement method."""
 
