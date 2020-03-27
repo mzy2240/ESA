@@ -13,14 +13,22 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../../'))
 
+# Open and read the version file.
+with open('../../VERSION', 'r') as fh:
+    __version__ = fh.read()
 
 # -- Project information -----------------------------------------------------
 
 project = 'ESA'
-copyright = '2019, Zeyu Mao, Brandon Thayer'
-author = 'Zeyu Mao, Brandon Thayer'
+copyright = '2020, Zeyu Mao, Brandon Thayer, Yijing Liu'
+author = 'Zeyu Mao, Brandon Thayer, Yijing Liu'
 
+# The short X.Y version
+version = __version__
+# The full version, including alpha/beta/rc tags.
+release = version
 
 # -- General configuration ---------------------------------------------------
 
