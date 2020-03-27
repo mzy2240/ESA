@@ -6,16 +6,17 @@ The documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
-import pandas as pd
-import numpy as np
-import pywintypes
-import pythoncom
-import win32com
-from win32com.client import VARIANT
-from typing import Union, List
-from pathlib import Path, PureWindowsPath
 import logging
 import os
+from pathlib import Path, PureWindowsPath
+from typing import Union, List
+
+import numpy as np
+import pandas as pd
+import pythoncom
+import pywintypes
+import win32com
+from win32com.client import VARIANT
 
 # TODO: Make logging more configurable.
 logging.basicConfig(
@@ -178,7 +179,7 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self._change_parameters_multiple_element_df(
-                ObjectType=ObjectType, command_df=command_df)
+            ObjectType=ObjectType, command_df=command_df)
 
         # Now, query for the given parameters.
         df = self.GetParametersMultipleElement(
@@ -534,21 +535,37 @@ class SAW(object):
     # SimAuto Server Functions
     ####################################################################
 
-    def ChangeParameters(self, ObjType, ParamList, ValueArray):
+    def ChangeParameters(self, ObjectType: str, ParamList: list,
+                         Values: list) -> None:
         """
-        NOT IMPLEMENTED.
+        The ChangeParameters function has been replaced by the
+        ChangeParametersSingleElement function. ChangeParameters
+        can still be called as before, but will now just automatically
+        call ChangeParametersSingleElement, and pass on the parameters
+        to that function.
+        Unlike the script SetData and CreateData commands, SimAuto does
+        not have any explicit functions to create elements. Instead this
+        can be done using the ChangeParameters functions by making use
+        of the CreateIfNotFound SimAuto property. Set CreateIfNotFound =
+        True if objects that are updated through the ChangeParameters
+        functions should be created if they do not already exist in the
+        case. Objects that already exist will be updated. Set
+        CreateIfNotFound = False to not create new objects and only
+        update existing ones. The CreateIfNotFound property is global,
+        once it is set to True this applies to all future
+        ChangeParameters calls.
 
-        ChangeParameters is used to change single or multiple parameters
-        of a single object. ParamList is a variant array storing strings
-        that are Simulator object field variables, and must contain the
-        key fields for the objecttype. Create variant arrays (one for
-        each element being changed) with values corresponding to the
-        fields in ParamList.
+        :param ObjectType: The type of object you are changing
+            parameters for.
+        :param ParamList: List of object field variable names. Note this
+            MUST include the key fields for the given ObjectType
+            (which you can get via the get_key_fields_for_object_type
+            method).
+        :param Values: List of values corresponding to the parameters in
+            the ParamList.
         """
-        raise NotImplementedError(NIE_MSG)
-        # output = self._call_simauto('ChangeParameters', ObjType, ParamList,
-        #                             ValueArray)
-        # return output
+        return self.ChangeParametersSingleElement(ObjectType, ParamList,
+                                                  Values)
 
     def ChangeParametersSingleElement(self, ObjectType: str, ParamList: list,
                                       Values: list) -> None:
@@ -753,7 +770,7 @@ class SAW(object):
         """NOT IMPLEMENTED."""
         raise NotImplementedError(NIE_MSG)
 
-    def GetSpecificFieldList(self, ObjectType: str, FieldList: List[str])\
+    def GetSpecificFieldList(self, ObjectType: str, FieldList: List[str]) \
             -> pd.DataFrame:
         """
         The GetSpecificFieldList function is used to return identifying
@@ -872,7 +889,7 @@ class SAW(object):
         # All done.
         return df
 
-    def ListOfDevicesAsVariantStrings(self, ObjType: str, FilterName='') ->\
+    def ListOfDevicesAsVariantStrings(self, ObjType: str, FilterName='') -> \
             tuple:
         """While this method is implemented, you are almost certainly
         better off using ListOfDevices instead. Since this method isn't
