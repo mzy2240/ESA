@@ -1075,16 +1075,36 @@ class SAW(object):
         return self._call_simauto('SaveState')
 
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """NOT IMPLEMENTED.
-
-        Send data from SimAuto to an Excel spreadsheet.
-
+        """Send data from SimAuto to an Excel spreadsheet. The  function
+        is flexible in that you can specify the type of object data you
+        want to export, an advanced filter name for a filter you want to
+        use, and as many or as few field types as desired that are
+        supported by the type of object. The first time this function
+        is called, a new instance of Excel will be started, and the data
+        requested will be pasted to a new sheet. For each subsequent
+        call of this function, the requested data will be pasted to a
+        new sheet within the same workbook,until the workbook is closed.
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
+
+        :param ObjectType: A string describing the type of object for
+        which you are requesting data.
+        :param FilterName: The name of an advanced filter which was
+        previously defined in the case before being loaded in the
+        Simulator Automation Server. If no filter is desired, then
+        simply pass an empty string. If a filter name is passed but the
+        filter cannot be found in the loaded case, no filter is used.
+        :param FilterName: This parameter must either be an array of
+        fields for the given object or the string "ALL". As an array,
+        FieldList contains an array of strings, where each string
+        represents an object field variable, as defined in the section
+        on PowerWorld Object Variables. If, instead of an array of
+        strings, the single string "ALL" is passed, the Simulator
+        Automation Server will use predefined default fields when
+        exporting the data.
         """
-        raise NotImplementedError(NIE_MSG)
-        # return self._call_simauto('SendToExcel', ObjectType, FilterName,
-        #                           FieldList)
+        return self._call_simauto('SendToExcel', ObjectType, FilterName,
+                                   FieldList)
 
     def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
                      ToAppend=True, EString=None):
