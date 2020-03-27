@@ -555,6 +555,9 @@ class SAW(object):
         once it is set to True this applies to all future
         ChangeParameters calls.
 
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
+
         :param ObjectType: The type of object you are changing
             parameters for.
         :param ParamList: List of object field variable names. Note this
@@ -617,9 +620,50 @@ class SAW(object):
                                   convert_list_to_variant(ParamList),
                                   convert_nested_list_to_variant(ValueList))
 
-    def ChangeParametersMultipleElementFlatInput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def ChangeParametersMultipleElementFlatInput(self, ObjectType: str,
+                                                 ParamList: list,
+                                                 NoOfObjects: int,
+                                                 ValueList: list) -> None:
+        """The ChangeParametersMultipleElementFlatInput function allows
+        you to set parameters for multiple objects of the same type in
+        a case loaded into the Simulator Automation Server. This
+        function is very similar to the ChangeParametersMultipleElement,
+         but uses a single dimensioned array of values as input instead
+         of a multi-dimensioned array of arrays.
+        Recommend to use helper functions like
+        change_parameters_multiple_element_df instead of this one for
+        your convenience.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
+
+        :param ObjectType: The type of object you are changing
+            parameters for.
+        :param ParamList: Listing of object field variable names. Note
+            this MUST include the key fields for the given ObjectType
+            (which you can get via the get_key_fields_for_object_type
+            method).
+        :param NoOfObjects: An integer number of devices that are
+            passing values for. SimAuto will automatically check that
+            the number of parameters for each device (counted from
+            ParamList) and the number of objects integer correspond to
+            the number of values in value list (counted from ValueList.)
+        :param ValueList: List of lists corresponding to the ParamList.
+            Should have length n, where n is the number of elements you
+            with to change parameters for. Each sub-list should have
+            the same length as ParamList, and the items in the sub-list
+            should correspond 1:1 with ParamList.
+        :return: Result from calling SimAuto, which should always
+            simply be None.
+        """
+        # Call SimAuto and return the result (should just be None)
+        if isinstance(ValueList[0], list):
+            raise Error("The value list has to be a 1-D array")
+        return self._call_simauto('ChangeParametersMultipleElementFlatInput',
+                                  ObjectType,
+                                  convert_list_to_variant(ParamList),
+                                  NoOfObjects,
+                                  convert_list_to_variant(ValueList))
 
     def CloseCase(self):
         """Closes case without saving changes.
