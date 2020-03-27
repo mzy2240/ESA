@@ -687,6 +687,48 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class ChangeParametersTestCase(unittest.TestCase):
+    """Test ChangeParameters.
+
+    TODO: This test case could use some more tests, e.g. expected
+        errors, etc.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.line_key_fields = saw_14.get_key_fields_for_object_type(
+                'Branch')['internal_field_name'].tolist()
+        cls.line_r = ['LineR']
+        cls.params = cls.line_key_fields + cls.line_r
+        cls.line_data = saw_14.GetParametersMultipleElement(
+            ObjectType='Branch', ParamList=cls.params)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Be a good boy and put things back the way you found them."""
+        # noinspection PyUnresolvedReferences
+        saw_14.change_and_confirm_params_multiple_element(
+            'Branch', cls.line_data)
+
+    def test_change_line_r(self):
+        # Let's just change the first line resistance.
+        new_r = self.line_data.iloc[0]['LineR'] * 2
+        # Intentionally making a copy so that we don't modify the
+        # original DataFrame - we'll be using that to reset the line
+        # parameters after this test has run.
+        value_series = self.line_data.iloc[0].copy()
+        value_series['LineR'] = new_r
+        values_list = value_series.tolist()
+        saw_14.ChangeParameters('Branch', self.params, values_list)
+
+        # Retrieve the updated line parameters.
+        new_line_data = saw_14.GetParametersMultipleElement(
+            'Branch', self.params)
+
+        # Ensure the update went through.
+        self.assertEqual(new_line_data.iloc[0]['LineR'], new_r)
+
+
 class ChangeParametersSingleElementTestCase(unittest.TestCase):
     """Test ChangeParametersSingleElement.
 
