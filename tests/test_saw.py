@@ -26,14 +26,16 @@ forget to tag it as global!), and then call the object's exit() method
 in tearDownModule.
 """
 
+import logging
+import os
 import unittest
 from unittest.mock import patch
-import os
+
 import numpy as np
 import pandas as pd
-from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError
+
+from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_posix_path, convert_to_windows_path
-import logging
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -130,7 +132,7 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
         cls.branch_data = saw_14.GetParametersMultipleElement(
             ObjectType='branch',
             ParamList=branch_key_fields['internal_field_name'].tolist()
-                       + ['LineStatus'])
+                      + ['LineStatus'])
         # Make a copy so we can modify it without affecting the original
         # DataFrame.
         cls.branch_data_copy = cls.branch_data.copy()
@@ -460,6 +462,7 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
     """Test the set_simauto_property method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, early_bind=True)
@@ -687,6 +690,88 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class ChangeParametersMultipleElementFlatInputTestCase(unittest.TestCase):
+    """Test ChangeParametersMultipleElementFlatInput"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Get generator key fields.
+        cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
+        cls.params = \
+            cls.key_field_df_gens['internal_field_name'].to_numpy().tolist()
+        # Combine key fields with our desired attribute.
+        cls.params.append('GenVoltSet')
+        cls.gen_v_pu = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=cls.params)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Always be nice and clean up after yourself and put your toys
+        away. No, but seriously, put the voltage set points back."""
+        value_list = cls.gen_v_pu.to_numpy().tolist()
+        num_objects = len(value_list)
+        flattened_value_list = [val for sublist in value_list for val in
+                                sublist]
+        saw_14.ChangeParametersMultipleElementFlatInput(
+            ObjectType='gen', ParamList=cls.params,
+            NoOfObjects=num_objects, ValueList=flattened_value_list)
+
+    # noinspection DuplicatedCode
+    def test_change_gen_voltage_set_points(self):
+        """Set all generator voltages to 1, and ensure the command
+        sticks.
+        """
+        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
+        # Start by converting our generator data to a list of lists.
+        value_list = self.gen_v_pu.to_numpy().tolist()
+
+        # Loop over the values, set to 1.
+        # noinspection PyTypeChecker
+        for v in value_list:
+            # Set voltage at 1.
+            v[-1] = 1.0
+
+        # Send in the command.
+        # noinspection PyTypeChecker
+        num_objects = len(value_list)
+        flattened_value_list = [val for sublist in value_list for val in
+                                sublist]
+        self.assertIsNone(saw_14.ChangeParametersMultipleElementFlatInput(
+            ObjectType='gen', ParamList=self.params,
+            NoOfObjects=num_objects, ValueList=flattened_value_list))
+
+        # Check results.
+        gen_v = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params)
+
+        # Our present results should not be the same as the original.
+        try:
+            pd.testing.assert_frame_equal(gen_v, self.gen_v_pu)
+        except AssertionError:
+            # Frames are not equal. Success.
+            pass
+        else:
+            self.fail('DataFrames are equal, but they should not be.')
+
+        # Our current results should have all 1's for the GenRegPUVolt
+        # column.
+        # actual = pd.to_numeric(gen_v['GenRegPUVolt']).to_numpy()
+        actual = pd.to_numeric(gen_v['GenVoltSet']).to_numpy()
+        expected = np.array([1.0] * actual.shape[0])
+
+        np.testing.assert_array_equal(actual, expected)
+
+    def test_nested_value_list(self):
+        with self.assertRaisesRegex(Error,
+                                    'The value list has to be a 1-D array'):
+            value_list = self.gen_v_pu.to_numpy().tolist()
+            num_objects = len(value_list)
+            saw_14.ChangeParametersMultipleElementFlatInput(
+                ObjectType='gen', ParamList=self.params,
+                NoOfObjects=num_objects, ValueList=value_list)
+
+
 class ChangeParametersTestCase(unittest.TestCase):
     """Test ChangeParameters.
 
@@ -697,7 +782,7 @@ class ChangeParametersTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.line_key_fields = saw_14.get_key_fields_for_object_type(
-                'Branch')['internal_field_name'].tolist()
+            'Branch')['internal_field_name'].tolist()
         cls.line_r = ['LineR']
         cls.params = cls.line_key_fields + cls.line_r
         cls.line_data = saw_14.GetParametersMultipleElement(
@@ -739,7 +824,7 @@ class ChangeParametersSingleElementTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.line_key_fields = saw_14.get_key_fields_for_object_type(
-                'Branch')['internal_field_name'].tolist()
+            'Branch')['internal_field_name'].tolist()
         cls.line_r = ['LineR']
         cls.params = cls.line_key_fields + cls.line_r
         cls.line_data = saw_14.GetParametersMultipleElement(
@@ -980,6 +1065,7 @@ class GetSpecificFieldListTestCase(unittest.TestCase):
 
 class GetSpecificFieldMaxNumTestCase(unittest.TestCase):
     """Test GetSpecificFieldMaxNum."""
+
     def test_load_angle(self):
         # While there are 3 ABCLoadAngle variables, the maximum number
         # is 2.
@@ -1055,6 +1141,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
 
 class ListOfDevicesAsVariantStrings(unittest.TestCase):
     """Test ListOfDevicesAsVariantStrings"""
+
     def test_buses(self):
         # Call method.
         out = saw_14.ListOfDevicesAsVariantStrings('bus')
@@ -1068,6 +1155,7 @@ class ListOfDevicesAsVariantStrings(unittest.TestCase):
 
 class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
     """Test ListOfDevicesFlatOutput."""
+
     def test_buses(self):
         # Call method for buses.
         out = saw_14.ListOfDevicesFlatOutput('bus')
@@ -1087,6 +1175,7 @@ class LoadStateErrorTestCase(unittest.TestCase):
     from other tests, at the cost of increasing test run time by
     several seconds.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14)
