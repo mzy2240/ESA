@@ -1104,14 +1104,14 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
 
-        :param ObjectType: A string describing the type of object for
+        :param ObjectType: A String describing the type of object for
         which you are requesting data.
-        :param FilterName: The name of an advanced filter which was
-        previously defined in the case before being loaded in the
-        Simulator Automation Server. If no filter is desired, then
+        :param FilterName: String with the name of an advanced filter
+        which was previously defined in the case before being loaded in
+        the Simulator Automation Server. If no filter is desired, then
         simply pass an empty string. If a filter name is passed but the
         filter cannot be found in the loaded case, no filter is used.
-        :param FilterName: This parameter must either be an array of
+        :param FieldList: Variant parameter must either be an array of
         fields for the given object or the string "ALL". As an array,
         FieldList contains an array of strings, where each string
         represents an object field variable, as defined in the section
