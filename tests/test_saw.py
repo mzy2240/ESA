@@ -1417,10 +1417,10 @@ class SendToExcel(unittest.TestCase):
     def test_nonexistobject(self):
         """Ensure an exception is raised if the object can't be found"""
         with self.assertRaises(PowerWorldError):
-            # No object type named gen1 "
+            # No object type named Gen1 "
             fields = ['BusNum', 'GenID', 'BusNomVolt']
             saw_14.SendToExcel(
-                ObjectType='gen1', FilterName='', FieldList=fields)
+                ObjectType='Gen1', FilterName='', FieldList=fields)
 
     def test_nonexistfilter(self):
         """Ensure an exception is raised if filter can't be found"""
