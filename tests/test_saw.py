@@ -1339,6 +1339,19 @@ class RunScriptCommandTestCase(unittest.TestCase):
             saw_14.RunScriptCommand(Statements='invalid statement')
 
 
+class OpenCaseTypeTestCase(unittest.TestCase):
+    """Test OpenCaseType."""
+
+    def test_expected_behavior(self):
+        my_saw_14 = SAW(PATH_14,
+                        object_field_lookup=('bus', 'shunt'))
+        my_saw_14.CloseCase()
+        my_saw_14.OpenCaseType(PATH_14, 'PWB')
+        # Ensure our pwb_file_path matches our given path.
+        self.assertEqual(convert_to_posix_path(PATH_14),
+                         my_saw_14.pwb_file_path)
+
+
 class SaveCaseTestCase(unittest.TestCase):
     """Test SaveCase."""
 
