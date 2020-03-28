@@ -673,9 +673,26 @@ class SAW(object):
         """
         return self._call_simauto('CloseCase')
 
-    def GetCaseHeader(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetCaseHeader(self, filename: str = None):
+        """
+        The GetCaseHeader function is used to extract the case header
+        information from the file specified. The return value of the
+        function will have two values. Result(0) will be an error
+        string, which is blank if no errors occurred. Result(1) will be
+        an array of strings containing the contents of the case header
+        or description.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/GetCaseHeader_Function.htm?Highlight=GetCaseHeader>`__
+
+        :param filename: The name of the file you wish to extract the
+            header information from
+        :return: An array of strings containing the contents of the case
+            header or description.
+        """
+        if filename is None:
+            filename = self.pwb_file_path
+        return self._call_simauto('GetCaseHeader', filename)
 
     def GetFieldList(self, ObjectType: str, copy=False) -> pd.DataFrame:
         """Get all fields associated with a given ObjectType.
@@ -1116,9 +1133,37 @@ class SAW(object):
         # Open the case. PowerWorld should return None.
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
-    def OpenCaseType(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def OpenCaseType(self, FileName: str, FileType: str,
+                     Options: Union[list, str, None] = None) -> None:
+        """
+        The OpenCaseType function will load a PowerWorldâ Simulator load
+         flow file into the Simulator Automation Server. This is similar
+          to opening a file using the File > Open Case menu option in
+          Simulator.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/OpenCaseType_Function.htm?Highlight=OpenCaseType>`__
+
+        :param FileName: Full path to the case file to be loaded. If
+            None, this method will attempt to use the last FileName
+            used to open a case.
+        :param FileType: The type of case file to be loaded. It can be
+            one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
+            PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
+            GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX, UCTE,
+            AREVAHDB
+        :param Options: Optional parameter indicating special load
+            options for PTI and GE file types.
+        """
+        self.pwb_file_path = convert_to_posix_path(FileName)
+        if isinstance(Options, list):
+            options = convert_list_to_variant(Options)
+        elif isinstance(Options, str):
+            options = Options
+        else:
+            options = ""
+        return self._call_simauto('OpenCaseType', self.pwb_file_path,
+                                  FileType, options)
 
     def ProcessAuxFile(self, FileName):
         """
