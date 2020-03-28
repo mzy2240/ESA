@@ -1414,15 +1414,6 @@ class SaveCaseTestCase(unittest.TestCase):
 class SendToExcel(unittest.TestCase):
     """Test SendTOExcel """
 
-    # noinspection PyMethodMayBeStatic
-    def test_expected_results(self):
-        """Send data from SimAuto server to excel spreadsheet"""
-        fields = ['BusNum', 'GenID', 'GenMW']
-        actual = saw_14.SendToExcel(
-            ObjectType='gen', FilterName='', FieldList=fields)
-
-        expected = pd.Series([232.39, 40.0, 0, 0, 0], index=[1, 2, 3, 6, 8])
-
     def test_nonexistfield(self):
         """Ensure an exception is raised if the field cannot be found"""
         with self.assertRaisesRegex(PowerWorldError, 'Object not found'):
