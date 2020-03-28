@@ -30,6 +30,8 @@ import logging
 import os
 import unittest
 from unittest.mock import patch
+import tempfile
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -1350,6 +1352,21 @@ class OpenCaseTypeTestCase(unittest.TestCase):
         # Ensure our pwb_file_path matches our given path.
         self.assertEqual(convert_to_posix_path(PATH_14),
                          my_saw_14.pwb_file_path)
+
+
+class WriteAuxFileTestCaseTestCase(unittest.TestCase):
+    """Test WriteAuxFile."""
+
+    def test_file_is_created(self):
+        temp_path = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
+                                                delete=False)
+        temp_path.close()
+        saw_14.WriteAuxFile(FileName=Path(temp_path.name).as_posix(),
+                            FilterName="",
+                            ObjectType="Bus",
+                            FieldList="all")
+        self.assertTrue(os.path.isfile(temp_path.name))
+        os.unlink(temp_path.name)
 
 
 class SaveCaseTestCase(unittest.TestCase):

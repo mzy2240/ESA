@@ -1278,11 +1278,10 @@ class SAW(object):
         return self._call_simauto('SendToExcel', ObjectType, FilterName,
                                   FieldList)
 
-    def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
-                     ToAppend=True, EString=None):
-        """NOT IMPLEMENTED.
-
-        The WriteAuxFile function can be used to write data from the
+    def WriteAuxFile(self, FileName: str, FilterName: str, ObjectType: str,
+                     FieldList: Union[list, str],
+                     ToAppend=True):
+        """The WriteAuxFile function can be used to write data from the
         case in the Simulator Automation Server to a PowerWorld
         Auxiliary file. The name of an advanced filter which was
         PREVIOUSLY DEFINED in the case before being loaded in the
@@ -1292,12 +1291,13 @@ class SAW(object):
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm>`__
+
+
         """
-        raise NotImplementedError(NIE_MSG)
-        # aux_file = convert_to_posix_path(FileName)
-        # return self._call_simauto('WriteAuxFile', aux_file,
-        #                           FilterName, ObjectType, EString, ToAppend,
-        #                           FieldList)
+        aux_file = convert_to_posix_path(FileName)
+        return self._call_simauto('WriteAuxFile', aux_file,
+                                  FilterName, ObjectType, ToAppend,
+                                  FieldList)
 
     ####################################################################
     # PowerWorld ScriptCommand helper functions
