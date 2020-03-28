@@ -1133,9 +1133,37 @@ class SAW(object):
         # Open the case. PowerWorld should return None.
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
-    def OpenCaseType(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def OpenCaseType(self, FileName: str, FileType: str,
+                     Options: Union[list, str, None] = None) -> None:
+        """
+        The OpenCaseType function will load a PowerWorldâ Simulator load
+         flow file into the Simulator Automation Server. This is similar
+          to opening a file using the File > Open Case menu option in
+          Simulator.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/OpenCaseType_Function.htm?Highlight=OpenCaseType>`__
+
+        :param FileName: Full path to the case file to be loaded. If
+            None, this method will attempt to use the last FileName
+            used to open a case.
+        :param FileType: The type of case file to be loaded. It can be
+            one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
+            PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
+            GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX, UCTE,
+            AREVAHDB
+        :param Options: Optional parameter indicating special load
+            options for PTI and GE file types.
+        """
+        self.pwb_file_path = convert_to_posix_path(FileName)
+        if isinstance(Options, list):
+            options = convert_list_to_variant(Options)
+        elif isinstance(Options, str):
+            options = Options
+        else:
+            options = ""
+        return self._call_simauto('OpenCaseType', self.pwb_file_path,
+                                  FileType, options)
 
     def ProcessAuxFile(self, FileName):
         """
