@@ -1199,6 +1199,16 @@ class ListOfDevicesAsVariantStrings(unittest.TestCase):
         self.assertEqual(14, len(out[0]))
 
 
+class GetCaseHeaderTestCase(unittest.TestCase):
+    """Test GetCaseHeader"""
+
+    def test_case_header(self):
+        # Call method.
+        out = saw_14.GetCaseHeader()
+
+        self.assertIsInstance(out, tuple)
+
+
 class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
     """Test ListOfDevicesFlatOutput."""
 
