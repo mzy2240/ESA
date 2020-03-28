@@ -1414,13 +1414,21 @@ class SaveCaseTestCase(unittest.TestCase):
 class SendToExcel(unittest.TestCase):
     """Test SendTOExcel """
 
-    def test_nonexistfield(self):
-        """Ensure an exception is raised if the field cannot be found"""
-        with self.assertRaisesRegex(PowerWorldError, 'Object not found'):
-            # Generator does not has a field "BusNomVolt"
+    def test_nonexistobject(self):
+        """Ensure an exception is raised if the object can't be found"""
+        with self.assertRaises(PowerWorldError):
+            # No object type named gen1 "
             fields = ['BusNum', 'GenID', 'BusNomVolt']
-            actual = saw_14.SendToExcel(
-                ObjectType='gen', FilterName='', FieldList=fields)
+            saw_14.SendToExcel(
+                ObjectType='gen1', FilterName='', FieldList=fields)
+
+    def test_nonexistfilter(self):
+        """Ensure an exception is raised if filter can't be found"""
+        with self.assertRaises(PowerWorldError):
+            # No object type named gen1 "
+            fields = ['BusNum', 'GenID', 'BusNomVolt']
+            saw_14.SendToExcel(
+                ObjectType='gen', FilterName='Area1', FieldList=fields)
 
 
 ########################################################################
