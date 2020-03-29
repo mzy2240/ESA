@@ -1422,14 +1422,6 @@ class SendToExcel(unittest.TestCase):
             saw_14.SendToExcel(
                 ObjectType='Gen1', FilterName='', FieldList=fields)
 
-    def test_nonexistfilter(self):
-        """Ensure an exception is raised if filter can't be found"""
-        with self.assertRaises(PowerWorldError):
-            # No object type named gen1 "
-            fields = ['BusNum', 'GenID', 'BusNomVolt']
-            saw_14.SendToExcel(
-                ObjectType='gen', FilterName='Area1', FieldList=fields)
-
 
 ########################################################################
 # ScriptCommand helper tests
