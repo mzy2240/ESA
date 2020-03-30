@@ -18,4 +18,4 @@ functions provided by SimAuto, ESA provides helper functions that
 further ease development. Below is a quick motivating example that
 shows how easy it is to use SimAuto.
 
-.. include:: ../snippets/increase_loading_14.rst
+.. include:: snippets/increase_loading_14.rst
