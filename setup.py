@@ -47,6 +47,9 @@ setuptools.setup(
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
     install_requires=['pandas >= 0.24', 'numpy', 'pywin32', 'pypiwin32'],
     python_requires='>=3.5',
+    # There are a couple tests that use networkx, and we use the magic
+    # of sphinx for documentation.
+    extras_require={'test': ['networkx'], 'doc': ['sphinx']},
     license='MIT',
     # TODO: Why aren't we zip safe?
     zip_safe=False

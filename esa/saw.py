@@ -1,8 +1,9 @@
 """saw is short for SimAuto Wrapper. This module provides a class,
 SAW, for interfacing with PowerWorld's Simulator Automation Server
-(aka SimAuto).
+(SimAuto). In addition to the SAW class, there are a few custom error
+classes, such as PowerWorldError.
 
-The documentation for SimAuto can be found
+PowrWorld's documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """

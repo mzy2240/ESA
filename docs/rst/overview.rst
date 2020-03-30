@@ -73,7 +73,11 @@ It's worth noting that ``RunScriptCommand`` will directly return results
 from PowerWorld, which will come back with all sorts of nasty data types
 (e.g. strings with leading and trailing whitespace). Your best course of
 action is to create a DataFrame/Series from the output, and use the
-`clean_df_or_series` method afterwards.
+``clean_df_or_series`` method afterwards.
+
+Documentation from PowerWorld on available script commands can be found
+`here
+<https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__.
 
 clean_df_or_series
 ^^^^^^^^^^^^^^^^^^
@@ -92,6 +96,17 @@ documentation. Where possible, ``SAW`` methods return Pandas DataFrames
 or Pandas Series. If there's nothing to return, ``None`` will be
 returned. ESA makes extensive use of type hinting so that your IDE can
 automatically highlight issues related to data types.
+
+PowerWorld Variables
+--------------------
+
+At present, ESA uses PowerWorld "Variable Names" as opposed to
+PowerWorld "Concise Variable Names." A listing of these variables can be
+found `here
+<https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx>`__.
+It would seem that PowerWorld is moving toward "Concise Variable Names,"
+and in a future update ESA may support these (see `this issue
+<https://github.com/mzy2240/ESA/issues/1#issue-525219427>`__).
 
 Contributing
 ------------
