@@ -1225,6 +1225,9 @@ class GetCaseHeaderTestCase(unittest.TestCase):
 
         self.assertIsInstance(out, tuple)
 
+        for item in out:
+            self.assertIsInstance(item, str)
+
 
 class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
     """Test ListOfDevicesFlatOutput."""
