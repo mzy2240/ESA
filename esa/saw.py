@@ -625,15 +625,17 @@ class SAW(object):
                                                  ParamList: list,
                                                  NoOfObjects: int,
                                                  ValueList: list) -> None:
-        """The ChangeParametersMultipleElementFlatInput function allows
+        """
+        The ChangeParametersMultipleElementFlatInput function allows
         you to set parameters for multiple objects of the same type in
         a case loaded into the Simulator Automation Server. This
         function is very similar to the ChangeParametersMultipleElement,
-         but uses a single dimensioned array of values as input instead
-         of a multi-dimensioned array of arrays.
-        Recommend to use helper functions like
-        change_parameters_multiple_element_df instead of this one for
-        your convenience.
+        but uses a single dimensioned array of values as input instead
+        of a multi-dimensioned array of arrays.
+
+        It is recommended that you use helper functions like
+        ``change_parameters_multiple_element_df`` instead of this one,
+        as it's simply easier to use.
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
