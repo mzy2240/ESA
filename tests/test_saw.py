@@ -993,6 +993,19 @@ class GetParametersMultipleElementFlatOutput(unittest.TestCase):
 
         self.assertIsInstance(results, tuple)
 
+        # Check that the length of the tuple is as expected, noting that
+        # the first two elements denote the number of elements and
+        # number of fields per element.
+        self.assertEqual(int(results[0]) * int(results[1]) + 2,
+                         len(results))
+
+    def test_shunts(self):
+        # 14 bus has no shunts.
+        kf = saw_14.get_key_field_list('shunt')
+        self.assertIsNone(
+            saw_14.GetParametersMultipleElementFlatOutput(
+                'shunt', kf))
+
 
 class GetParametersSingleElementTestCase(unittest.TestCase):
     """Test GetParameterSingleElement method."""

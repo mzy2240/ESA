@@ -825,7 +825,7 @@ class SAW(object):
     def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
                                                ParamList: list,
                                                FilterName: str = '') -> \
-            Union[str, None]:
+            Union[None, Tuple[str]]:
         """This function operates the same as the
         GetParametersMultipleElement function, only with one notable
         difference. The values returned as the output of the function
@@ -833,8 +833,11 @@ class SAW(object):
         the multi-dimensional array as described in the
         GetParametersMultipleElement topic.
 
-        Recommend to use GetParametersMultipleElement instead, for
-        automatic dataframe conversion and better type/output check.
+        It is recommended that you use GetParametersMultipleElement
+        instead, as you'll receive a DataFrame with correct data types.
+        As this method is extraneous, the output from PowerWorld will
+        be directly returned. This will show you just how useful ESA
+        really is!
 
         :param ObjectType: Type of object to get parameters for.
         :param ParamList: List of variables to obtain for the given
@@ -848,7 +851,7 @@ class SAW(object):
             load flow case.
 
         :return:The format of the output array is the following: [
-            errorString, NumberOfObjectsReturned, NumberOfFieldsPerObject,
+            NumberOfObjectsReturned, NumberOfFieldsPerObject,
             Ob1Fld1, Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)]
             The data is thus returned in a single dimension array, where
             the parameters NumberOfObjectsReturned and
@@ -857,12 +860,18 @@ class SAW(object):
             parameter is the start of the data. The data is listed as
             all fields for object 1, then all fields for object 2, and
             so on. You can parse the array using the NumberOf…
-            parameters for objects and fields.
+            parameters for objects and fields. If the given object
+            type does not exist, the method will return None.
         """
-        return self._call_simauto(
+        result = self._call_simauto(
             'GetParametersMultipleElementFlatOutput', ObjectType,
             convert_list_to_variant(ParamList),
             FilterName)
+
+        if len(result) == 0:
+            return None
+        else:
+            return result
 
     def GetParameters(self, ObjectType: str,
                       ParamList: list, Values: list) -> pd.Series:
