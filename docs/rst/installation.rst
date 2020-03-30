@@ -1,99 +1,54 @@
+Installing ESA
+==============
+Installing ESA is simple! Follow the directions below to get started.
+
 Overview
-~~~~~~~~
+--------
 
-Installing ESA is easy, and most users will simply want to use Python's
-package manager, Pip, to install ESA. The subsections below cover
-installation via Pip (:ref:`install-pip`) and from source
-(:ref:`install-source`). Additionally, optional post-installation
-instructions are provided.
+.. include:: installation/overview.rst
 
-.. _virtual-environments
+Prerequisites
+--------------
 
-On Virtual Environments
-~~~~~~~~~~~~~~~~~~~~~~~
+.. include:: installation/pre_reqs.rst
 
-Like any Python project, the use of virtual environments is **strongly**
-encouraged. If you're new to virtual environments, Python provides a
-nice `tutorial <https://docs.python.org/3/tutorial/venv.html>`__.
+Virtual Environment Configuration
+---------------------------------
 
-All directions that provide command line snippets will assume that you
-have already activated your virtual environment. The general procedure
-is shown below (you'll need to substitute your own path).
+.. include:: installation/virtualenv.rst
 
-.. code:: bat
+Install Prerequisite Packages
+-----------------------------
 
-    cd C:\Users\myuser\path\to\virtual\environment
-    Scripts\activate.bat
+.. include:: installation/manual_pywin32.rst
 
-.. _install-pip
+Install ESA via Pip
+-------------------
 
-Installation with Pip (easiest)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+.. include:: installation/pip.rst
 
-Use the Python package manager `pip <https://pip.pypa.io/en/stable/>`__
-to install ESA:
+Install ESA from Source
+-----------------------
 
-.. code:: bat
+.. include:: installation/source.rst
 
-   python -m pip install esa
+Post-Installation
+-----------------
+The post-installation steps found here are optional, but may save you
+some headache down the line.
 
-.. _install-source
+Cursory Verification of Successful Installation
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Installation from Source
-~~~~~~~~~~~~~~~~~~~~~~~~
+.. include:: installation/postinstall_verify.rst
 
-If you want to make modifications to ESA for your own purposes, you'll
-likely want to clone the Git repository and install from source.
-Fortunately, this is quite easy. The following directions will assume
-that your project is at ``C:\Users\myuser\git\myproject`` and that your
-virtual environment is at ``C:\Users\myuser\git\myproject\venv``. If
-you're new to virtual environments, Python provides a nice
-`tutorial <https://docs.python.org/3/tutorial/venv.html>`__.
+Execute ESA Unittests
+^^^^^^^^^^^^^^^^^^^^^
 
-Start by cloning ESA into ``C:\Users\myuser\git\ESA``. This can be
-accomplished in a variety of ways, but perhaps the simplest is by using
-Git Bash:
+.. include:: installation/postinstall_unittests.rst
 
-.. code:: bash
+pywin32 Post-Installation
+^^^^^^^^^^^^^^^^^^^^^^^^^
 
-   cd ~/git
-   git clone https://github.com/mzy2240/ESA.git
-
-Alternatively, you can use GitHub to download a zip archive of ESA, and
-then you can extract it.
-
-After the cloning has completed, close Git Bash and open up a command
-prompt. Run the following:
-
-.. code:: cmd
-
-   cd C:\Users\myuser\git\myproject
-   venv\Scripts\activate.bat
-
-Your prompt should change to be prefixed by ``(venv)`` indicating that
-your virtual environment has been activated. Now, perform the following:
-
-.. code:: cmd
-
-   cd ../ESA
-   python setup.py install
-
-Post-Installation (optional)
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-You need to run a post-installation script related to a pre-requisite
-Python package, `pywin32 <https://github.com/mhammond/pywin32>`__. As
-per pywin32's directions, you'll need to run the following with an
-**elevated** (administrator) command prompt after navigating to your
-virtual environment's directory:
-
-.. code:: cmd
-
-   Scripts\activate.bat
-   python Scripts/pywin32_postinstall.py -install
-
-(this ``Scripts`` directory can be found within your virtual environment
-where your Python packages are installed. If you followed along in the
-"Installation from Source" example, this ``Scripts`` directory would be
-found at ``C:\Users\myuser\git\myproject\venv``.)
+.. include:: installation/postinstall_pywin32.rst
 
