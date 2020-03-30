@@ -24,6 +24,10 @@ sure to follow the pattern used for saw_14: Initialize to None in
 main code body, initialize actual SAW object in setUpModule (don't
 forget to tag it as global!), and then call the object's exit() method
 in tearDownModule.
+
+Finally, please note that examples from docs/rst/snippets are executed
+using doctest. These files use a suffix convention to determine which
+.pwb file to use in the CASE_PATH constant.
 """
 
 import logging
@@ -38,11 +42,16 @@ import pandas as pd
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_posix_path, convert_to_windows_path
+import logging
+import doctest
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
 CASE_DIR = os.path.join(THIS_DIR, 'cases')
 DATA_DIR = os.path.join(THIS_DIR, 'data')
+SNIPPET_DIR = os.path.join(THIS_DIR, '..', 'docs', 'rst', 'snippets')
+SNIPPET_FILES = [os.path.join(SNIPPET_DIR, x) for x in
+                 os.listdir(SNIPPET_DIR) if x.endswith('.rst')]
 
 # Path to IEEE 14 bus model.
 PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
@@ -59,6 +68,12 @@ LTC_AUX_FILE = os.path.join(THIS_DIR, 'ltc_filter.aux')
 # development easier.
 # noinspection PyTypeChecker
 saw_14 = None  # type: SAW
+
+# Map cases for doc testing.
+CASE_MAP = {'14': PATH_14, '2000': PATH_2000}
+
+# Path to file containing lines for one of the examples.
+CANDIDATE_LINES = os.path.join(DATA_DIR, 'CandidateLines.csv')
 
 
 # noinspection PyPep8Naming
@@ -1496,6 +1511,45 @@ class TestCreateNewLinesFromFile2000Bus(unittest.TestCase):
         # Create the lines.
         self.saw.change_and_confirm_params_multiple_element(
             ObjectType='branch', command_df=self.line_df)
+
+
+########################################################################
+# DOC TESTS
+########################################################################
+# The "load_tests" and "get_snippet_suites" methods below take care of
+# everything needed to run all the snippets.
+
+# To enable unittest discovery:
+# https://docs.python.org/3.8/library/doctest.html#unittest-api
+def load_tests(loader, tests, ignore):
+    suites = get_snippet_suites()
+    for s in suites:
+        tests.addTests(s)
+    return tests
+
+
+def get_snippet_suites():
+    """Return list of DocFileSuites"""
+    out = []
+    # Loop over the available cases.
+    for suffix, case_path in CASE_MAP.items():
+        # Filter files by suffix, which corresponds to the case.
+        files = [x for x in SNIPPET_FILES if x.endswith(suffix + '.rst')]
+
+        if len(files) > 0:
+
+            # Define global variables needed for the examples.
+            g = {'CASE_PATH': case_path}
+            if '2000' in suffix:
+                # One example adds lines and depends on a .csv file.
+                g['CANDIDATE_LINES'] = CANDIDATE_LINES
+
+            # Create a DocFileSuite.
+            out.append(doctest.DocFileSuite(
+                *files, module_relative=False,
+                globs=g))
+
+    return out
 
 
 if __name__ == '__main__':

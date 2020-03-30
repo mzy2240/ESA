@@ -13,14 +13,22 @@
 import os
 import sys
 sys.path.insert(0, os.path.abspath('../'))
+sys.path.insert(0, os.path.abspath('../../'))
 
+# Open and read the version file.
+with open('../../VERSION', 'r') as fh:
+    __version__ = fh.read()
 
 # -- Project information -----------------------------------------------------
 
 project = 'ESA'
-copyright = '2019, Zeyu Mao, Brandon Thayer'
-author = 'Zeyu Mao, Brandon Thayer'
+copyright = '2020, Zeyu Mao, Brandon Thayer, Yijing Liu'
+author = 'Zeyu Mao, Brandon Thayer, Yijing Liu'
 
+# The short X.Y version
+version = __version__
+# The full version, including alpha/beta/rc tags.
+release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -35,7 +43,13 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+#
+# Note from Brandon: Add directories containing sub-files to avoid
+# warnings during build time. Hopefully this doesn't shoot us in the
+# foot later.
+# https://stackoverflow.com/a/15438962/11052174
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
+                    'snippets', 'welcome', 'citation.rst', 'README.rst']
 
 
 # -- Options for HTML output -------------------------------------------------
