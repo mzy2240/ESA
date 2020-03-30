@@ -43,7 +43,13 @@ templates_path = ['_templates']
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
 # This pattern also affects html_static_path and html_extra_path.
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+#
+# Note from Brandon: Add directories containing sub-files to avoid
+# warnings during build time. Hopefully this doesn't shoot us in the
+# foot later.
+# https://stackoverflow.com/a/15438962/11052174
+exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
+                    'snippets', 'welcome', 'citation.rst', 'README.rst']
 
 
 # -- Options for HTML output -------------------------------------------------
