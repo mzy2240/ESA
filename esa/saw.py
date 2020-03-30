@@ -10,7 +10,7 @@ PowrWorld's documentation for SimAuto can be found
 import logging
 import os
 from pathlib import Path, PureWindowsPath
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -674,21 +674,19 @@ class SAW(object):
         """
         return self._call_simauto('CloseCase')
 
-    def GetCaseHeader(self, filename: str = None):
+    def GetCaseHeader(self, filename: str = None) -> Tuple[str]:
         """
         The GetCaseHeader function is used to extract the case header
-        information from the file specified. The return value of the
-        function will have two values. Result(0) will be an error
-        string, which is blank if no errors occurred. Result(1) will be
-        an array of strings containing the contents of the case header
-        or description.
+        information from the file specified. A tuple of strings
+        containing the contents of the case header or description is
+        returned.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/GetCaseHeader_Function.htm?Highlight=GetCaseHeader>`__
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetCaseHeader_Function.htm>`__
 
         :param filename: The name of the file you wish to extract the
-            header information from
-        :return: An array of strings containing the contents of the case
+            header information from.
+        :return: A tuple of strings containing the contents of the case
             header or description.
         """
         if filename is None:
