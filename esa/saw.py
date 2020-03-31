@@ -1,15 +1,16 @@
 """saw is short for SimAuto Wrapper. This module provides a class,
 SAW, for interfacing with PowerWorld's Simulator Automation Server
-(aka SimAuto).
+(SimAuto). In addition to the SAW class, there are a few custom error
+classes, such as PowerWorldError.
 
-The documentation for SimAuto can be found
+PowrWorld's documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
 import logging
 import os
 from pathlib import Path, PureWindowsPath
-from typing import Union, List
+from typing import Union, List, Tuple
 
 import numpy as np
 import pandas as pd
@@ -624,15 +625,17 @@ class SAW(object):
                                                  ParamList: list,
                                                  NoOfObjects: int,
                                                  ValueList: list) -> None:
-        """The ChangeParametersMultipleElementFlatInput function allows
+        """
+        The ChangeParametersMultipleElementFlatInput function allows
         you to set parameters for multiple objects of the same type in
         a case loaded into the Simulator Automation Server. This
         function is very similar to the ChangeParametersMultipleElement,
-         but uses a single dimensioned array of values as input instead
-         of a multi-dimensioned array of arrays.
-        Recommend to use helper functions like
-        change_parameters_multiple_element_df instead of this one for
-        your convenience.
+        but uses a single dimensioned array of values as input instead
+        of a multi-dimensioned array of arrays.
+
+        It is recommended that you use helper functions like
+        ``change_parameters_multiple_element_df`` instead of this one,
+        as it's simply easier to use.
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
@@ -673,21 +676,19 @@ class SAW(object):
         """
         return self._call_simauto('CloseCase')
 
-    def GetCaseHeader(self, filename: str = None):
+    def GetCaseHeader(self, filename: str = None) -> Tuple[str]:
         """
         The GetCaseHeader function is used to extract the case header
-        information from the file specified. The return value of the
-        function will have two values. Result(0) will be an error
-        string, which is blank if no errors occurred. Result(1) will be
-        an array of strings containing the contents of the case header
-        or description.
+        information from the file specified. A tuple of strings
+        containing the contents of the case header or description is
+        returned.
 
         `PowerWorld documentation
-        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/GetCaseHeader_Function.htm?Highlight=GetCaseHeader>`__
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetCaseHeader_Function.htm>`__
 
         :param filename: The name of the file you wish to extract the
-            header information from
-        :return: An array of strings containing the contents of the case
+            header information from.
+        :return: A tuple of strings containing the contents of the case
             header or description.
         """
         if filename is None:
@@ -826,7 +827,7 @@ class SAW(object):
     def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
                                                ParamList: list,
                                                FilterName: str = '') -> \
-            Union[str, None]:
+            Union[None, Tuple[str]]:
         """This function operates the same as the
         GetParametersMultipleElement function, only with one notable
         difference. The values returned as the output of the function
@@ -834,8 +835,11 @@ class SAW(object):
         the multi-dimensional array as described in the
         GetParametersMultipleElement topic.
 
-        Recommend to use GetParametersMultipleElement instead, for
-        automatic dataframe conversion and better type/output check.
+        It is recommended that you use GetParametersMultipleElement
+        instead, as you'll receive a DataFrame with correct data types.
+        As this method is extraneous, the output from PowerWorld will
+        be directly returned. This will show you just how useful ESA
+        really is!
 
         :param ObjectType: Type of object to get parameters for.
         :param ParamList: List of variables to obtain for the given
@@ -849,7 +853,7 @@ class SAW(object):
             load flow case.
 
         :return:The format of the output array is the following: [
-            errorString, NumberOfObjectsReturned, NumberOfFieldsPerObject,
+            NumberOfObjectsReturned, NumberOfFieldsPerObject,
             Ob1Fld1, Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)]
             The data is thus returned in a single dimension array, where
             the parameters NumberOfObjectsReturned and
@@ -858,12 +862,18 @@ class SAW(object):
             parameter is the start of the data. The data is listed as
             all fields for object 1, then all fields for object 2, and
             so on. You can parse the array using the NumberOf…
-            parameters for objects and fields.
+            parameters for objects and fields. If the given object
+            type does not exist, the method will return None.
         """
-        return self._call_simauto(
+        result = self._call_simauto(
             'GetParametersMultipleElementFlatOutput', ObjectType,
             convert_list_to_variant(ParamList),
             FilterName)
+
+        if len(result) == 0:
+            return None
+        else:
+            return result
 
     def GetParameters(self, ObjectType: str,
                       ParamList: list, Values: list) -> pd.Series:
