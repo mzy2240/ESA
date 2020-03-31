@@ -1412,7 +1412,12 @@ class SaveCaseTestCase(unittest.TestCase):
 
 
 class SendToExcel(unittest.TestCase):
-    """Test SendTOExcel """
+    """Test SendTOExcel
+    The author was not able to sufficiently test this method, since
+    there's no method to save excel in current SimAuto version and
+    pandas can only read excel that has been saved already. Another
+    attempt to catch a running excel file using excel COM server was
+    also failed."""
 
     def test_nonexistobject(self):
         """Ensure an exception is raised if the object can't be found"""
