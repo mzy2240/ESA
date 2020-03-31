@@ -1258,6 +1258,10 @@ class SAW(object):
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
 
+        Warnings: the authors were not able to sufficiently test this
+        method. We recommend users simply get objects and use pandas to
+        save data as .csv files.
+
         :param ObjectType: A String describing the type of object for
             which you are requesting data.
         :param FilterName: String with the name of an advanced filter
