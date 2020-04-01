@@ -41,7 +41,7 @@ directions. In many cases, ESA can simply be installed by:
 
 .. code:: bat
 
-    python -m pip install --only-binary pywin32,pypiwin32 pywin32 pypiwin32 esa
+    python -m pip install esa
 
 License
 -------
