@@ -1138,7 +1138,7 @@ class SAW(object):
                                 'time, a FileName is required.')
         else:
             # Set pwb_file_path according to the given FileName.
-            self.pwb_file_path = convert_to_posix_path(FileName)
+            self.pwb_file_path = FileName
 
         # Open the case. PowerWorld should return None.
         return self._call_simauto('OpenCase', self.pwb_file_path)
@@ -1165,7 +1165,7 @@ class SAW(object):
         :param Options: Optional parameter indicating special load
             options for PTI and GE file types.
         """
-        self.pwb_file_path = convert_to_posix_path(FileName)
+        self.pwb_file_path = FileName
         if isinstance(Options, list):
             options = convert_list_to_variant(Options)
         elif isinstance(Options, str):
@@ -1304,8 +1304,7 @@ class SAW(object):
 
 
         """
-        aux_file = convert_to_posix_path(FileName)
-        return self._call_simauto('WriteAuxFile', aux_file,
+        return self._call_simauto('WriteAuxFile', FileName,
                                   FilterName, ObjectType, ToAppend,
                                   FieldList)
 
