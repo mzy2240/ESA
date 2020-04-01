@@ -1,7 +1,8 @@
 """The following are importable from the top-level ``esa`` package:
 
 *   SAW: ESA's primary class
-*
+*   Error: Base Error class for ESA exceptions. This exception is never
+    directly raised.
 *   PowerWorldError: Error class for when PowerWorld/SimAuto reports an
     error.
 *   COMError: Error class for when something goes wrong communicating
