@@ -1256,21 +1256,17 @@ class SAW(object):
         return self._call_simauto('SaveState')
 
     def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """Send data from SimAuto to an Excel spreadsheet. The  function
-        is flexible in that you can specify the type of object data you
-        want to export, an advanced filter name for a filter you want to
-        use, and as many or as few field types as desired that are
-        supported by the type of object. The first time this function
-        is called, a new instance of Excel will be started, and the data
-        requested will be pasted to a new sheet. For each subsequent
-        call of this function, the requested data will be pasted to a
-        new sheet within the same workbook,until the workbook is closed.
+        """Send data from SimAuto to an Excel spreadsheet. While we
+        provide this function, we strongly recommend you to use the
+        GetParametersMultipleElement function and save the dataframe
+        directly to the csv file using the to_csv method. The problem
+        of this method is, it will create (not save) an opened excel
+        sheet and basically require you to manually save it, which can
+        be quite tricky (and heavily overheaded) even if you use the
+        excel COM interface to get access to it.
+
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
-
-        Warnings: the authors were not able to sufficiently test this
-        method. We recommend users simply get objects and use pandas to
-        save data as .csv files.
 
         :param ObjectType: A String describing the type of object for
             which you are requesting data.
