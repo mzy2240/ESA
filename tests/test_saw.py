@@ -61,6 +61,9 @@ PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')
 PATH_2000_mod = os.path.join(
     CASE_DIR, 'tx2000_mod', 'ACTIVSg2000_AUG-09-2018_Ride_version7.PWB')
 
+# Path to the WSCC model.
+PATH_9 = os.path.join(CASE_DIR, 'wscc_9', 'WSCC 9 bus.pwb')
+
 # Aux file for filtering transformers by LTC control.
 LTC_AUX_FILE = os.path.join(THIS_DIR, 'ltc_filter.aux')
 
@@ -1383,6 +1386,99 @@ class OpenCaseTypeTestCase(unittest.TestCase):
         # Ensure our pwb_file_path matches our given path.
         self.assertEqual(PATH_14,
                          my_saw_14.pwb_file_path)
+
+
+class TSGetContingencyResultsTestCase(unittest.TestCase):
+    """Test TSGetContingencyResults."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Open up the nine bus model.
+        cls.saw = SAW(PATH_9, early_bind=True)
+
+        # The 9 bus model has a contingency already defined:
+        cls.ctg_name = 'My Transient Contingency'
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_nonexistent_ctg(self):
+        """Should get Nones back when running a contingency that does
+        not exist.
+        """
+        # Define contingency name.
+        ctg_name = 'ctgName'
+
+        #
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        meta, data = self.saw.TSGetContingencyResults(ctg_name, obj_field_list,
+                                                      t1, t2)
+
+        self.assertIsNone(meta)
+        self.assertIsNone(data)
+
+    @unittest.skip('This test hangs. PowerWorld somehow gets upset if you '
+                   'ask for results and have not solved the transient '
+                   'contingency.')
+    def test_existing_ctg(self):
+        """THIS HANGS! Contingency exists in case, but has not been
+        solved yet."""
+        # This came from a PowerWorld example:
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        result = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, t1, t2)
+
+        print(result)
+
+        pass
+
+    def test_solve_and_run(self):
+        """Solve the contingency and run the function."""
+        # This came from a PowerWorld example:
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        # Solve.
+        self.saw.RunScriptCommand('TSSolve("{}")'.format(self.ctg_name))
+
+        # Get results.
+        meta, data = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, t1, t2)
+
+        # Check types.
+        self.assertIsInstance(meta, pd.DataFrame)
+        self.assertIsInstance(data, pd.DataFrame)
+
+        # Ensure shapes are as expected.
+        self.assertEqual(meta.shape[0], data.shape[1] - 1)
+
+        # Data should all be floats.
+        for dtype in data.dtypes:
+            self.assertEqual(dtype, np.float64)
+
+        # Rows in meta should match columns in data.
+        meta_rows = meta.index.tolist()
+        data_cols = data.columns.tolist()
+
+        # Remove time from data columns.
+        data_cols.remove('time')
+
+        self.assertListEqual(meta_rows, data_cols)
 
 
 class WriteAuxFileTestCaseTestCase(unittest.TestCase):
