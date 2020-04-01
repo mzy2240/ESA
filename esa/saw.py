@@ -1146,7 +1146,7 @@ class SAW(object):
     def OpenCaseType(self, FileName: str, FileType: str,
                      Options: Union[list, str, None] = None) -> None:
         """
-        The OpenCaseType function will load a PowerWorldâ Simulator load
+        The OpenCaseType function will load a PowerWorld Simulator load
          flow file into the Simulator Automation Server. This is similar
           to opening a file using the File > Open Case menu option in
           Simulator.
