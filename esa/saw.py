@@ -1255,15 +1255,14 @@ class SAW(object):
         """
         return self._call_simauto('SaveState')
 
-    def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """Send data from SimAuto to an Excel spreadsheet. While we
-        provide this function, we strongly recommend you to use the
-        GetParametersMultipleElement function and save the dataframe
-        directly to the csv file using the to_csv method. The problem
-        of this method is, it will create (not save) an opened excel
-        sheet and basically require you to manually save it, which can
-        be quite tricky (and heavily overheaded) even if you use the
-        excel COM interface to get access to it.
+    def SendToExcel(self, ObjectType: str, FilterName: str, FieldList) -> None:
+        """Send data from SimAuto to an Excel spreadsheet. While ESA
+        provides this function, we strongly recommend you to use the
+        ``GetParametersMultipleElement`` function and save the DataFrame
+        directly to a .csv file using the DataFrame's ``to_csv``
+        method. The problem with ``SendToExcel`` is that it opens
+        (but does not save) an Excel sheet, which requires you to
+        manually save it.
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
@@ -1284,9 +1283,118 @@ class SAW(object):
             an array of strings, the single string "ALL" is passed, the
             Simulator Automation Server will use predefined default
             fields when exporting the data.
+
+        :returns: None
         """
         return self._call_simauto('SendToExcel', ObjectType, FilterName,
                                   FieldList)
+
+    def TSGetContingencyResults(self, CtgName: str, ObjFieldList: List[str],
+                                StartTime: Union[None, str] = None,
+                                StopTime: Union[None, str] = None) -> \
+            Union[Tuple[None, None], Tuple[pd.DataFrame, pd.DataFrame]]:
+        """
+        WARNING: Running this method with an existing contingency that
+        has not been solved yet seems to cause Simulator or SimAuto to
+        simply hang indefinitely. DO NOT RUN THIS METHOD until you have
+        solved the contingency first. This can be done via the
+        RunScriptCommand method, using TSSolve.
+
+        On to the main documentation:
+
+        The TSGetContingencyResults function is used to read
+        transient stability results into an external program (Python)
+        using SimAuto.
+
+        This function is analogous to the script command TSGetResults,
+        where rather than saving out results to a file, the results are
+        passed back directly to the SimAuto COM object and may be
+        further processed by an external program. As with TSGetResults,
+        this function should only be used after the simulation is run
+        (for example, use this after running script commands TSSolveAll
+        or TSSolve).
+
+        `PowerWorld documentation:
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/TSGetContingencyResults%20Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____49>`__
+
+        The authors of ESA do not have extensive experience running
+        transient contingencies in PowerWorld, so this method has not
+        been tested as extensively as we would prefer. If your case/code
+        has issues with this method, please file an issue on `GitHub
+        <https://github.com/mzy2240/ESA/issues>`__.
+
+        :param CtgName: The contingency to obtain results from. Only one
+            contingency be obtained at a time.
+        :param ObjFieldList: A list of strings which may contain plots,
+            subplots, or individual object/field pairs specifying the
+            result variables to obtain.
+        :param StartTime: The time in seconds in the simulation to begin
+            retrieving results. If not specified (None), the start time
+            of the simulation is used.
+        :param StopTime: The time in seconds in the simulation to stop
+            retrieving results. If not specified, the end time of the
+            simulation is used.
+
+        :returns: A tuple containing two DataFrames, "meta" and "data."
+            Alternatively, if the given CtgName does not exist, a tuple
+            of (None, None) will be returned.
+            The "meta" DataFrame describes the data in the "data"
+            DataFrame, and can be used to map objects to columns in
+            the "data" DataFrame. The "meta" DataFrame's columns are:
+            ['ObjectType', 'PrimaryKey', 'SecondaryKey', 'Label',
+            'VariableName', 'ColHeader']. Each row in the "meta"
+            DataFrame corresponds to a column in the "data" DataFrame.
+            So the "meta" row with index label 0 corresponds to the
+            column labeled 0 in the "data" DataFrame, and so forth.
+            Unfortunately, the ``ObjectType``s that come back from
+            PowerWorld do not always match valid ``ObjectType``
+            variable names (e.g. "Generator" comes back as an
+            ``ObjectType``, but attempting to use "Generator" in the
+            ``GetParametersMultipleElement`` method results in an
+            error), so ESA's ability to perform automatic data type
+            transformation is limited. All columns in the "data"
+            DataFrame will be cast to numeric types by
+            ``pandas.to_numeric``. If Pandas cannot determine an
+            appropriate numeric type, the data will be unmodified (i.e.,
+            the type will not be changed). In addition to the integer
+            labeled columns which match the "meta" rows, the "data"
+            DataFrame additionally has a "time" column which corresponds
+            to the timestamp (in seconds).
+        """
+        out = self._call_simauto('TSGetContingencyResults', CtgName,
+                                 ObjFieldList, StartTime, StopTime)
+
+        # We get (None, (None,)) if the contingency does not exist.
+        if out == (None, (None,)):
+            return None, None
+
+        # Length should always be 2.
+        assert len(out) == 2, 'Unexpected return format from PowerWorld.'
+
+        # Extract the meta data.
+        meta = pd.DataFrame(
+            out[0], columns=['ObjectType', 'PrimaryKey', 'SecondaryKey',
+                             'Label', 'VariableName', 'ColHeader'])
+
+        # Remove extraneous white space in the strings.
+        # https://stackoverflow.com/a/40950485/11052174
+        meta = meta.apply(lambda x: x.str.strip(), axis=0)
+
+        # Extract the data.
+        data = pd.DataFrame(out[1])
+
+        # Decrement all the columns by 1 so that they line up with the
+        # 'meta' frame.
+        data.rename(columns=lambda x: x - 1, inplace=True)
+
+        # Rename first column to 'time'.
+        data.rename(columns={-1: 'time'}, inplace=True)
+
+        # Attempt to convert all columns to numeric.
+        data = data.apply(lambda x: pd.to_numeric(x, errors='ignore'))
+
+        # Return.
+        return meta, data
 
     def WriteAuxFile(self, FileName: str, FilterName: str, ObjectType: str,
                      FieldList: Union[list, str],
