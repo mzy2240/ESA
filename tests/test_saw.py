@@ -41,7 +41,7 @@ import numpy as np
 import pandas as pd
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
-from esa.saw import convert_to_posix_path, convert_to_windows_path
+from esa.saw import convert_to_windows_path
 import logging
 import doctest
 
@@ -118,7 +118,7 @@ class InitializationTestCase(unittest.TestCase):
         self.assertIsInstance(my_saw_14.log, logging.Logger)
 
         # Ensure our pwb_file_path matches our given path.
-        self.assertEqual(convert_to_posix_path(PATH_14),
+        self.assertEqual(PATH_14,
                          my_saw_14.pwb_file_path)
 
         # Ensure we have the expected object_fields.
@@ -1381,7 +1381,7 @@ class OpenCaseTypeTestCase(unittest.TestCase):
         my_saw_14.CloseCase()
         my_saw_14.OpenCaseType(PATH_14, 'PWB')
         # Ensure our pwb_file_path matches our given path.
-        self.assertEqual(convert_to_posix_path(PATH_14),
+        self.assertEqual(PATH_14,
                          my_saw_14.pwb_file_path)
 
 
@@ -1392,7 +1392,7 @@ class WriteAuxFileTestCaseTestCase(unittest.TestCase):
         temp_path = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
                                                 delete=False)
         temp_path.close()
-        saw_14.WriteAuxFile(FileName=Path(temp_path.name).as_posix(),
+        saw_14.WriteAuxFile(FileName=temp_path.name,
                             FilterName="",
                             ObjectType="Bus",
                             FieldList="all")
