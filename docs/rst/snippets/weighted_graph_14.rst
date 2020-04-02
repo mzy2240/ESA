@@ -90,8 +90,11 @@ Explore some graph properties to ensure it worked:
     14
     >>> g.number_of_edges()
     20
-    >>> g.get_edge_data(1, 2)
-    {'r': 0.01937987032338931, 'x': 0.05917003035204804}
+    >>> data_1_2 = g.get_edge_data(1, 2)
+    >>> data_1_2['r']
+    0.01937987032338931
+    >>> data_1_2['x']
+    0.05917003035204804
 
 As always, clean up when done:
 
