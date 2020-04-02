@@ -23,6 +23,17 @@ PowerWorld auxiliary file that defines a filter which obtains only LTC
 type transformers. Used for testing ProcessAuxFile, and is also a useful
 template for defining filters in aux files.
 
+README.rst
+----------
+
+This file.
+
+run_tests_for_all_python_versions.py
+------------------------------------
+
+Script to run tests for all supported Python versions. Check out its
+docstring for more information.
+
 test_saw.py
 -----------
 
