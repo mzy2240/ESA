@@ -43,38 +43,14 @@ import pandas as pd
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_windows_path
 
-# Handle pathing.
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-CASE_DIR = os.path.join(THIS_DIR, 'cases')
-DATA_DIR = os.path.join(THIS_DIR, 'data')
-SNIPPET_DIR = os.path.join(THIS_DIR, '..', 'docs', 'rst', 'snippets')
-SNIPPET_FILES = [os.path.join(SNIPPET_DIR, x) for x in
-                 os.listdir(SNIPPET_DIR) if x.endswith('.rst')]
-
-# Path to IEEE 14 bus model.
-PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
-
-# Path to the Texas 2000 bus model.
-PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')
-PATH_2000_mod = os.path.join(
-    CASE_DIR, 'tx2000_mod', 'ACTIVSg2000_AUG-09-2018_Ride_version7.PWB')
-
-# Path to the WSCC model.
-PATH_9 = os.path.join(CASE_DIR, 'wscc_9', 'WSCC 9 bus.pwb')
-
-# Aux file for filtering transformers by LTC control.
-LTC_AUX_FILE = os.path.join(THIS_DIR, 'ltc_filter.aux')
+# noinspection PyUnresolvedReferences
+from constants import PATH_14, PATH_2000, PATH_2000_mod, PATH_9, THIS_DIR, \
+    LTC_AUX_FILE, DATA_DIR, CANDIDATE_LINES, CASE_MAP, SNIPPET_FILES
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
 # noinspection PyTypeChecker
 saw_14 = None  # type: SAW
-
-# Map cases for doc testing.
-CASE_MAP = {'14': PATH_14, '2000': PATH_2000}
-
-# Path to file containing lines for one of the examples.
-CANDIDATE_LINES = os.path.join(DATA_DIR, 'CandidateLines.csv')
 
 
 # noinspection PyPep8Naming
@@ -149,8 +125,8 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
             saw_14.get_key_fields_for_object_type('branch')
         cls.branch_data = saw_14.GetParametersMultipleElement(
             ObjectType='branch',
-            ParamList=branch_key_fields['internal_field_name'].tolist()
-                      + ['LineStatus'])
+            ParamList=(branch_key_fields['internal_field_name'].tolist()
+                       + ['LineStatus']))
         # Make a copy so we can modify it without affecting the original
         # DataFrame.
         cls.branch_data_copy = cls.branch_data.copy()
@@ -753,6 +729,7 @@ class ChangeParametersMultipleElementFlatInputTestCase(unittest.TestCase):
         # Send in the command.
         # noinspection PyTypeChecker
         num_objects = len(value_list)
+        # noinspection PyTypeChecker
         flattened_value_list = [val for sublist in value_list for val in
                                 sublist]
         self.assertIsNone(saw_14.ChangeParametersMultipleElementFlatInput(
@@ -780,6 +757,7 @@ class ChangeParametersMultipleElementFlatInputTestCase(unittest.TestCase):
 
         np.testing.assert_array_equal(actual, expected)
 
+    # noinspection PyTypeChecker
     def test_nested_value_list(self):
         with self.assertRaisesRegex(Error,
                                     'The value list has to be a 1-D array'):
@@ -1685,6 +1663,7 @@ class TestCreateNewLinesFromFile2000Bus(unittest.TestCase):
 
 # To enable unittest discovery:
 # https://docs.python.org/3.8/library/doctest.html#unittest-api
+# noinspection PyUnusedLocal
 def load_tests(loader, tests, ignore):
     suites = get_snippet_suites()
     for s in suites:
