@@ -1,0 +1,219 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Overview &#8212; ESA 0.6.3 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="esa API Documentation" href="esa.html" />
+    <link rel="prev" title="Quick Start" href="quick_start.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>When using ESA, you’ll likely only use a single class: <code class="docutils literal notranslate"><span class="pre">SAW</span></code>, which is
+short for SimAuto Wrapper. After you’ve installed the esa package
+(refer to the installation section of this documentation), you’ll import
+the <code class="docutils literal notranslate"><span class="pre">SAW</span></code> class like so:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="s1">&#39;&lt;full path to case file&gt;&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>All methods of the SAW class are fully documented. Additionally, all
+inputs and outputs use type hinting so that your interactive development
+environment (IDE, such as PyCharm) will automatically highlight
+incorrect input types.</p>
+<div class="section" id="naming-conventions">
+<h2>Naming Conventions<a class="headerlink" href="#naming-conventions" title="Permalink to this headline">¶</a></h2>
+<p>When browsing the documentation, you’ll notice that naming
+conventions are mixed, with some being CamelCase and others being
+lower_case_with_underscores. We use the CamelCase convention to indicate
+that we’re more or less directly calling a
+<a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3">PowerWorld SimAuto Function</a>
+(e.g. <code class="docutils literal notranslate"><span class="pre">SAW.ChangeParametersMultipleElement</span></code>) or a
+<a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Auxiliary_Files.htm">PowerWorld Script Command</a>
+(e.g. <code class="docutils literal notranslate"><span class="pre">SAW.SolvePowerFlow</span></code>). CamelCase is also used when describing
+variables which are more or less directly passed into a SimAuto
+function (e.g. <code class="docutils literal notranslate"><span class="pre">ObjectType</span></code>). The lower_case_with_underscores
+convention is used in function naming to indicate that a function is a
+higher-level function which may call multiple PowerWorld functions
+and/or not return everything from PowerWorld. Some examples of these
+functions are
+<code class="docutils literal notranslate"><span class="pre">SAW.change_and_confirm_params_multiple_element</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SAW.change_parameters_multiple_element_df</span></code>,
+<code class="docutils literal notranslate"><span class="pre">SAW.get_key_fields_for_object_type</span></code>, and
+<code class="docutils literal notranslate"><span class="pre">SAW.get_power_flow_results</span></code>. In general, it is recommended to use
+these higher level functions where possible. Note these show up toward
+the bottom of the API documentation since methods which start with
+upper case letters come before methods that start with lower case
+letters. Variables use the lower_case_with_underscores convention any
+time the variable is not a direct SimAuto input.</p>
+</div>
+<div class="section" id="functions-methods">
+<h2>Functions/Methods<a class="headerlink" href="#functions-methods" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="simauto-functions">
+<h3>SimAuto Functions<a class="headerlink" href="#simauto-functions" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">SAW</span></code> class has every SimAuto function implemented. I.e., you
+can call a <code class="docutils literal notranslate"><span class="pre">SAW</span></code> method corresponding to every documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3">SimAuto
+function</a>.</p>
+</div>
+<div class="section" id="high-level-helper-functions">
+<h3>High-Level/Helper Functions<a class="headerlink" href="#high-level-helper-functions" title="Permalink to this headline">¶</a></h3>
+<p>As mentioned in the <a class="reference internal" href="#naming-conventions">Naming Conventions</a> section, we recommend you use
+the high level helper functions (which use the
+lower_case_with_underscores convention) where possible.</p>
+</div>
+<div class="section" id="runscriptcommand">
+<h3>RunScriptCommand<a class="headerlink" href="#runscriptcommand" title="Permalink to this headline">¶</a></h3>
+<p>For PowerWorld functionality not directly covered by the SimAuto
+functions, you’ll want to use <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code>. Note that we
+already have some methods defined which are script commands, e.g.
+<code class="docutils literal notranslate"><span class="pre">SAW.SolvePowerFlow</span></code>. So, you may want to search for the function
+you want before directly using <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code>.</p>
+<p>It’s worth noting that <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code> will directly return results
+from PowerWorld, which will come back with all sorts of nasty data types
+(e.g. strings with leading and trailing whitespace). Your best course of
+action is to create a DataFrame/Series from the output, and use the
+<code class="docutils literal notranslate"><span class="pre">clean_df_or_series</span></code> method afterwards.</p>
+<p>Documentation from PowerWorld on available script commands can be found
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">here</a>.</p>
+</div>
+<div class="section" id="clean-df-or-series">
+<h3>clean_df_or_series<a class="headerlink" href="#clean-df-or-series" title="Permalink to this headline">¶</a></h3>
+<p>This helper function will do automatic type translation for you based
+on known PowerWorld data types. If you’re dealing with direct outputs
+from PowerWorld (e.g. from using <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code>), this method
+will save you all sorts of trouble. Read the method’s API documentation
+thoroughly before using.</p>
+</div>
+</div>
+<div class="section" id="data-types">
+<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<p>All method input and output data types are documented in the API
+documentation. Where possible, <code class="docutils literal notranslate"><span class="pre">SAW</span></code> methods return Pandas DataFrames
+or Pandas Series. If there’s nothing to return, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be
+returned. ESA makes extensive use of type hinting so that your IDE can
+automatically highlight issues related to data types.</p>
+</div>
+<div class="section" id="powerworld-variables">
+<h2>PowerWorld Variables<a class="headerlink" href="#powerworld-variables" title="Permalink to this headline">¶</a></h2>
+<p>At present, ESA uses PowerWorld “Variable Names” as opposed to
+PowerWorld “Concise Variable Names.” A listing of these variables can be
+found <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx">here</a>.
+It would seem that PowerWorld is moving toward “Concise Variable Names,”
+and in a future update ESA may support these (see <a class="reference external" href="https://github.com/mzy2240/ESA/issues/1#issue-525219427">this issue</a>).</p>
+</div>
+<div class="section" id="contributing">
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<p>We welcome contributions to ESA - please give
+<a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/contributing.md">contributing.md</a>
+a read.</p>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ESA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#naming-conventions">Naming Conventions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#functions-methods">Functions/Methods</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-types">Data Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#powerworld-variables">PowerWorld Variables</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contributing">Contributing</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snippets.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="quick_start.html" title="previous chapter">Quick Start</a></li>
+      <li>Next: <a href="esa.html" title="next chapter">esa API Documentation</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/overview.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

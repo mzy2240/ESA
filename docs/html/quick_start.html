@@ -1,0 +1,328 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Quick Start &#8212; ESA 0.6.3 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Overview" href="overview.html" />
+    <link rel="prev" title="Installing ESA" href="installation.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="quick-start">
+<span id="id1"></span><h1>Quick Start<a class="headerlink" href="#quick-start" title="Permalink to this headline">¶</a></h1>
+<p>The following quick start example uses the IEEE 14 bus case, which can
+be found <a class="reference external" href="https://github.com/mzy2240/ESA/tree/master/tests/cases/ieee_14">in the ESA
+repository</a>
+or from <a class="reference external" href="https://electricgrids.engr.tamu.edu/electric-grid-test-cases/ieee-14-bus-system/">Texas
+A&amp;M University</a>.
+Notes related to the case are available from the <a class="reference external" href="https://labs.ece.uw.edu/pstca/">University of Washington</a>.</p>
+<p>You can find API documentation
+<a class="reference external" href="https://mzy2240.github.io/ESA/html/index.html">here</a>.</p>
+<p>Before running the example below, define a CASE_PATH variable like so
+(adapt the path as needed for your system):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+</pre></div>
+</div>
+<p>On to the quick start!</p>
+<p>Start by Importing the SimAuto Wrapper (SAW) class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+</pre></div>
+</div>
+<p>Initialize SAW instance using 14 bus test case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">FileName</span><span class="o">=</span><span class="n">CASE_PATH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Solve the power flow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Retrieve power flow results for buses. This will return a Pandas
+DataFrame to make your life easier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bus_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;bus&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bus_data</span>
+<span class="go">    BusNum BusName  BusPUVolt   BusAngle    BusNetMW  BusNetMVR</span>
+<span class="go">0        1   Bus 1   1.060000   0.000000  232.391691 -16.549389</span>
+<span class="go">1        2   Bus 2   1.045000  -4.982553   18.300001  30.855957</span>
+<span class="go">2        3   Bus 3   1.010000 -12.725027  -94.199997   6.074852</span>
+<span class="go">3        4   Bus 4   1.017672 -10.312829  -47.799999   3.900000</span>
+<span class="go">4        5   Bus 5   1.019515  -8.773799   -7.600000  -1.600000</span>
+<span class="go">5        6   Bus 6   1.070000 -14.220869  -11.200000   5.229700</span>
+<span class="go">6        7   Bus 7   1.061520 -13.359558    0.000000   0.000000</span>
+<span class="go">7        8   Bus 8   1.090000 -13.359571    0.000000  17.623067</span>
+<span class="go">8        9   Bus 9   1.055933 -14.938458  -29.499999   4.584888</span>
+<span class="go">9       10  Bus 10   1.050986 -15.097221   -9.000000  -5.800000</span>
+<span class="go">10      11  Bus 11   1.056907 -14.790552   -3.500000  -1.800000</span>
+<span class="go">11      12  Bus 12   1.055189 -15.075512   -6.100000  -1.600000</span>
+<span class="go">12      13  Bus 13   1.050383 -15.156196  -13.500001  -5.800000</span>
+<span class="go">13      14  Bus 14   1.035531 -16.033565  -14.900000  -5.000000</span>
+</pre></div>
+</div>
+<p>Retrieve power flow results for generators:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_data</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1  232.391691 -16.549389</span>
+<span class="go">1       2     1   40.000001  43.555957</span>
+<span class="go">2       3     1    0.000000  25.074852</span>
+<span class="go">3       6     1    0.000000  12.729700</span>
+<span class="go">4       8     1    0.000000  17.623067</span>
+</pre></div>
+</div>
+<p>Let’s change generator injections! But first, we need to know which
+fields PowerWorld needs in order to identify generators. These fields
+are known as key fields.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_key_fields</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_key_field_list</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_key_fields</span>
+<span class="go">[&#39;BusNum&#39;, &#39;GenID&#39;]</span>
+</pre></div>
+</div>
+<p>Change generator active power injection at buses 3 and 8 via SimAuto
+function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="n">gen_key_fields</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;GenMW&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">ChangeParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">ValueList</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Did it work? Spoiler: it does!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
+<span class="go">   BusNum GenID       GenMW</span>
+<span class="go">0       1     1  232.391691</span>
+<span class="go">1       2     1   40.000001</span>
+<span class="go">2       3     1   30.000001</span>
+<span class="go">3       6     1    0.000000</span>
+<span class="go">4       8     1   50.000000</span>
+</pre></div>
+</div>
+<p>It would seem the generator active power injections have changed. Let’s
+re-run the power flow and see if bus voltages and angles change.
+Spoiler: they do.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bus_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;bus&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BusPUVolt&#39;</span><span class="p">,</span> <span class="s1">&#39;BusAngle&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span> <span class="o">=</span> <span class="n">bus_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_bus_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span>
+<span class="go">       BusPUVolt   BusAngle</span>
+<span class="go">0   0.000000e+00   0.000000</span>
+<span class="go">1  -1.100000e-07  -2.015596</span>
+<span class="go">2  -5.700000e-07  -4.813164</span>
+<span class="go">3  -8.650700e-03  -3.920185</span>
+<span class="go">4  -7.207540e-03  -3.238592</span>
+<span class="go">5  -5.900000e-07  -4.586528</span>
+<span class="go">6  -4.628790e-03  -7.309167</span>
+<span class="go">7  -3.190000e-06 -11.655362</span>
+<span class="go">8  -7.189370e-03  -6.284631</span>
+<span class="go">9  -6.256150e-03  -5.987861</span>
+<span class="go">10 -3.514030e-03  -5.297895</span>
+<span class="go">11 -2.400800e-04  -4.709888</span>
+<span class="go">12 -1.351040e-03  -4.827348</span>
+<span class="go">13 -4.736110e-03  -5.662158</span>
+</pre></div>
+</div>
+<p>Wouldn’t it be easier if we could change parameters with a DataFrame?
+Wouldn’t it be nice if we didn’t have to manually check if our updates
+were respected? You’re in luck!</p>
+<p>Create a copy of the <code class="docutils literal notranslate"><span class="pre">gen_data</span></code> DataFrame so that we can modify its
+values and use it to update parameters in PowerWorld. Then, change the
+generation for the generators at buses 2, 3, and 6.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span> <span class="o">=</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gen_copy</span><span class="p">[</span><span class="s1">&#39;BusNum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]),</span> <span class="s1">&#39;GenMW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1  232.391691 -16.549389</span>
+<span class="go">1       2     1    0.000000  43.555957</span>
+<span class="go">2       3     1  100.000000  25.074852</span>
+<span class="go">3       6     1  100.000000  12.729700</span>
+<span class="go">4       8     1    0.000000  17.623067</span>
+</pre></div>
+</div>
+<p>Use helper function <code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code> to
+both command the generators and to confirm that PowerWorld respected the
+command. This is incredibly useful because if you directly use
+<code class="docutils literal notranslate"><span class="pre">ChangeParametersMultipleElements</span></code>, PowerWorld may unexpectedly not
+update the parameter you tried to change! If the following does not
+raise an exception, we’re in good shape (it doesn’t)!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_and_confirm_params_multiple_element</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">command_df</span><span class="o">=</span><span class="n">gen_copy</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;GenMVR&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Run the power flow and observe the change in generation at the slack
+bus (bus 1):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1   62.128144  14.986289</span>
+<span class="go">1       2     1    0.000000  10.385347</span>
+<span class="go">2       3     1  100.000000   0.000000</span>
+<span class="go">3       6     1  100.000000  -3.893420</span>
+<span class="go">4       8     1    0.000000  17.399502</span>
+</pre></div>
+</div>
+<p>What if we try to change generator voltage set points? Start by getting
+a DataFrame with the current settings. Remember to always access the
+key fields so that when we want to update parameters later PowerWorld
+knows how to find the generators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">gen_key_fields</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;GenRegPUVolt&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span>
+<span class="go">   BusNum GenID  GenRegPUVolt</span>
+<span class="go">0       1     1      1.060000</span>
+<span class="go">1       2     1      1.045000</span>
+<span class="go">2       3     1      1.025425</span>
+<span class="go">3       6     1      1.070000</span>
+<span class="go">4       8     1      1.090000</span>
+</pre></div>
+</div>
+<p>Now, change all voltage set points to 1 per unit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span><span class="p">[</span><span class="s1">&#39;GenRegPUVolt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span>
+<span class="go">   BusNum GenID  GenRegPUVolt</span>
+<span class="go">0       1     1           1.0</span>
+<span class="go">1       2     1           1.0</span>
+<span class="go">2       3     1           1.0</span>
+<span class="go">3       6     1           1.0</span>
+<span class="go">4       8     1           1.0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_and_confirm_params_multiple_element</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">gen_v</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">199</span>, in <span class="n">change_and_confirm_params_multiple_element</span>
+    <span class="k">raise</span> <span class="n">CommandNotRespectedError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="gr">esa.saw.CommandNotRespectedError</span>: <span class="n">After calling ChangeParametersMultipleElement, not all parameters were actually changed within PowerWorld. Try again with a different parameter (e.g. use GenVoltSet instead of GenRegPUVolt).</span>
+</pre></div>
+</div>
+<p>So, PowerWorld didn’t respect that command, but we’ve been saved from
+future confusion by the <code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code>
+helper function.</p>
+<p>Let’s call the LoadState SimAuto function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">LoadState</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">967</span>, in <span class="n">LoadState</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;LoadState&#39;</span><span class="p">)</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">1227</span>, in <span class="n">_call_simauto</span>
+    <span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">esa.saw.PowerWorldError</span>: <span class="n">LoadState: State hasn&#39;t been previously stored.</span>
+</pre></div>
+</div>
+<p>This behavior is expected - it is not valid to call <code class="docutils literal notranslate"><span class="pre">LoadState</span></code> if
+<code class="docutils literal notranslate"><span class="pre">SaveState</span></code> has not yet been called. In the exception above, not that
+a <code class="docutils literal notranslate"><span class="pre">PowerWorldError</span></code> is raised. This empowers users to handle
+exceptions in whatever manner they see fit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">PowerWorldError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">saw</span><span class="o">.</span><span class="n">LoadState</span><span class="p">()</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">PowerWorldError</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oh my, we&#39;ve encountered a PowerWorldError!&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">Oh my, we&#39;ve encountered a PowerWorldError!</span>
+</pre></div>
+</div>
+<p>Finally, make sure to clean up after yourself so you don’t have COM
+objects hanging around.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After walking through this quick start, you should be ready to start
+using ESA to improve your simulation and analysis work flows!</p>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ESA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="snippets.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="installation.html" title="previous chapter">Installing ESA</a></li>
+      <li>Next: <a href="overview.html" title="next chapter">Overview</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/quick_start.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
