@@ -4,18 +4,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>esa package &#8212; ESA  documentation</title>
+    <title>esa API Documentation &#8212; ESA 0.6.3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="esa" href="modules.html" />
-    <link rel="prev" title="Introduction" href="intro.html" />
+    <link rel="next" title="Examples" href="snippets.html" />
+    <link rel="prev" title="Overview" href="overview.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -32,17 +32,37 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="esa-package">
-<h1>esa package<a class="headerlink" href="#esa-package" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="esa-api-documentation">
+<h1>esa API Documentation<a class="headerlink" href="#esa-api-documentation" title="Permalink to this headline">¶</a></h1>
+<p>ESA is a single module package - the only Python file is <code class="docutils literal notranslate"><span class="pre">saw.py</span></code>.
+To make it easy to remember, “SAW” is an acronym for “SimAuto Wrapper.”
+Within the <code class="docutils literal notranslate"><span class="pre">saw</span></code> module is the <code class="docutils literal notranslate"><span class="pre">SAW</span></code> class, which is the workhorse
+of ESA.</p>
+<div class="section" id="module-esa">
+<span id="esa-package"></span><h2>esa Package<a class="headerlink" href="#module-esa" title="Permalink to this headline">¶</a></h2>
+<p>The following are importable from the top-level <code class="docutils literal notranslate"><span class="pre">esa</span></code> package:</p>
+<ul class="simple">
+<li><p>SAW: ESA’s primary class</p></li>
+<li><p>Error: Base Error class for ESA exceptions. This exception is never
+directly raised.</p></li>
+<li><p>PowerWorldError: Error class for when PowerWorld/SimAuto reports an
+error.</p></li>
+<li><p>COMError: Error class for when something goes wrong communicating
+with Windows and/or SimAuto.</p></li>
+<li><p>CommandNotRespectedError: Error class for when a commanded change is
+not respected by PowerWorld/SimAuto. This exception is only raised
+via SAW helper methods like
+<code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code></p></li>
+<li><p>__version__: ESA’s version.</p></li>
+</ul>
 </div>
 <div class="section" id="module-esa.saw">
-<span id="esa-saw-module"></span><h2>esa.saw module<a class="headerlink" href="#module-esa.saw" title="Permalink to this headline">¶</a></h2>
+<span id="esa-saw-module"></span><h2>esa.saw Module<a class="headerlink" href="#module-esa.saw" title="Permalink to this headline">¶</a></h2>
 <p>saw is short for SimAuto Wrapper. This module provides a class,
 SAW, for interfacing with PowerWorld’s Simulator Automation Server
-(aka SimAuto).</p>
-<p>The documentation for SimAuto can be found
+(SimAuto). In addition to the SAW class, there are a few custom error
+classes, such as PowerWorldError.</p>
+<p>PowrWorld’s documentation for SimAuto can be found
 <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a></p>
 <dl class="exception">
 <dt id="esa.saw.COMError">
@@ -107,28 +127,39 @@ necessary.</p></li>
 <a class="reference external" href="https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients">Microsoft recommends</a>
 early binding in most cases.</p>
 <dl class="method">
-<dt id="esa.saw.SAW.CalculateLODF">
-<code class="sig-name descname">CalculateLODF</code><span class="sig-paren">(</span><em class="sig-param">Branch</em>, <em class="sig-param">LinearMethod='DC'</em>, <em class="sig-param">PostClosureLCDF='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CalculateLODF" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to calculate the Line Outage Distribution
-Factors (or the Line Closure Distribution Factors) for a
-particular branch. If the branch is presently closed, then the
-LODF values will be calculated, otherwise the LCDF values will
-be calculated. You may optionally specify the linear calculation
-method as well. If no Linear Method is specified, Lossless DC
-will be used. The LODF results will be sent to excel</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.ChangeParameters">
-<code class="sig-name descname">ChangeParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjType</em>, <em class="sig-param">ParamList</em>, <em class="sig-param">ValueArray</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>ChangeParameters is used to change single or multiple parameters
-of a single object. ParamList is a variant array storing strings
-that are Simulator object field variables, and must contain the
-key fields for the objecttype. Create variant arrays (one for
-each element being changed) with values corresponding to the
-fields in ParamList.</p>
+<code class="sig-name descname">ChangeParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ChangeParameters function has been replaced by the
+ChangeParametersSingleElement function. ChangeParameters
+can still be called as before, but will now just automatically
+call ChangeParametersSingleElement, and pass on the parameters
+to that function.
+Unlike the script SetData and CreateData commands, SimAuto does
+not have any explicit functions to create elements. Instead this
+can be done using the ChangeParameters functions by making use
+of the CreateIfNotFound SimAuto property. Set CreateIfNotFound =
+True if objects that are updated through the ChangeParameters
+functions should be created if they do not already exist in the
+case. Objects that already exist will be updated. Set
+CreateIfNotFound = False to not create new objects and only
+update existing ones. The CreateIfNotFound property is global,
+once it is set to True this applies to all future
+ChangeParameters calls.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm">PowerWorld documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you are changing
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of object field variable names. Note this
+MUST include the key fields for the given ObjectType
+(which you can get via the get_key_fields_for_object_type
+method).</p></li>
+<li><p><strong>Values</strong> – List of values corresponding to the parameters in
+the ParamList.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -164,8 +195,43 @@ simply be None.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.ChangeParametersMultipleElementFlatInput">
-<code class="sig-name descname">ChangeParametersMultipleElementFlatInput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">ChangeParametersMultipleElementFlatInput</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">NoOfObjects: int</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
+<dd><p>The ChangeParametersMultipleElementFlatInput function allows
+you to set parameters for multiple objects of the same type in
+a case loaded into the Simulator Automation Server. This
+function is very similar to the ChangeParametersMultipleElement,
+but uses a single dimensioned array of values as input instead
+of a multi-dimensioned array of arrays.</p>
+<p>It is recommended that you use helper functions like
+<code class="docutils literal notranslate"><span class="pre">change_parameters_multiple_element_df</span></code> instead of this one,
+as it’s simply easier to use.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm">PowerWorld documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you are changing
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – Listing of object field variable names. Note
+this MUST include the key fields for the given ObjectType
+(which you can get via the get_key_fields_for_object_type
+method).</p></li>
+<li><p><strong>NoOfObjects</strong> – An integer number of devices that are
+passing values for. SimAuto will automatically check that
+the number of parameters for each device (counted from
+ParamList) and the number of objects integer correspond to
+the number of values in value list (counted from ValueList.)</p></li>
+<li><p><strong>ValueList</strong> – List of lists corresponding to the ParamList.
+Should have length n, where n is the number of elements you
+with to change parameters for. Each sub-list should have
+the same length as ParamList, and the items in the sub-list
+should correspond 1:1 with ParamList.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Result from calling SimAuto, which should always
+simply be None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -197,27 +263,9 @@ the ParamList.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="esa.saw.SAW.CreateData">
-<code class="sig-name descname">CreateData</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FieldList: str</em>, <em class="sig-param">ValueList: str</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CreateData" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.CurrentDir">
 <em class="property">property </em><code class="sig-name descname">CurrentDir</code><a class="headerlink" href="#esa.saw.SAW.CurrentDir" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.Delete">
-<code class="sig-name descname">Delete</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.Delete" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.EnterMode">
-<code class="sig-name descname">EnterMode</code><span class="sig-paren">(</span><em class="sig-param">mode</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.EnterMode" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-</dd></dl>
 
 <dl class="attribute">
 <dt id="esa.saw.SAW.FIELD_LIST_COLUMNS">
@@ -226,8 +274,22 @@ the ParamList.</p></li>
 
 <dl class="method">
 <dt id="esa.saw.SAW.GetCaseHeader">
-<code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><em class="sig-param">filename: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[str]<a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GetCaseHeader function is used to extract the case header
+information from the file specified. A tuple of strings
+containing the contents of the case header or description is
+returned.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetCaseHeader_Function.htm">PowerWorld documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>filename</strong> – The name of the file you wish to extract the
+header information from.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of strings containing the contents of the case
+header or description.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -254,8 +316,40 @@ and ‘display_name.’</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.GetParameters">
-<code class="sig-name descname">GetParameters</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">GetParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function is maintained in versions of Simulator later 
+than version 9 for compatibility with Simulator version 9. This 
+function will call the GetParametersSingleElement implicitly.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object you’re retrieving
+parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of strings indicating parameters to
+retrieve. Note the key fields MUST be present. One can
+obtain key fields for an object type via the
+get_key_fields_for_object_type method.</p></li>
+<li><p><strong>Values</strong> – List of values corresponding 1:1 to parameters in
+the ParamList. Values must be included for the key fields,
+and the remaining values should be set to 0.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Pandas Series indexed by the given ParamList. This
+Series will be cleaned by clean_df_or_series, so data will
+be of the appropriate type and strings are cleaned up.</p>
+</dd>
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><a class="reference internal" href="#esa.saw.PowerWorldError" title="esa.saw.PowerWorldError"><strong>PowerWorldError</strong></a> – if the object cannot be found.</p></li>
+<li><p><strong>ValueError</strong> – if any given element in ParamList is not
+valid for the given ObjectType.</p></li>
+<li><p><strong>AssertionError</strong> – if the given ParamList and Values do
+not have the same length.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -300,8 +394,48 @@ are not valid for the given object type.</p></li>
 
 <dl class="method">
 <dt id="esa.saw.SAW.GetParametersMultipleElementFlatOutput">
-<code class="sig-name descname">GetParametersMultipleElementFlatOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">GetParametersMultipleElementFlatOutput</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">FilterName: str = ''</em><span class="sig-paren">)</span> &#x2192; Union[None, Tuple[str]]<a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function operates the same as the
+GetParametersMultipleElement function, only with one notable
+difference. The values returned as the output of the function
+are returned in a single-dimensional vector array, instead of
+the multi-dimensional array as described in the
+GetParametersMultipleElement topic.</p>
+<p>It is recommended that you use GetParametersMultipleElement
+instead, as you’ll receive a DataFrame with correct data types.
+As this method is extraneous, the output from PowerWorld will
+be directly returned. This will show you just how useful ESA
+really is!</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – Type of object to get parameters for.</p></li>
+<li><p><strong>ParamList</strong> – List of variables to obtain for the given
+object type. E.g. [‘BusNum’, ‘GenID’, ‘GenMW’]. One
+can use the method GetFieldList to get a listing of all
+available fields. Additionally, you’ll likely want to always
+return the key fields associated with the objects. These
+key fields can be obtained via the
+get_key_fields_for_object_type method.</p></li>
+<li><p><strong>FilterName</strong> – Name of an advanced filter defined in the
+load flow case.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return:The format of the output array is the following</dt>
+<dd class="field-even"><p>[
+NumberOfObjectsReturned, NumberOfFieldsPerObject,
+Ob1Fld1, Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)]
+The data is thus returned in a single dimension array, where
+the parameters NumberOfObjectsReturned and
+NumberOfFieldsPerObject tell you how the rest of the array
+is populated. Following the NumberOfObjectsReturned
+parameter is the start of the data. The data is listed as
+all fields for object 1, then all fields for object 2, and
+so on. You can parse the array using the NumberOf…
+parameters for objects and fields. If the given object
+type does not exist, the method will return None.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -342,14 +476,70 @@ not have the same length.</p></li>
 
 <dl class="method">
 <dt id="esa.saw.SAW.GetSpecificFieldList">
-<code class="sig-name descname">GetSpecificFieldList</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">GetSpecificFieldList</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str, FieldList: List[str]</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GetSpecificFieldList function is used to return identifying
+information about specific fields used by an object type. Note
+that in many cases simply using the GetFieldList method is
+simpler and gives more information.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldList_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object for which fields are
+requested.</p></li>
+<li><p><strong>FieldList</strong> – A list of strings. Each string represents
+object field variables, as defined in the section on
+<a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/PowerWorld_Object_Variables.htm">PowerWorld Object Fields</a>
+. Specific variablenames along with location numbers can be
+specified. To return all fields using the same variablename,
+use “variablename:ALL” instead of the location number that
+would normally appear after the colon. If all fields should
+be returned, a single parameter of “ALL” can be used instead
+of specific variablenames.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A Pandas DataFrame with columns given by the class
+constant SPECIFIC_FIELD_LIST_COLUMNS. There will be a row
+for each element in the FieldList input unless ‘ALL’ is
+used in the FieldList. The DataFrame will be sorted
+alphabetically by the variablenames.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="esa.saw.SAW.GetSpecificFieldMaxNum">
-<code class="sig-name descname">GetSpecificFieldMaxNum</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">GetSpecificFieldMaxNum</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">Field: str</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
+<dd><p>The GetSpecificFieldMaxNum function is used to return the
+maximum number of a fields that use a particular variablename
+for a specific object type.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldMaxNum_Function.htm">PowerWorld Documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – The type of object for which information is
+being requested.</p></li>
+<li><p><strong>Field</strong> – The variablename for which the maximum number of
+fields is being requested. This should just be the
+variablename and should exclude the location number that can
+be included to indicate different fields that use the same
+variablename, i.e. do not include the colon and number that
+can be included when identifying a field.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An integer that specifies the maximum number of fields
+that use the same variablename for a particular object type.
+Fields are identified in the format variablename:location
+when multiple fields use the same variablename. The output
+indicates the maximum number that the location can be.
+Generally, fields are identified starting from 0 and going
+up to the maximum number, but keep in mind that values
+within this range might be skipped and not used to indicate
+valid fields.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -383,14 +573,89 @@ key field is present, the data will be sorted by BusNum.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.ListOfDevicesAsVariantStrings">
-<code class="sig-name descname">ListOfDevicesAsVariantStrings</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">ListOfDevicesAsVariantStrings</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
+<dd><p>While this method is implemented, you are almost certainly
+better off using ListOfDevices instead. Since this method isn’t
+particularly useful, no type casting will be performed on the
+output array. Contrast the results of calling this method with
+the results of calling ListOfDevices to see just how helpful
+ESA is!</p>
+<p>Description below if from
+<a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesAsVariantStrings_Function.htm">PowerWorld</a>:</p>
+<p>This function operates the same as the ListOfDevices function,
+only with one notable difference. The values returned as the
+output of the function are returned as Variants of type String.
+The ListOfDevices function was errantly released returning the
+values strongly typed as Integers and Strings directly, whereas
+all other SimAuto functions returned data as Variants of type
+String. This function was added to also return the data in the
+same manner. This solved some compatibility issues with some
+software languages.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjType</strong> – The type of object for which you are acquiring
+the list of devices.</p></li>
+<li><p><strong>FilterName</strong> – The name of an advanced filter defined in the
+load flow case open in the Simulator Automation Server. If
+no filter is desired, then simply pass an empty string. If
+the filter cannot be found, the server will default to
+returning all objects in the case of type ObjType.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple of tuples as documented by PowerWorld for the
+ListOfDevices function.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
 <dt id="esa.saw.SAW.ListOfDevicesFlatOutput">
-<code class="sig-name descname">ListOfDevicesFlatOutput</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">ListOfDevicesFlatOutput</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
+<dd><p>While this method is implemented, you are almost certainly
+better off using ListOfDevices instead. Since this method isn’t
+particularly useful, no type casting, data type changing, or
+data rearranging will be performed on the output array.
+Contrast the results of calling this method with the results of
+calling ListOfDevices to see just how helpful ESA is!</p>
+<p>This function operates the same as the ListOfDevices
+function, only with one notable difference. The values returned
+as the output of the function are returned in a
+single-dimensional vector array, instead of the
+multi-dimensional array as described in the ListOfDevices topic.
+The function returns the key field values for the device,
+typically in the order of bus number 1, bus number 2
+(where applicable), and circuit identifier (where applicable).
+These are the most common key fields, but some object types do
+have other key fields as well.</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesFlatOutput_Function.htm">PowerWorld documentation:</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjType</strong> – The type of object for which you are acquiring
+the list of devices.</p></li>
+<li><p><strong>FilterName</strong> – The name of an advanced filter defined in the
+load flow case open in the Simulator Automation Server. If
+no filter is desired, then simply pass an empty string. If
+the filter cannot be found, the server will default to
+returning all objects in the case of type ObjType.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List in the following format:
+[NumberOfObjectsReturned, NumberOfFieldsPerObject, Ob1Fld1,
+Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)].
+The data is thus returned in a single dimension array, where
+the parameters NumberOfObjectsReturned and
+NumberOfFieldsPerObject tell you how the rest of the array
+is populated. Following the NumberOfObjectsReturned
+parameter is the start of the data. The data is listed as
+all fields for object 1, then all fields for object 2, and
+so on. You can parse the array using the NumberOf…
+parameters for objects and fields.</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -423,14 +688,32 @@ been called before.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.OpenCaseType">
-<code class="sig-name descname">OpenCaseType</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.OpenOneLine">
-<code class="sig-name descname">OpenOneLine</code><span class="sig-paren">(</span><em class="sig-param">filename</em>, <em class="sig-param">view=''</em>, <em class="sig-param">fullscreen='NO'</em>, <em class="sig-param">showfull='NO'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
+<code class="sig-name descname">OpenCaseType</code><span class="sig-paren">(</span><em class="sig-param">FileName: str</em>, <em class="sig-param">FileType: str</em>, <em class="sig-param">Options: Union[list</em>, <em class="sig-param">str</em>, <em class="sig-param">None] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>The OpenCaseType function will load a PowerWorld Simulator load</dt><dd><dl class="simple">
+<dt>flow file into the Simulator Automation Server. This is similar</dt><dd><p>to opening a file using the File &gt; Open Case menu option in
+Simulator.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/OpenCaseType_Function.htm?Highlight=OpenCaseType">PowerWorld documentation</a></p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>FileName</strong> – Full path to the case file to be loaded. If
+None, this method will attempt to use the last FileName
+used to open a case.</p></li>
+<li><p><strong>FileType</strong> – The type of case file to be loaded. It can be
+one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
+PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
+GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX, UCTE,
+AREVAHDB</p></li>
+<li><p><strong>Options</strong> – Optional parameter indicating special load
+options for PTI and GE file types.</p></li>
+</ul>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="attribute">
@@ -482,6 +765,11 @@ those included in the script sections of auxiliary files.</p>
 <code class="sig-name descname">SIMAUTO_PROPERTIES</code><em class="property"> = {'CreateIfNotFound': &lt;class 'bool'&gt;, 'CurrentDir': &lt;class 'str'&gt;, 'UIVisible': &lt;class 'bool'&gt;}</em><a class="headerlink" href="#esa.saw.SAW.SIMAUTO_PROPERTIES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt id="esa.saw.SAW.SPECIFIC_FIELD_LIST_COLUMNS">
+<code class="sig-name descname">SPECIFIC_FIELD_LIST_COLUMNS</code><em class="property"> = ['variablename:location', 'field', 'column header', 'field description']</em><a class="headerlink" href="#esa.saw.SAW.SPECIFIC_FIELD_LIST_COLUMNS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="esa.saw.SAW.SaveCase">
 <code class="sig-name descname">SaveCase</code><span class="sig-paren">(</span><em class="sig-param">FileName=None</em>, <em class="sig-param">FileType='PWB'</em>, <em class="sig-param">Overwrite=True</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveCase" title="Permalink to this definition">¶</a></dt>
@@ -519,14 +807,6 @@ already exists, an exception will be raised.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="esa.saw.SAW.SaveJacobian">
-<code class="sig-name descname">SaveJacobian</code><span class="sig-paren">(</span><em class="sig-param">JacFileName</em>, <em class="sig-param">JIDFileName</em>, <em class="sig-param">FileType</em>, <em class="sig-param">JacForm</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveJacobian" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to save the Jacobian Matrix to a text file or a
-file formatted for use with MATLAB</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.SaveState">
 <code class="sig-name descname">SaveState</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
 <dd><p>SaveState is used to save the current state of the power
@@ -537,39 +817,41 @@ the Simulator application.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esa.saw.SAW.SaveYbusInMatlabFormat">
-<code class="sig-name descname">SaveYbusInMatlabFormat</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">IncludeVoltages='Yes'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveYbusInMatlabFormat" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to save the YBus to a file formatted for use
-with MATLAB</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.SendToExcel">
-<code class="sig-name descname">SendToExcel</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FilterName: str</em>, <em class="sig-param">FieldList</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Send data from SimAuto to an Excel spreadsheet.</p>
+<code class="sig-name descname">SendToExcel</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FilterName: str</em>, <em class="sig-param">FieldList</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Send data from SimAuto to an Excel spreadsheet. While ESA
+provides this function, we strongly recommend you to use the
+<code class="docutils literal notranslate"><span class="pre">GetParametersMultipleElement</span></code> function and save the DataFrame
+directly to a .csv file using the DataFrame’s <code class="docutils literal notranslate"><span class="pre">to_csv</span></code>
+method. The problem with <code class="docutils literal notranslate"><span class="pre">SendToExcel</span></code> is that it opens
+(but does not save) an Excel sheet, which requires you to
+manually save it.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm">PowerWorld documentation</a></p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.SetData">
-<code class="sig-name descname">SetData</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FieldList: str</em>, <em class="sig-param">ValueList: str</em>, <em class="sig-param">Filter=''</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SetData" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to set fields for particular objects. If a
-filter is specified, then it will set the respective fields for
-all objects which meet this filter. Otherwise, if no filter is
-specified, then the keyfields must be included in the field
-list so that the object can be found. e.g.
-FieldList = ‘[Number,NomkV]’</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.SetParticipationFactors">
-<code class="sig-name descname">SetParticipationFactors</code><span class="sig-paren">(</span><em class="sig-param">Method</em>, <em class="sig-param">ConstantValue</em>, <em class="sig-param">Object</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SetParticipationFactors" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to modify the generator participation factors in
-the case.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – A String describing the type of object for
+which you are requesting data.</p></li>
+<li><p><strong>FilterName</strong> – String with the name of an advanced filter
+which was previously defined in the case before being loaded
+in the Simulator Automation Server. If no filter is desired,
+then simply pass an empty string. If a filter name is passed
+but the filter cannot be found in the loaded case, no filter
+is used.</p></li>
+<li><p><strong>FieldList</strong> – Variant parameter must either be an array of
+fields for the given object or the string “ALL”. As an
+array, FieldList contains an array of strings, where each
+string represents an object field variable, as defined in
+the section on PowerWorld Object Variables. If, instead of
+an array of strings, the single string “ALL” is passed, the
+Simulator Automation Server will use predefined default
+fields when exporting the data.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="method">
@@ -594,95 +876,71 @@ for more details.</p>
 </dd></dl>
 
 <dl class="method">
-<dt id="esa.saw.SAW.TSCalculateCriticalClearTime">
-<code class="sig-name descname">TSCalculateCriticalClearTime</code><span class="sig-paren">(</span><em class="sig-param">Branch</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSCalculateCriticalClearTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Use this action to calculate critical clearing time for faults
-on the lines that meet the specified filter. A single line can
-be specified in the format [BRANCH keyfield1 keyfield2 ckt] or
-[BRANCH label]. Multiple lines can be selected by specifying a
-filter. For the specified lines, this calculation will determine
-the first time a violation is reached (critical clearing time),
-where a violation is determined based on all enabled Transient
-Limit Monitors. For each line, results are saved as a new
-Transient Contingency on a line, with the fault duration equal
-to the critical clearing time.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.TSGetContingencyResults">
-<code class="sig-name descname">TSGetContingencyResults</code><span class="sig-paren">(</span><em class="sig-param">CtgName</em>, <em class="sig-param">ObjFieldList</em>, <em class="sig-param">StartTime=None</em>, <em class="sig-param">StopTime=None</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Read transient stability results directly into the SimAuto COM
-object and be further used.
-!!!!! This function should ONLY be used after the simulation is run
-(for example, use this after running script commands tsSolveAll
-or tsSolve).
-ObjFieldList = [‘“Plot ‘’Bus_4_Frequency’’”’] or
-ObjFieldList = [‘“Bus 4 | frequency”’]</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.TSResultStorageSetAll">
-<code class="sig-name descname">TSResultStorageSetAll</code><span class="sig-paren">(</span><em class="sig-param">ObjectType</em>, <em class="sig-param">Choice</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSResultStorageSetAll" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.TSRunUntilSpecifiedTime">
-<code class="sig-name descname">TSRunUntilSpecifiedTime</code><span class="sig-paren">(</span><em class="sig-param">ContingencyName</em>, <em class="sig-param">RunOptions</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSRunUntilSpecifiedTime" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>This command allows manual control of the transient stability
-run. The simulation can be run until a specified time or number
-of times steps and then paused for further evaluation.</p>
+<code class="sig-name descname">TSGetContingencyResults</code><span class="sig-paren">(</span><em class="sig-param">CtgName: str, ObjFieldList: List[str], StartTime: Union[None, str] = None, StopTime: Union[None, str] = None</em><span class="sig-paren">)</span> &#x2192; Union[Tuple[None, None], Tuple[pandas.core.frame.DataFrame, pandas.core.frame.DataFrame]]<a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
+<dd><p>WARNING: This function should only be used after the simulation
+is run (for example, use this after running script commands
+TSSolveAll or TSSolve).</p>
+<p>On to the main documentation:</p>
+<p>The TSGetContingencyResults function is used to read
+transient stability results into an external program (Python)
+using SimAuto.</p>
+<p>This function is analogous to the script command TSGetResults,
+where rather than saving out results to a file, the results are
+passed back directly to the SimAuto COM object and may be
+further processed by an external program. As with TSGetResults,
+this function should only be used after the simulation is run
+(for example, use this after running script commands TSSolveAll
+or TSSolve).</p>
+<p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/TSGetContingencyResults%20Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____49">PowerWorld documentation:</a></p>
+<p>The authors of ESA do not have extensive experience running
+transient contingencies in PowerWorld, so this method has not
+been tested as extensively as we would prefer. If your case/code
+has issues with this method, please file an issue on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub</a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>ContingencyName</strong> – TODO</p></li>
-<li><p><strong>RunOptions</strong> – ‘[StopTime(in seconds), StepSize(numbers),
-StepsInCycles=’YES’, ResetStartTime=’NO’,
-NumberOfTimeStepsToDo=0]’</p></li>
+<li><p><strong>CtgName</strong> – The contingency to obtain results from. Only one
+contingency be obtained at a time.</p></li>
+<li><p><strong>ObjFieldList</strong> – A list of strings which may contain plots,
+subplots, or individual object/field pairs specifying the
+result variables to obtain.</p></li>
+<li><p><strong>StartTime</strong> – The time in seconds in the simulation to begin
+retrieving results. If not specified (None), the start time
+of the simulation is used.</p></li>
+<li><p><strong>StopTime</strong> – The time in seconds in the simulation to stop
+retrieving results. If not specified, the end time of the
+simulation is used.</p></li>
 </ul>
 </dd>
-</dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.TSSolve">
-<code class="sig-name descname">TSSolve</code><span class="sig-paren">(</span><em class="sig-param">ContingencyName</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSSolve" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Solves only the specified contingency</p>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.TSWriteOptions">
-<code class="sig-name descname">TSWriteOptions</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">Options</em>, <em class="sig-param">KeyField=' Primary'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.TSWriteOptions" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Save the transient stability option settings to an auxiliary
-file.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>FileName</strong> – TODO</p></li>
-<li><p><strong>Options</strong> – <p>[SaveDynamicModel, SaveStabilityOptions,
-SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]</p>
-<p>SaveDynamicModel : (optional) NO doesn’t save dynamic model
-(default YES)</p>
-<p>SaveStabilityOptions : (optional) NO doesn’t save stability
-options (default YES)</p>
-<p>SaveStabilityEvents : (optional) NO doesn’t save stability
-events (default YES)</p>
-<p>SaveResultsSettings : (optional) NO doesn’t save results
-settings (default YES)</p>
-<p>SavePlotDefinitions : (optional) NO doesn’t save plot
-definitions (default YES)</p>
-</p></li>
-<li><p><strong>KeyField</strong> – (optional) Specifies key: can be Primary,
-Secondary, or Label (default Primary)</p></li>
-</ul>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple containing two DataFrames, “meta” and “data.”
+Alternatively, if the given CtgName does not exist, a tuple
+of (None, None) will be returned.
+The “meta” DataFrame describes the data in the “data”
+DataFrame, and can be used to map objects to columns in
+the “data” DataFrame. The “meta” DataFrame’s columns are:
+[‘ObjectType’, ‘PrimaryKey’, ‘SecondaryKey’, ‘Label’,
+‘VariableName’, ‘ColHeader’]. Each row in the “meta”
+DataFrame corresponds to a column in the “data” DataFrame.
+So the “meta” row with index label 0 corresponds to the
+column labeled 0 in the “data” DataFrame, and so forth.
+Unfortunately, the <code class="docutils literal notranslate"><span class="pre">ObjectType``s</span> <span class="pre">that</span> <span class="pre">come</span> <span class="pre">back</span> <span class="pre">from</span>
+<span class="pre">PowerWorld</span> <span class="pre">do</span> <span class="pre">not</span> <span class="pre">always</span> <span class="pre">match</span> <span class="pre">valid</span> <span class="pre">``ObjectType</span></code>
+variable names (e.g. “Generator” comes back as an
+<code class="docutils literal notranslate"><span class="pre">ObjectType</span></code>, but attempting to use “Generator” in the
+<code class="docutils literal notranslate"><span class="pre">GetParametersMultipleElement</span></code> method results in an
+error), so ESA’s ability to perform automatic data type
+transformation is limited. All columns in the “data”
+DataFrame will be cast to numeric types by
+<code class="docutils literal notranslate"><span class="pre">pandas.to_numeric</span></code>. If Pandas cannot determine an
+appropriate numeric type, the data will be unmodified (i.e.,
+the type will not be changed). In addition to the integer
+labeled columns which match the “meta” rows, the “data”
+DataFrame additionally has a “time” column which corresponds
+to the timestamp (in seconds).</p>
 </dd>
 </dl>
-<p>TODO: KeyField isn’t currently used?</p>
 </dd></dl>
 
 <dl class="method">
@@ -692,9 +950,8 @@ Secondary, or Label (default Primary)</p></li>
 
 <dl class="method">
 <dt id="esa.saw.SAW.WriteAuxFile">
-<code class="sig-name descname">WriteAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">FilterName</em>, <em class="sig-param">ObjectType</em>, <em class="sig-param">FieldList</em>, <em class="sig-param">ToAppend=True</em>, <em class="sig-param">EString=None</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.WriteAuxFile" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>The WriteAuxFile function can be used to write data from the
+<code class="sig-name descname">WriteAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName: str, FilterName: str, ObjectType: str, FieldList: Union[list, str], ToAppend=True</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.WriteAuxFile" title="Permalink to this definition">¶</a></dt>
+<dd><p>The WriteAuxFile function can be used to write data from the
 case in the Simulator Automation Server to a PowerWorld
 Auxiliary file. The name of an advanced filter which was
 PREVIOUSLY DEFINED in the case before being loaded in the
@@ -799,15 +1056,6 @@ Series.</p></li>
 </dd></dl>
 
 <dl class="method">
-<dt id="esa.saw.SAW.create_filter">
-<code class="sig-name descname">create_filter</code><span class="sig-paren">(</span><em class="sig-param">condition</em>, <em class="sig-param">object_type</em>, <em class="sig-param">filter_name</em>, <em class="sig-param">filter_logic='AND'</em>, <em class="sig-param">filter_pre='NO'</em>, <em class="sig-param">enabled='YES'</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.create_filter" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Creates a filter in PowerWorld. The attempt is to reduce the
-clunkiness of creating a filter in the API, which entails
-creating an aux data file.</p>
-</dd></dl>
-
-<dl class="method">
 <dt id="esa.saw.SAW.exit">
 <code class="sig-name descname">exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up for the PowerWorld COM object</p>
@@ -869,14 +1117,6 @@ None if the given ObjectType is not present in the model.</p>
 <dd class="field-odd"><p><strong>ValueError</strong> – if given ObjectType is invalid.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="method">
-<dt id="esa.saw.SAW.get_three_phase_bolted_fault_current">
-<code class="sig-name descname">get_three_phase_bolted_fault_current</code><span class="sig-paren">(</span><em class="sig-param">bus_num</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_three_phase_bolted_fault_current" title="Permalink to this definition">¶</a></dt>
-<dd><p>NOT IMPLEMENTED.</p>
-<p>Calculates the three phase fault; this can be done even with
-cases which only contain positive sequence impedances</p>
 </dd></dl>
 
 <dl class="method">
@@ -957,13 +1197,6 @@ UIVisible.</p></li>
 </dd></dl>
 
 </div>
-<div class="section" id="module-esa.version">
-<span id="esa-version-module"></span><h2>esa.version module<a class="headerlink" href="#module-esa.version" title="Permalink to this headline">¶</a></h2>
-</div>
-<div class="section" id="module-esa">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-esa" title="Permalink to this headline">¶</a></h2>
-<p>TODO: Document your package.</p>
-</div>
 </div>
 
 
@@ -985,26 +1218,25 @@ UIVisible.</p></li>
 <h3>Navigation</h3>
 <p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="intro.html">Introduction</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">esa package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-esa.saw">esa.saw module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-esa.version">esa.version module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#module-esa">Module contents</a></li>
+<li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">esa API Documentation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#module-esa">esa Package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-esa.saw">esa.saw Module</a></li>
 </ul>
 </li>
-<li class="toctree-l1 current"><a class="reference internal" href="modules.html">esa</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">esa package</a></li>
-</ul>
-</li>
+<li class="toctree-l1"><a class="reference internal" href="snippets.html">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
 </ul>
 
 <div class="relations">
 <h3>Related Topics</h3>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="intro.html" title="previous chapter">Introduction</a></li>
-      <li>Next: <a href="modules.html" title="next chapter">esa</a></li>
+      <li>Previous: <a href="overview.html" title="previous chapter">Overview</a></li>
+      <li>Next: <a href="snippets.html" title="next chapter">Examples</a></li>
   </ul></li>
 </ul>
 </div>
@@ -1017,7 +1249,7 @@ UIVisible.</p></li>
     </form>
     </div>
 </div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -1031,10 +1263,10 @@ UIVisible.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2019, Zeyu Mao, Brandon Thayer.
+      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.3.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
