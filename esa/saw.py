@@ -1294,11 +1294,9 @@ class SAW(object):
                                 StopTime: Union[None, str] = None) -> \
             Union[Tuple[None, None], Tuple[pd.DataFrame, pd.DataFrame]]:
         """
-        WARNING: Running this method with an existing contingency that
-        has not been solved yet seems to cause Simulator or SimAuto to
-        simply hang indefinitely. DO NOT RUN THIS METHOD until you have
-        solved the contingency first. This can be done via the
-        RunScriptCommand method, using TSSolve.
+        WARNING: This function should only be used after the simulation
+        is run (for example, use this after running script commands
+        TSSolveAll or TSSolve).
 
         On to the main documentation:
 
