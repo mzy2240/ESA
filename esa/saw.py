@@ -1540,10 +1540,10 @@ class SAW(object):
                     # Apparently -1 is the signal for an error.
                     m = (
                         'PowerWorld simply returned -1 after calling '
-                        f"'{func}' with '{args}'. Unfortunately, that's all "
+                        "'{func}' with '{args}'. Unfortunately, that's all "
                         "we can help you with. Perhaps the arguments are "
                         "invalid or in the wrong order - double-check the "
-                        "documentation.")
+                        "documentation.").format(func=func, args=args)
                     raise PowerWorldError(m)
                 elif isinstance(output, int):
                     # Return the integer.
