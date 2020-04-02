@@ -15,5 +15,10 @@ ESA.
     ``docs\rst`` directory).
 #.  When ready, commit all the new changes and update to the Github
     repository.
-#.  Generate the distribution archive.
-#.  Upload the distribution archive to the Python Package Index.
+#.  Generate the distribution archive by running this command from the
+    same directory where ``setup.py`` is located:
+    ``python setup.py sdist bdist_wheel``
+#.  Upload the distribution archive to the Python Package Index by
+    running this command: ``python -m twine upload dist/*``.
+    Before uploading make sure there is only one archive version in the
+    ``dist`` directory.
