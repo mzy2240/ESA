@@ -84,10 +84,13 @@ def main(python_install_dir, local, fresh):
         out_files.append(out_file)
 
         # Run the tests.
+        print('Running tests...')
         with open(out_file, 'w') as f:
             subprocess.run(
                 (exe, '-m', 'unittest', 'discover', 'tests'), cwd=TOP_DIR,
                 stderr=subprocess.STDOUT, stdout=f)
+
+        print('Done!')
 
     print('*' * 80)
     print('ALL DONE!')
