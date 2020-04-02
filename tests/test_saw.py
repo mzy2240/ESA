@@ -266,7 +266,7 @@ class ChangeParametersMultipleElementDFTestCase(unittest.TestCase):
                 saw_14.change_parameters_multiple_element_df(
                     ObjectType='load', command_df=command_df))
 
-        p.assert_called_once()
+        self.assertEqual(1, p.call_count)
         self.assertDictEqual(
             p.mock_calls[0][2],
             {'ObjectType': 'load', 'ParamList': cols,
