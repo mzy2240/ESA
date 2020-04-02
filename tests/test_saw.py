@@ -30,20 +30,18 @@ using doctest. These files use a suffix convention to determine which
 .pwb file to use in the CASE_PATH constant.
 """
 
+import doctest
 import logging
 import os
+import tempfile
 import unittest
 from unittest.mock import patch
-import tempfile
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_windows_path
-import logging
-import doctest
 
 # Handle pathing.
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -1479,6 +1477,52 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         data_cols.remove('time')
 
         self.assertListEqual(meta_rows, data_cols)
+
+    def test_individual_object_field_pair(self):
+        """Obtain the result for an individual object/field pair"""
+        # The target is the frequency data from Bus 4.
+        obj_field_list = ['"Bus 4 | frequency"']
+
+        # Set up TS parameters
+        t1 = 0.0
+        t2 = 10.0
+        stepsize = 0.01
+
+        # Solve.
+        self.saw.RunScriptCommand(f'TSSolve("{self.ctg_name}",[{t1},{t2},'
+                                  f'{stepsize},NO])')
+
+        # Get results.
+        meta, data = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, str(t1), str(t2))
+
+        # Ensure shapes are as expected.
+        self.assertEqual(meta.shape[0], 1)  # Only 1 object/field pair
+        self.assertEqual(data.shape[1], 2)  # Plus the time column
+
+        # ObjectType should be Bus
+        self.assertEqual(meta['ObjectType'].values[0], 'Bus')
+
+        # Primary key should be 4.
+        self.assertEqual(meta['PrimaryKey'].values[0], '4')
+
+        # Field should be frequency.
+        self.assertEqual(meta['VariableName'].values[0], 'Frequency')
+
+        # Start and end time should match the arguments in the query.
+        self.assertEqual(data['time'].iloc[0], t1)
+        self.assertEqual(data['time'].iloc[-1], t2)
+
+        # Data row count >= (t2 - t1)/stepsize + contingency count + 1
+        # This is due to the repeated time point when contingencies
+        # occur, and also some contingencies are self-cleared (which
+        # only show once in the contingency element list but will also
+        # result in repeated time point when it is cleared.
+        params = self.saw.get_key_field_list('TSContingencyElement')
+        contingency = self.saw.GetParametersMultipleElement(
+            'TSContingencyElement', params)
+        self.assertGreaterEqual(data.shape[0],
+                                (t2-t1)/stepsize+contingency.shape[0]+1)
 
 
 class WriteAuxFileTestCaseTestCase(unittest.TestCase):
