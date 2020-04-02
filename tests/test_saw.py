@@ -1489,8 +1489,10 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         stepsize = 0.01
 
         # Solve.
-        self.saw.RunScriptCommand(f'TSSolve("{self.ctg_name}",[{t1},{t2},'
-                                  f'{stepsize},NO])')
+        cmd = 'TSSolve("{}",[{},{},{},NO])'.format(
+            self.ctg_name, t1, t2, stepsize
+        )
+        self.saw.RunScriptCommand(cmd)
 
         # Get results.
         meta, data = self.saw.TSGetContingencyResults(
