@@ -38,3 +38,8 @@ test_saw.py
 -----------
 
 Python file for running tests related to the SAW module.
+
+test_snippets.py
+----------------
+
+Python file for running tests related to the documentation snippets.
