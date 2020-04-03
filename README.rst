@@ -75,6 +75,6 @@ Contributing
 
 We welcome contributions! Please read ``contributing.md``.
 
-.. _documentation: https://github.com/mzy2240/ESA
-.. _documented: https://github.com/mzy2240/ESA
+.. _documentation: https://mzy2240.github.io/ESA/
+.. _documented: https://mzy2240.github.io/ESA/
 
