@@ -34,7 +34,7 @@ import logging
 import os
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock, Mock
 
 import numpy as np
 import pandas as pd
@@ -43,7 +43,7 @@ from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences
-from .constants import PATH_14, PATH_2000, PATH_2000_mod, PATH_9, THIS_DIR, \
+from tests.constants import PATH_14, PATH_2000, PATH_2000_mod, PATH_9, THIS_DIR, \
     LTC_AUX_FILE, DATA_DIR, CANDIDATE_LINES, CASE_MAP, SNIPPET_FILES
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
@@ -107,6 +107,13 @@ class InitializationTestCase(unittest.TestCase):
                                  'field_data_type', 'description',
                                  'display_name'},
                                 set(df.columns.to_numpy()))
+
+    def test_error_during_dispatch(self):
+        """Ensure an exception is raised if dispatch fails."""
+        with patch('win32com.client.gencache.EnsureDispatch',
+                   side_effect=TypeError):
+            with self.assertRaises(TypeError):
+                SAW(PATH_14, early_bind=True)
 
 
 ########################################################################
@@ -506,6 +513,12 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'The given path for Current'):
             self.saw.set_simauto_property(property_name='CurrentDir',
                                           property_value=r'C:\bad\path')
+
+    def test_set_bad_property_name(self):
+        m = 'The given property_name, junk,'
+        with self.assertRaisesRegex(ValueError, m):
+            self.saw.set_simauto_property(property_name='junk',
+                                          property_value='42')
 
 
 ########################################################################
@@ -1351,16 +1364,39 @@ class RunScriptCommandTestCase(unittest.TestCase):
 
 
 class OpenCaseTypeTestCase(unittest.TestCase):
-    """Test OpenCaseType."""
+    """Test OpenCaseType. The tests here are admittedly a bit crude."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
 
     def test_expected_behavior(self):
-        my_saw_14 = SAW(PATH_14,
-                        object_field_lookup=('bus', 'shunt'))
-        my_saw_14.CloseCase()
-        my_saw_14.OpenCaseType(PATH_14, 'PWB')
+        self.saw.CloseCase()
+        self.saw.OpenCaseType(PATH_14, 'PWB')
         # Ensure our pwb_file_path matches our given path.
         self.assertEqual(PATH_14,
-                         my_saw_14.pwb_file_path)
+                         self.saw.pwb_file_path)
+
+    def test_options_single(self):
+        # Ensure this runs without error.
+        self.saw.OpenCaseType(PATH_14, 'PWB', 'YES')
+
+    def test_options_multiple(self):
+        # Ensure this runs without error.
+        self.saw.OpenCaseType(PATH_14, 'PWB', ['YES', 'NEAR'])
+
+
+class OpenCaseTestCase(unittest.TestCase):
+    """Test OpenCase."""
+    def test_failure_if_pwb_file_path_none(self):
+        m = 'When OpenCase is called for the first time,'
+        with patch.object(saw_14, 'pwb_file_path', new=None):
+            with self.assertRaisesRegex(TypeError, m):
+                saw_14.OpenCase()
 
 
 class TSGetContingencyResultsTestCase(unittest.TestCase):
@@ -1560,6 +1596,12 @@ class SaveCaseTestCase(unittest.TestCase):
             'SaveCase', convert_to_windows_path(saw_14.pwb_file_path),
             'PWB', True)
 
+    def test_save_with_missing_path(self):
+        m = 'SaveCase was called without a FileName, but it would appear'
+        with patch.object(saw_14, 'pwb_file_path', new=None):
+            with self.assertRaisesRegex(TypeError, m):
+                saw_14.SaveCase()
+
 
 class SendToExcel(unittest.TestCase):
     """Test SendTOExcel
@@ -1578,6 +1620,32 @@ class SendToExcel(unittest.TestCase):
             saw_14.SendToExcel(
                 ObjectType='Gen1', FilterName='', FieldList=fields)
 
+
+########################################################################
+# SimAuto Properties tests
+########################################################################
+
+class SimAutoPropertiesTestCase(unittest.TestCase):
+    """Test the SimAuto attributes."""
+
+    def test_current_dir(self):
+        cwd = saw_14.CurrentDir
+        self.assertIsInstance(cwd, str)
+        self.assertIn('ESA', cwd)
+
+    def test_process_id(self):
+        pid = saw_14.ProcessID
+        self.assertIsInstance(pid, int)
+
+    def test_request_build_date(self):
+        bd = saw_14.RequestBuildDate
+        self.assertIsInstance(bd, int)
+
+    def test_ui_visible(self):
+        self.assertFalse(saw_14.UIVisible)
+
+    def test_create_if_not_found(self):
+        self.assertFalse(saw_14.CreateIfNotFound)
 
 ########################################################################
 # ScriptCommand helper tests
@@ -1652,6 +1720,28 @@ class TestCreateNewLinesFromFile2000Bus(unittest.TestCase):
         # Create the lines.
         self.saw.change_and_confirm_params_multiple_element(
             ObjectType='branch', command_df=self.line_df)
+
+
+class CallSimAutoTestCase(unittest.TestCase):
+    """Test portions of _call_simauto not covered by the higher level
+    methods.
+    """
+    def test_bad_function(self):
+        with self.assertRaisesRegex(AttributeError, 'The given function, bad'):
+            saw_14._call_simauto('bad')
+
+    def test_weird_type_error(self):
+        """I'll be honest - I'm just trying to get testing coverage to
+        100%, and I have no idea how to get this exception raised
+        without doing some hacking. Here we go.
+        """
+        m = MagicMock()
+        m.GetParametersSingleElement = Mock(return_value=('issues', 12))
+        with patch.object(saw_14, '_pwcom', new=m):
+            with patch('esa.saw.PowerWorldError',
+                       side_effect=TypeError('weird things')):
+                with self.assertRaises(TypeError):
+                    saw_14.GetParametersSingleElement('bus', ['BusNum'], [1])
 
 
 if __name__ == '__main__':

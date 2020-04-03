@@ -15,7 +15,6 @@ from typing import Union, List, Tuple
 import numpy as np
 import pandas as pd
 import pythoncom
-import pywintypes
 import win32com
 from win32com.client import VARIANT
 
@@ -523,14 +522,7 @@ class SAW(object):
                                  'not a valid path!'.format(property_value))
 
         # Set the property.
-        # noinspection PyUnresolvedReferences
-        try:
-            setattr(self._pwcom, property_name, property_value)
-        except pywintypes.com_error:
-            # Well, this is unexpected.
-            raise ValueError('The given property_name, property_value '
-                             'pair ({}, {}), resulted in an error. Please '
-                             'help us out by filing an issue on GitHub.')
+        setattr(self._pwcom, property_name, property_value)
 
     ####################################################################
     # SimAuto Server Functions
@@ -1160,10 +1152,11 @@ class SAW(object):
         :param FileType: The type of case file to be loaded. It can be
             one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
             PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
-            GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX, UCTE,
-            AREVAHDB
+            GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX,
+            UCTE, AREVAHDB
         :param Options: Optional parameter indicating special load
-            options for PTI and GE file types.
+            options for PTI and GE file types. See the PowerWorld
+            documentation for more details.
         """
         self.pwb_file_path = FileName
         if isinstance(Options, list):
@@ -1442,39 +1435,63 @@ class SAW(object):
     # PowerWorld SimAuto Properties
     ####################################################################
     @property
-    def CurrentDir(self):
-        output = self._pwcom.CurrentDir
-        return output
+    def CreateIfNotFound(self):
+        """The CreateIfNotFound property of the Simulator Automation
+        Server is useful when you are changing data with the
+        ChangeParameters functions. Set the attribute through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.CreateIfNotFound
 
     @property
-    def ProcessID(self):
-        """Retrieve the process ID of the currently running
-        SimulatorAuto process"""
-        output = self._pwcom.ProcessID
-        return output
+    def CurrentDir(self) -> str:
+        """The CurrentDir property of the Simulator Automation Server
+        allows you to retrieve or set the working directory for the
+        currently running SimulatorAuto process. This is most useful if
+        using relative filenames (e.g. ``"relativename.aux"`` versus
+        ``r"C:\Program Files\PowerWorld\Working\abosultename.aux"``)
+        when specifying files. Set this property through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.CurrentDir
 
     @property
-    def RequestBuildDate(self):
-        """Retrieve the build date of the PowerWorld Simulator
-        executable currently running with the SimulatorAuto process
+    def ProcessID(self) -> int:
+        """The ProcessID property of the Simulator Automation Server
+        allows you to retrieve the process ID of the currently running
+        SimulatorAuto process, as can also be seen through the Task
+        Manager in Windows. This information can be useful if a forced
+        shutdown of the SimulatorAuto object is needed, as all calls to
+        the SimulatorAuto object are synchronous. This means the
+        SimulatorAuto object will not be destroyed until all calls, no
+        matter the time of execution, have completed.
+        """
+        return self._pwcom.ProcessID
+
+    @property
+    def RequestBuildDate(self) -> int:
+        """The RequestBuildDate property of the Simulator Automation
+        Server allows you to retrieve the build date of the PowerWorld
+        Simulator executable currently running with the SimulatorAuto
+        process. The property returns an integer value that represents a
+        date. This information is useful for verifying the release
+        version of the executable.
         """
         return self._pwcom.RequestBuildDate
 
     @property
-    def UIVisible(self):
-        output = self._pwcom.UIVisible
-        return output
+    def UIVisible(self) -> bool:
+        """Get the UIVisible property of the Simulator Automation
+        Server which indicates the visibility of the user interface for
+        Simulator. Default behavior is to not show the user interface
+        while using SimAuto. Set this property through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.UIVisible
 
     ####################################################################
     # Private Methods
     ####################################################################
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.exit()
-        return True
 
     def _call_simauto(self, func: str, *args):
         """Helper function for calling the SimAuto server.
@@ -1639,11 +1656,6 @@ class SAW(object):
                     merged[cols_out[str_cols]].to_numpy()
                 )
         )
-
-
-def convert_to_posix_path(p):
-    """Given a path, p, convert it to a Posix path."""
-    return Path(p).as_posix()
 
 
 def convert_to_windows_path(p):
