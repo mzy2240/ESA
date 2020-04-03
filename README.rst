@@ -10,6 +10,7 @@ well tested and fully `documented`_.
 
 `Documentation`_
 ----------------
+
 For quick-start directions, installation instructions, API reference,
 examples, and more, please check out ESA's `documentation`_.
 
@@ -36,12 +37,33 @@ If you use ESA in any of your work, please use the following citation:
 
 Installation
 ------------
+
 Please refer to ESA's `documentation`_ for full, detailed installation
 directions. In many cases, ESA can simply be installed by:
 
 .. code:: bat
 
     python -m pip install esa
+
+Testing Coverage
+----------------
+
+The ESA team works hard to ensure ESA is well tested, and we strive for
+100% testing coverage. The table below shows the most up-to-date
+testing coverage data for ESA, using `coverage
+<https://pypi.org/project/coverage/>`__.
+
+.. table:: ESA's testing coverage as of 2020-04-03 (Git commit: dd89a6a)
+    :widths: auto
+    :align: left
+
+    +-----------------+-------------------+-----------------+-----------------+--------------------+
+    | Name            |   Num. Statements |   Missing Lines |   Covered Lines |   Percent Coverage |
+    +=================+===================+=================+=================+====================+
+    | esa/__init__.py |                 1 |               0 |               1 |                100 |
+    +-----------------+-------------------+-----------------+-----------------+--------------------+
+    | esa/saw.py      |               319 |               0 |             319 |                100 |
+    +-----------------+-------------------+-----------------+-----------------+--------------------+
 
 License
 -------
