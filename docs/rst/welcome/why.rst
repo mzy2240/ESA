@@ -10,8 +10,12 @@ following desirable properties:
 *   Wraps all available SimAuto functions
 *   Provides additional helper functions to further simplify
     interactions with SimAuto
+*   Provides functions to interact with PowerWorld Simulator interface,
+    without the hassle of creating and loading the display auxiliary
+    files
 *   Returns useful data types such as Pandas DataFrames, unlocking a
     whole new realm of analysis and control capabilities
+*   AI & ML friendly
 *   Compatible with several modern Python versions
 *   Lightweight and fast
 
