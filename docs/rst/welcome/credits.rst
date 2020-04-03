@@ -4,7 +4,9 @@ ESA was developed at Texas A&M University by `Brandon Thayer
 <https://github.com/SmartJingJing123>`__. Significant guidance and
 oversight was provided by `Professor Thomas Overbye
 <https://engineering.tamu.edu/electrical/profiles/overbye-thomas.html>`__,
-who is a co-founder of PowerWorld Corporation.
+who is a co-founder of PowerWorld Corporation, and `Professor Katherine
+Davis <https://engineering.tamu.edu/electrical/profiles/davis-katherine
+.html>`__, who is one of the original authors of SimAuto.
 Funding was provided by the Texas A&M Engineering Experiment Station's
 `Smart Grid Center <https://smartgridcenter.tamu.edu/>`__.
 
