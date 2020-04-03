@@ -38,11 +38,21 @@ Files
 All ``.rst`` files are used in creating ESA's documentation. The "main"
 file is ``index.rst``.
 
-
-
 conf.py
 ^^^^^^^
 Sphinx configuration file.
+
+coverage.rst
+^^^^^^^^^^^^
+
+Testing coverage table created by ``coverage_to_rst.py``. Included by
+overview.rst.
+
+coverage_to_rst.py
+^^^^^^^^^^^^^^^^^^
+
+Runs ESA unittests and assesses testing coverage. Modifies top level
+README file and generates coverage.rst.
 
 make.bat
 ^^^^^^^^

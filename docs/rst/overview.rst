@@ -108,6 +108,14 @@ It would seem that PowerWorld is moving toward "Concise Variable Names,"
 and in a future update ESA may support these (see `this issue
 <https://github.com/mzy2240/ESA/issues/1#issue-525219427>`__).
 
+Testing Coverage
+----------------
+
+The ESA team strives to write good tests with 100% coverage. The table
+below provides the latest test coverage data for ESA.
+
+.. include:: coverage.rst
+
 Contributing
 ------------
 

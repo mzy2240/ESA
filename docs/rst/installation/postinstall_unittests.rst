@@ -21,3 +21,16 @@ you see a message like:
 
 If something is wrong, you'll see some indications of failure. The
 "expected failures" are okay, and do not indicate there are any issues.
+
+If you've installed the testing dependencies listed in setup.py, you
+should have "coverage.py" installed. If you'd like to assess ESA's
+testing coverage, the incantation looks like (run from top-level of
+ESA repository after activating virtual environment):
+
+.. code:: bat
+
+    coverage run
+    coverage report -m
+
+Note that the arguments to ``coverage run`` are provided by
+``.coveragerc`` at the top-level of the repository.
