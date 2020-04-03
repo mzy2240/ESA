@@ -38,7 +38,8 @@ If you use ESA in any of your work, please use the following citation:
 Installation
 ------------
 
-Please refer to ESA's `documentation`_ for full, detailed installation
+Please refer to ESA's `documentation <https://mzy2240.github
+.io/ESA/html/installation.html>`__ for full, detailed installation
 directions. In many cases, ESA can simply be installed by:
 
 .. code:: bat
@@ -77,4 +78,3 @@ We welcome contributions! Please read ``contributing.md``.
 
 .. _documentation: https://mzy2240.github.io/ESA/
 .. _documented: https://mzy2240.github.io/ESA/
-

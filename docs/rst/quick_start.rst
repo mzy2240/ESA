@@ -12,6 +12,10 @@ Notes related to the case are available from the `University of Washington
 <https://labs.ece.uw.edu/pstca/>`__.
 
 You can find API documentation
-`here <https://mzy2240.github.io/ESA/html/index.html>`__.
+`here <https://mzy2240.github.io/ESA/html/esa.html>`__ and more examples
+`here <https://mzy2240.github.io/ESA/html/snippets.html>`__.
 
 .. include:: snippets/quick_start_14.rst
+
+For more examples, you can find them `here <https://mzy2240.github
+.io/ESA/html/snippets.html>`__.
