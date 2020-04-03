@@ -53,7 +53,7 @@ The ESA team works hard to ensure ESA is well tested, and we strive for
 testing coverage data for ESA, using `coverage
 <https://pypi.org/project/coverage/>`__.
 
-.. table:: ESA's testing coverage as of 2020-04-03 (Git commit: dd89a6a)
+..table:: ESA's testing coverage as of 2020-04-03 (Git commit: 26cfb49)
     :widths: auto
     :align: left
 

@@ -22,8 +22,8 @@ with open('../../VERSION', 'r') as fh:
 # -- Project information -----------------------------------------------------
 
 project = 'ESA'
-copyright = '2020, Zeyu Mao, Brandon Thayer, Yijing Liu'
-author = 'Zeyu Mao, Brandon Thayer, Yijing Liu'
+copyright = '2020, Brandon Thayer, Zeyu Mao, Yijing Liu'
+author = 'Brandon Thayer, Zeyu Mao, Yijing Liu'
 
 # The short X.Y version
 version = __version__
@@ -49,7 +49,8 @@ templates_path = ['_templates']
 # foot later.
 # https://stackoverflow.com/a/15438962/11052174
 exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
-                    'snippets', 'welcome', 'citation.rst', 'README.rst']
+                    'snippets', 'welcome', 'citation.rst', 'README.rst',
+                    '.coverage', 'coverage.rst', 'coverage_to_rst.py']
 
 
 # -- Options for HTML output -------------------------------------------------
