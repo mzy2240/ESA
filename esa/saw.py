@@ -1446,6 +1446,35 @@ class SAW(object):
         script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
         return self.RunScriptCommand(script_command)
 
+    def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
+        """Use this function to open an oneline diagram. This fucntion
+        can be used to associate onelines with a PWB file.
+
+        :param filename: The file name of the oneline diagram to open.
+        :param view: The view name that should be opened. Pass an empty
+            string to denote no specific view.
+        :param fullscreen: Set to YES or NO. YES means that the oneline
+            diagram will be open in full screen mode. If this parameter
+            is not specified, then NO is assumed.
+        :param showfull: Optional parameter. Set to YES to open the
+            oneline and apply the Show Full option. Set to NO to open
+            the oneline and leave the oneline as is. Default is NO if
+            not specified.
+        """
+        script = 'OpenOneline({}, {}, {} {})'.format(filename, view,
+                                                     fullscreen, showfull)
+        return self.RunScriptCommand(script)
+
+    def CloseOneline(self, OnelineName=""):
+        """Use this action to close an open oneline diagram without
+         saving it. If the name is omitted, the last focused oneline 
+         diagram will be closed.
+
+         :param OnelineName: The name of the oneline diagram to close.
+         """
+        script = 'CloseOneline({})'.format(OnelineName)
+        return self.RunScriptCommand(script)
+
     ####################################################################
     # PowerWorld SimAuto Properties
     ####################################################################
