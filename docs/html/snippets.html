@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Examples &#8212; ESA 0.6.3 documentation</title>
+    <title>Examples &#8212; ESA 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -531,8 +531,11 @@ diagonal Y bus matrix entries and buses which are not connected
 <span class="go">14</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
 <span class="go">20</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
-<span class="go">{&#39;r&#39;: 0.01937987032338931, &#39;x&#39;: 0.05917003035204804}</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span>
+<span class="go">0.01937987032338931</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+<span class="go">0.05917003035204804</span>
 </pre></div>
 </div>
 <p>As always, clean up when done:</p>
@@ -609,7 +612,7 @@ diagonal Y bus matrix entries and buses which are not connected
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
+      &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>

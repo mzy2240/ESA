@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Installing ESA &#8212; ESA 0.6.3 documentation</title>
+    <title>Installing ESA &#8212; ESA 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -196,6 +196,16 @@ you see a message like:</p>
 </div></blockquote>
 <p>If something is wrong, you’ll see some indications of failure. The
 “expected failures” are okay, and do not indicate there are any issues.</p>
+<p>If you’ve installed the testing dependencies listed in setup.py, you
+should have “coverage.py” installed. If you’d like to assess ESA’s
+testing coverage, the incantation looks like (run from top-level of
+ESA repository after activating virtual environment):</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>coverage run
+coverage report -m
+</pre></div>
+</div>
+<p>Note that the arguments to <code class="docutils literal notranslate"><span class="pre">coverage</span> <span class="pre">run</span></code> are provided by
+<code class="docutils literal notranslate"><span class="pre">.coveragerc</span></code> at the top-level of the repository.</p>
 </div>
 <div class="section" id="pywin32-post-installation">
 <h3>pywin32 Post-Installation<a class="headerlink" href="#pywin32-post-installation" title="Permalink to this headline">¶</a></h3>
@@ -284,7 +294,7 @@ your virtual environment directory.</p>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
+      &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>

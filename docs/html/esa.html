@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>esa API Documentation &#8212; ESA 0.6.3 documentation</title>
+    <title>esa API Documentation &#8212; ESA 1.0.0 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -263,9 +263,25 @@ the ParamList.</p></li>
 </dd></dl>
 
 <dl class="method">
+<dt id="esa.saw.SAW.CreateIfNotFound">
+<em class="property">property </em><code class="sig-name descname">CreateIfNotFound</code><a class="headerlink" href="#esa.saw.SAW.CreateIfNotFound" title="Permalink to this definition">¶</a></dt>
+<dd><p>The CreateIfNotFound property of the Simulator Automation
+Server is useful when you are changing data with the
+ChangeParameters functions. Set the attribute through the
+<code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
+</dd></dl>
+
+<dl class="method">
 <dt id="esa.saw.SAW.CurrentDir">
 <em class="property">property </em><code class="sig-name descname">CurrentDir</code><a class="headerlink" href="#esa.saw.SAW.CurrentDir" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>The CurrentDir property of the Simulator Automation Server
+allows you to retrieve or set the working directory for the
+currently running SimulatorAuto process. This is most useful if
+using relative filenames (e.g. <code class="docutils literal notranslate"><span class="pre">&quot;relativename.aux&quot;</span></code> versus
+<code class="docutils literal notranslate"><span class="pre">r&quot;C:\Program</span> <span class="pre">Files\PowerWorld\Workingbosultename.aux&quot;</span></code>)
+when specifying files. Set this property through the
+<code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
+</dd></dl>
 
 <dl class="attribute">
 <dt id="esa.saw.SAW.FIELD_LIST_COLUMNS">
@@ -707,10 +723,11 @@ used to open a case.</p></li>
 <li><p><strong>FileType</strong> – The type of case file to be loaded. It can be
 one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
 PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
-GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX, UCTE,
-AREVAHDB</p></li>
+GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX,
+UCTE, AREVAHDB</p></li>
 <li><p><strong>Options</strong> – Optional parameter indicating special load
-options for PTI and GE file types.</p></li>
+options for PTI and GE file types. See the PowerWorld
+documentation for more details.</p></li>
 </ul>
 </dd>
 </dl>
@@ -740,15 +757,25 @@ full path.</p>
 <dl class="method">
 <dt id="esa.saw.SAW.ProcessID">
 <em class="property">property </em><code class="sig-name descname">ProcessID</code><a class="headerlink" href="#esa.saw.SAW.ProcessID" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the process ID of the currently running
-SimulatorAuto process</p>
+<dd><p>The ProcessID property of the Simulator Automation Server
+allows you to retrieve the process ID of the currently running
+SimulatorAuto process, as can also be seen through the Task
+Manager in Windows. This information can be useful if a forced
+shutdown of the SimulatorAuto object is needed, as all calls to
+the SimulatorAuto object are synchronous. This means the
+SimulatorAuto object will not be destroyed until all calls, no
+matter the time of execution, have completed.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="esa.saw.SAW.RequestBuildDate">
 <em class="property">property </em><code class="sig-name descname">RequestBuildDate</code><a class="headerlink" href="#esa.saw.SAW.RequestBuildDate" title="Permalink to this definition">¶</a></dt>
-<dd><p>Retrieve the build date of the PowerWorld Simulator
-executable currently running with the SimulatorAuto process</p>
+<dd><p>The RequestBuildDate property of the Simulator Automation
+Server allows you to retrieve the build date of the PowerWorld
+Simulator executable currently running with the SimulatorAuto
+process. The property returns an integer value that represents a
+date. This information is useful for verifying the release
+version of the executable.</p>
 </dd></dl>
 
 <dl class="method">
@@ -946,7 +973,12 @@ to the timestamp (in seconds).</p>
 <dl class="method">
 <dt id="esa.saw.SAW.UIVisible">
 <em class="property">property </em><code class="sig-name descname">UIVisible</code><a class="headerlink" href="#esa.saw.SAW.UIVisible" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get the UIVisible property of the Simulator Automation
+Server which indicates the visibility of the user interface for
+Simulator. Default behavior is to not show the user interface
+while using SimAuto. Set this property through the
+<code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
+</dd></dl>
 
 <dl class="method">
 <dt id="esa.saw.SAW.WriteAuxFile">
@@ -1185,12 +1217,6 @@ UIVisible.</p></li>
 </dd></dl>
 
 <dl class="function">
-<dt id="esa.saw.convert_to_posix_path">
-<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_posix_path</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_posix_path" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given a path, p, convert it to a Posix path.</p>
-</dd></dl>
-
-<dl class="function">
 <dt id="esa.saw.convert_to_windows_path">
 <code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_windows_path</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_windows_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a path, p, convert it to a Windows path.</p>
@@ -1263,7 +1289,7 @@ UIVisible.</p></li>
       <div class="clearer"></div>
     </div>
     <div class="footer">
-      &copy;2020, Zeyu Mao, Brandon Thayer, Yijing Liu.
+      &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
       Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
