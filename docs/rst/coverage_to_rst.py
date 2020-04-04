@@ -13,6 +13,7 @@ from collections import OrderedDict
 import subprocess
 import datetime
 import re
+import sys
 
 # Paths:
 THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -22,10 +23,13 @@ ESA_DIR = os.path.join(TOP_LEVEL, 'esa')
 JSON_FILE = os.path.join(THIS_DIR, 'coverage.json')
 README = os.path.join(TOP_LEVEL, 'README.rst')
 
+# Add root project to the path.
+sys.path.insert(0, TOP_LEVEL)
+
 
 def main():
     # Initialize coverage stuff.
-    cov = Coverage(source=[ESA_DIR])
+    cov = Coverage(source=[ESA_DIR], config_file=False)
     cov.start()
 
     # Run tests.
@@ -111,10 +115,14 @@ def main():
 
 
 def run_tests():
+    print('*' * 120)
+    print('RUNNING TESTS')
+    print('Ignore any exceptions until you see a bunch of "*" characters.')
     loader = TestLoader()
     suite = loader.discover(start_dir=TEST_DIR)
     result = TestResult()
     suite.run(result)
+    print('*' * 120)
 
 
 if __name__ == '__main__':
