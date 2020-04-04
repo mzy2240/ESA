@@ -1,23 +1,22 @@
 """saw is short for SimAuto Wrapper. This module provides a class,
 SAW, for interfacing with PowerWorld's Simulator Automation Server
-(aka SimAuto).
+(SimAuto). In addition to the SAW class, there are a few custom error
+classes, such as PowerWorldError.
 
-The documentation for SimAuto can be found
+PowrWorld's documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
-import pandas as pd
+import logging
+import os
+from pathlib import Path, PureWindowsPath
+from typing import Union, List, Tuple
+
 import numpy as np
-import pywintypes
+import pandas as pd
 import pythoncom
 import win32com
 from win32com.client import VARIANT
-from typing import Union, List
-from pathlib import Path, PureWindowsPath
-import logging
-import os
-import time
-import tempfile
 
 # TODO: Make logging more configurable.
 logging.basicConfig(
@@ -59,6 +58,12 @@ class SAW(object):
     FIELD_LIST_COLUMNS = \
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
+
+    # Class level property defining columns used for
+    # GetSpecificFieldList method.
+    SPECIFIC_FIELD_LIST_COLUMNS = \
+        ['variablename:location', 'field', 'column header',
+         'field description']
 
     # SimAuto properties that we allow users to set via the
     # set_simauto_property method.
@@ -178,7 +183,7 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self._change_parameters_multiple_element_df(
-                ObjectType=ObjectType, command_df=command_df)
+            ObjectType=ObjectType, command_df=command_df)
 
         # Now, query for the given parameters.
         df = self.GetParametersMultipleElement(
@@ -294,28 +299,6 @@ class SAW(object):
                 obj.index = np.arange(start=0, stop=obj.shape[0])
 
         return obj
-
-    def create_filter(self, condition, object_type, filter_name,
-                      filter_logic='AND', filter_pre='NO', enabled='YES'):
-        """
-        NOT IMPLEMENTED.
-
-        Creates a filter in PowerWorld. The attempt is to reduce the
-        clunkiness of creating a filter in the API, which entails
-        creating an aux data file.
-        """
-        raise NotImplementedError(NIE_MSG)
-        # aux_text = '''
-        #     DATA (FILTER, [ObjectType,FilterName,FilterLogic,FilterPre,Enabled])
-        #     {
-        #     "{objecttype}" "{filtername}" "{filterlogic}" "{filterpre}" "{enabled]"
-        #         <SUBDATA Condition>
-        #             {condition}
-        #         </SUBDATA>
-        #     }'''.format(condition=condition, objecttype=object_type,
-        #                 filtername=filter_name, filterlogic=filter_logic,
-        #                 filterpre=filter_pre, enabled=enabled)
-        # return self._call_simauto('LoadAux', aux_text)
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
@@ -458,24 +441,6 @@ class SAW(object):
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
 
-    def update_ui(self):
-        """Re-render the PowerWorld interface. *Extremely experimental*
-        """
-        return self.ProcessAuxFile(self.empty_aux)
-
-    def get_three_phase_bolted_fault_current(self, bus_num):
-        """
-        NOT IMPLEMENTED.
-
-        Calculates the three phase fault; this can be done even with
-        cases which only contain positive sequence impedances"""
-        raise NotImplementedError(NIE_MSG)
-        # script_cmd = f'Fault([BUS {bus_num}], 3PB);\n'
-        # result = self.RunScriptCommand(script_cmd)
-        # field_list = ['BusNum', 'FaultCurMag']
-        # return self.GetParametersSingleElement('BUS', field_list,
-        #                                        [bus_num, 0])
-
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
             np.ndarray:
@@ -564,14 +529,7 @@ class SAW(object):
                                  'not a valid path!'.format(property_value))
 
         # Set the property.
-        # noinspection PyUnresolvedReferences
-        try:
-            setattr(self._pwcom, property_name, property_value)
-        except pywintypes.com_error:
-            # Well, this is unexpected.
-            raise ValueError('The given property_name, property_value '
-                             'pair ({}, {}), resulted in an error. Please '
-                             'help us out by filing an issue on GitHub.')
+        setattr(self._pwcom, property_name, property_value)
 
 
 
@@ -579,21 +537,40 @@ class SAW(object):
     # SimAuto Server Functions
     ####################################################################
 
-    def ChangeParameters(self, ObjType, ParamList, ValueArray):
+    def ChangeParameters(self, ObjectType: str, ParamList: list,
+                         Values: list) -> None:
         """
-        NOT IMPLEMENTED.
+        The ChangeParameters function has been replaced by the
+        ChangeParametersSingleElement function. ChangeParameters
+        can still be called as before, but will now just automatically
+        call ChangeParametersSingleElement, and pass on the parameters
+        to that function.
+        Unlike the script SetData and CreateData commands, SimAuto does
+        not have any explicit functions to create elements. Instead this
+        can be done using the ChangeParameters functions by making use
+        of the CreateIfNotFound SimAuto property. Set CreateIfNotFound =
+        True if objects that are updated through the ChangeParameters
+        functions should be created if they do not already exist in the
+        case. Objects that already exist will be updated. Set
+        CreateIfNotFound = False to not create new objects and only
+        update existing ones. The CreateIfNotFound property is global,
+        once it is set to True this applies to all future
+        ChangeParameters calls.
 
-        ChangeParameters is used to change single or multiple parameters
-        of a single object. ParamList is a variant array storing strings
-        that are Simulator object field variables, and must contain the
-        key fields for the objecttype. Create variant arrays (one for
-        each element being changed) with values corresponding to the
-        fields in ParamList.
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
+
+        :param ObjectType: The type of object you are changing
+            parameters for.
+        :param ParamList: List of object field variable names. Note this
+            MUST include the key fields for the given ObjectType
+            (which you can get via the get_key_fields_for_object_type
+            method).
+        :param Values: List of values corresponding to the parameters in
+            the ParamList.
         """
-        raise NotImplementedError(NIE_MSG)
-        # output = self._call_simauto('ChangeParameters', ObjType, ParamList,
-        #                             ValueArray)
-        # return output
+        return self.ChangeParametersSingleElement(ObjectType, ParamList,
+                                                  Values)
 
     def ChangeParametersSingleElement(self, ObjectType: str, ParamList: list,
                                       Values: list) -> None:
@@ -645,9 +622,52 @@ class SAW(object):
                                   convert_list_to_variant(ParamList),
                                   convert_nested_list_to_variant(ValueList))
 
-    def ChangeParametersMultipleElementFlatInput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def ChangeParametersMultipleElementFlatInput(self, ObjectType: str,
+                                                 ParamList: list,
+                                                 NoOfObjects: int,
+                                                 ValueList: list) -> None:
+        """
+        The ChangeParametersMultipleElementFlatInput function allows
+        you to set parameters for multiple objects of the same type in
+        a case loaded into the Simulator Automation Server. This
+        function is very similar to the ChangeParametersMultipleElement,
+        but uses a single dimensioned array of values as input instead
+        of a multi-dimensioned array of arrays.
+
+        It is recommended that you use helper functions like
+        ``change_parameters_multiple_element_df`` instead of this one,
+        as it's simply easier to use.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm>`__
+
+        :param ObjectType: The type of object you are changing
+            parameters for.
+        :param ParamList: Listing of object field variable names. Note
+            this MUST include the key fields for the given ObjectType
+            (which you can get via the get_key_fields_for_object_type
+            method).
+        :param NoOfObjects: An integer number of devices that are
+            passing values for. SimAuto will automatically check that
+            the number of parameters for each device (counted from
+            ParamList) and the number of objects integer correspond to
+            the number of values in value list (counted from ValueList.)
+        :param ValueList: List of lists corresponding to the ParamList.
+            Should have length n, where n is the number of elements you
+            with to change parameters for. Each sub-list should have
+            the same length as ParamList, and the items in the sub-list
+            should correspond 1:1 with ParamList.
+        :return: Result from calling SimAuto, which should always
+            simply be None.
+        """
+        # Call SimAuto and return the result (should just be None)
+        if isinstance(ValueList[0], list):
+            raise Error("The value list has to be a 1-D array")
+        return self._call_simauto('ChangeParametersMultipleElementFlatInput',
+                                  ObjectType,
+                                  convert_list_to_variant(ParamList),
+                                  NoOfObjects,
+                                  convert_list_to_variant(ValueList))
 
     def CloseCase(self):
         """Closes case without saving changes.
@@ -657,9 +677,24 @@ class SAW(object):
         """
         return self._call_simauto('CloseCase')
 
-    def GetCaseHeader(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetCaseHeader(self, filename: str = None) -> Tuple[str]:
+        """
+        The GetCaseHeader function is used to extract the case header
+        information from the file specified. A tuple of strings
+        containing the contents of the case header or description is
+        returned.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetCaseHeader_Function.htm>`__
+
+        :param filename: The name of the file you wish to extract the
+            header information from.
+        :return: A tuple of strings containing the contents of the case
+            header or description.
+        """
+        if filename is None:
+            filename = self.pwb_file_path
+        return self._call_simauto('GetCaseHeader', filename)
 
     def GetFieldList(self, ObjectType: str, copy=False) -> pd.DataFrame:
         """Get all fields associated with a given ObjectType.
@@ -790,21 +825,153 @@ class SAW(object):
         # Clean DataFrame and return it.
         return self.clean_df_or_series(obj=df, ObjectType=ObjectType)
 
-    def GetParametersMultipleElementFlatOutput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
+                                               ParamList: list,
+                                               FilterName: str = '') -> \
+            Union[None, Tuple[str]]:
+        """This function operates the same as the
+        GetParametersMultipleElement function, only with one notable
+        difference. The values returned as the output of the function
+        are returned in a single-dimensional vector array, instead of
+        the multi-dimensional array as described in the
+        GetParametersMultipleElement topic.
 
-    def GetParameters(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+        It is recommended that you use GetParametersMultipleElement
+        instead, as you'll receive a DataFrame with correct data types.
+        As this method is extraneous, the output from PowerWorld will
+        be directly returned. This will show you just how useful ESA
+        really is!
 
-    def GetSpecificFieldList(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+        :param ObjectType: Type of object to get parameters for.
+        :param ParamList: List of variables to obtain for the given
+            object type. E.g. ['BusNum', 'GenID', 'GenMW']. One
+            can use the method GetFieldList to get a listing of all
+            available fields. Additionally, you'll likely want to always
+            return the key fields associated with the objects. These
+            key fields can be obtained via the
+            get_key_fields_for_object_type method.
+        :param FilterName: Name of an advanced filter defined in the
+            load flow case.
 
-    def GetSpecificFieldMaxNum(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+        :return:The format of the output array is the following: [
+            NumberOfObjectsReturned, NumberOfFieldsPerObject,
+            Ob1Fld1, Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)]
+            The data is thus returned in a single dimension array, where
+            the parameters NumberOfObjectsReturned and
+            NumberOfFieldsPerObject tell you how the rest of the array
+            is populated. Following the NumberOfObjectsReturned
+            parameter is the start of the data. The data is listed as
+            all fields for object 1, then all fields for object 2, and
+            so on. You can parse the array using the NumberOf…
+            parameters for objects and fields. If the given object
+            type does not exist, the method will return None.
+        """
+        result = self._call_simauto(
+            'GetParametersMultipleElementFlatOutput', ObjectType,
+            convert_list_to_variant(ParamList),
+            FilterName)
+
+        if len(result) == 0:
+            return None
+        else:
+            return result
+
+    def GetParameters(self, ObjectType: str,
+                      ParamList: list, Values: list) -> pd.Series:
+        """This function is maintained in versions of Simulator later 
+        than version 9 for compatibility with Simulator version 9. This 
+        function will call the GetParametersSingleElement implicitly.
+        
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm>`__
+
+        :param ObjectType: The type of object you're retrieving
+            parameters for.
+        :param ParamList: List of strings indicating parameters to
+            retrieve. Note the key fields MUST be present. One can
+            obtain key fields for an object type via the
+            get_key_fields_for_object_type method.
+        :param Values: List of values corresponding 1:1 to parameters in
+            the ParamList. Values must be included for the key fields,
+            and the remaining values should be set to 0.
+
+        :returns: Pandas Series indexed by the given ParamList. This
+            Series will be cleaned by clean_df_or_series, so data will
+            be of the appropriate type and strings are cleaned up.
+
+        :raises PowerWorldError: if the object cannot be found.
+        :raises ValueError: if any given element in ParamList is not
+            valid for the given ObjectType.
+        :raises AssertionError: if the given ParamList and Values do
+            not have the same length.
+        """
+        return self.GetParametersSingleElement(ObjectType, ParamList, Values)
+
+    def GetSpecificFieldList(self, ObjectType: str, FieldList: List[str]) \
+            -> pd.DataFrame:
+        """
+        The GetSpecificFieldList function is used to return identifying
+        information about specific fields used by an object type. Note
+        that in many cases simply using the GetFieldList method is
+        simpler and gives more information.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldList_Function.htm>`__
+
+        :param ObjectType: The type of object for which fields are
+            requested.
+        :param FieldList: A list of strings. Each string represents
+            object field variables, as defined in the section on
+            `PowerWorld Object Fields
+            <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/PowerWorld_Object_Variables.htm>`__
+            . Specific variablenames along with location numbers can be
+            specified. To return all fields using the same variablename,
+            use "variablename:ALL" instead of the location number that
+            would normally appear after the colon. If all fields should
+            be returned, a single parameter of "ALL" can be used instead
+            of specific variablenames.
+
+        :returns: A Pandas DataFrame with columns given by the class
+            constant SPECIFIC_FIELD_LIST_COLUMNS. There will be a row
+            for each element in the FieldList input unless 'ALL' is
+            used in the FieldList. The DataFrame will be sorted
+            alphabetically by the variablenames.
+        """
+        return pd.DataFrame(
+            self._call_simauto('GetSpecificFieldList', ObjectType,
+                               convert_list_to_variant(FieldList)),
+            columns=self.SPECIFIC_FIELD_LIST_COLUMNS).sort_values(
+            by=self.SPECIFIC_FIELD_LIST_COLUMNS[0]).reset_index(drop=True)
+
+    def GetSpecificFieldMaxNum(self, ObjectType: str, Field: str) -> int:
+        """The GetSpecificFieldMaxNum function is used to return the
+        maximum number of a fields that use a particular variablename
+        for a specific object type.
+
+        `PowerWorld Documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetSpecificFieldMaxNum_Function.htm>`__
+
+        :param ObjectType: The type of object for which information is
+            being requested.
+        :param Field: The variablename for which the maximum number of
+            fields is being requested. This should just be the
+            variablename and should exclude the location number that can
+            be included to indicate different fields that use the same
+            variablename, i.e. do not include the colon and number that
+            can be included when identifying a field.
+
+        :returns: An integer that specifies the maximum number of fields
+            that use the same variablename for a particular object type.
+            Fields are identified in the format variablename:location
+            when multiple fields use the same variablename. The output
+            indicates the maximum number that the location can be.
+            Generally, fields are identified starting from 0 and going
+            up to the maximum number, but keep in mind that values
+            within this range might be skipped and not used to indicate
+            valid fields.
+        """
+        # Unfortunately, at the time of writing this method does not
+        return self._call_simauto('GetSpecificFieldMaxNum', ObjectType, Field)
 
     def ListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
@@ -859,13 +1026,87 @@ class SAW(object):
         # All done.
         return df
 
-    def ListOfDevicesAsVariantStrings(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def ListOfDevicesAsVariantStrings(self, ObjType: str, FilterName='') -> \
+            tuple:
+        """While this method is implemented, you are almost certainly
+        better off using ListOfDevices instead. Since this method isn't
+        particularly useful, no type casting will be performed on the
+        output array. Contrast the results of calling this method with
+        the results of calling ListOfDevices to see just how helpful
+        ESA is!
 
-    def ListOfDevicesFlatOutput(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+        Description below if from
+        `PowerWorld
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesAsVariantStrings_Function.htm>`__:
+
+        This function operates the same as the ListOfDevices function,
+        only with one notable difference. The values returned as the
+        output of the function are returned as Variants of type String.
+        The ListOfDevices function was errantly released returning the
+        values strongly typed as Integers and Strings directly, whereas
+        all other SimAuto functions returned data as Variants of type
+        String. This function was added to also return the data in the
+        same manner. This solved some compatibility issues with some
+        software languages.
+
+        :param ObjType: The type of object for which you are acquiring
+            the list of devices.
+        :param FilterName: The name of an advanced filter defined in the
+            load flow case open in the Simulator Automation Server. If
+            no filter is desired, then simply pass an empty string. If
+            the filter cannot be found, the server will default to
+            returning all objects in the case of type ObjType.
+
+        :returns: Tuple of tuples as documented by PowerWorld for the
+            ListOfDevices function.
+        """
+        return self._call_simauto('ListOfDevicesAsVariantStrings',
+                                  ObjType, FilterName)
+
+    def ListOfDevicesFlatOutput(self, ObjType: str, FilterName='') -> tuple:
+        """While this method is implemented, you are almost certainly
+        better off using ListOfDevices instead. Since this method isn't
+        particularly useful, no type casting, data type changing, or
+        data rearranging will be performed on the output array.
+        Contrast the results of calling this method with the results of
+        calling ListOfDevices to see just how helpful ESA is!
+
+        This function operates the same as the ListOfDevices
+        function, only with one notable difference. The values returned
+        as the output of the function are returned in a
+        single-dimensional vector array, instead of the
+        multi-dimensional array as described in the ListOfDevices topic.
+        The function returns the key field values for the device,
+        typically in the order of bus number 1, bus number 2
+        (where applicable), and circuit identifier (where applicable).
+        These are the most common key fields, but some object types do
+        have other key fields as well.
+
+        `PowerWorld documentation:
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ListOfDevicesFlatOutput_Function.htm>`__
+
+        :param ObjType: The type of object for which you are acquiring
+            the list of devices.
+        :param FilterName: The name of an advanced filter defined in the
+            load flow case open in the Simulator Automation Server. If
+            no filter is desired, then simply pass an empty string. If
+            the filter cannot be found, the server will default to
+            returning all objects in the case of type ObjType.
+
+        :returns: List in the following format:
+            [NumberOfObjectsReturned, NumberOfFieldsPerObject, Ob1Fld1,
+            Ob1Fld2, …, Ob(n)Fld(m-1), Ob(n)Fld(m)].
+            The data is thus returned in a single dimension array, where
+            the parameters NumberOfObjectsReturned and
+            NumberOfFieldsPerObject tell you how the rest of the array
+            is populated. Following the NumberOfObjectsReturned
+            parameter is the start of the data. The data is listed as
+            all fields for object 1, then all fields for object 2, and
+            so on. You can parse the array using the NumberOf…
+            parameters for objects and fields.
+        """
+        return self._call_simauto(
+            'ListOfDevicesFlatOutput', ObjType, FilterName)
 
     def LoadState(self) -> None:
         """LoadState is used to load the system state previously saved
@@ -898,14 +1139,43 @@ class SAW(object):
                                 'time, a FileName is required.')
         else:
             # Set pwb_file_path according to the given FileName.
-            self.pwb_file_path = convert_to_posix_path(FileName)
+            self.pwb_file_path = FileName
 
         # Open the case. PowerWorld should return None.
         return self._call_simauto('OpenCase', self.pwb_file_path)
 
-    def OpenCaseType(self):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
+    def OpenCaseType(self, FileName: str, FileType: str,
+                     Options: Union[list, str, None] = None) -> None:
+        """
+        The OpenCaseType function will load a PowerWorld Simulator load
+         flow file into the Simulator Automation Server. This is similar
+          to opening a file using the File > Open Case menu option in
+          Simulator.
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Default.htm#MainDocumentation_HTML/OpenCaseType_Function.htm?Highlight=OpenCaseType>`__
+
+        :param FileName: Full path to the case file to be loaded. If
+            None, this method will attempt to use the last FileName
+            used to open a case.
+        :param FileType: The type of case file to be loaded. It can be
+            one of the following strings: PWB, PTI, PTI23, PTI24, PTI25,
+            PTI26, PTI27, PTI28, PTI29, PTI30, PTI31, PTI32, PTI33,
+            GE (means GE18), GE14, GE15, GE17, GE18, GE19, CF, AUX,
+            UCTE, AREVAHDB
+        :param Options: Optional parameter indicating special load
+            options for PTI and GE file types. See the PowerWorld
+            documentation for more details.
+        """
+        self.pwb_file_path = FileName
+        if isinstance(Options, list):
+            options = convert_list_to_variant(Options)
+        elif isinstance(Options, str):
+            options = Options
+        else:
+            options = ""
+        return self._call_simauto('OpenCaseType', self.pwb_file_path,
+                                  FileType, options)
 
     def ProcessAuxFile(self, FileName):
         """
@@ -987,40 +1257,149 @@ class SAW(object):
         """
         return self._call_simauto('SaveState')
 
-    def SendToExcel(self, ObjectType: str, FilterName: str, FieldList):
-        """NOT IMPLEMENTED.
-
-        Send data from SimAuto to an Excel spreadsheet.
+    def SendToExcel(self, ObjectType: str, FilterName: str, FieldList) -> None:
+        """Send data from SimAuto to an Excel spreadsheet. While ESA
+        provides this function, we strongly recommend you to use the
+        ``GetParametersMultipleElement`` function and save the DataFrame
+        directly to a .csv file using the DataFrame's ``to_csv``
+        method. The problem with ``SendToExcel`` is that it opens
+        (but does not save) an Excel sheet, which requires you to
+        manually save it.
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SendToExcel_Function.htm>`__
+
+        :param ObjectType: A String describing the type of object for
+            which you are requesting data.
+        :param FilterName: String with the name of an advanced filter
+            which was previously defined in the case before being loaded
+            in the Simulator Automation Server. If no filter is desired,
+            then simply pass an empty string. If a filter name is passed
+            but the filter cannot be found in the loaded case, no filter
+            is used.
+        :param FieldList: Variant parameter must either be an array of
+            fields for the given object or the string "ALL". As an
+            array, FieldList contains an array of strings, where each
+            string represents an object field variable, as defined in
+            the section on PowerWorld Object Variables. If, instead of
+            an array of strings, the single string "ALL" is passed, the
+            Simulator Automation Server will use predefined default
+            fields when exporting the data.
+
+        :returns: None
         """
-        raise NotImplementedError(NIE_MSG)
-        # return self._call_simauto('SendToExcel', ObjectType, FilterName,
-        #                           FieldList)
+        return self._call_simauto('SendToExcel', ObjectType, FilterName,
+                                  FieldList)
 
-    def TSGetContingencyResults(self, CtgName, ObjFieldList,
-                                StartTime=None, StopTime=None):
-        """NOT IMPLEMENTED.
-
-        Read transient stability results directly into the SimAuto COM
-        object and be further used.
-        !!!!! This function should ONLY be used after the simulation is run
-        (for example, use this after running script commands tsSolveAll
-        or tsSolve).
-        ObjFieldList = ['"Plot ''Bus_4_Frequency''"'] or
-        ObjFieldList = ['"Bus 4 | frequency"']
+    def TSGetContingencyResults(self, CtgName: str, ObjFieldList: List[str],
+                                StartTime: Union[None, str] = None,
+                                StopTime: Union[None, str] = None) -> \
+            Union[Tuple[None, None], Tuple[pd.DataFrame, pd.DataFrame]]:
         """
-        raise NotImplementedError(NIE_MSG)
-        # output = self._call_simauto('TSGetContingencyResults', CtgName,
-        #                             ObjFieldList, StartTime, StopTime)
-        # return output
+        WARNING: This function should only be used after the simulation
+        is run (for example, use this after running script commands
+        TSSolveAll or TSSolve).
 
-    def WriteAuxFile(self, FileName, FilterName, ObjectType, FieldList,
-                     ToAppend=True, EString=None):
-        """NOT IMPLEMENTED.
+        On to the main documentation:
 
-        The WriteAuxFile function can be used to write data from the
+        The TSGetContingencyResults function is used to read
+        transient stability results into an external program (Python)
+        using SimAuto.
+
+        This function is analogous to the script command TSGetResults,
+        where rather than saving out results to a file, the results are
+        passed back directly to the SimAuto COM object and may be
+        further processed by an external program. As with TSGetResults,
+        this function should only be used after the simulation is run
+        (for example, use this after running script commands TSSolveAll
+        or TSSolve).
+
+        `PowerWorld documentation:
+        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/TSGetContingencyResults%20Function.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____49>`__
+
+        The authors of ESA do not have extensive experience running
+        transient contingencies in PowerWorld, so this method has not
+        been tested as extensively as we would prefer. If your case/code
+        has issues with this method, please file an issue on `GitHub
+        <https://github.com/mzy2240/ESA/issues>`__.
+
+        :param CtgName: The contingency to obtain results from. Only one
+            contingency be obtained at a time.
+        :param ObjFieldList: A list of strings which may contain plots,
+            subplots, or individual object/field pairs specifying the
+            result variables to obtain.
+        :param StartTime: The time in seconds in the simulation to begin
+            retrieving results. If not specified (None), the start time
+            of the simulation is used.
+        :param StopTime: The time in seconds in the simulation to stop
+            retrieving results. If not specified, the end time of the
+            simulation is used.
+
+        :returns: A tuple containing two DataFrames, "meta" and "data."
+            Alternatively, if the given CtgName does not exist, a tuple
+            of (None, None) will be returned.
+            The "meta" DataFrame describes the data in the "data"
+            DataFrame, and can be used to map objects to columns in
+            the "data" DataFrame. The "meta" DataFrame's columns are:
+            ['ObjectType', 'PrimaryKey', 'SecondaryKey', 'Label',
+            'VariableName', 'ColHeader']. Each row in the "meta"
+            DataFrame corresponds to a column in the "data" DataFrame.
+            So the "meta" row with index label 0 corresponds to the
+            column labeled 0 in the "data" DataFrame, and so forth.
+            Unfortunately, the ``ObjectType``s that come back from
+            PowerWorld do not always match valid ``ObjectType``
+            variable names (e.g. "Generator" comes back as an
+            ``ObjectType``, but attempting to use "Generator" in the
+            ``GetParametersMultipleElement`` method results in an
+            error), so ESA's ability to perform automatic data type
+            transformation is limited. All columns in the "data"
+            DataFrame will be cast to numeric types by
+            ``pandas.to_numeric``. If Pandas cannot determine an
+            appropriate numeric type, the data will be unmodified (i.e.,
+            the type will not be changed). In addition to the integer
+            labeled columns which match the "meta" rows, the "data"
+            DataFrame additionally has a "time" column which corresponds
+            to the timestamp (in seconds).
+        """
+        out = self._call_simauto('TSGetContingencyResults', CtgName,
+                                 ObjFieldList, StartTime, StopTime)
+
+        # We get (None, (None,)) if the contingency does not exist.
+        if out == (None, (None,)):
+            return None, None
+
+        # Length should always be 2.
+        assert len(out) == 2, 'Unexpected return format from PowerWorld.'
+
+        # Extract the meta data.
+        meta = pd.DataFrame(
+            out[0], columns=['ObjectType', 'PrimaryKey', 'SecondaryKey',
+                             'Label', 'VariableName', 'ColHeader'])
+
+        # Remove extraneous white space in the strings.
+        # https://stackoverflow.com/a/40950485/11052174
+        meta = meta.apply(lambda x: x.str.strip(), axis=0)
+
+        # Extract the data.
+        data = pd.DataFrame(out[1])
+
+        # Decrement all the columns by 1 so that they line up with the
+        # 'meta' frame.
+        data.rename(columns=lambda x: x - 1, inplace=True)
+
+        # Rename first column to 'time'.
+        data.rename(columns={-1: 'time'}, inplace=True)
+
+        # Attempt to convert all columns to numeric.
+        data = data.apply(lambda x: pd.to_numeric(x, errors='ignore'))
+
+        # Return.
+        return meta, data
+
+    def WriteAuxFile(self, FileName: str, FilterName: str, ObjectType: str,
+                     FieldList: Union[list, str],
+                     ToAppend=True):
+        """The WriteAuxFile function can be used to write data from the
         case in the Simulator Automation Server to a PowerWorld
         Auxiliary file. The name of an advanced filter which was
         PREVIOUSLY DEFINED in the case before being loaded in the
@@ -1030,158 +1409,16 @@ class SAW(object):
 
         `PowerWorld documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm>`__
+
+
         """
-        raise NotImplementedError(NIE_MSG)
-        # aux_file = convert_to_posix_path(FileName)
-        # return self._call_simauto('WriteAuxFile', aux_file,
-        #                           FilterName, ObjectType, EString, ToAppend,
-        #                           FieldList)
+        return self._call_simauto('WriteAuxFile', FileName,
+                                  FilterName, ObjectType, ToAppend,
+                                  FieldList)
 
     ####################################################################
     # PowerWorld ScriptCommand helper functions
     ####################################################################
-    def CalculateLODF(self, Branch, LinearMethod='DC', PostClosureLCDF='YES'):
-        """NOT IMPLEMENTED.
-
-        Use this action to calculate the Line Outage Distribution
-        Factors (or the Line Closure Distribution Factors) for a
-        particular branch. If the branch is presently closed, then the
-        LODF values will be calculated, otherwise the LCDF values will
-        be calculated. You may optionally specify the linear calculation
-        method as well. If no Linear Method is specified, Lossless DC
-        will be used. The LODF results will be sent to excel
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("CalculateLODF ({},{},{})"
-        #                              .format(Branch, LinearMethod,
-        #                                      PostClosureLCDF))
-
-    def CreateData(self, ObjectType: str, FieldList: str, ValueList: str):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand(
-        #     "CreateData({},{},{})".format(ObjectType, FieldList, ValueList))
-
-    def Delete(self, ObjectType: str):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("Delete(%s)" % ObjectType)
-
-    def EnterMode(self, mode):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("EnterMode(%s)" % mode)
-
-    def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
-        """Use this action to open a oneline diagram. When using SimAuto, this action cannot be used to actually
-        view a oneline. This script can be used in SimAuto to associate onelines with a PWB file. Any oneline that
-        is opened using the script command and while the case is saved will opened in the GUI once the case is
-        reopened.
-
-        :param filename: The file name of the oneline diagram to open. Wildcards are allowed
-            when opening a DDL file type. This is useful for loading DDL files via
-            browsing patch searches
-        :param view: The view name that should be opened. Pass an empty string to denote
-            no specific view
-        :param fullscreen: Set to YES or NO. YES means that the oneline diagram will be open in
-            full screen mode. If this parameter is not specified, then NO is assumed
-        :param showfull: Optional parameter. Set to YES to open the oneline and apply the Show
-            Full option. Set to NO to open the oneline and leave the oneline as is.
-            Default is NO if not specified
-
-        See
-        `Auxiliary File Format.pdf
-        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
-        for more details.
-        """
-        filename = Path(filename)
-        script = f"OpenOneline({filename.as_posix()}, {view}, {fullscreen}" \
-                 f" {showfull})"
-        return self.RunScriptCommand(script)
-
-    def CloseOneline(self, OnelineName=""):
-        """Use this action to close an open oneline diagram without saving it. If the name is omitted, the last
-        focused oneline diagram will be closed.
-
-        :param OnelineName: The name of the oneline diagram to close.
-
-        See
-        `Auxiliary File Format.pdf
-        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
-        for more details.
-        """
-        script = f"CloseOneline({OnelineName})"
-        return self.RunScriptCommand(script)
-
-    def ResetToFlatStart(self, FlatVoltagesAngles='YES', ShuntsToMax='NO', LTCsToMiddle='NO', PSAnglesToMiddle='NO'):
-        """Use this action to initialize the Power Flow Solution to a "flat start." The parameters are all optional and
-        specify a conditional response depending on whether the solution is successfully found. If parameters are
-        not passed then default values will be used
-
-        :param FlatVoltagesAngles: Set to YES or NO. YES means setting all the voltage magnitudes and
-            generator setpoint voltages to 1.0 per unit and all the voltage angles to
-            zero. Default Value = YES.
-        :param ShuntsToMax: Set to YES or NO. YES means to increase Switched Shunts Mvar half way
-            to maximum. Default Value = NO.
-        :param LTCsToMiddle: Set to YES or NO. YES means setting the LTC Transformer Taps to middle
-            of range. Default Value = NO.
-        :param PSAnglesToMiddle: Set to YES or NO. YES means setting Phase Shifter angles to middle of
-            range. Default Value = NO.
-
-        See
-        `Auxiliary File Format.pdf
-        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
-        for more details.
-        """
-        script = f"ResetToFlatStart({FlatVoltagesAngles},{ShuntsToMax},{LTCsToMiddle},{PSAnglesToMiddle})"
-        return self.RunScriptCommand(script)
-
-    def SaveJacobian(self, JacFileName, JIDFileName, FileType, JacForm):
-        """NOT IMPLEMENTED.
-
-        Use this action to save the Jacobian Matrix to a text file or a
-        file formatted for use with MATLAB
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("SaveJacobian({},{},{},{})"
-        #                              .format(JacFileName, JIDFileName,
-        #                                      FileType, JacForm))
-
-    def SaveYbusInMatlabFormat(self, FileName, IncludeVoltages='Yes'):
-        """NOT IMPLEMENTED.
-
-        Use this action to save the YBus to a file formatted for use
-        with MATLAB
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("SaveYbusInMatlabFormat({},{})"
-        #                              .format(FileName, IncludeVoltages))
-
-    def SetData(self, ObjectType: str, FieldList: str, ValueList: str,
-                Filter=''):
-        """NOT IMPLEMENTED.
-
-        Use this action to set fields for particular objects. If a
-        filter is specified, then it will set the respective fields for
-        all objects which meet this filter. Otherwise, if no filter is
-        specified, then the keyfields must be included in the field
-        list so that the object can be found. e.g.
-        FieldList = '[Number,NomkV]'
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand(
-        #     "SetData({},{},{},{})".format(ObjectType, FieldList, ValueList,
-        #                                   Filter))
-
-    def SetParticipationFactors(self, Method, ConstantValue, Object):
-        """NOT IMPLEMENTED.
-
-        Use this action to modify the generator participation factors in
-        the case.
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("SetParticipationFactors ({},{},{})"
-        #                              .format(Method, ConstantValue, Object))
 
     def SolvePowerFlow(self, SolMethod: str = 'RECTNEWT') -> None:
         """Run the SolvePowerFlow command.
@@ -1203,126 +1440,67 @@ class SAW(object):
         script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
         return self.RunScriptCommand(script_command)
 
-    def TSCalculateCriticalClearTime(self, Branch):
-        """NOT IMPLEMENTED.
-
-        Use this action to calculate critical clearing time for faults
-        on the lines that meet the specified filter. A single line can
-        be specified in the format [BRANCH keyfield1 keyfield2 ckt] or
-        [BRANCH label]. Multiple lines can be selected by specifying a
-        filter. For the specified lines, this calculation will determine
-        the first time a violation is reached (critical clearing time),
-        where a violation is determined based on all enabled Transient
-        Limit Monitors. For each line, results are saved as a new
-        Transient Contingency on a line, with the fault duration equal
-        to the critical clearing time.
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand(
-        #     "TSCalculateCriticalClearTime (%s)" % Branch)
-
-    def TSResultStorageSetAll(self, ObjectType, Choice):
-        """NOT IMPLEMENTED."""
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand(
-        #     "TSResultStorageSetAll (%s) (%s)" % (ObjectType, Choice))
-
-    def TSRunUntilSpecifiedTime(self, ContingencyName, RunOptions):
-        """NOT IMPLEMENTED.
-
-        This command allows manual control of the transient stability
-        run. The simulation can be run until a specified time or number
-        of times steps and then paused for further evaluation.
-
-        :param ContingencyName: TODO
-
-        :param RunOptions: '[StopTime(in seconds), StepSize(numbers),
-            StepsInCycles='YES', ResetStartTime='NO',
-            NumberOfTimeStepsToDo=0]'
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("TSRunUntilSpecifiedTime ({},{})"
-        #                              .format(ContingencyName, RunOptions))
-
-    def TSSolve(self, ContingencyName):
-        """NOT IMPLEMENTED.
-
-        Solves only the specified contingency
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("TSSolve (%s)" % ContingencyName)
-
-    def TSWriteOptions(self, FileName, Options, KeyField=' Primary'):
-        """NOT IMPLEMENTED.
-
-        Save the transient stability option settings to an auxiliary
-        file.
-
-        :param FileName: TODO
-        :param Options: [SaveDynamicModel, SaveStabilityOptions,
-            SaveStabilityEvents, SaveResultsEvents, SavePlotDefinitions]
-
-            SaveDynamicModel : (optional) NO doesn't save dynamic model
-            (default YES)
-
-            SaveStabilityOptions : (optional) NO doesn't save stability
-            options (default YES)
-
-            SaveStabilityEvents : (optional) NO doesn't save stability
-            events (default YES)
-
-            SaveResultsSettings : (optional) NO doesn't save results
-            settings (default YES)
-
-            SavePlotDefinitions : (optional) NO doesn't save plot
-            definitions (default YES)
-
-        :param KeyField: (optional) Specifies key: can be Primary,
-            Secondary, or Label (default Primary)
-
-        TODO: KeyField isn't currently used?
-        """
-        raise NotImplementedError(NIE_MSG)
-        # return self.RunScriptCommand("TSWriteOptions({},{})"
-        #                              .format(FileName, Options))
-
     ####################################################################
     # PowerWorld SimAuto Properties
     ####################################################################
     @property
-    def CurrentDir(self):
-        output = self._pwcom.CurrentDir
-        return output
+    def CreateIfNotFound(self):
+        """The CreateIfNotFound property of the Simulator Automation
+        Server is useful when you are changing data with the
+        ChangeParameters functions. Set the attribute through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.CreateIfNotFound
 
     @property
-    def ProcessID(self):
-        """Retrieve the process ID of the currently running
-        SimulatorAuto process"""
-        output = self._pwcom.ProcessID
-        return output
+    def CurrentDir(self) -> str:
+        """The CurrentDir property of the Simulator Automation Server
+        allows you to retrieve or set the working directory for the
+        currently running SimulatorAuto process. This is most useful if
+        using relative filenames (e.g. ``"relativename.aux"`` versus
+        ``r"C:\Program Files\PowerWorld\Working\abosultename.aux"``)
+        when specifying files. Set this property through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.CurrentDir
 
     @property
-    def RequestBuildDate(self):
-        """Retrieve the build date of the PowerWorld Simulator
-        executable currently running with the SimulatorAuto process
+    def ProcessID(self) -> int:
+        """The ProcessID property of the Simulator Automation Server
+        allows you to retrieve the process ID of the currently running
+        SimulatorAuto process, as can also be seen through the Task
+        Manager in Windows. This information can be useful if a forced
+        shutdown of the SimulatorAuto object is needed, as all calls to
+        the SimulatorAuto object are synchronous. This means the
+        SimulatorAuto object will not be destroyed until all calls, no
+        matter the time of execution, have completed.
+        """
+        return self._pwcom.ProcessID
+
+    @property
+    def RequestBuildDate(self) -> int:
+        """The RequestBuildDate property of the Simulator Automation
+        Server allows you to retrieve the build date of the PowerWorld
+        Simulator executable currently running with the SimulatorAuto
+        process. The property returns an integer value that represents a
+        date. This information is useful for verifying the release
+        version of the executable.
         """
         return self._pwcom.RequestBuildDate
 
     @property
-    def UIVisible(self):
-        output = self._pwcom.UIVisible
-        return output
+    def UIVisible(self) -> bool:
+        """Get the UIVisible property of the Simulator Automation
+        Server which indicates the visibility of the user interface for
+        Simulator. Default behavior is to not show the user interface
+        while using SimAuto. Set this property through the
+        ``set_simauto_property`` method.
+        """
+        return self._pwcom.UIVisible
 
     ####################################################################
     # Private Methods
     ####################################################################
-
-    def __enter__(self):
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        self.exit()
-        return True
 
     def _call_simauto(self, func: str, *args):
         """Helper function for calling the SimAuto server.
@@ -1368,16 +1546,45 @@ class SAW(object):
             # If we just get a tuple with the empty string in it,
             # there's nothing to return.
             return None
-        if output is None or output[0] == '':
-            pass
-        elif 'No data' in output[0]:
-            pass
-        else:
-            raise PowerWorldError(output[0])
 
-        # After errors have been handled, return the data (which is in
-        # position 1 of the tuple).
-        return output[1]
+        # There's one inconsistent method, GetFieldMaxNum, which
+        # appears to return -1 on error, otherwise simply an integer.
+        # Since that's an edge case, we'll use a try/except block.
+        try:
+            if output is None or output[0] == '':
+                pass
+            elif 'No data' in output[0]:
+                pass
+            else:
+                raise PowerWorldError(output[0])
+
+        except TypeError as e:
+            # We'll get 'is not subscriptable' if PowerWorld simply
+            # returned an integer, as will happen with GetFieldMaxNum.
+            if 'is not subscriptable' in e.args[0]:
+                if output == -1:
+                    # Apparently -1 is the signal for an error.
+                    m = (
+                        'PowerWorld simply returned -1 after calling '
+                        "'{func}' with '{args}'. Unfortunately, that's all "
+                        "we can help you with. Perhaps the arguments are "
+                        "invalid or in the wrong order - double-check the "
+                        "documentation.").format(func=func, args=args)
+                    raise PowerWorldError(m)
+                elif isinstance(output, int):
+                    # Return the integer.
+                    return output
+
+            # If we made it here, simply re-raise the exception.
+            raise e
+
+        # After errors have been handled, return the data. Typically
+        # this is in position 1.
+        if len(output) == 2:
+            return output[1]
+        else:
+            # Return all the remaining data.
+            return output[1:]
 
     def _change_parameters_multiple_element_df(
             self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
@@ -1458,11 +1665,6 @@ class SAW(object):
                     merged[cols_out[str_cols]].to_numpy()
                 )
         )
-
-
-def convert_to_posix_path(p):
-    """Given a path, p, convert it to a Posix path."""
-    return Path(p).as_posix()
 
 
 def convert_to_windows_path(p):

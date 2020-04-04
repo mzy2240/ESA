@@ -1,0 +1,6 @@
+# File to provide options to coverage.py.
+[run]
+# Only measure coverage for files found in the esa package
+source = esa
+command_line = -m unittest discover tests
+data_file = docs/rst/.coverage

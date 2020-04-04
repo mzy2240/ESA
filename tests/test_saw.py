@@ -24,32 +24,27 @@ sure to follow the pattern used for saw_14: Initialize to None in
 main code body, initialize actual SAW object in setUpModule (don't
 forget to tag it as global!), and then call the object's exit() method
 in tearDownModule.
+
+Finally, please note that examples from docs/rst/snippets are executed
+using doctest. These files use a suffix convention to determine which
+.pwb file to use in the CASE_PATH constant.
 """
 
-import unittest
-from unittest.mock import patch
+import logging
 import os
+import tempfile
+import unittest
+from unittest.mock import patch, MagicMock, Mock
+
 import numpy as np
 import pandas as pd
-from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError
-from esa.saw import convert_to_posix_path, convert_to_windows_path
-import logging
 
-# Handle pathing.
-THIS_DIR = os.path.dirname(os.path.abspath(__file__))
-CASE_DIR = os.path.join(THIS_DIR, 'cases')
-DATA_DIR = os.path.join(THIS_DIR, 'data')
+from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
+from esa.saw import convert_to_windows_path
 
-# Path to IEEE 14 bus model.
-PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
-
-# Path to the Texas 2000 bus model.
-PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')
-PATH_2000_mod = os.path.join(
-    CASE_DIR, 'tx2000_mod', 'ACTIVSg2000_AUG-09-2018_Ride_version7.PWB')
-
-# Aux file for filtering transformers by LTC control.
-LTC_AUX_FILE = os.path.join(THIS_DIR, 'ltc_filter.aux')
+# noinspection PyUnresolvedReferences
+from tests.constants import PATH_14, PATH_2000, PATH_2000_mod, PATH_9, \
+    THIS_DIR, LTC_AUX_FILE, DATA_DIR
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -99,7 +94,7 @@ class InitializationTestCase(unittest.TestCase):
         self.assertIsInstance(my_saw_14.log, logging.Logger)
 
         # Ensure our pwb_file_path matches our given path.
-        self.assertEqual(convert_to_posix_path(PATH_14),
+        self.assertEqual(PATH_14,
                          my_saw_14.pwb_file_path)
 
         # Ensure we have the expected object_fields.
@@ -112,6 +107,13 @@ class InitializationTestCase(unittest.TestCase):
                                  'field_data_type', 'description',
                                  'display_name'},
                                 set(df.columns.to_numpy()))
+
+    def test_error_during_dispatch(self):
+        """Ensure an exception is raised if dispatch fails."""
+        with patch('win32com.client.gencache.EnsureDispatch',
+                   side_effect=TypeError):
+            with self.assertRaises(TypeError):
+                SAW(PATH_14, early_bind=True)
 
 
 ########################################################################
@@ -129,8 +131,8 @@ class ChangeAndConfirmParamsMultipleElementTestCase(unittest.TestCase):
             saw_14.get_key_fields_for_object_type('branch')
         cls.branch_data = saw_14.GetParametersMultipleElement(
             ObjectType='branch',
-            ParamList=branch_key_fields['internal_field_name'].tolist()
-                       + ['LineStatus'])
+            ParamList=(branch_key_fields['internal_field_name'].tolist()
+                       + ['LineStatus']))
         # Make a copy so we can modify it without affecting the original
         # DataFrame.
         cls.branch_data_copy = cls.branch_data.copy()
@@ -246,7 +248,7 @@ class ChangeParametersMultipleElementDFTestCase(unittest.TestCase):
                 saw_14.change_parameters_multiple_element_df(
                     ObjectType='load', command_df=command_df))
 
-        p.assert_called_once()
+        self.assertEqual(1, p.call_count)
         self.assertDictEqual(
             p.mock_calls[0][2],
             {'ObjectType': 'load', 'ParamList': cols,
@@ -460,6 +462,7 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
     """Test the set_simauto_property method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, early_bind=True)
@@ -510,6 +513,12 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'The given path for Current'):
             self.saw.set_simauto_property(property_name='CurrentDir',
                                           property_value=r'C:\bad\path')
+
+    def test_set_bad_property_name(self):
+        m = 'The given property_name, junk,'
+        with self.assertRaisesRegex(ValueError, m):
+            self.saw.set_simauto_property(property_name='junk',
+                                          property_value='42')
 
 
 ########################################################################
@@ -687,6 +696,132 @@ class ChangeParametersMultipleElementExpectedFailure(unittest.TestCase):
         self.assertIsNone(result)
 
 
+class ChangeParametersMultipleElementFlatInputTestCase(unittest.TestCase):
+    """Test ChangeParametersMultipleElementFlatInput"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Get generator key fields.
+        cls.key_field_df_gens = saw_14.get_key_fields_for_object_type('gen')
+        cls.params = \
+            cls.key_field_df_gens['internal_field_name'].to_numpy().tolist()
+        # Combine key fields with our desired attribute.
+        cls.params.append('GenVoltSet')
+        cls.gen_v_pu = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=cls.params)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Always be nice and clean up after yourself and put your toys
+        away. No, but seriously, put the voltage set points back."""
+        value_list = cls.gen_v_pu.to_numpy().tolist()
+        num_objects = len(value_list)
+        flattened_value_list = [val for sublist in value_list for val in
+                                sublist]
+        saw_14.ChangeParametersMultipleElementFlatInput(
+            ObjectType='gen', ParamList=cls.params,
+            NoOfObjects=num_objects, ValueList=flattened_value_list)
+
+    # noinspection DuplicatedCode
+    def test_change_gen_voltage_set_points(self):
+        """Set all generator voltages to 1, and ensure the command
+        sticks.
+        """
+        # https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/ChangeParametersMultipleElement_Sample_Code_Python.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____9
+        # Start by converting our generator data to a list of lists.
+        value_list = self.gen_v_pu.to_numpy().tolist()
+
+        # Loop over the values, set to 1.
+        # noinspection PyTypeChecker
+        for v in value_list:
+            # Set voltage at 1.
+            v[-1] = 1.0
+
+        # Send in the command.
+        # noinspection PyTypeChecker
+        num_objects = len(value_list)
+        # noinspection PyTypeChecker
+        flattened_value_list = [val for sublist in value_list for val in
+                                sublist]
+        self.assertIsNone(saw_14.ChangeParametersMultipleElementFlatInput(
+            ObjectType='gen', ParamList=self.params,
+            NoOfObjects=num_objects, ValueList=flattened_value_list))
+
+        # Check results.
+        gen_v = saw_14.GetParametersMultipleElement(
+            ObjectType='gen', ParamList=self.params)
+
+        # Our present results should not be the same as the original.
+        try:
+            pd.testing.assert_frame_equal(gen_v, self.gen_v_pu)
+        except AssertionError:
+            # Frames are not equal. Success.
+            pass
+        else:
+            self.fail('DataFrames are equal, but they should not be.')
+
+        # Our current results should have all 1's for the GenRegPUVolt
+        # column.
+        # actual = pd.to_numeric(gen_v['GenRegPUVolt']).to_numpy()
+        actual = pd.to_numeric(gen_v['GenVoltSet']).to_numpy()
+        expected = np.array([1.0] * actual.shape[0])
+
+        np.testing.assert_array_equal(actual, expected)
+
+    # noinspection PyTypeChecker
+    def test_nested_value_list(self):
+        with self.assertRaisesRegex(Error,
+                                    'The value list has to be a 1-D array'):
+            value_list = self.gen_v_pu.to_numpy().tolist()
+            num_objects = len(value_list)
+            saw_14.ChangeParametersMultipleElementFlatInput(
+                ObjectType='gen', ParamList=self.params,
+                NoOfObjects=num_objects, ValueList=value_list)
+
+
+class ChangeParametersTestCase(unittest.TestCase):
+    """Test ChangeParameters.
+
+    TODO: This test case could use some more tests, e.g. expected
+        errors, etc.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.line_key_fields = saw_14.get_key_fields_for_object_type(
+            'Branch')['internal_field_name'].tolist()
+        cls.line_r = ['LineR']
+        cls.params = cls.line_key_fields + cls.line_r
+        cls.line_data = saw_14.GetParametersMultipleElement(
+            ObjectType='Branch', ParamList=cls.params)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """Be a good boy and put things back the way you found them."""
+        # noinspection PyUnresolvedReferences
+        saw_14.change_and_confirm_params_multiple_element(
+            'Branch', cls.line_data)
+
+    def test_change_line_r(self):
+        # Let's just change the first line resistance.
+        new_r = self.line_data.iloc[0]['LineR'] * 2
+        # Intentionally making a copy so that we don't modify the
+        # original DataFrame - we'll be using that to reset the line
+        # parameters after this test has run.
+        value_series = self.line_data.iloc[0].copy()
+        value_series['LineR'] = new_r
+        values_list = value_series.tolist()
+        saw_14.ChangeParameters('Branch', self.params, values_list)
+
+        # Retrieve the updated line parameters.
+        new_line_data = saw_14.GetParametersMultipleElement(
+            'Branch', self.params)
+
+        # Ensure the update went through.
+        self.assertEqual(new_line_data.iloc[0]['LineR'], new_r)
+
+
 class ChangeParametersSingleElementTestCase(unittest.TestCase):
     """Test ChangeParametersSingleElement.
 
@@ -697,7 +832,7 @@ class ChangeParametersSingleElementTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.line_key_fields = saw_14.get_key_fields_for_object_type(
-                'Branch')['internal_field_name'].tolist()
+            'Branch')['internal_field_name'].tolist()
         cls.line_r = ['LineR']
         cls.params = cls.line_key_fields + cls.line_r
         cls.line_data = saw_14.GetParametersMultipleElement(
@@ -839,6 +974,30 @@ class GetParametersMultipleElementTestCase(unittest.TestCase):
             )
 
 
+class GetParametersMultipleElementFlatOutput(unittest.TestCase):
+    """Test GetParametersMultipleElementFlatOutput"""
+
+    def test_get_gen_voltage_set_points(self):
+        params = ['BusNum', 'GenID', 'GenRegPUVolt']
+        results = saw_14.GetParametersMultipleElementFlatOutput(
+            ObjectType='gen', ParamList=params)
+
+        self.assertIsInstance(results, tuple)
+
+        # Check that the length of the tuple is as expected, noting that
+        # the first two elements denote the number of elements and
+        # number of fields per element.
+        self.assertEqual(int(results[0]) * int(results[1]) + 2,
+                         len(results))
+
+    def test_shunts(self):
+        # 14 bus has no shunts.
+        kf = saw_14.get_key_field_list('shunt')
+        self.assertIsNone(
+            saw_14.GetParametersMultipleElementFlatOutput(
+                'shunt', kf))
+
+
 class GetParametersSingleElementTestCase(unittest.TestCase):
     """Test GetParameterSingleElement method."""
 
@@ -872,6 +1031,118 @@ class GetParametersSingleElementTestCase(unittest.TestCase):
                 ObjectType='gen', ParamList=['BusNum', 'GenID', 'BogusParam'],
                 Values=[1, '1', 0]
             )
+
+
+class GetParametersTestCase(unittest.TestCase):
+    """Test GetParameters method."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_expected_results(self):
+        fields = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineX']
+
+        actual = saw_14.GetParameters(
+            ObjectType='branch', ParamList=fields, Values=[4, 9, '1', 0])
+
+        expected = pd.Series([4, 9, '1', 0.556180], index=fields)
+
+        pd.testing.assert_series_equal(actual, expected)
+
+    def test_nonexistent_object(self):
+        """Ensure an exception is raised if the object cannot be found.
+        """
+        with self.assertRaisesRegex(PowerWorldError, 'Object not found'):
+            # 14 bus certainly does not have a 100th bus.
+            # noinspection PyUnusedLocal
+            actual = saw_14.GetParameters(
+                ObjectType='gen', ParamList=['BusNum', 'GenID', 'GenMW'],
+                Values=[100, '1', 0]
+            )
+
+    def test_bad_field(self):
+        """Ensure an exception is raised when a bad field is provided.
+        """
+        with self.assertRaisesRegex(ValueError, 'The given object has fields'):
+            saw_14.GetParameters(
+                ObjectType='gen', ParamList=['BusNum', 'GenID', 'BogusParam'],
+                Values=[1, '1', 0]
+            )
+
+
+class GetSpecificFieldListTestCase(unittest.TestCase):
+    """Test GetSpecificFieldList"""
+
+    def helper(self, df):
+        """Helper for checking basic DataFrame attributes."""
+        # Ensure columns match up.
+        self.assertListEqual(list(df.columns),
+                             saw_14.SPECIFIC_FIELD_LIST_COLUMNS)
+
+        # The dtypes for all columns should be strings, which are
+        # 'objects' in Pandas.
+        self.assertTrue((df.dtypes == np.dtype('O')).all())
+
+        # Ensure we're sorted by the first column.
+        self.assertTrue(
+            df[saw_14.SPECIFIC_FIELD_LIST_COLUMNS[0]].is_monotonic_increasing)
+
+        # Ensure the index starts at 0 and is monotonic
+        self.assertTrue(df.index[0] == 0)
+        self.assertTrue(df.index.is_monotonic_increasing)
+
+    def test_all(self):
+        """As documented, try using the ALL specifier."""
+        # Fetch all gen parameters.
+        out = saw_14.GetSpecificFieldList('gen', ['ALL'])
+
+        # Do basic tests.
+        self.helper(out)
+
+        # For whatever reason, the following does not work. We get
+        # lengths of 808 and 806, respectively. This is not worth
+        # investigating.
+        # # Ensure we get the same number of parameters as were pulled for
+        # # GetFieldList.
+        # out2 = saw_14.GetFieldList('gen')
+        #
+        # self.assertEqual(out.shape[0], out2.shape[0])
+
+        #
+
+    def test_all_location(self):
+        """As documented, try using variablename:ALL"""
+        out = saw_14.GetSpecificFieldList('load', ['ABCLoadAngle:ALL'])
+
+        # Do basic tests.
+        self.helper(out)
+
+        # We should get three entries back.
+        self.assertEqual(3, out.shape[0])
+
+    def test_some_variables(self):
+        """Pass a handful of variables in."""
+        v = ['GenVoltSet', 'GenMW', 'GenMVR']
+        out = saw_14.GetSpecificFieldList('gen', v)
+
+        # Do basic tests.
+        self.helper(out)
+
+        # We should get an entry for each item in the list.
+        self.assertEqual(len(v), out.shape[0])
+
+
+class GetSpecificFieldMaxNumTestCase(unittest.TestCase):
+    """Test GetSpecificFieldMaxNum."""
+
+    def test_load_angle(self):
+        # While there are 3 ABCLoadAngle variables, the maximum number
+        # is 2.
+        self.assertEqual(
+            2, saw_14.GetSpecificFieldMaxNum('load', 'ABCLoadAngle'))
+
+    def test_bad_input(self):
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'PowerWorld simply returned -1'):
+            saw_14.GetSpecificFieldMaxNum('bogus', 'bogus')
 
 
 class ListOfDevicesTestCase(unittest.TestCase):
@@ -935,6 +1206,47 @@ class ListOfDevicesTestCase(unittest.TestCase):
         pd.testing.assert_frame_equal(expected, result)
 
 
+class ListOfDevicesAsVariantStrings(unittest.TestCase):
+    """Test ListOfDevicesAsVariantStrings"""
+
+    def test_buses(self):
+        # Call method.
+        out = saw_14.ListOfDevicesAsVariantStrings('bus')
+
+        # We should get a tuple of tuples.
+        self.assertEqual(1, len(out))
+
+        # 14 buses.
+        self.assertEqual(14, len(out[0]))
+
+
+class GetCaseHeaderTestCase(unittest.TestCase):
+    """Test GetCaseHeader"""
+
+    def test_case_header(self):
+        # Call method.
+        out = saw_14.GetCaseHeader()
+
+        self.assertIsInstance(out, tuple)
+
+        for item in out:
+            self.assertIsInstance(item, str)
+
+
+class ListOfDevicesFlatOutputTestCase(unittest.TestCase):
+    """Test ListOfDevicesFlatOutput."""
+
+    def test_buses(self):
+        # Call method for buses.
+        out = saw_14.ListOfDevicesFlatOutput('bus')
+        self.assertTrue(isinstance(out, tuple))
+
+        # Since buses have a single key field (BusNum), we'll only get
+        # one return per bus. So, including the two fields at the
+        # beginning of the list, we'll have 16 elements.
+        self.assertEqual(16, len(out))
+
+
 class LoadStateErrorTestCase(unittest.TestCase):
     """Test LoadState without calling SaveState, and ensure we get an
     error from PowerWorld.
@@ -943,6 +1255,7 @@ class LoadStateErrorTestCase(unittest.TestCase):
     from other tests, at the cost of increasing test run time by
     several seconds.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14)
@@ -1050,6 +1363,198 @@ class RunScriptCommandTestCase(unittest.TestCase):
             saw_14.RunScriptCommand(Statements='invalid statement')
 
 
+class OpenCaseTypeTestCase(unittest.TestCase):
+    """Test OpenCaseType. The tests here are admittedly a bit crude."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_expected_behavior(self):
+        self.saw.CloseCase()
+        self.saw.OpenCaseType(PATH_14, 'PWB')
+        # Ensure our pwb_file_path matches our given path.
+        self.assertEqual(PATH_14,
+                         self.saw.pwb_file_path)
+
+    def test_options_single(self):
+        # Ensure this runs without error.
+        self.saw.OpenCaseType(PATH_14, 'PWB', 'YES')
+
+    def test_options_multiple(self):
+        # Ensure this runs without error.
+        self.saw.OpenCaseType(PATH_14, 'PWB', ['YES', 'NEAR'])
+
+
+class OpenCaseTestCase(unittest.TestCase):
+    """Test OpenCase."""
+    def test_failure_if_pwb_file_path_none(self):
+        m = 'When OpenCase is called for the first time,'
+        with patch.object(saw_14, 'pwb_file_path', new=None):
+            with self.assertRaisesRegex(TypeError, m):
+                saw_14.OpenCase()
+
+
+class TSGetContingencyResultsTestCase(unittest.TestCase):
+    """Test TSGetContingencyResults."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Open up the nine bus model.
+        cls.saw = SAW(PATH_9, early_bind=True)
+
+        # The 9 bus model has a contingency already defined:
+        cls.ctg_name = 'My Transient Contingency'
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_nonexistent_ctg(self):
+        """Should get Nones back when running a contingency that does
+        not exist.
+        """
+        # Define contingency name.
+        ctg_name = 'ctgName'
+
+        #
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        meta, data = self.saw.TSGetContingencyResults(ctg_name, obj_field_list,
+                                                      t1, t2)
+
+        self.assertIsNone(meta)
+        self.assertIsNone(data)
+
+    @unittest.skip('This test hangs. PowerWorld somehow gets upset if you '
+                   'ask for results and have not solved the transient '
+                   'contingency.')
+    def test_existing_ctg(self):
+        """THIS HANGS! Contingency exists in case, but has not been
+        solved yet."""
+        # This came from a PowerWorld example:
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        result = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, t1, t2)
+
+        print(result)
+
+        pass
+
+    def test_solve_and_run(self):
+        """Solve the contingency and run the function."""
+        # This came from a PowerWorld example:
+        obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
+
+        #
+        t1 = '0.0'
+        t2 = '10.0'
+
+        # Solve.
+        self.saw.RunScriptCommand('TSSolve("{}")'.format(self.ctg_name))
+
+        # Get results.
+        meta, data = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, t1, t2)
+
+        # Check types.
+        self.assertIsInstance(meta, pd.DataFrame)
+        self.assertIsInstance(data, pd.DataFrame)
+
+        # Ensure shapes are as expected.
+        self.assertEqual(meta.shape[0], data.shape[1] - 1)
+
+        # Data should all be floats.
+        for dtype in data.dtypes:
+            self.assertEqual(dtype, np.float64)
+
+        # Rows in meta should match columns in data.
+        meta_rows = meta.index.tolist()
+        data_cols = data.columns.tolist()
+
+        # Remove time from data columns.
+        data_cols.remove('time')
+
+        self.assertListEqual(meta_rows, data_cols)
+
+    def test_individual_object_field_pair(self):
+        """Obtain the result for an individual object/field pair"""
+        # The target is the frequency data from Bus 4.
+        obj_field_list = ['"Bus 4 | frequency"']
+
+        # Set up TS parameters
+        t1 = 0.0
+        t2 = 10.0
+        stepsize = 0.01
+
+        # Solve.
+        cmd = 'TSSolve("{}",[{},{},{},NO])'.format(
+            self.ctg_name, t1, t2, stepsize
+        )
+        self.saw.RunScriptCommand(cmd)
+
+        # Get results.
+        meta, data = self.saw.TSGetContingencyResults(
+            self.ctg_name, obj_field_list, str(t1), str(t2))
+
+        # Ensure shapes are as expected.
+        self.assertEqual(meta.shape[0], 1)  # Only 1 object/field pair
+        self.assertEqual(data.shape[1], 2)  # Plus the time column
+
+        # ObjectType should be Bus
+        self.assertEqual(meta['ObjectType'].values[0], 'Bus')
+
+        # Primary key should be 4.
+        self.assertEqual(meta['PrimaryKey'].values[0], '4')
+
+        # Field should be frequency.
+        self.assertEqual(meta['VariableName'].values[0], 'Frequency')
+
+        # Start and end time should match the arguments in the query.
+        self.assertEqual(data['time'].iloc[0], t1)
+        self.assertEqual(data['time'].iloc[-1], t2)
+
+        # Data row count >= (t2 - t1)/stepsize + contingency count + 1
+        # This is due to the repeated time point when contingencies
+        # occur, and also some contingencies are self-cleared (which
+        # only show once in the contingency element list but will also
+        # result in repeated time point when it is cleared.
+        params = self.saw.get_key_field_list('TSContingencyElement')
+        contingency = self.saw.GetParametersMultipleElement(
+            'TSContingencyElement', params)
+        self.assertGreaterEqual(data.shape[0],
+                                (t2-t1)/stepsize+contingency.shape[0]+1)
+
+
+class WriteAuxFileTestCaseTestCase(unittest.TestCase):
+    """Test WriteAuxFile."""
+
+    def test_file_is_created(self):
+        temp_path = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
+                                                delete=False)
+        temp_path.close()
+        saw_14.WriteAuxFile(FileName=temp_path.name,
+                            FilterName="",
+                            ObjectType="Bus",
+                            FieldList="all")
+        self.assertTrue(os.path.isfile(temp_path.name))
+        os.unlink(temp_path.name)
+
+
 class SaveCaseTestCase(unittest.TestCase):
     """Test SaveCase."""
 
@@ -1091,6 +1596,56 @@ class SaveCaseTestCase(unittest.TestCase):
             'SaveCase', convert_to_windows_path(saw_14.pwb_file_path),
             'PWB', True)
 
+    def test_save_with_missing_path(self):
+        m = 'SaveCase was called without a FileName, but it would appear'
+        with patch.object(saw_14, 'pwb_file_path', new=None):
+            with self.assertRaisesRegex(TypeError, m):
+                saw_14.SaveCase()
+
+
+class SendToExcel(unittest.TestCase):
+    """Test SendTOExcel
+    The author was not able to sufficiently test this method, since
+    the tested function would open an excel sheet and copy to it without
+    saving. This also creates a big problem when trying to use the excel
+    COM interface to access the sheet and verify the data, cause the COM
+    object is likely in use and cannot be operated by another process.
+    """
+
+    def test_nonexistobject(self):
+        """Ensure an exception is raised if the object can't be found"""
+        with self.assertRaises(PowerWorldError):
+            # No object type named Gen1 "
+            fields = ['BusNum', 'GenID', 'BusNomVolt']
+            saw_14.SendToExcel(
+                ObjectType='Gen1', FilterName='', FieldList=fields)
+
+
+########################################################################
+# SimAuto Properties tests
+########################################################################
+
+class SimAutoPropertiesTestCase(unittest.TestCase):
+    """Test the SimAuto attributes."""
+
+    def test_current_dir(self):
+        cwd = saw_14.CurrentDir
+        self.assertIsInstance(cwd, str)
+        self.assertIn('ESA', cwd)
+
+    def test_process_id(self):
+        pid = saw_14.ProcessID
+        self.assertIsInstance(pid, int)
+
+    def test_request_build_date(self):
+        bd = saw_14.RequestBuildDate
+        self.assertIsInstance(bd, int)
+
+    def test_ui_visible(self):
+        self.assertFalse(saw_14.UIVisible)
+
+    def test_create_if_not_found(self):
+        self.assertFalse(saw_14.CreateIfNotFound)
 
 ########################################################################
 # ScriptCommand helper tests
@@ -1165,6 +1720,28 @@ class TestCreateNewLinesFromFile2000Bus(unittest.TestCase):
         # Create the lines.
         self.saw.change_and_confirm_params_multiple_element(
             ObjectType='branch', command_df=self.line_df)
+
+
+class CallSimAutoTestCase(unittest.TestCase):
+    """Test portions of _call_simauto not covered by the higher level
+    methods.
+    """
+    def test_bad_function(self):
+        with self.assertRaisesRegex(AttributeError, 'The given function, bad'):
+            saw_14._call_simauto('bad')
+
+    def test_weird_type_error(self):
+        """I'll be honest - I'm just trying to get testing coverage to
+        100%, and I have no idea how to get this exception raised
+        without doing some hacking. Here we go.
+        """
+        m = MagicMock()
+        m.GetParametersSingleElement = Mock(return_value=('issues', 12))
+        with patch.object(saw_14, '_pwcom', new=m):
+            with patch('esa.saw.PowerWorldError',
+                       side_effect=TypeError('weird things')):
+                with self.assertRaises(TypeError):
+                    saw_14.GetParametersSingleElement('bus', ['BusNum'], [1])
 
 
 if __name__ == '__main__':

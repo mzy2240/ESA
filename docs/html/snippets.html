@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta charset="utf-8" />
+    <title>Examples &#8212; ESA 1.0.0 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/language_data.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Common Issues" href="common_issues.html" />
+    <link rel="prev" title="esa API Documentation" href="esa.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>For your convenience, several ESA usage examples are provided in this
+section. Some examples may also be presented earlier in the
+documentation. If you would like to share your own examples with us,
+please file an issue on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub</a>. If you’d like even more
+examples (though in a <em>much</em> less reader friendly format), check out
+ESA’s <a class="reference external" href="https://github.com/mzy2240/ESA/tree/master/tests">tests</a>,
+specifically the <code class="docutils literal notranslate"><span class="pre">test_saw.py</span></code> file.</p>
+<div class="section" id="esa-quick-start">
+<h2>ESA Quick Start<a class="headerlink" href="#esa-quick-start" title="Permalink to this headline">¶</a></h2>
+<p>The following example is also presented in the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>
+section.</p>
+<p>Before running the example below, define a CASE_PATH variable like so
+(adapt the path as needed for your system):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+</pre></div>
+</div>
+<p>On to the quick start!</p>
+<p>Start by Importing the SimAuto Wrapper (SAW) class:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+</pre></div>
+</div>
+<p>Initialize SAW instance using 14 bus test case:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">FileName</span><span class="o">=</span><span class="n">CASE_PATH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Solve the power flow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Retrieve power flow results for buses. This will return a Pandas
+DataFrame to make your life easier.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">bus_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;bus&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">bus_data</span>
+<span class="go">    BusNum BusName  BusPUVolt   BusAngle    BusNetMW  BusNetMVR</span>
+<span class="go">0        1   Bus 1   1.060000   0.000000  232.391691 -16.549389</span>
+<span class="go">1        2   Bus 2   1.045000  -4.982553   18.300001  30.855957</span>
+<span class="go">2        3   Bus 3   1.010000 -12.725027  -94.199997   6.074852</span>
+<span class="go">3        4   Bus 4   1.017672 -10.312829  -47.799999   3.900000</span>
+<span class="go">4        5   Bus 5   1.019515  -8.773799   -7.600000  -1.600000</span>
+<span class="go">5        6   Bus 6   1.070000 -14.220869  -11.200000   5.229700</span>
+<span class="go">6        7   Bus 7   1.061520 -13.359558    0.000000   0.000000</span>
+<span class="go">7        8   Bus 8   1.090000 -13.359571    0.000000  17.623067</span>
+<span class="go">8        9   Bus 9   1.055933 -14.938458  -29.499999   4.584888</span>
+<span class="go">9       10  Bus 10   1.050986 -15.097221   -9.000000  -5.800000</span>
+<span class="go">10      11  Bus 11   1.056907 -14.790552   -3.500000  -1.800000</span>
+<span class="go">11      12  Bus 12   1.055189 -15.075512   -6.100000  -1.600000</span>
+<span class="go">12      13  Bus 13   1.050383 -15.156196  -13.500001  -5.800000</span>
+<span class="go">13      14  Bus 14   1.035531 -16.033565  -14.900000  -5.000000</span>
+</pre></div>
+</div>
+<p>Retrieve power flow results for generators:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_data</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1  232.391691 -16.549389</span>
+<span class="go">1       2     1   40.000001  43.555957</span>
+<span class="go">2       3     1    0.000000  25.074852</span>
+<span class="go">3       6     1    0.000000  12.729700</span>
+<span class="go">4       8     1    0.000000  17.623067</span>
+</pre></div>
+</div>
+<p>Let’s change generator injections! But first, we need to know which
+fields PowerWorld needs in order to identify generators. These fields
+are known as key fields.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_key_fields</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_key_field_list</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_key_fields</span>
+<span class="go">[&#39;BusNum&#39;, &#39;GenID&#39;]</span>
+</pre></div>
+</div>
+<p>Change generator active power injection at buses 3 and 8 via SimAuto
+function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="n">gen_key_fields</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;GenMW&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">values</span> <span class="o">=</span> <span class="p">[[</span><span class="mi">3</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">30</span><span class="p">],</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="s1">&#39;1&#39;</span><span class="p">,</span> <span class="mi">50</span><span class="p">]]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">ChangeParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">ValueList</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Did it work? Spoiler: it does!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
+<span class="go">   BusNum GenID       GenMW</span>
+<span class="go">0       1     1  232.391691</span>
+<span class="go">1       2     1   40.000001</span>
+<span class="go">2       3     1   30.000001</span>
+<span class="go">3       6     1    0.000000</span>
+<span class="go">4       8     1   50.000000</span>
+</pre></div>
+</div>
+<p>It would seem the generator active power injections have changed. Let’s
+re-run the power flow and see if bus voltages and angles change.
+Spoiler: they do.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_bus_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;bus&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;BusPUVolt&#39;</span><span class="p">,</span> <span class="s1">&#39;BusAngle&#39;</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span> <span class="o">=</span> <span class="n">bus_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span> <span class="o">-</span> <span class="n">new_bus_data</span><span class="p">[</span><span class="n">cols</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">diff</span>
+<span class="go">       BusPUVolt   BusAngle</span>
+<span class="go">0   0.000000e+00   0.000000</span>
+<span class="go">1  -1.100000e-07  -2.015596</span>
+<span class="go">2  -5.700000e-07  -4.813164</span>
+<span class="go">3  -8.650700e-03  -3.920185</span>
+<span class="go">4  -7.207540e-03  -3.238592</span>
+<span class="go">5  -5.900000e-07  -4.586528</span>
+<span class="go">6  -4.628790e-03  -7.309167</span>
+<span class="go">7  -3.190000e-06 -11.655362</span>
+<span class="go">8  -7.189370e-03  -6.284631</span>
+<span class="go">9  -6.256150e-03  -5.987861</span>
+<span class="go">10 -3.514030e-03  -5.297895</span>
+<span class="go">11 -2.400800e-04  -4.709888</span>
+<span class="go">12 -1.351040e-03  -4.827348</span>
+<span class="go">13 -4.736110e-03  -5.662158</span>
+</pre></div>
+</div>
+<p>Wouldn’t it be easier if we could change parameters with a DataFrame?
+Wouldn’t it be nice if we didn’t have to manually check if our updates
+were respected? You’re in luck!</p>
+<p>Create a copy of the <code class="docutils literal notranslate"><span class="pre">gen_data</span></code> DataFrame so that we can modify its
+values and use it to update parameters in PowerWorld. Then, change the
+generation for the generators at buses 2, 3, and 6.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span> <span class="o">=</span> <span class="n">gen_data</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">deep</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">gen_copy</span><span class="p">[</span><span class="s1">&#39;BusNum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">]),</span> <span class="s1">&#39;GenMW&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">,</span> <span class="mf">100.0</span><span class="p">]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_copy</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1  232.391691 -16.549389</span>
+<span class="go">1       2     1    0.000000  43.555957</span>
+<span class="go">2       3     1  100.000000  25.074852</span>
+<span class="go">3       6     1  100.000000  12.729700</span>
+<span class="go">4       8     1    0.000000  17.623067</span>
+</pre></div>
+</div>
+<p>Use helper function <code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code> to
+both command the generators and to confirm that PowerWorld respected the
+command. This is incredibly useful because if you directly use
+<code class="docutils literal notranslate"><span class="pre">ChangeParametersMultipleElements</span></code>, PowerWorld may unexpectedly not
+update the parameter you tried to change! If the following does not
+raise an exception, we’re in good shape (it doesn’t)!</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_and_confirm_params_multiple_element</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">command_df</span><span class="o">=</span><span class="n">gen_copy</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;GenMVR&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Run the power flow and observe the change in generation at the slack
+bus (bus 1):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_power_flow_results</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
+<span class="go">   BusNum GenID       GenMW     GenMVR</span>
+<span class="go">0       1     1   62.128144  14.986289</span>
+<span class="go">1       2     1    0.000000  10.385347</span>
+<span class="go">2       3     1  100.000000   0.000000</span>
+<span class="go">3       6     1  100.000000  -3.893420</span>
+<span class="go">4       8     1    0.000000  17.399502</span>
+</pre></div>
+</div>
+<p>What if we try to change generator voltage set points? Start by getting
+a DataFrame with the current settings. Remember to always access the
+key fields so that when we want to update parameters later PowerWorld
+knows how to find the generators.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">gen_key_fields</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;GenRegPUVolt&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span>
+<span class="go">   BusNum GenID  GenRegPUVolt</span>
+<span class="go">0       1     1      1.060000</span>
+<span class="go">1       2     1      1.045000</span>
+<span class="go">2       3     1      1.025425</span>
+<span class="go">3       6     1      1.070000</span>
+<span class="go">4       8     1      1.090000</span>
+</pre></div>
+</div>
+<p>Now, change all voltage set points to 1 per unit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span><span class="p">[</span><span class="s1">&#39;GenRegPUVolt&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">1.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">gen_v</span>
+<span class="go">   BusNum GenID  GenRegPUVolt</span>
+<span class="go">0       1     1           1.0</span>
+<span class="go">1       2     1           1.0</span>
+<span class="go">2       3     1           1.0</span>
+<span class="go">3       6     1           1.0</span>
+<span class="go">4       8     1           1.0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_and_confirm_params_multiple_element</span><span class="p">(</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">gen_v</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">199</span>, in <span class="n">change_and_confirm_params_multiple_element</span>
+    <span class="k">raise</span> <span class="n">CommandNotRespectedError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="gr">esa.saw.CommandNotRespectedError</span>: <span class="n">After calling ChangeParametersMultipleElement, not all parameters were actually changed within PowerWorld. Try again with a different parameter (e.g. use GenVoltSet instead of GenRegPUVolt).</span>
+</pre></div>
+</div>
+<p>So, PowerWorld didn’t respect that command, but we’ve been saved from
+future confusion by the <code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code>
+helper function.</p>
+<p>Let’s call the LoadState SimAuto function:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">LoadState</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">967</span>, in <span class="n">LoadState</span>
+    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;LoadState&#39;</span><span class="p">)</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">1227</span>, in <span class="n">_call_simauto</span>
+    <span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">esa.saw.PowerWorldError</span>: <span class="n">LoadState: State hasn&#39;t been previously stored.</span>
+</pre></div>
+</div>
+<p>This behavior is expected - it is not valid to call <code class="docutils literal notranslate"><span class="pre">LoadState</span></code> if
+<code class="docutils literal notranslate"><span class="pre">SaveState</span></code> has not yet been called. In the exception above, not that
+a <code class="docutils literal notranslate"><span class="pre">PowerWorldError</span></code> is raised. This empowers users to handle
+exceptions in whatever manner they see fit:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">PowerWorldError</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">saw</span><span class="o">.</span><span class="n">LoadState</span><span class="p">()</span>
+<span class="gp">... </span><span class="k">except</span> <span class="n">PowerWorldError</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Oh my, we&#39;ve encountered a PowerWorldError!&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="go">Oh my, we&#39;ve encountered a PowerWorldError!</span>
+</pre></div>
+</div>
+<p>Finally, make sure to clean up after yourself so you don’t have COM
+objects hanging around.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>After walking through this quick start, you should be ready to start
+using ESA to improve your simulation and analysis work flows!</p>
+</div>
+<div class="section" id="increase-loading-in-case">
+<h2>Increase Loading in Case<a class="headerlink" href="#increase-loading-in-case" title="Permalink to this headline">¶</a></h2>
+<p>The following example is also presented in the <a class="reference internal" href="welcome.html#what-is-esa"><span class="std std-ref">What Is ESA?</span></a>
+section.</p>
+<p>If you want to follow along, you’ll first need to define your own
+<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant, like so (adapt the path for your system):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+</pre></div>
+</div>
+<p>Then, import the SimAuto wrapper (SAW) class and initialize an instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">CASE_PATH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Retrieve key fields for loads:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kf</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_key_field_list</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kf</span>
+<span class="go">[&#39;BusNum&#39;, &#39;LoadID&#39;]</span>
+</pre></div>
+</div>
+<p>Pull load data including active and reactive power demand:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">load_frame</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">kf</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">load_frame</span>
+<span class="go">    BusNum LoadID    LoadSMW   LoadSMVR</span>
+<span class="go">0        2      1  21.699999  12.700000</span>
+<span class="go">1        3      1  94.199997  19.000000</span>
+<span class="go">2        4      1  47.799999  -3.900000</span>
+<span class="go">3        5      1   7.600000   1.600000</span>
+<span class="go">4        6      1  11.200000   7.500000</span>
+<span class="go">5        9      1  29.499999  16.599999</span>
+<span class="go">6       10      1   9.000000   5.800000</span>
+<span class="go">7       11      1   3.500000   1.800000</span>
+<span class="go">8       12      1   6.100000   1.600000</span>
+<span class="go">9       13      1  13.500001   5.800000</span>
+<span class="go">10      14      1  14.900000   5.000000</span>
+</pre></div>
+</div>
+<p>Uniformly increase loading by 50% and solve the power flow:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">load_frame</span><span class="p">[[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mf">1.5</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_parameters_multiple_element_df</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">load_frame</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Clean up when done:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Easy, isn’t it?</p>
+</div>
+<div class="section" id="add-lines-to-case">
+<h2>Add Lines to Case<a class="headerlink" href="#add-lines-to-case" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to add transmission lines to a model. You can
+find the case and .csv file referenced in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory of the
+ESA repository. Before starting the example, please define the constants
+<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">CANDIDATE_LINES</span></code> like the following, adapting paths
+to your system.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB&quot;</span>
+<span class="n">CANDIDATE_LINES</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\data\CandidateLines.csv&quot;</span>
+</pre></div>
+</div>
+<p>Import packages/classes and read the <code class="docutils literal notranslate"><span class="pre">CANDIDATE_LINES</span></code> .csv file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">CANDIDATE_LINES</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span>
+<span class="go">   From Number  To Number  Ckt        R        X        B  Lim MVA A</span>
+<span class="go">0         8155       5358    3  0.00037  0.00750  0.52342       2768</span>
+<span class="go">1         8154       8135    3  0.00895  0.03991  0.00585        149</span>
+<span class="go">2         8153       8108    3  0.01300  0.05400  0.02700        186</span>
+<span class="go">3         8152       8160    3  0.00538  0.03751  0.00613        221</span>
+<span class="go">4         8155       8057    3  0.00037  0.00750  0.52342       2768</span>
+<span class="go">5         8154       8153    3  0.01300  0.05400  0.02700        186</span>
+<span class="go">6         8155       8135    3  0.00538  0.03751  0.00613        221</span>
+</pre></div>
+</div>
+<p>Instantiate a <code class="docutils literal notranslate"><span class="pre">SAW</span></code> object. Set <code class="docutils literal notranslate"><span class="pre">CreateIfNotFound</span></code> to <code class="docutils literal notranslate"><span class="pre">True</span></code> so
+that new lines can be added:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">=</span><span class="n">SAW</span><span class="p">(</span><span class="n">FileName</span><span class="o">=</span><span class="n">CASE_PATH</span><span class="p">,</span> <span class="n">CreateIfNotFound</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">early_bind</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Rename columns in the <code class="docutils literal notranslate"><span class="pre">line_df</span></code> to match PowerWorld variables. We are
+renaming variables from the “Concise Variable Name” convention to the
+“Variable Name” convention. See <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx">power_world_object_fields.xlsx</a>.
+Also note <a class="reference external" href="https://github.com/mzy2240/ESA/issues/1#issue-525219427">this issue</a> is also relevant.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+<span class="gp">... </span><span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+<span class="gp">... </span><span class="s1">&#39;From Number&#39;</span><span class="p">:</span> <span class="s1">&#39;BusNum&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;To Number&#39;</span><span class="p">:</span> <span class="s1">&#39;BusNum:1&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;Ckt&#39;</span><span class="p">:</span> <span class="s1">&#39;LineCircuit&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;R&#39;</span><span class="p">:</span> <span class="s1">&#39;LineR&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;X&#39;</span><span class="p">:</span> <span class="s1">&#39;LineX&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;B&#39;</span><span class="p">:</span> <span class="s1">&#39;LineC&#39;</span><span class="p">,</span>
+<span class="gp">... </span><span class="s1">&#39;Lim MVA A&#39;</span><span class="p">:</span> <span class="s1">&#39;LineAMVA&#39;</span>
+<span class="gp">... </span><span class="p">},</span>
+<span class="gp">... </span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span><span class="o">.</span><span class="n">columns</span>
+<span class="go">Index([&#39;BusNum&#39;, &#39;BusNum:1&#39;, &#39;LineCircuit&#39;, &#39;LineR&#39;, &#39;LineX&#39;, &#39;LineC&#39;,</span>
+<span class="go">       &#39;LineAMVA&#39;],</span>
+<span class="go">      dtype=&#39;object&#39;)</span>
+</pre></div>
+</div>
+<p>Secondary and tertiary limits are required fields that we must add
+manually, since they were not present in the .csv file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span><span class="p">[</span><span class="s1">&#39;LineAMVA:1&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span><span class="p">[</span><span class="s1">&#39;LineAMVA:2&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="mf">0.0</span>
+</pre></div>
+</div>
+<p>Check to see if the first line is actually present. An error will
+indicate that it’s not.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">line_key_fields</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_key_field_list</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">line_key_fields</span>
+<span class="go">[&#39;BusNum&#39;, &#39;BusNum:1&#39;, &#39;LineCircuit&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first_line</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersSingleElement</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="n">line_key_fields</span><span class="p">,</span> <span class="n">line_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">line_key_fields</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">693</span>, in <span class="n">GetParametersSingleElement</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;GetParametersSingleElement&#39;</span><span class="p">,</span> <span class="n">ObjectType</span><span class="p">,</span>
+  File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">1227</span>, in <span class="n">_call_simauto</span>
+    <span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="gr">esa.saw.PowerWorldError</span>: <span class="n">GetParameters: Object not found</span>
+</pre></div>
+</div>
+<p>Enter edit mode to enable the creation of new devices, and use
+the <code class="docutils literal notranslate"><span class="pre">change_and_confirm_params_multiple_element</span></code> helper function to
+easily create the lines. This function will automagically confirm that
+the lines will be created.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">RunScriptCommand</span><span class="p">(</span><span class="s2">&quot;EnterMode(EDIT);&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_and_confirm_params_multiple_element</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="n">line_df</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Now, we should be able to find that first line without error:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">first_line</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersSingleElement</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="n">line_key_fields</span><span class="p">,</span> <span class="n">line_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="n">line_key_fields</span><span class="p">]</span><span class="o">.</span><span class="n">tolist</span><span class="p">())</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">first_line</span>
+<span class="go">BusNum         8152</span>
+<span class="go">BusNum:1       8160</span>
+<span class="go">LineCircuit       3</span>
+<span class="go">dtype: object</span>
+</pre></div>
+</div>
+<p>Always clean up:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="create-simple-graph-model">
+<h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to easily transform a grid model into a graph
+supported by NetworkX. NetworkX is a popular Python package for
+analyzing graph structure, building network models and designing new
+network algorithms. You’ll first need to install NetworkX into your
+virtual environment (which should be activated!), which is most easily
+done by:</p>
+<div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install networkx
+</pre></div>
+</div>
+<p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
+constant like so, adapting the path to your system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB&quot;</span>
+</pre></div>
+</div>
+<p>On to the example!</p>
+<p>Perform imports, initialize a <code class="docutils literal notranslate"><span class="pre">SAW</span></code> instance:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">CASE_PATH</span><span class="p">,</span> <span class="n">early_bind</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Get a DataFrame with all branches (lines, transformers, etc.):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">kf</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">get_key_field_list</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">kf</span>
+<span class="go">[&#39;BusNum&#39;, &#39;BusNum:1&#39;, &#39;LineCircuit&#39;]</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">branch_df</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;branch&#39;</span><span class="p">,</span> <span class="n">kf</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">branch_df</span>
+<span class="go">      BusNum  BusNum:1 LineCircuit</span>
+<span class="go">0       1001      1064           1</span>
+<span class="go">1       1001      1064           2</span>
+<span class="go">2       1001      1071           1</span>
+<span class="go">3       1001      1071           2</span>
+<span class="go">4       1002      1007           1</span>
+<span class="gp">... </span>     <span class="o">...</span>       <span class="o">...</span>         <span class="o">...</span>
+<span class="go">3199    8157      5124           1</span>
+<span class="go">3200    8157      8156           1</span>
+<span class="go">3201    8158      8030           1</span>
+<span class="go">3202    8159      8158           1</span>
+<span class="go">3203    8160      8159           1</span>
+
+<span class="go">[3204 rows x 3 columns]</span>
+</pre></div>
+</div>
+<p>Create the graph from the DataFrame. Yes, it is this simple. Use
+<code class="docutils literal notranslate"><span class="pre">Graph</span></code> instead of <code class="docutils literal notranslate"><span class="pre">MultiGraph</span></code> if there are no parallel branches.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span><span class="n">branch_df</span><span class="p">,</span> <span class="s2">&quot;BusNum&quot;</span><span class="p">,</span> <span class="s2">&quot;BusNum:1&quot;</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+<span class="go">2000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+<span class="go">3204</span>
+</pre></div>
+</div>
+<p>Clean up:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="created-graph-model-with-edges-weighted-by-branch-impedance">
+<h2>Created Graph Model with Edges Weighted by Branch Impedance<a class="headerlink" href="#created-graph-model-with-edges-weighted-by-branch-impedance" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how one can create a weighted graph using branch
+impedance values as weights. You’ll need to have the NetworkX Python
+package installed into your virtual environment in order to execute
+this example on your machine (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">networkx</span></code>).</p>
+<p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
+constant like so, adapting the path to your system:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+</pre></div>
+</div>
+<p>Onward!</p>
+<p>Imports and initialization:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">networkx</span> <span class="k">as</span> <span class="nn">nx</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">re</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">CASE_PATH</span><span class="p">,</span> <span class="n">early_bind</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">Graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Save YBus matrix to file:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">ybus_file</span> <span class="o">=</span> <span class="n">CASE_PATH</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;pwb&#39;</span><span class="p">,</span> <span class="s1">&#39;mat&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;SaveYbusInMatlabFormat(&quot;</span><span class="si">{}</span><span class="s1">&quot;, NO)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ybus_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">RunScriptCommand</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Read YBus matrix file into memory. The first two lines are skipped via
+the <code class="docutils literal notranslate"><span class="pre">readline</span></code> method because they aren’t needed.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">ybus_file</span><span class="p">,</span> <span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="n">mat_str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="go">&#39;j = sqrt(-1);\n&#39;</span>
+<span class="go">&#39;Ybus = sparse(14);\n&#39;</span>
+</pre></div>
+</div>
+<p>We’re done with the file itself now. Remove it:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">ybus_file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Remove all white space, split by semicolons, and define a couple regular
+expressions (ie –&gt; integer expression, fe –&gt; float expression):</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">mat_str</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;\s&#39;</span><span class="p">,</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">mat_str</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lines</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;;&#39;</span><span class="p">,</span> <span class="n">mat_str</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ie</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;[0-9]+&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fe</span> <span class="o">=</span> <span class="sa">r</span><span class="s1">&#39;-*[0-9]+\.[0-9]+&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">exp</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;(?:Ybus\()(</span><span class="si">{ie}</span><span class="s1">),(</span><span class="si">{ie}</span><span class="s1">)(?:\)=)(</span><span class="si">{fe}</span><span class="s1">)(?:\+j\*)(?:\()(</span><span class="si">{fe}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">ie</span><span class="o">=</span><span class="n">ie</span><span class="p">,</span> <span class="n">fe</span><span class="o">=</span><span class="n">fe</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>Loop over the lines from the file and build up the graph. Ignore
+diagonal Y bus matrix entries and buses which are not connected
+(have 0 admittance between them).</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">lines</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="n">match</span> <span class="o">=</span> <span class="n">exp</span><span class="o">.</span><span class="n">match</span><span class="p">(</span><span class="n">line</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">match</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">continue</span>
+<span class="gp">... </span>    <span class="n">idx1</span><span class="p">,</span> <span class="n">idx2</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">imag</span> <span class="o">=</span> <span class="n">match</span><span class="o">.</span><span class="n">groups</span><span class="p">()</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">idx1</span> <span class="o">==</span> <span class="n">idx2</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">continue</span>
+<span class="gp">... </span>    <span class="n">neg_admittance</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">real</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="nb">float</span><span class="p">(</span><span class="n">imag</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">try</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="n">impedance</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span> <span class="o">/</span> <span class="n">neg_admittance</span>
+<span class="gp">... </span>    <span class="k">except</span> <span class="ne">ZeroDivisionError</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">continue</span>
+<span class="gp">... </span>    <span class="n">g</span><span class="o">.</span><span class="n">add_edge</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">idx1</span><span class="p">),</span> <span class="nb">int</span><span class="p">(</span><span class="n">idx2</span><span class="p">),</span> <span class="n">r</span><span class="o">=</span><span class="n">impedance</span><span class="o">.</span><span class="n">real</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">impedance</span><span class="o">.</span><span class="n">imag</span><span class="p">)</span>
+<span class="gp">...</span>
+</pre></div>
+</div>
+<p>Explore some graph properties to ensure it worked:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">number_of_nodes</span><span class="p">()</span>
+<span class="go">14</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">g</span><span class="o">.</span><span class="n">number_of_edges</span><span class="p">()</span>
+<span class="go">20</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">get_edge_data</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span><span class="p">[</span><span class="s1">&#39;r&#39;</span><span class="p">]</span>
+<span class="go">0.01937987032338931</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">data_1_2</span><span class="p">[</span><span class="s1">&#39;x&#39;</span><span class="p">]</span>
+<span class="go">0.05917003035204804</span>
+</pre></div>
+</div>
+<p>As always, clean up when done:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">exit</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">ESA</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
+<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#esa-quick-start">ESA Quick Start</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#increase-loading-in-case">Increase Loading in Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#add-lines-to-case">Add Lines to Case</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-simple-graph-model">Create Simple Graph Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#created-graph-model-with-edges-weighted-by-branch-impedance">Created Graph Model with Edges Weighted by Branch Impedance</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="esa.html" title="previous chapter">esa API Documentation</a></li>
+      <li>Next: <a href="common_issues.html" title="next chapter">Common Issues</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="submit" value="Go" />
+    </form>
+    </div>
+</div>
+<script>$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/snippets.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
