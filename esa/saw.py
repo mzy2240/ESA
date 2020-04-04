@@ -18,6 +18,8 @@ import pythoncom
 import win32com
 from win32com.client import VARIANT
 
+import tempfile
+
 # TODO: Make logging more configurable.
 logging.basicConfig(
     format="%(asctime)s [%(levelname)s] [%(name)s]: %(message)s",
@@ -129,6 +131,11 @@ class SAW(object):
         # Set the CreateIfNotFound and UIVisible properties.
         self.set_simauto_property('CreateIfNotFound', CreateIfNotFound)
         self.set_simauto_property('UIVisible', UIVisible)
+        # Prepare an empty auxiliary file
+        self.ntf = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
+                                               delete=False)
+        self.empty_aux = Path(self.ntf.name).as_posix()
+        self.ntf.close()
         # Open the case.
         self.OpenCase(FileName=FileName)
 
@@ -298,6 +305,9 @@ class SAW(object):
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
+        # Clean the empty aux file
+        os.unlink(self.ntf.name)
+        # Close the case and delete the COM object
         self.CloseCase()
         del self._pwcom
         self._pwcom = None
@@ -523,6 +533,11 @@ class SAW(object):
 
         # Set the property.
         setattr(self._pwcom, property_name, property_value)
+
+    def update_ui(self):
+        """Re-render the PowerWorld interface.
+        """
+        return self.ProcessAuxFile(self.empty_aux)
 
     ####################################################################
     # SimAuto Server Functions
