@@ -1513,8 +1513,9 @@ class SAW(object):
         :raises COMError: If attempting to call the SimAuto function
             results in an error.
 
-        The listing of valid functions can be found `here
-        <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3>`__.
+        The listing of valid functions can be found in PowerWorld's
+        `web help
+        <https://www.powerworld.com/WebHelp/>`__.
         """
         # Get a reference to the SimAuto function from the COM object.
         try:
