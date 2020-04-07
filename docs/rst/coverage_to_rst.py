@@ -96,10 +96,11 @@ def main():
     rst_table = '    {}'.format(rst_table)
 
     # Generate section.
-    new_section = (".. table:: ESA's testing coverage as of {} (Git commit: {})"
-                   .format(date, git_hash)
-                   + '\n    :widths: auto\n    :align: left\n\n{}\n'
-                   .format(rst_table))
+    new_section = (
+            ".. table:: ESA's testing coverage as of {} (Git commit: {})"
+            .format(date, git_hash)
+            + '\n    :widths: auto\n    :align: left\n\n{}\n'
+            .format(rst_table))
 
     # Substitute the new section in.
     readme = re.sub("\.\.\stable::\sESA's\stesting\scoverage(.*)\+\n",
@@ -118,11 +119,15 @@ def run_tests():
     print('*' * 120)
     print('RUNNING TESTS')
     print('Ignore any exceptions until you see a bunch of "*" characters.')
+    print('-' * 120)
     loader = TestLoader()
     suite = loader.discover(start_dir=TEST_DIR)
     result = TestResult()
     suite.run(result)
     print('*' * 120)
+    print('DONE RUNNING TESTS. ANY ERRORS BEYOND THIS POINT ARE CAUSE FOR '
+          'CONCERN.')
+    print('-' * 120)
 
 
 if __name__ == '__main__':

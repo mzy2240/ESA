@@ -8,7 +8,8 @@ who is a co-founder of PowerWorld Corporation, and `Professor Katherine
 Davis <https://engineering.tamu.edu/electrical/profiles/davis-katherine
 .html>`__, who is one of the original authors of SimAuto.
 Funding was provided by the Texas A&M Engineering Experiment Station's
-`Smart Grid Center <https://smartgridcenter.tamu.edu/>`__.
+`Smart Grid Center <https://smartgridcenter.tamu.edu/>`__ and the U.S.
+Department of Energy (DOE) under award DE-OE0000895.
 
 The authors of ESA would like to give a special thank you to our users.
 Additionally, we've received help from some of our colleagues along the
