@@ -1461,7 +1461,7 @@ class SAW(object):
             the oneline and leave the oneline as is. Default is NO if
             not specified.
         """
-        script = 'OpenOneline({}, {}, {} {})'.format(filename, view,
+        script = 'OpenOneline("{}", {}, {} {})'.format(filename, view,
                                                      fullscreen, showfull)
         return self.RunScriptCommand(script)
 

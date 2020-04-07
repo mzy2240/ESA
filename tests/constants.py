@@ -11,6 +11,7 @@ SNIPPET_FILES = [os.path.join(SNIPPET_DIR, x) for x in
 
 # Path to IEEE 14 bus model.
 PATH_14 = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwb')
+PATH_14_PWD = os.path.join(CASE_DIR, 'ieee_14', 'IEEE 14 bus.pwd')
 
 # Path to the Texas 2000 bus model.
 PATH_2000 = os.path.join(CASE_DIR, 'tx2000', 'tx2000_base.PWB')

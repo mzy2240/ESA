@@ -43,8 +43,8 @@ from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences
-from tests.constants import PATH_14, PATH_2000, PATH_2000_mod, PATH_9, \
-    THIS_DIR, LTC_AUX_FILE, DATA_DIR
+from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, PATH_2000_mod, \
+    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -519,6 +519,26 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, m):
             self.saw.set_simauto_property(property_name='junk',
                                           property_value='42')
+
+
+class UpdateUITestCase(unittest.TestCase):
+    """Test the update_ui method. To avoid conflicts with
+    other tests we'll create a fresh SAW instance here.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_update_default(self):
+        """It should work with or without the visible UI.
+        """
+        self.assertIsNone(self.saw.update_ui())
 
 
 ########################################################################
@@ -1668,6 +1688,63 @@ class SolvePowerFlowTestCase(unittest.TestCase):
         with self.assertRaisesRegex(PowerWorldError,
                                     'Invalid solution method'):
             saw_14.SolvePowerFlow(SolMethod='junk')
+
+
+class OpenOneLineTestCase(unittest.TestCase):
+    """Test the OpenOneLine method. Note PowerWorld doesn't return
+    anything for this script command, so we should always get None back
+    unless there is an error.
+    """
+
+    def test_open_default(self):
+        """Open the correct pwd file.
+        """
+        self.assertIsNone(saw_14.OpenOneLine(PATH_14_PWD))
+
+    def test_open_invalid_format_file(self):
+        """Open the non-PWD file should raise a PowerWorld Error
+        """
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'Error opening oneline'):
+            saw_14.OpenOneLine(PATH_14)
+
+
+class CloseOnelineTestCase(unittest.TestCase):
+    """Test the CloseOneline method. Note PowerWorld doesn't return
+    anything for this script command, so we should always get None back
+    unless there is an error.
+    """
+
+    def test_close_default(self):
+        """Close the last focused oneline diagram.
+        """
+        saw_14.OpenOneLine(PATH_14_PWD)
+        self.assertIsNone(saw_14.CloseOneline())
+
+    def test_close_with_name(self):
+        """Close the oneline diagram with the CORRECT name.
+        """
+        saw_14.OpenOneLine(PATH_14_PWD)
+        self.assertIsNone(saw_14.CloseOneline(os.path.basename(PATH_14_PWD)))
+
+    def test_close_with_wrong_name(self):
+        """Close the oneline diagram with wrong name should raise a
+        PowerWorld Error
+        """
+        saw_14.OpenOneLine(PATH_14_PWD)
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'Cannot find Oneline'):
+            saw_14.CloseOneline("A file that cannot be found")
+
+    def test_close_with_invalid_identifier(self):
+        """Close the oneline diagram with invalid identifier should
+        raise a PowerWorld Error
+        """
+        saw_14.OpenOneLine(PATH_14_PWD)
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'invalid identifier character'):
+            saw_14.CloseOneline(PATH_14_PWD)
+
 
 
 ########################################################################
