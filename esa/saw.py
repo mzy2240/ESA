@@ -131,11 +131,13 @@ class SAW(object):
         # Set the CreateIfNotFound and UIVisible properties.
         self.set_simauto_property('CreateIfNotFound', CreateIfNotFound)
         self.set_simauto_property('UIVisible', UIVisible)
-        # Prepare an empty auxiliary file
+
+        # Prepare an empty auxiliary file used for updating the UI.
         self.ntf = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
                                                delete=False)
         self.empty_aux = Path(self.ntf.name).as_posix()
         self.ntf.close()
+
         # Open the case.
         self.OpenCase(FileName=FileName)
 
@@ -534,8 +536,10 @@ class SAW(object):
         # Set the property.
         setattr(self._pwcom, property_name, property_value)
 
-    def update_ui(self):
-        """Re-render the PowerWorld interface.
+    def update_ui(self) -> None:
+        """Re-render the PowerWorld user interface (UI).
+
+        :returns: None
         """
         return self.ProcessAuxFile(self.empty_aux)
 
@@ -1446,31 +1450,55 @@ class SAW(object):
         script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
         return self.RunScriptCommand(script_command)
 
-    def OpenOneLine(self, filename, view="", fullscreen="NO", showfull="NO"):
-        """Use this function to open an oneline diagram. This fucntion
+    def OpenOneLine(self, filename: str, view: str = "",
+                    FullScreen: str = "NO", ShowFull: str = "NO",
+                    LinkMethod: str = "LABELS", Left: float = 0.0,
+                    Top: float = 0.0, Width: float = 0.0, Height: float = 0.0)\
+            -> None:
+        """Use this function to open a oneline diagram. This function
         can be used to associate onelines with a PWB file.
 
         :param filename: The file name of the oneline diagram to open.
         :param view: The view name that should be opened. Pass an empty
             string to denote no specific view.
-        :param fullscreen: Set to YES or NO. YES means that the oneline
+        :param FullScreen: Set to YES or NO. YES means that the oneline
             diagram will be open in full screen mode. If this parameter
             is not specified, then NO is assumed.
-        :param showfull: Optional parameter. Set to YES to open the
+        :param ShowFull: Optional parameter. Set to YES to open the
             oneline and apply the Show Full option. Set to NO to open
             the oneline and leave the oneline as is. Default is NO if
             not specified.
+        :param LinkMethod: Optional Parameter that controls oneline
+            linking. LABELS, NAMENOMKV, and NUMBER will link using the
+            respective key fields.
+        :param Left: Optional with default of 0. Value between 0 and 100
+            that indicates the location of the left edge of the oneline
+            as a percentage of the Simulator/Retriever window width.
+        :param Top: Optional with default of 0. Value between 0 and 100
+            that indicates the top edge of the oneline as a percentage
+            of the Simulator/Retriever window height.
+        :param Width: Optional with default of 0. Value between 0 and
+            100 that indicates the width of the oneline as a percentage
+            of the Simulator/Retriever window width.
+        :param Height: Optional with default of 0. Value between 0 and
+            100 that indicates the height of the oneline as a percentage
+            of the Simulator/Retriever window height.
+
+        :returns: None
         """
-        script = 'OpenOneline("{}", {}, {} {})'.format(filename, view,
-                                                     fullscreen, showfull)
+        script = 'OpenOneline("{}", {}, {} {})'.format(
+            filename, view, FullScreen, ShowFull, LinkMethod, Left, Top,
+            Width, Height)
         return self.RunScriptCommand(script)
 
-    def CloseOneline(self, OnelineName=""):
+    def CloseOneline(self, OnelineName: str = "") -> None:
         """Use this action to close an open oneline diagram without
          saving it. If the name is omitted, the last focused oneline 
          diagram will be closed.
 
          :param OnelineName: The name of the oneline diagram to close.
+
+         :returns: None
          """
         script = 'CloseOneline({})'.format(OnelineName)
         return self.RunScriptCommand(script)
