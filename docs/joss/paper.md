@@ -17,18 +17,21 @@ tags:
 authors:
   - name: Brandon L. Thayer
     orcid: 0000-0002-6517-1295
-    affiliation: "Texas A&M University, Pacific Northwest National Laboratory"
+    affiliation: 1
   - name: Zeyu Mao
     orcid: 0000-0003-0841-5123
-    affiliation: Texas A&M University
+    affiliation: 1
   - name: Yijing Liu
     orcid: 0000-0002-5104-325X
-    affiliation: Texas A&M University
+    affiliation: 1
   - name: Thomas Overbye
     orcid: 0000-0002-2382-2811
-    affiliation: Texas A&M University
+    affiliation: 1
 date: 08 April 2020
 bibliography: paper.bib
+affiliations:
+  - Texas A&M University
+  index: 1
 ---
 
 # Summary
