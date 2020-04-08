@@ -27,11 +27,11 @@ authors:
   - name: Thomas Overbye
     orcid: 0000-0002-2382-2811
     affiliation: 1
+affiliations:
+  - name: "Texas A&M University"
+    index: 1
 date: 08 April 2020
 bibliography: paper.bib
-affiliations:
-  - name: Texas A&M University
-  index: 1
 ---
 
 # Summary
