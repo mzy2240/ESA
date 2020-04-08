@@ -43,6 +43,11 @@ html
 
 Directory used by sphinx when generating documentation
 
+joss
+^^^^
+
+Directory for storing JOSS paper files.
+
 rst
 ^^^
 
