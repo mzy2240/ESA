@@ -30,7 +30,7 @@ authors:
 date: 08 April 2020
 bibliography: paper.bib
 affiliations:
-  - Texas A&M University
+  - name: Texas A&M University
   index: 1
 ---
 
