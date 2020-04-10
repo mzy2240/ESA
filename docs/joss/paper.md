@@ -24,6 +24,9 @@ authors:
   - name: Yijing Liu
     orcid: 0000-0002-5104-325X
     affiliation: 1
+  - name: Katherine Davis
+    orcid: 0000-0002-xxxx-xxxx
+    affiliation: 1
   - name: Thomas Overbye
     orcid: 0000-0002-2382-2811
     affiliation: 1
@@ -109,6 +112,11 @@ to calculate real-time electric fields. These can then be fed to a grid
 model of Texas using ESA to enable calculation of real-time
 geomagnetically induced currents (GICs) for monitoring and
 visualization.
+- ESA is used by an ongoing research project entitled "Contingency 
+Analysis Based on Graph Theory Concepts and Line Outage Distribution 
+Factor". In this project ESA is leveraged to extract the topology of
+the power system model, to compute the LODF matrix and also to validate 
+the proposed algorithm.
 - TODO: Add more
 
 # Acknowledgements
