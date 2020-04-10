@@ -25,7 +25,7 @@ authors:
     orcid: 0000-0002-5104-325X
     affiliation: 1
   - name: Katherine Davis
-    orcid: 0000-0002-xxxx-xxxx
+    orcid: 0000-0002-1603-1122
     affiliation: 1
   - name: Thomas Overbye
     orcid: 0000-0002-2382-2811
