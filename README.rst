@@ -26,7 +26,7 @@ If you use ESA in any of your work, please use the following citation:
 .. code:: latex
 
    @misc{ESA,
-     author = {Zeyu Mao and Brandon Thayer and Yijing Liu},
+     author = {Brandon Thayer and Zeyu Mao and Yijing Liu},
      title = {Easy SimAuto (ESA)},
      year = {2020},
      publisher = {GitHub},
