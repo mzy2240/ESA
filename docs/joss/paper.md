@@ -89,8 +89,9 @@ present:
 
 - In [@gym-powerworld], [@brandon_thesis], ESA was used to create a
 standardized reinforcement learning environment for power system voltage
-control. This environment was then used to carry out experiments
-involving 
+control. This environment was then used to carry out deep reinforcement
+learning (DRL) experiments in which the algorithm attempts to learn how
+to best control grid voltages under a diverse set of grid conditions. 
 - In [@scenario_development], ESA was leveraged to create and simulate 
 different electric grid scenarios where load, renewable generation 
 levels, generation capacities, scheduled outages, and unit commitment
