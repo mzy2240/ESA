@@ -46,7 +46,8 @@ system that was not designed for intermittent power sources,
 researchers and industry practitioners must simulate the electric grid,
 its component devices, and its operation.
 
-PowerWorld Simulator is a commercial power systems simulation tool that
+[PowerWorld Simulator](https://www.powerworld.com/) is a commercial
+power systems simulation tool that
 contains a suite of modeling and simulation features including power 
 flow simulation, contingency analysis, transient stability simulation,
 and more [@powerworld]. The Simulator Automation Server (SimAuto) add-on
@@ -61,11 +62,12 @@ the in-memory nature of SimAuto communication can make using SimAuto
 challenging, requiring error-checking, data type conversions, data
 parsing, and more.
 
-Easy SimAuto (ESA) is a Python package that significantly simplifies
-using SimAuto [@esa]. ESA wraps all available SimAuto functions;
-performs automatic error checking, data type conversions, and data 
-parsing; is easily installable via Python's package manager (Pip);
-has 100% testing coverage; and is fully documented. Similar packages
+[Easy SimAuto (ESA)](https://github.com/mzy2240/ESA) is a Python package
+that significantly simplifies using SimAuto [@esa]. ESA wraps all
+available SimAuto functions; performs automatic error checking, data
+type conversions, and data parsing; is easily installable via Python's
+package manager (Pip); has 100% testing coverage; and is fully
+documented. Similar packages
 have been created in the past, but lack functions, tests, documentation,
 and other useful features ESA provides [@pypowerworld], [@matpws].
 Most SimAuto users tend to write their own one-off functions and 
