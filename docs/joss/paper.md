@@ -114,9 +114,8 @@ geomagnetically induced currents (GICs) for monitoring and
 visualization.
 - ESA is used by an ongoing research project entitled "Contingency 
 Analysis Based on Graph Theory Concepts and Line Outage Distribution 
-Factor". In this project ESA is leveraged to extract the topology of
-the power system model, to compute the LODF matrix and also to validate 
-the proposed algorithm.
+Factor" (LODF). In this project, ESA is leveraged to extract the
+topology of the power system model and obtain the LODF matrix.
 - TODO: Add more
 
 # Acknowledgements
