@@ -26,6 +26,11 @@ Why Use ESA?
 
 .. include:: welcome/why.rst
 
+Projects That Use ESA
+---------------------
+
+.. include:: welcome/projects.rst
+
 Disclaimer and Credits
 ----------------------
 
