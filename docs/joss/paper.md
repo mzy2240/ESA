@@ -100,12 +100,13 @@ were all varied. The resulting scenarios were used in the
 hosted by the U.S. Department of Energy (DOE).
 - ESA is used by an ongoing research project entitled "Real Time
 Monitoring Applications for the Power Grid under Geomagnetic
-Disturbances": Recently, a real-world GMD monitoring system consisting
-of six magnetometers was deployed in Texas. The resulting magnetic field
-measurements are coupled with ground conductivity models to calculate
-real-time electric fields. These can then be fed to a grid model of
-Texas using ESA to enable calculation of real-time GICs for monitoring
-and visualization.
+Disturbances (GMD)": Recently, a real-world GMD monitoring system
+consisting of six magnetometers was deployed in Texas. The resulting
+magnetic field measurements are coupled with ground conductivity models
+to calculate real-time electric fields. These can then be fed to a grid
+model of Texas using ESA to enable calculation of real-time
+geomagnetically induced currents (GICs) for monitoring and
+visualization.
 - TODO: Add more
 
 # Acknowledgements
