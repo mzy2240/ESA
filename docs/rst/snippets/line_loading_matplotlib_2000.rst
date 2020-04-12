@@ -46,8 +46,16 @@ Get line loading percentage at all buses via SimAuto function:
   >>> branch_data = saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
   >>> branch_data
         BusNum  BusNum:1 LineCircuit  LineMaxPercent
-0       1001      1064           1       30.873056
-1       1001      1064           2       30.873056
-2       1001      1071           1       35.950521
-3       1001      1071           2       35.950521
-4       1002      1007           1        5.299143
+  0       1001      1064           1       30.873056
+  1       1001      1064           2       30.873056
+  2       1001      1071           1       35.950521
+  3       1001      1071           2       35.950521
+  4       1002      1007           1        5.299143
+
+Then Let's start to plot with Matplotlib!
+
+.. code:: python
+
+  >>> branch_data.plot(kind='scatter',x='BusNum',y='LineMaxPercent', color='blue')
+  >>> plt.show()
+  
