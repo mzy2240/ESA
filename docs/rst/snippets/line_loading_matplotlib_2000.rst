@@ -1,10 +1,15 @@
-This examples shows how to make various of plots using Matplotlib. Matplotlib is a comprehensive library for creating static, animated, and interactive visualizations in Python. You'll first need to install Matplotlib into your virtual environment (which should be activated!), which is most easily done by.
+This examples shows how to make various of plots using Matplotlib.
+Matplotlib is a comprehensive library for creating static, animated,
+and interactive visualizations in Python. You'll first need to install
+Matplotlib into your virtual environment (which should be activated!),
+which is most easily done by.
   
 .. code:: bat
 
     python -m pip install -U matplotlib
  
-Before following along with the example, define the CASE_PATH constant like so, adapting the path to your system.
+Before following along with the example, define the CASE_PATH constant
+like so, adapting the path to your system.
 
 .. code:: python
 
@@ -24,13 +29,16 @@ Initialize SAW instance using 2000 bus test case:
 .. code:: python
 
   >>> saw = SAW(FileName=CASE_PATH)
+
 Solve the power flow:
 
 .. code:: python
 
   >>> saw.SolvePowerFlow()
  
-Let's change line loading percentage. But first, we need to know which fields PowerWorld needs in order to identify branches. These fields are known as key fields.
+Let's change line loading percentage. But first, we need to know which
+fields PowerWorld needs in order to identify branches. These fields are
+known as key fields.
 
 .. code:: python
 
@@ -46,16 +54,27 @@ Get line loading percentage at all buses via SimAuto function:
   >>> branch_data = saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
   >>> branch_data
         BusNum  BusNum:1 LineCircuit  LineMaxPercent
-  0       1001      1064           1       30.873056
-  1       1001      1064           2       30.873056
-  2       1001      1071           1       35.950521
-  3       1001      1071           2       35.950521
-  4       1002      1007           1        5.299143
+  0       1001      1064           1       30.879348
+  1       1001      1064           2       30.879348
+  2       1001      1071           1       35.957154
+  3       1001      1071           2       35.957154
+  4       1002      1007           1        5.342946
+  ...      ...       ...         ...             ...
+  3199    8157      5124           1       36.371236
+  3200    8157      8156           1       47.000999
+  3201    8158      8030           1       26.123525
+  3202    8159      8158           1       43.641971
+  3203    8160      8159           1       57.795335
+  <BLANKLINE>
+  [3204 rows x 4 columns]
 
 Then Let's start to plot with Matplotlib!
 
 .. code:: python
 
   >>> branch_data.plot(kind='scatter',x='BusNum',y='LineMaxPercent', color='blue')
+  <matplotlib.axes._subplots.AxesSubplot object at 0x000002A1B4407248>
   >>> plt.show()
+
+  .. image:: C:\Users\yijin\OneDrive\Documents\GitHub\ESA\docs\rst\snippets\myplot.png
   
