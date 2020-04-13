@@ -51,7 +51,7 @@ setuptools.setup(
     # There are a couple tests that use networkx, and we use the magic
     # of sphinx for documentation. Coverage is necessary to keep the
     # coverage report up to date.
-    extras_require={'test': ['networkx', 'coverage'],
+    extras_require={'test': ['networkx', 'coverage', 'matplotlib'],
                     'doc': ['sphinx', 'tabulate']},
     license='MIT',
     # TODO: Why aren't we zip safe?
