@@ -103,6 +103,12 @@ levels, generation capacities, scheduled outages, and unit commitment
 were all varied. The resulting scenarios were used in the
 [Grid Optimization (GO) competition](https://gocompetition.energy.gov/)
 hosted by the U.S. Department of Energy (DOE).
+- Geomagnetic disturbances (GMDs) affect the magnetic and electric field
+of the earth, inducing dc voltage sources superimposed on transmission
+lines. In [@OverbyeKPEC], a planning-based GMD mitigation strategy was
+developed for large power systems. ESA is leveraged to programmatically
+place GIC blocking devices in test systems per the proposed algorithm,
+thus minimizing the effects of GMDs on the power grid.
 - ESA is used by an ongoing research project entitled "Real Time
 Monitoring Applications for the Power Grid under Geomagnetic
 Disturbances (GMD)": Recently, a real-world GMD monitoring system
@@ -116,7 +122,6 @@ visualization.
 Analysis Based on Graph Theory Concepts and Line Outage Distribution 
 Factor" (LODF). In this project, ESA is leveraged to extract the
 topology of the power system model and obtain the LODF matrix.
-- TODO: Add more
 
 # Acknowledgements
 
