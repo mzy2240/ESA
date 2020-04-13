@@ -10,3 +10,5 @@ the file names.
 Also note that all ``2000`` snippets will be passed the
 ``CANDIDATE_LINES`` variable during testing, as that's needed for
 "add_lines_2000.rst".
+
+File ``myplot.png`` will be needed for "line_loading_matplotlib_2000".
