@@ -72,8 +72,7 @@ Then Let's start to plot with Matplotlib!
 
 .. code:: python
 
-  >>> branch_data.plot(kind='scatter',x='BusNum',y='LineMaxPercent', color='blue')
-  `matplotlib.collections.LineCollection`
+  >>> fig = branch_data.plot(kind='scatter',x='BusNum',y='LineMaxPercent', color='blue')
   >>> plt.show()
 
 .. image:: https://github.com/mzy2240/ESA/blob/develop/docs/rst/snippets/myplot.png
