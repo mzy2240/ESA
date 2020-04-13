@@ -83,6 +83,6 @@ Then let's start to plot with Matplotlib!
 
 The results should look like:
 
-.. image:: line_loading_histogram.png
-    :width: 200px
+.. image:: snippets/line_loading_histogram.png
+    :width: 100 %
     :align: center

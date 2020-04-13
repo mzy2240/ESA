@@ -38,3 +38,8 @@ Created Graph Model with Edges Weighted by Branch Impedance
 -----------------------------------------------------------
 
 .. include:: snippets/weighted_graph_14.rst
+
+Plot Histogram of Line Flows with Matplotlib
+--------------------------------------------
+
+.. include:: snippets/line_loading_matplotlib_2000.rst
