@@ -73,8 +73,8 @@ Then Let's start to plot with Matplotlib!
 .. code:: python
 
   >>> branch_data.plot(kind='scatter',x='BusNum',y='LineMaxPercent', color='blue')
-  <matplotlib.axes._subplots.AxesSubplot object at 0x000002A1B4407248>
+  `matplotlib.collections.LineCollection`
   >>> plt.show()
 
-  .. image:: C:\Users\yijin\OneDrive\Documents\GitHub\ESA\docs\rst\snippets\myplot.png
+.. image:: https://github.com/mzy2240/ESA/blob/develop/docs/rst/snippets/myplot.png
   
