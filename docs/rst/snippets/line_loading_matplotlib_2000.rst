@@ -76,4 +76,5 @@ Then Let's start to plot with Matplotlib!
   >>> plt.show()
 
 .. image:: https://github.com/mzy2240/ESA/blob/develop/docs/rst/snippets/myplot.png
-  
+    :width: 200px
+    :align: center
