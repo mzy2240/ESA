@@ -15,6 +15,12 @@ following desirable properties:
     files
 *   Returns useful data types such as Pandas DataFrames, unlocking a
     whole new realm of analysis and control capabilities
+*   Gets data from a power system model for other application, like
+    graph analysis or signal processing
+*   Co-simulation with other domains such as transportation,
+    communication, or natural gas
+*   Task automation, like dynamic model tuning and relay setting
+    tuning
 *   AI & ML friendly
 *   Compatible with several modern Python versions
 *   Lightweight and fast
