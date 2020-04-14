@@ -17,7 +17,7 @@ tags:
 authors:
   - name: Brandon L. Thayer
     orcid: 0000-0002-6517-1295
-    affiliation: 1
+    affiliation: "1, 2"
     footnote: 1
   - name: Zeyu Mao
     orcid: 0000-0003-0841-5123
@@ -36,6 +36,7 @@ authors:
 affiliations:
   - name: "Texas A&M University"
     index: 1
+  - name: "Pacific Northwest National Laboratory"
 date: 08 April 2020
 bibliography: paper.bib
 ---
