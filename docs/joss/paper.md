@@ -1,5 +1,5 @@
 ---
-title: 'Easy SimAuto (ESA): A Python Package that Eases Interaction with the PowerWorld Simulator Automation Server (SimAuto)'
+title: 'Easy SimAuto (ESA): A Python Package that Eases Interaction with the PowerWorld Simulator'
 tags:
   - Python
   - PowerWorld
@@ -69,13 +69,16 @@ challenging, requiring error-checking, data type conversions, data
 parsing, and more.
 
 [Easy SimAuto (ESA)](https://github.com/mzy2240/ESA) is a Python package
-that significantly simplifies using SimAuto [@esa]. ESA wraps all
-available SimAuto functions; performs automatic error checking, data
-type conversions, and data parsing; is easily installable via Python's
-package manager (Pip); has 100% testing coverage; and is fully
-documented. Similar packages
-have been created in the past, but lack functions, tests, documentation,
-and other useful features ESA provides [@pypowerworld], [@matpws].
+that significantly simplifies interfacing the PowerWorld Simulator 
+[@esa]. ESA wraps all available SimAuto functions; provides high-level
+ helper functions to execute common tasks in less code; leverages the
+  script commands and the auxiliary file [@aux] to provide more
+   functionalities that the native SimAuto cannot offer; performs 
+automatic error checking, data type conversions, and data parsing; is 
+easily installable via Python's package manager (Pip); has 100% testing
+ coverage; and is fully documented. Similar packages have been created 
+ in the past, but lack functions, tests, documentation, and other useful
+  features ESA provides [@pypowerworld], [@matpws].
 Most SimAuto users tend to write their own one-off functions and 
 boilerplate code for interfacing with SimAuto - ESA eliminates this 
 redundancy and abstracts away all the low-level SimAuto interactions
@@ -87,10 +90,14 @@ practitioners. As the design and operation of the electric grid becomes
 more complex, researchers and developers need the ability to incorporate
 their programs, algorithms, control schemes, etc. into power system
 simulations. Since ESA uses data types common to data science and
-scientific computing (e.g. Pandas DataFrames), it's well suited to both
-academic research and task automation in industry. Additionally, ESA
-provides a much-needed bridge between power system simulation and 
-machine learning libraries.
+scientific computing (e.g. Pandas DataFrames and Numpy Array), it's well
+ suited to both academic research and task automation in industry
+ . Additionally, ESA provides a much-needed bridge between power system
+simulation and machine learning libraries. On the one hand, when 
+compared to other Python-based power system simulator, ESA provides much
+more functions with faster calculation speed and industry-level 
+accuracy; on the other hand, ESA provides a more user-friendly interface
+when compared to other traditional power system simulators.
 
 ESA has already been utilized in several research projects past and
 present:
