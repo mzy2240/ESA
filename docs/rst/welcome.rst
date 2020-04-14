@@ -4,6 +4,8 @@ Welcome to Easy SimAuto's (ESA) documentation! If you encounter issues
 with ESA or the documentation, please file an issue on `GitHub
 <https://github.com/mzy2240/ESA/issues>`__.
 
+.. _citation:
+
 Citation
 --------
 
