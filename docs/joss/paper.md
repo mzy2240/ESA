@@ -18,9 +18,12 @@ authors:
   - name: Brandon L. Thayer
     orcid: 0000-0002-6517-1295
     affiliation: 1
+    footnote: 1
   - name: Zeyu Mao
     orcid: 0000-0003-0841-5123
     affiliation: 1
+    footnote: 1
+    equal: 1
   - name: Yijing Liu
     orcid: 0000-0002-5104-325X
     affiliation: 1
@@ -105,7 +108,9 @@ were all varied. The resulting scenarios were used in the
 hosted by the U.S. Department of Energy (DOE).
 - Geomagnetic disturbances (GMDs) affect the magnetic and electric field
 of the earth, inducing dc voltage sources superimposed on transmission
-lines. In [@OverbyeKPEC], a planning-based GMD mitigation strategy was
+lines. In [@OverbyeKPEC]^[accepted, to be published after delayed conference
+ takes place], a planning-based GMD mitigation strategy
+ was
 developed for large power systems. ESA is leveraged to programmatically
 place GIC blocking devices in test systems per the proposed algorithm,
 thus minimizing the effects of GMDs on the power grid.
