@@ -25,11 +25,12 @@ linkcolor=[rgb]{0, 0, 0}}
     \endorigfigure
 }
 
+
 \usepackage{fixltx2e} % provides \textsubscript
 \usepackage[
   backend=biber,
-%  style=alphabetic,
-%  citestyle=numeric
+  %style=alphabetic,
+  %citestyle=numeric
 ]{biblatex}
 \bibliography{$bibliography$}
 
@@ -411,6 +412,7 @@ $endif$
 \date{\vspace{-7ex}}
 
 \begin{document}
+
 $if(title)$
 \maketitle
 $endif$
