@@ -1,5 +1,5 @@
 ---
-title: 'Easy SimAuto (ESA): A Python Package that Eases Interaction with the PowerWorld Simulator'
+title: 'Easy SimAuto (ESA): A Python Package that Eases Interaction with PowerWorld Simulator'
 tags:
   - Python
   - PowerWorld
