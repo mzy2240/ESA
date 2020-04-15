@@ -134,10 +134,15 @@ to calculate real-time electric fields. These can then be fed to a grid
 model of Texas using ESA to enable calculation of real-time
 geomagnetically induced currents (GICs) for monitoring and
 visualization.
-- ESA is used by an ongoing research project entitled "Contingency 
-Analysis Based on Graph Theory Concepts and Line Outage Distribution 
-Factors (LODF)." In this project, ESA is leveraged to extract the
-topology of the power system model and obtain the LODF matrix.
+- ESA is used by an ongoing research project entitled "Cyber Physical 
+Resilient Energy Systems (CYPRES)". In this project, ESA is leveraged to
+automatically map the communication system (like DNP3 outstation and 
+data points) to the power system model.
+- ESA is used by an ongoing research project entitled "Generalized 
+Contingency Analysis Based on Graph Theory Concepts and Line Outage 
+Distribution Factors (LODF)." In this project, ESA is leveraged to 
+extract the topology of the power system model and obtain the LODF 
+matrix.
 
 # Acknowledgements
 
