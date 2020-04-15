@@ -1,5 +1,6 @@
 import setuptools
 import os
+import re
 
 with open('VERSION', 'r') as fh:
     __version__ = fh.read()
@@ -7,9 +8,21 @@ with open('VERSION', 'r') as fh:
 with open("README.rst", "r") as fh:
     long_description = fh.read()
 
-# Append the version to __init__ before installing.
-with open(os.path.join('esa', '__init__.py'), 'a') as fh:
-    fh.write('__version__ = "{}"\n'.format(__version__))
+# Update the __version__ in __init__ before installing:
+# Path to __init__.py:
+init_path = os.path.join('esa', '__init__.py')
+# Read __init__.py:
+with open(init_path, 'r') as fh:
+    __init__ = fh.read()
+
+# Update the version:
+__init__ = re.sub(r'__version__\s*=\s*[\'"][0-9]+\.[0-9]+\.[0-9]+[\'"]',
+                  '__version__ = "{}"'.format(__version__),
+                  __init__)
+
+# Write new __init__.py:
+with open(init_path, 'w') as fh:
+    fh.write(__init__)
 
 setuptools.setup(
     name='esa',
