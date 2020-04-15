@@ -1,7 +1,7 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
     <title>esa API Documentation &#8212; ESA 1.0.1 documentation</title>
@@ -64,7 +64,7 @@ SAW, for interfacing with PowerWorld’s Simulator Automation Server
 classes, such as PowerWorldError.</p>
 <p>PowrWorld’s documentation for SimAuto can be found
 <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a></p>
-<dl class="exception">
+<dl class="py exception">
 <dt id="esa.saw.COMError">
 <em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">COMError</code><a class="headerlink" href="#esa.saw.COMError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
@@ -72,7 +72,7 @@ classes, such as PowerWorldError.</p>
 error.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="esa.saw.CommandNotRespectedError">
 <em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">CommandNotRespectedError</code><a class="headerlink" href="#esa.saw.CommandNotRespectedError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
@@ -81,23 +81,23 @@ PowerWorld itself does not raise an error. This exception should
 be used with helpers that double-check commands.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="esa.saw.Error">
 <em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">Error</code><a class="headerlink" href="#esa.saw.Error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Exception</span></code></p>
 <p>Base class for exceptions in this module.</p>
 </dd></dl>
 
-<dl class="exception">
+<dl class="py exception">
 <dt id="esa.saw.PowerWorldError">
 <em class="property">exception </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">PowerWorldError</code><a class="headerlink" href="#esa.saw.PowerWorldError" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#esa.saw.Error" title="esa.saw.Error"><code class="xref py py-class docutils literal notranslate"><span class="pre">esa.saw.Error</span></code></a></p>
 <p>Raised when PowerWorld reports an error following a SimAuto call.</p>
 </dd></dl>
 
-<dl class="class">
+<dl class="py class">
 <dt id="esa.saw.SAW">
-<em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param">FileName</em>, <em class="sig-param">early_bind=False</em>, <em class="sig-param">UIVisible=False</em>, <em class="sig-param">object_field_lookup=('bus'</em>, <em class="sig-param">'gen'</em>, <em class="sig-param">'load'</em>, <em class="sig-param">'shunt'</em>, <em class="sig-param">'branch')</em>, <em class="sig-param">CreateIfNotFound=False</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">SAW</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span></em>, <em class="sig-param"><span class="n">early_bind</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">UIVisible</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">object_field_lookup</span><span class="o">=</span><span class="default_value">'bus', 'gen', 'load', 'shunt', 'branch'</span></em>, <em class="sig-param"><span class="n">CreateIfNotFound</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>A SimAuto Wrapper in Python</p>
 <p>Initialize SimAuto wrapper. The case will be opened, and
@@ -126,9 +126,9 @@ necessary.</p></li>
 <p>Note that
 <a class="reference external" href="https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients">Microsoft recommends</a>
 early binding in most cases.</p>
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ChangeParameters">
-<code class="sig-name descname">ChangeParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ChangeParameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">Values</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ChangeParameters function has been replaced by the
 ChangeParametersSingleElement function. ChangeParameters
 can still be called as before, but will now just automatically
@@ -162,9 +162,9 @@ the ParamList.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ChangeParametersMultipleElement">
-<code class="sig-name descname">ChangeParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ChangeParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">ValueList</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set parameters for multiple objects of the same type.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -193,9 +193,9 @@ simply be None.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ChangeParametersMultipleElementFlatInput">
-<code class="sig-name descname">ChangeParametersMultipleElementFlatInput</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">NoOfObjects: int</em>, <em class="sig-param">ValueList: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ChangeParametersMultipleElementFlatInput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">NoOfObjects</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">ValueList</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ChangeParametersMultipleElementFlatInput function allows
 you to set parameters for multiple objects of the same type in
 a case loaded into the Simulator Automation Server. This
@@ -234,9 +234,9 @@ simply be None.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ChangeParametersSingleElement">
-<code class="sig-name descname">ChangeParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ChangeParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">Values</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a list of parameters for a single object.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -255,16 +255,16 @@ the ParamList.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.CloseCase">
 <code class="sig-name descname">CloseCase</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.CloseCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Closes case without saving changes.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/CloseCase_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.CloseOneline">
-<code class="sig-name descname">CloseOneline</code><span class="sig-paren">(</span><em class="sig-param">OnelineName: str = ''</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.CloseOneline" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">CloseOneline</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">OnelineName</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.CloseOneline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this action to close an open oneline diagram without
 saving it. If the name is omitted, the last focused oneline 
 diagram will be closed.</p>
@@ -278,7 +278,7 @@ diagram will be closed.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.CreateIfNotFound">
 <em class="property">property </em><code class="sig-name descname">CreateIfNotFound</code><a class="headerlink" href="#esa.saw.SAW.CreateIfNotFound" title="Permalink to this definition">¶</a></dt>
 <dd><p>The CreateIfNotFound property of the Simulator Automation
@@ -287,7 +287,7 @@ ChangeParameters functions. Set the attribute through the
 <code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.CurrentDir">
 <em class="property">property </em><code class="sig-name descname">CurrentDir</code><a class="headerlink" href="#esa.saw.SAW.CurrentDir" title="Permalink to this definition">¶</a></dt>
 <dd><p>The CurrentDir property of the Simulator Automation Server
@@ -299,14 +299,14 @@ when specifying files. Set this property through the
 <code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="esa.saw.SAW.FIELD_LIST_COLUMNS">
 <code class="sig-name descname">FIELD_LIST_COLUMNS</code><em class="property"> = ['key_field', 'internal_field_name', 'field_data_type', 'description', 'display_name']</em><a class="headerlink" href="#esa.saw.SAW.FIELD_LIST_COLUMNS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetCaseHeader">
-<code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><em class="sig-param">filename: str = None</em><span class="sig-paren">)</span> &#x2192; Tuple[str]<a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetCaseHeader function is used to extract the case header
 information from the file specified. A tuple of strings
 containing the contents of the case header or description is
@@ -324,9 +324,9 @@ header or description.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetFieldList">
-<code class="sig-name descname">GetFieldList</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">copy=False</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetFieldList" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetFieldList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">copy</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetFieldList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all fields associated with a given ObjectType.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -346,9 +346,9 @@ and ‘display_name.’</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm">PowerWorld Documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetParameters">
-<code class="sig-name descname">GetParameters</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetParameters</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">Values</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is maintained in versions of Simulator later 
 than version 9 for compatibility with Simulator version 9. This 
 function will call the GetParametersSingleElement implicitly.</p>
@@ -384,9 +384,9 @@ not have the same length.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetParametersMultipleElement">
-<code class="sig-name descname">GetParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">FilterName: str = ''</em><span class="sig-paren">)</span> &#x2192; Optional[pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetParametersMultipleElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>pandas.core.frame.DataFrame<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request values of specified fields for a set of objects in
 the load flow case.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
@@ -424,9 +424,9 @@ are not valid for the given object type.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetParametersMultipleElementFlatOutput">
-<code class="sig-name descname">GetParametersMultipleElementFlatOutput</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">FilterName: str = ''</em><span class="sig-paren">)</span> &#x2192; Union[None, Tuple[str]]<a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetParametersMultipleElementFlatOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; Union[None, Tuple[str]]<a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function operates the same as the
 GetParametersMultipleElement function, only with one notable
 difference. The values returned as the output of the function
@@ -470,9 +470,9 @@ type does not exist, the method will return None.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetParametersSingleElement">
-<code class="sig-name descname">GetParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">ParamList: list</em>, <em class="sig-param">Values: list</em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetParametersSingleElement</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ParamList</span><span class="p">:</span> <span class="n">list</span></em>, <em class="sig-param"><span class="n">Values</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.series.Series<a class="headerlink" href="#esa.saw.SAW.GetParametersSingleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request values of specified fields for a particular object.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -506,9 +506,9 @@ not have the same length.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetSpecificFieldList">
-<code class="sig-name descname">GetSpecificFieldList</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str, FieldList: List[str]</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetSpecificFieldList</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FieldList</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetSpecificFieldList function is used to return identifying
 information about specific fields used by an object type. Note
 that in many cases simply using the GetFieldList method is
@@ -540,9 +540,9 @@ alphabetically by the variablenames.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.GetSpecificFieldMaxNum">
-<code class="sig-name descname">GetSpecificFieldMaxNum</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">Field: str</em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">GetSpecificFieldMaxNum</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">Field</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetSpecificFieldMaxNum function is used to return the
 maximum number of a fields that use a particular variablename
 for a specific object type.</p>
@@ -574,9 +574,9 @@ valid fields.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ListOfDevices">
-<code class="sig-name descname">ListOfDevices</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.ListOfDevices" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ListOfDevices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.ListOfDevices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of objects and their key fields. This function
 is general, and you may be better off running more specific
 methods like “get_gens”</p>
@@ -603,9 +603,9 @@ key field is present, the data will be sorted by BusNum.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ListOfDevicesAsVariantStrings">
-<code class="sig-name descname">ListOfDevicesAsVariantStrings</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ListOfDevicesAsVariantStrings</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
 <dd><p>While this method is implemented, you are almost certainly
 better off using ListOfDevices instead. Since this method isn’t
 particularly useful, no type casting will be performed on the
@@ -642,9 +642,9 @@ ListOfDevices function.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ListOfDevicesFlatOutput">
-<code class="sig-name descname">ListOfDevicesFlatOutput</code><span class="sig-paren">(</span><em class="sig-param">ObjType: str</em>, <em class="sig-param">FilterName=''</em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ListOfDevicesFlatOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="o">=</span><span class="default_value">''</span></em><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>While this method is implemented, you are almost certainly
 better off using ListOfDevices instead. Since this method isn’t
 particularly useful, no type casting, data type changing, or
@@ -690,7 +690,7 @@ parameters for objects and fields.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.LoadState">
 <code class="sig-name descname">LoadState</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
 <dd><p>LoadState is used to load the system state previously saved
@@ -700,9 +700,9 @@ addition or removal of the system elements.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/LoadState_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.OpenCase">
-<code class="sig-name descname">OpenCase</code><span class="sig-paren">(</span><em class="sig-param">FileName: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">OpenCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>str<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load PowerWorld case into the automation server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -718,9 +718,9 @@ been called before.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/OpenCase_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.OpenCaseType">
-<code class="sig-name descname">OpenCaseType</code><span class="sig-paren">(</span><em class="sig-param">FileName: str</em>, <em class="sig-param">FileType: str</em>, <em class="sig-param">Options: Union[list</em>, <em class="sig-param">str</em>, <em class="sig-param">None] = None</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">OpenCaseType</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FileType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">Options</span><span class="p">:</span> <span class="n">Union[list, str, None]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>The OpenCaseType function will load a PowerWorld Simulator load</dt><dd><dl class="simple">
 <dt>flow file into the Simulator Automation Server. This is similar</dt><dd><p>to opening a file using the File &gt; Open Case menu option in
@@ -749,9 +749,9 @@ documentation for more details.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.OpenOneLine">
-<code class="sig-name descname">OpenOneLine</code><span class="sig-paren">(</span><em class="sig-param">filename: str</em>, <em class="sig-param">view: str = ''</em>, <em class="sig-param">FullScreen: str = 'NO'</em>, <em class="sig-param">ShowFull: str = 'NO'</em>, <em class="sig-param">LinkMethod: str = 'LABELS'</em>, <em class="sig-param">Left: float = 0.0</em>, <em class="sig-param">Top: float = 0.0</em>, <em class="sig-param">Width: float = 0.0</em>, <em class="sig-param">Height: float = 0.0</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">OpenOneLine</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">view</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em>, <em class="sig-param"><span class="n">FullScreen</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'NO'</span></em>, <em class="sig-param"><span class="n">ShowFull</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'NO'</span></em>, <em class="sig-param"><span class="n">LinkMethod</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'LABELS'</span></em>, <em class="sig-param"><span class="n">Left</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">Top</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">Width</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.0</span></em>, <em class="sig-param"><span class="n">Height</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this function to open a oneline diagram. This function
 can be used to associate onelines with a PWB file.</p>
 <dl class="field-list simple">
@@ -790,14 +790,14 @@ of the Simulator/Retriever window height.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="esa.saw.SAW.POWER_FLOW_FIELDS">
 <code class="sig-name descname">POWER_FLOW_FIELDS</code><em class="property"> = {'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1'], 'bus': ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR'], 'gen': ['BusNum', 'GenID', 'GenMW', 'GenMVR'], 'load': ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR'], 'shunt': ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']}</em><a class="headerlink" href="#esa.saw.SAW.POWER_FLOW_FIELDS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ProcessAuxFile">
-<code class="sig-name descname">ProcessAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ProcessAuxFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">ProcessAuxFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ProcessAuxFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load a PowerWorld Auxiliary file into SimAuto. This allows
 you to create a text file (conforming to the PowerWorld
 Auxiliary file format) that can list a set of data changes and
@@ -811,7 +811,7 @@ full path.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ProcessAuxFile_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.ProcessID">
 <em class="property">property </em><code class="sig-name descname">ProcessID</code><a class="headerlink" href="#esa.saw.SAW.ProcessID" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ProcessID property of the Simulator Automation Server
@@ -824,7 +824,7 @@ SimulatorAuto object will not be destroyed until all calls, no
 matter the time of execution, have completed.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.RequestBuildDate">
 <em class="property">property </em><code class="sig-name descname">RequestBuildDate</code><a class="headerlink" href="#esa.saw.SAW.RequestBuildDate" title="Permalink to this definition">¶</a></dt>
 <dd><p>The RequestBuildDate property of the Simulator Automation
@@ -835,28 +835,28 @@ date. This information is useful for verifying the release
 version of the executable.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.RunScriptCommand">
-<code class="sig-name descname">RunScriptCommand</code><span class="sig-paren">(</span><em class="sig-param">Statements</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.RunScriptCommand" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">RunScriptCommand</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">Statements</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.RunScriptCommand" title="Permalink to this definition">¶</a></dt>
 <dd><p>Execute a list of script statements. The script actions are
 those included in the script sections of auxiliary files.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand_Function.htm">PowerWorld documentation</a></p>
 <p><a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">Auxiliary File Format</a></p>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="esa.saw.SAW.SIMAUTO_PROPERTIES">
 <code class="sig-name descname">SIMAUTO_PROPERTIES</code><em class="property"> = {'CreateIfNotFound': &lt;class 'bool'&gt;, 'CurrentDir': &lt;class 'str'&gt;, 'UIVisible': &lt;class 'bool'&gt;}</em><a class="headerlink" href="#esa.saw.SAW.SIMAUTO_PROPERTIES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="esa.saw.SAW.SPECIFIC_FIELD_LIST_COLUMNS">
 <code class="sig-name descname">SPECIFIC_FIELD_LIST_COLUMNS</code><em class="property"> = ['variablename:location', 'field', 'column header', 'field description']</em><a class="headerlink" href="#esa.saw.SAW.SPECIFIC_FIELD_LIST_COLUMNS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.SaveCase">
-<code class="sig-name descname">SaveCase</code><span class="sig-paren">(</span><em class="sig-param">FileName=None</em>, <em class="sig-param">FileType='PWB'</em>, <em class="sig-param">Overwrite=True</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveCase" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SaveCase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">FileType</span><span class="o">=</span><span class="default_value">'PWB'</span></em>, <em class="sig-param"><span class="n">Overwrite</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.SaveCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Save the current case to file.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/SaveCase_Function.htm">PowerWorld documentation</a></p>
 <dl class="field-list simple">
@@ -890,7 +890,7 @@ already exists, an exception will be raised.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.SaveState">
 <code class="sig-name descname">SaveState</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
 <dd><p>SaveState is used to save the current state of the power
@@ -900,9 +900,9 @@ the Simulator application.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/SaveState_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.SendToExcel">
-<code class="sig-name descname">SendToExcel</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">FilterName: str</em>, <em class="sig-param">FieldList</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SendToExcel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FieldList</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send data from SimAuto to an Excel spreadsheet. While ESA
 provides this function, we strongly recommend you to use the
 <code class="docutils literal notranslate"><span class="pre">GetParametersMultipleElement</span></code> function and save the DataFrame
@@ -938,9 +938,9 @@ fields when exporting the data.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.SolvePowerFlow">
-<code class="sig-name descname">SolvePowerFlow</code><span class="sig-paren">(</span><em class="sig-param">SolMethod: str = 'RECTNEWT'</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">SolvePowerFlow</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">SolMethod</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'RECTNEWT'</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the SolvePowerFlow command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -959,9 +959,9 @@ calculation. Case insensitive. Valid options are:
 for more details.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.TSGetContingencyResults">
-<code class="sig-name descname">TSGetContingencyResults</code><span class="sig-paren">(</span><em class="sig-param">CtgName: str, ObjFieldList: List[str], StartTime: Union[None, str] = None, StopTime: Union[None, str] = None</em><span class="sig-paren">)</span> &#x2192; Union[Tuple[None, None], Tuple[pandas.core.frame.DataFrame, pandas.core.frame.DataFrame]]<a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">TSGetContingencyResults</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">CtgName</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ObjFieldList</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">StartTime</span><span class="p">:</span> <span class="n">Union[None, str]</span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">StopTime</span><span class="p">:</span> <span class="n">Union[None, str]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Union[Tuple[None, None], Tuple[pandas.core.frame.DataFrame, pandas.core.frame.DataFrame]]<a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>WARNING: This function should only be used after the simulation
 is run (for example, use this after running script commands
 TSSolveAll or TSSolve).</p>
@@ -1027,7 +1027,7 @@ to the timestamp (in seconds).</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.UIVisible">
 <em class="property">property </em><code class="sig-name descname">UIVisible</code><a class="headerlink" href="#esa.saw.SAW.UIVisible" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the UIVisible property of the Simulator Automation
@@ -1037,9 +1037,9 @@ while using SimAuto. Set this property through the
 <code class="docutils literal notranslate"><span class="pre">set_simauto_property</span></code> method.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.WriteAuxFile">
-<code class="sig-name descname">WriteAuxFile</code><span class="sig-paren">(</span><em class="sig-param">FileName: str, FilterName: str, ObjectType: str, FieldList: Union[list, str], ToAppend=True</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.WriteAuxFile" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">WriteAuxFile</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">FileName</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FilterName</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">FieldList</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>list<span class="p">, </span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">ToAppend</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.WriteAuxFile" title="Permalink to this definition">¶</a></dt>
 <dd><p>The WriteAuxFile function can be used to write data from the
 case in the Simulator Automation Server to a PowerWorld
 Auxiliary file. The name of an advanced filter which was
@@ -1050,9 +1050,9 @@ filter cannot be found in the loaded case, no filter is used.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/WriteAuxFile_Function.htm">PowerWorld documentation</a></p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.change_and_confirm_params_multiple_element">
-<code class="sig-name descname">change_and_confirm_params_multiple_element</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">command_df: pandas.core.frame.DataFrame</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_and_confirm_params_multiple_element" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">change_and_confirm_params_multiple_element</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">command_df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_and_confirm_params_multiple_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change parameters for multiple objects of the same type, and
 confirm that the change was respected by PowerWorld.</p>
 <dl class="field-list simple">
@@ -1084,9 +1084,9 @@ actually change the parameters.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.change_parameters_multiple_element_df">
-<code class="sig-name descname">change_parameters_multiple_element_df</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em>, <em class="sig-param">command_df: pandas.core.frame.DataFrame</em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_parameters_multiple_element_df" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">change_parameters_multiple_element_df</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">command_df</span><span class="p">:</span> <span class="n">pandas.core.frame.DataFrame</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.change_parameters_multiple_element_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to call ChangeParametersMultipleElement, but uses a
 DataFrame to determine parameters and values. This method is
 lighter weight but perhaps “riskier” than the
@@ -1111,9 +1111,9 @@ element.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.clean_df_or_series">
-<code class="sig-name descname">clean_df_or_series</code><span class="sig-paren">(</span><em class="sig-param">obj: Union[pandas.core.frame.DataFrame, pandas.core.series.Series], ObjectType: str</em><span class="sig-paren">)</span> &#x2192; Union[pandas.core.frame.DataFrame, pandas.core.series.Series]<a class="headerlink" href="#esa.saw.SAW.clean_df_or_series" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">clean_df_or_series</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">obj</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>pandas.core.frame.DataFrame<span class="p">, </span>pandas.core.series.Series<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>pandas.core.frame.DataFrame<span class="p">, </span>pandas.core.series.Series<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.clean_df_or_series" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to cast data to the correct types, clean up strings,
 and sort DataFrame by BusNum (if applicable/present).</p>
 <dl class="field-list simple">
@@ -1144,15 +1144,15 @@ Series.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.exit">
 <code class="sig-name descname">exit</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up for the PowerWorld COM object</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.get_key_field_list">
-<code class="sig-name descname">get_key_field_list</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; List[str]<a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_key_field_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function to get a list of key fields for a given
 object type.</p>
 <dl class="field-list simple">
@@ -1167,9 +1167,9 @@ like a list of key fields. E.g. ‘gen’.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.get_key_fields_for_object_type">
-<code class="sig-name descname">get_key_fields_for_object_type</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_key_fields_for_object_type</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; pandas.core.frame.DataFrame<a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get all key fields for an object type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1188,9 +1188,9 @@ field returned by the Simulator, but modified to be 0-based.</p>
 <a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/Key_Fields.htm">here</a>.</p>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.get_power_flow_results">
-<code class="sig-name descname">get_power_flow_results</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str</em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_power_flow_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the power flow results from SimAuto server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1208,9 +1208,9 @@ None if the given ObjectType is not present in the model.</p>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.identify_numeric_fields">
-<code class="sig-name descname">identify_numeric_fields</code><span class="sig-paren">(</span><em class="sig-param">ObjectType: str, fields: Union[List, numpy.ndarray]</em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#esa.saw.SAW.identify_numeric_fields" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">identify_numeric_fields</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">fields</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>List<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#esa.saw.SAW.identify_numeric_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper which looks up PowerWorld internal field names to
 determine if they’re numeric (True) or not (False).</p>
 <dl class="field-list simple">
@@ -1231,9 +1231,9 @@ fields are numeric. Going along with the example given for
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.set_simauto_property">
-<code class="sig-name descname">set_simauto_property</code><span class="sig-paren">(</span><em class="sig-param">property_name: str, property_value: Union[str, bool]</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.set_simauto_property" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">set_simauto_property</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">property_name</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">property_value</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>str<span class="p">, </span>bool<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.set_simauto_property" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a SimAuto property, e.g. CreateIfNotFound. The currently
 supported properties are listed in the SAW.SIMAUTO_PROPERTIES
 class constant.</p>
@@ -1249,7 +1249,7 @@ UIVisible.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="esa.saw.SAW.update_ui">
 <code class="sig-name descname">update_ui</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#esa.saw.SAW.update_ui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-render the PowerWorld user interface (UI).</p>
@@ -1262,9 +1262,9 @@ UIVisible.</p></li>
 
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="esa.saw.convert_list_to_variant">
-<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param">list_in: list</em><span class="sig-paren">)</span> &#x2192; win32com.client.VARIANT<a class="headerlink" href="#esa.saw.convert_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_in</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; win32com.client.VARIANT<a class="headerlink" href="#esa.saw.convert_list_to_variant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list, convert to a variant array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1273,9 +1273,9 @@ UIVisible.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="esa.saw.convert_nested_list_to_variant">
-<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_nested_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param">list_in: list</em><span class="sig-paren">)</span> &#x2192; List[win32com.client.VARIANT]<a class="headerlink" href="#esa.saw.convert_nested_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_nested_list_to_variant</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">list_in</span><span class="p">:</span> <span class="n">list</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>win32com.client.VARIANT<span class="p">]</span><a class="headerlink" href="#esa.saw.convert_nested_list_to_variant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of lists, convert to a variant array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1284,9 +1284,9 @@ UIVisible.</p></li>
 </dl>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="esa.saw.convert_to_windows_path">
-<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_windows_path</code><span class="sig-paren">(</span><em class="sig-param">p</em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_windows_path" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">esa.saw.</code><code class="sig-name descname">convert_to_windows_path</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">p</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.convert_to_windows_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a path, p, convert it to a Windows path.</p>
 </dd></dl>
 
@@ -1360,7 +1360,7 @@ UIVisible.</p></li>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
