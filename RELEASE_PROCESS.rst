@@ -22,6 +22,14 @@ ESA.
     new functions/features added, bugs fixed, and any changes that
     break backwards compatibility (ideally, there should not be any
     breaking changes).
+#.  Install esa locally into your virtual environment that you plan to
+    use for building the documentation (see next step). This is
+    necessary so that the ``__init__.py`` file will have the correct
+    ``__version__`` added to it. You can find information on how to
+    install ESA from source in the ESA docs, but in short, you'll
+    run the following in your activated virtual environment at the top
+    level of the ESA repository:
+    ``python -m pip install .[test,doc]``
 #.  If all tests are successful, build the documentation (see the README
     in ``docs\rst`` directory). Note that there should **NOT** be
     **ANY** warnings or errors in the console output when building the
@@ -32,6 +40,8 @@ ESA.
     ``git tag -a v1.0.1 -m "ESA version 1.0.1"``
 #.  Run ``git push``
 #.  Run ``git push --tags``
+#.  Ensure setuptools and wheel are up to date:
+    ``python -m pip install --upgrade setuptools wheel``
 #.  Generate the distribution archive by running this command from the
     same directory where ``setup.py`` is located:
     ``python setup.py sdist bdist_wheel``
