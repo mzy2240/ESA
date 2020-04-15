@@ -83,6 +83,6 @@ Then let's start to plot with Matplotlib!
 
 The results should look like:
 
-.. image:: https://media.githubusercontent.com/media/mzy2240/ESA/develop/docs/rst/snippets/line_loading_histogram.png
+.. image:: https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/line_loading_histogram.png
     :width: 100 %
     :align: center
