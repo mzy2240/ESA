@@ -45,3 +45,8 @@ Credits and Thanks
 ^^^^^^^^^^^^^^^^^^
 
 .. include:: welcome/credits.rst
+
+Changelog
+---------
+
+.. include:: welcome/changelog.rst
