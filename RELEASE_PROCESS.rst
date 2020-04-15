@@ -23,14 +23,13 @@ ESA.
     break backwards compatibility (ideally, there should not be any
     breaking changes).
 #.  Install esa locally into your virtual environment that you plan to
-    use for building the documentation (see next step). This is
-    necessary so that the ``__init__.py`` file will have the correct
-    ``__version__`` added to it. You can find information on how to
-    install ESA from source in the ESA docs, but in short, you'll
-    run the following in your activated virtual environment at the top
-    level of the ESA repository:
-    ``python -m pip install .[test,doc]``
-#.  If all tests are successful, build the documentation (see the README
+    use for building the documentation (see next step) by executing
+    ``python -m pip install -e .[test,doc]``. Note the ``-e`` specifies
+    "editable" mode so that the installation process does not copy all
+    the files into your virtual environment's ``Lib\site-packages``
+    directory. This local, editable installation will automatically
+    update ``__version__`` in ``__init__.py``.
+#.  If all tests were successful, build the documentation (see README
     in ``docs\rst`` directory). Note that there should **NOT** be
     **ANY** warnings or errors in the console output when building the
     documentation.
