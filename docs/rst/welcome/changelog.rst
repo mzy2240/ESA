@@ -2,6 +2,14 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.0.2
+^^^^^^^^^^^^^
+
+* Add area number to the power flow result
+* Update the citation section
+* Fix a bug in the test file that will result in a failure if some
+  default names are changed in PowerWorld
+
 Version 1.0.1
 ^^^^^^^^^^^^^
 
