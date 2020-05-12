@@ -1541,9 +1541,6 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         # Primary key should be 4.
         self.assertEqual(meta['PrimaryKey'].values[0], '4')
 
-        # Field should be frequency.
-        self.assertEqual(meta['VariableName'].values[0], 'Frequency')
-
         # Start and end time should match the arguments in the query.
         self.assertEqual(data['time'].iloc[0], t1)
         self.assertEqual(data['time'].iloc[-1], t2)
