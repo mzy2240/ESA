@@ -444,6 +444,46 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
 
+class GetSimulatorVersionTestCase(unittest.TestCase):
+    """Test get_simulator_version."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        # We're expecting a file to be created.
+        cls.file = os.path.join(saw_14.CurrentDir, 'version.txt')
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # Delete the created file.
+        os.remove(cls.file)
+
+    def test_no_delete(self):
+        """Test running the method with no arguments."""
+        # Pull the version.
+        version = saw_14.get_simulator_version(delete_when_done=False)
+
+        # Ensure it's an integer.
+        self.assertIsInstance(version, int)
+
+        self.assertTrue(os.path.isfile(self.file))
+
+    def test_with_delete(self):
+        """Specify a custom file location, ensure it's deleted."""
+        # Specify file to create.
+        f = os.path.join(THIS_DIR, 'somefile.txt')
+
+        # Pull the version.
+        version = saw_14.get_simulator_version(
+            filename=f, delete_when_done=True
+        )
+
+        # The file should not exist.
+        self.assertFalse(os.path.isfile(f))
+
+        # Version should be an integer.
+        self.assertIsInstance(version, int)
+
+
 class IdentifyNumericFieldsTestCase(unittest.TestCase):
     """Test identify_numeric_fields."""
 

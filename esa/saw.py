@@ -452,6 +452,45 @@ class SAW(object):
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
 
+    def get_simulator_version(self, filename: Union[str, None] = None,
+                              delete_when_done=True) -> int:
+        """Helper to get the version of PowerWorld Simulator that is
+        being used. See also the build_date and RequestBuildDate
+        properties.
+
+        At the time of writing, the only way to extract the PowerWorld
+        version via SimAuto is to ask PowerWorld to write the version to
+        a file. Thus, you must have write permissions for wherever this
+        file is written.
+
+        :param filename: Full path to file PowerWorld will write the
+            Simulator version to. If not specified (None), Simulator's
+            current working directory will be used, and the file will
+            be named version.txt.
+        :param delete_when_done: If True, the version file will be
+            deleted after this method has been called.
+        """
+        # Create a filename (full path) if one is not provided.
+        if filename is None:
+            cwd = self.CurrentDir
+            filename = os.path.join(cwd, 'version.txt')
+
+        try:
+            # Write the version to file.
+            self.RunScriptCommand(
+                'WriteTextToFile("{}", "@VERSION")'.format(filename))
+
+            # Extract the version from the file.
+            with open(filename, 'r') as f:
+                version = int(f.read().strip())
+
+        finally:
+            if delete_when_done:
+                os.remove(filename)
+
+        # All done.
+        return version
+
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
             np.ndarray:
