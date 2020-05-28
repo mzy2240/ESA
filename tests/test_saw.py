@@ -35,6 +35,7 @@ import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock, Mock
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -1679,7 +1680,7 @@ class SendToExcel(unittest.TestCase):
 
 
 ########################################################################
-# SimAuto Properties tests
+# Properties tests
 ########################################################################
 
 class SimAutoPropertiesTestCase(unittest.TestCase):
@@ -1703,6 +1704,21 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
+
+
+class OtherPropertiesTestCase(unittest.TestCase):
+    """Test other properties that aren't necessarily specifically
+    SimAuto properties."""
+
+    def test_build_date(self):
+        """Ensure the build date is a date. Also, ensure it's more
+        recent than September 2, 2010 when Simulator 16 seems to have
+        come out.
+        """
+        bd = saw_14.build_date
+
+        self.assertIsInstance(bd, datetime.date)
+        self.assertTrue(bd >= datetime.date(year=2010, month=9, day=2))
 
 ########################################################################
 # ScriptCommand helper tests

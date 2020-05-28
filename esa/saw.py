@@ -11,6 +11,8 @@ import logging
 import os
 from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
+import re
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -32,12 +34,9 @@ DATA_TYPES = ['Integer', 'Real', 'String']
 NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
-# Message for NotImplementedErrors.
-NIE_MSG = ('This method is either not complete or untested. We appreciate '
-           'contributions, so if you would like to complete and test this '
-           'method, please read contributing.md. If there is commented out '
-           'code, you can uncomment it and re-install esa from source at '
-           'your own risk.')
+# RequestBuildDate uses Delphi conventions, which counts days since
+# Dec. 30th, 1899.
+DAY_0 = datetime.date(year=1899, month=12, day=30)
 
 
 # noinspection PyPep8Naming
@@ -1593,6 +1592,10 @@ class SAW(object):
         process. The property returns an integer value that represents a
         date. This information is useful for verifying the release
         version of the executable.
+
+        After contacting PowerWorld, it seems the integer comes back
+        according to Delphi date conventions, which counts days since
+        December 30th, 1899.
         """
         return self._pwcom.RequestBuildDate
 
@@ -1605,6 +1608,16 @@ class SAW(object):
         ``set_simauto_property`` method.
         """
         return self._pwcom.UIVisible
+
+    ####################################################################
+    # Other Properties
+    ####################################################################
+    @property
+    def build_date(self) -> datetime.date:
+        """Get the build date of the Simulator executable as a Python
+        datetime.date object.
+        """
+        return DAY_0 + datetime.timedelta(days=self.RequestBuildDate)
 
     ####################################################################
     # Private Methods
