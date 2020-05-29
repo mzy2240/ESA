@@ -45,15 +45,12 @@ from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences
 from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, PATH_2000_mod, \
-    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR
+    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR, VERSION
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
 # noinspection PyTypeChecker
 saw_14 = None  # type: SAW
-# We'll skip the UI related tests for simulator versions below 20.
-# noinspection PyTypeChecker
-VERSION = None  # type: int
 
 
 def skip_if_version_below(version=21):
@@ -73,8 +70,6 @@ def setUpModule():
     """
     global saw_14
     saw_14 = SAW(PATH_14)
-    global VERSION
-    VERSION = saw_14.get_simulator_version(delete_when_done=True)
 
 
 # noinspection PyPep8Naming
