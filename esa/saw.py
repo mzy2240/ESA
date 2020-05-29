@@ -588,7 +588,8 @@ class SAW(object):
 
         # Set the property.
         try:
-            setattr(self._pwcom, property_name, property_value)
+            self._set_simauto_property(property_name=property_name,
+                                       property_value=property_value)
         except AttributeError as e:
             if property_name == 'UIVisible':
                 self.log.warning(
@@ -598,6 +599,16 @@ class SAW(object):
                 )
             else:
                 raise e from None
+
+    def _set_simauto_property(self, property_name, property_value):
+        """Helper to just set a property name and value. Primary purpose
+        of breaking things out this way is for testing.
+
+        :param property_name: Name of the property to set, e.g.
+            UIVisible.
+        :param property_value: Value to set the property to, e.g. False.
+        """
+        setattr(self._pwcom, property_name, property_value)
 
     def update_ui(self) -> None:
         """Re-render the PowerWorld user interface (UI).
