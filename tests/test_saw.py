@@ -415,7 +415,7 @@ class GetKeyFieldListTestCase(unittest.TestCase):
 
         # Key fields have changed for 3 winding transformers between
         # versions.
-        if VERSION == 21:
+        if VERSION in [21, 22]:
             expected = ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
                         'LineCircuit']
         elif VERSION == 17:
@@ -515,7 +515,7 @@ class IdentifyNumericFieldsTestCase(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_correct(self):
         # Intentionally make the fields out of alphabetical order.
-        if VERSION == 21:
+        if VERSION in [21, 22]:
             fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
             expected = np.array([False, False, True, True, True])
         elif VERSION == 17:

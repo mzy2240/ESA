@@ -484,7 +484,7 @@ class SAW(object):
 
             # Extract the version from the file.
             with open(filename, 'r') as f:
-                version = int(f.read().strip())
+                version = int(re.search(r'\d+', f.read().strip()).group(0))
 
         finally:
             if delete_when_done:
