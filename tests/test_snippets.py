@@ -7,7 +7,7 @@ import logging
 
 from esa import SAW
 # noinspection PyUnresolvedReferences
-from constants import CASE_MAP, SNIPPET_FILES, CANDIDATE_LINES, PATH_14
+from tests.constants import CASE_MAP, SNIPPET_FILES, CANDIDATE_LINES, PATH_14
 
 # Set up log.
 LOG = logging.getLogger()

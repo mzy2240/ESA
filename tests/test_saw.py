@@ -40,7 +40,8 @@ import datetime
 import numpy as np
 import pandas as pd
 
-from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
+from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, \
+    Error
 from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences

@@ -16,11 +16,11 @@ Data
 
 Use this directory to store other data needed for testing.
 
-ltc_filter.aux
+area_filter.aux
 --------------
 
-PowerWorld auxiliary file that defines a filter which obtains only LTC 
-type transformers. Used for testing ProcessAuxFile, and is also a useful
+PowerWorld auxiliary file that defines a filter which obtains only buses in
+the east area. Used for testing ProcessAuxFile, and is also a useful
 template for defining filters in aux files.
 
 README.rst

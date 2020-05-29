@@ -46,11 +46,11 @@ class SAW(object):
     # Class level property defining the fields which will be returned
     # for different ObjectTypes by the get_power_flow_results method.
     POWER_FLOW_FIELDS = {
-        'bus': ['BusNum', 'BusName', 'AreaNum', 'BusPUVolt', 'BusAngle', 'BusNetMW',
+        'bus': ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW',
                 'BusNetMVR'],
-        'gen': ['BusNum', 'GenID', 'AreaNum', 'GenMW', 'GenMVR'],
-        'load': ['BusNum', 'LoadID', 'AreaNum', 'LoadMW', 'LoadMVR'],
-        'shunt': ['BusNum', 'ShuntID', 'AreaNum', 'ShuntMW', 'ShuntMVR'],
+        'gen': ['BusNum', 'GenID', 'GenMW', 'GenMVR'],
+        'load': ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR'],
+        'shunt': ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR'],
         'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW',
                    'LineMW:1', 'LineMVR', 'LineMVR:1']
     }
