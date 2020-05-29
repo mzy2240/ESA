@@ -12,7 +12,8 @@ dummy_case.PWB
 --------------
 This is a case that literally has a single bus and nothing else. This is
 intentional - it's only used so that during testing a ``SAW`` instance
-can be quickly loaded up to determine the Simulator version.
+can be quickly loaded up to determine the Simulator version. It's saved
+in the Simulator 16 format.
 
 ieee_14
 -------
