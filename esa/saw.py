@@ -493,6 +493,12 @@ class SAW(object):
         # All done.
         return version
 
+    def get_version_and_builddate(self):
+        return self._call_simauto("GetParametersSingleElement",
+                                  "PowerWorldSession",
+                                  convert_list_to_variant(["Version",
+                                                           "ExeBuildDate"]), convert_list_to_variant(["", ""]))
+
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
             np.ndarray:

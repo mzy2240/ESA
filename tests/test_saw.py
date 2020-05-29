@@ -541,6 +541,14 @@ class IdentifyNumericFieldsTestCase(unittest.TestCase):
         np.testing.assert_array_equal(actual, expected)
 
 
+class GetVersionAndBuildDateTestCase(unittest.TestCase):
+    """Test get_version_and_builddate."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_correct(self):
+        self.assertIsInstance(saw_14.get_version_and_builddate(), tuple)
+
+
 class SetSimAutoPropertyTestCase(unittest.TestCase):
     """Test the set_simauto_property method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.
