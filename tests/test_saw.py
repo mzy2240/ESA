@@ -34,7 +34,7 @@ import logging
 import os
 import tempfile
 import unittest
-from unittest.mock import patch, MagicMock, Mock
+from unittest.mock import patch, MagicMock, Mock, seal
 import datetime
 
 import numpy as np
@@ -608,6 +608,23 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
             self.saw.set_simauto_property(property_name='junk',
                                           property_value='42')
 
+    def test_attr_error_for_ui_visible(self):
+        """Force the UIVisible attribute to throw an error.
+        """
+        with self.assertLogs(logger=self.saw.log, level='WARN'):
+            with patch.object(self.saw, '_set_simauto_property',
+                              side_effect=AttributeError):
+                self.saw.set_simauto_property('UIVisible', True)
+
+    def test_re_raise_attr_error(self):
+        """Ensure that a non UIVisible property correctly re-raises
+        the attribute error.
+        """
+        with patch.object(self.saw, '_set_simauto_property',
+                          side_effect=AttributeError('my special error')):
+            with self.assertRaisesRegex(AttributeError, 'my special error'):
+                self.saw.set_simauto_property('CreateIfNotFound', False)
+
 
 class UpdateUITestCase(unittest.TestCase):
     """Test the update_ui method. To avoid conflicts with
@@ -1070,6 +1087,42 @@ class GetFieldListTestCase(unittest.TestCase):
         """
         field_list = saw_14.GetFieldList('shunt')
         self.check_field_list(field_list)
+
+    def test_switch_to_old_field_list(self):
+        """Ensure that switching to "FIELD_LIST_COLUMNS_OLD works as
+        it should.
+        """
+        # Patch _object_fields to force a key error.
+        with patch.object(saw_14, '_object_fields', new={'dict': 1}):
+            # Patch _call_simauto to give us data that matches the shape
+            # of the FIELD_LIST_COLUMNS_OLD.
+            out = [['x'] * len(saw_14.FIELD_LIST_COLUMNS_OLD) for _ in
+                   range(10)]
+
+            with patch.object(saw_14, '_call_simauto', return_value=out):
+                result = saw_14.GetFieldList('bus')
+
+        # Ensure the result is a DataFrame.
+        self.assertIsInstance(result, pd.DataFrame)
+
+        # Ensure the columns are the "OLD" ones.
+        self.assertListEqual(result.columns.tolist(),
+                             saw_14.FIELD_LIST_COLUMNS_OLD)
+
+        # Ensure the shape is right. Hard-code the 10.
+        self.assertEqual(result.shape,
+                         (10, len(saw_14.FIELD_LIST_COLUMNS_OLD)))
+
+    def test_df_value_error_not_from_old_list(self):
+        """Make sure ValueError gets re-raised."""
+        # Patch DataFrame creation to raise error.
+        with patch('pandas.DataFrame', side_effect=ValueError('stuff n th')):
+            # Patch _object fields so that SimAuto is called. Using a
+            # dict for 'new' is Brandon's hack to force a KeyError.
+            with patch.object(saw_14, '_object_fields', new={'dict': 1}):
+                # Ensure we get our DataFrame ValueError back.
+                with self.assertRaisesRegex(ValueError, 'stuff n th'):
+                    saw_14.GetFieldList('bus')
 
 
 class GetParametersMultipleElementTestCase(unittest.TestCase):
@@ -1776,6 +1829,25 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
         else:
             with self.assertLogs(logger=saw_14.log, level='WARN'):
                 saw_14.UIVisible
+
+    def test_attr_error_ui_visible(self):
+        """Patch UIVisible, and ensure we get a warning when it throws
+        an attribute error.
+        """
+        # Create a mock for saw_14_pwcom. This is necessary because
+        # patching attributes of the actual COM object doesn't work
+        # very well.
+        com_patch = MagicMock()
+        # seal the mock so that attempts to access non-existent
+        # attribute will result in an AttributeError.
+        seal(com_patch)
+
+        # Mock out _pwcom and get the UIVisible attribute.
+        with patch.object(saw_14, '_pwcom', new=com_patch):
+            with self.assertLogs(logger=saw_14.log, level='WARN'):
+                result = saw_14.UIVisible
+
+        self.assertFalse(result)
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
