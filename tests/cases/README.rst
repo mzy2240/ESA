@@ -2,7 +2,17 @@ cases
 =====
 
 Use this directory to store PowerWorld cases for testing. Make sure the
-cases are public - don't share any private cases!
+cases are public - don't share any private cases! Ideally, you'll
+include the case saved in a variety of Simulator formats (e.g. 16, 17,
+18, 19, 20, 21) so that users who do not have the same Simulator version
+as you can still leverage them. Please note the naming conventions:
+cases end with ``_pws_version_<VERSION GOES HERE>.pwb``.
+
+dummy_case.PWB
+--------------
+This is a case that literally has a single bus and nothing else. This is
+intentional - it's only used so that during testing a ``SAW`` instance
+can be quickly loaded up to determine the Simulator version.
 
 ieee_14
 -------

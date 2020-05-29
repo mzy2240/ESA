@@ -35,6 +35,7 @@ import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock, Mock
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -44,12 +45,20 @@ from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences
 from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, PATH_2000_mod, \
-    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR
+    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR, VERSION
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
 # noinspection PyTypeChecker
 saw_14 = None  # type: SAW
+
+
+def skip_if_version_below(version=21):
+    """Use this method to skip tests below a given PowerWorld Simulator
+    version.
+    """
+    if VERSION < version:
+        raise unittest.SkipTest('Simulator version < {}.'.format(version))
 
 
 # noinspection PyPep8Naming
@@ -103,10 +112,16 @@ class InitializationTestCase(unittest.TestCase):
         for f in ['bus', 'shunt']:
             df = my_saw_14._object_fields[f]
             self.assertIsInstance(df, pd.DataFrame)
-            self.assertSetEqual({'key_field', 'internal_field_name',
-                                 'field_data_type', 'description',
-                                 'display_name'},
-                                set(df.columns.to_numpy()))
+
+            cols = df.columns.to_numpy().tolist()
+            if len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS):
+                self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS)
+            elif len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS_OLD):
+                self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS_OLD)
+            else:
+                raise AssertionError(
+                    'Columns, {}, do not match either FIELD_LIST_COLUMNS or '
+                    'FIELD_LIST_COLUMNS_OLD.'.format(cols))
 
     def test_error_during_dispatch(self):
         """Ensure an exception is raised if dispatch fails."""
@@ -398,12 +413,22 @@ class GetKeyFieldListTestCase(unittest.TestCase):
         # Ensure this is NOT cached.
         self.assertNotIn('3wxformer', saw_14._object_key_fields)
 
+        # Key fields have changed for 3 winding transformers between
+        # versions.
+        if VERSION == 21:
+            expected = ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
+                        'LineCircuit']
+        elif VERSION == 17:
+            expected = ['BusName_NomVolt:4', 'BusNum3W:3', 'LineCircuit']
+        else:
+            raise NotImplementedError(
+                'We do not know when key fields for 3 winding transformers'
+                'changed, and have thus far only looked into PWS versions '
+                '17 and 21. Please update this test if you are running a '
+                'different version of Simulator.')
+
         # Ensure the list comes back correctly.
-        self.assertListEqual(
-            ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
-             'LineCircuit'],
-            saw_14.get_key_field_list('3WXFormer')
-        )
+        self.assertListEqual(expected, saw_14.get_key_field_list('3WXFormer'))
 
 
 class GetPowerFlowResultsTestCase(unittest.TestCase):
@@ -444,18 +469,69 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
 
+class GetSimulatorVersionTestCase(unittest.TestCase):
+    """Test get_simulator_version."""
+    @classmethod
+    def setUpClass(cls) -> None:
+        # We're expecting a file to be created.
+        cls.file = os.path.join(saw_14.CurrentDir, 'version.txt')
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # Delete the created file.
+        os.remove(cls.file)
+
+    def test_no_delete(self):
+        """Test running the method with no arguments."""
+        # Pull the version.
+        version = saw_14.get_simulator_version(delete_when_done=False)
+
+        # Ensure it's an integer.
+        self.assertIsInstance(version, int)
+
+        self.assertTrue(os.path.isfile(self.file))
+
+    def test_with_delete(self):
+        """Specify a custom file location, ensure it's deleted."""
+        # Specify file to create.
+        f = os.path.join(THIS_DIR, 'somefile.txt')
+
+        # Pull the version.
+        version = saw_14.get_simulator_version(
+            filename=f, delete_when_done=True
+        )
+
+        # The file should not exist.
+        self.assertFalse(os.path.isfile(f))
+
+        # Version should be an integer.
+        self.assertIsInstance(version, int)
+
+
 class IdentifyNumericFieldsTestCase(unittest.TestCase):
     """Test identify_numeric_fields."""
 
     # noinspection PyMethodMayBeStatic
     def test_correct(self):
         # Intentionally make the fields out of alphabetical order.
-        fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
-        np.testing.assert_array_equal(
-            saw_14.identify_numeric_fields(
-                ObjectType='Branch', fields=fields),
-            np.array([False, False, True, True, True])
-        )
+        if VERSION == 21:
+            fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
+            expected = np.array([False, False, True, True, True])
+        elif VERSION == 17:
+            # The LockOut field is not present in version 17.
+            fields = ['LineStatus', 'LineR', 'LineX', 'BusNum']
+            expected = np.array([False, True, True, True])
+        else:
+            raise NotImplementedError(
+                'If you encounter this error, please update this test for the '
+                'version of PowerWorld Simulator that you are using. Thus far,'
+                ' it has only been tested with version 17 and 21.'
+            )
+
+        actual = \
+            saw_14.identify_numeric_fields(ObjectType='Branch', fields=fields)
+        np.testing.assert_array_equal(actual, expected)
 
 
 class SetSimAutoPropertyTestCase(unittest.TestCase):
@@ -496,8 +572,13 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
         self.assertTrue(p.UIVisible)
 
     def test_set_ui_visible_false(self):
-        self.saw.set_simauto_property('UIVisible', False)
-        self.assertFalse(self.saw._pwcom.UIVisible)
+        # UIVisible introduced in version 20.
+        if VERSION >= 20:
+            self.saw.set_simauto_property('UIVisible', False)
+            self.assertFalse(self.saw._pwcom.UIVisible)
+        else:
+            with self.assertLogs(logger=self.saw.log, level='WARN'):
+                self.saw.set_simauto_property('UIVisible', False)
 
     def test_set_ui_visible_bad_value(self):
         with self.assertRaisesRegex(
@@ -891,8 +972,29 @@ class GetFieldListTestCase(unittest.TestCase):
     def check_field_list(self, field_list):
         """Helper to check a returned field list DataFrame."""
         self.assertIsInstance(field_list, pd.DataFrame)
-        self.assertEqual(saw_14.FIELD_LIST_COLUMNS,
-                         field_list.columns.to_numpy().tolist())
+        actual = field_list.columns.to_numpy().tolist()
+
+        # Check FIELD_LIST_COLUMNS first, then check
+        # FIELD_LIST_COLUMNS_OLD
+        new = False
+        old = False
+
+        try:
+            self.assertEqual(saw_14.FIELD_LIST_COLUMNS, actual)
+        except AssertionError:
+            new = True
+
+        try:
+            self.assertEqual(saw_14.FIELD_LIST_COLUMNS_OLD, actual)
+        except AssertionError as e2:
+            old = True
+
+        if new and old:
+            raise AssertionError('Valid columns:\n{}\n{}\nReceived:{}'
+                                 .format(saw_14.FIELD_LIST_COLUMNS,
+                                         saw_14.FIELD_LIST_COLUMNS_OLD,
+                                         actual))
+
         pd.testing.assert_frame_equal(
             field_list, field_list.sort_values(by=['internal_field_name']))
 
@@ -1219,6 +1321,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
     def test_buses(self):
         """As the name implies, we should get 14 buses."""
         result = saw_14.ListOfDevices(ObjType="Bus")
+        # noinspection PyTypeChecker
         expected = pd.DataFrame(
             data=np.arange(1, 15, dtype=np.int64).reshape(14, 1),
             index=np.arange(0, 14),
@@ -1639,9 +1742,10 @@ class SendToExcel(unittest.TestCase):
 
 
 ########################################################################
-# SimAuto Properties tests
+# Properties tests
 ########################################################################
 
+# noinspection PyStatementEffect
 class SimAutoPropertiesTestCase(unittest.TestCase):
     """Test the SimAuto attributes."""
 
@@ -1659,10 +1763,30 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
         self.assertIsInstance(bd, int)
 
     def test_ui_visible(self):
-        self.assertFalse(saw_14.UIVisible)
+        # UIVisible introduced in version 20.
+        if VERSION >= 20:
+            self.assertFalse(saw_14.UIVisible)
+        else:
+            with self.assertLogs(logger=saw_14.log, level='WARN'):
+                saw_14.UIVisible
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
+
+
+class OtherPropertiesTestCase(unittest.TestCase):
+    """Test other properties that aren't necessarily specifically
+    SimAuto properties."""
+
+    def test_build_date(self):
+        """Ensure the build date is a date. Also, ensure it's more
+        recent than September 2, 2010 when Simulator 16 seems to have
+        come out.
+        """
+        bd = saw_14.build_date
+
+        self.assertIsInstance(bd, datetime.date)
+        self.assertTrue(bd >= datetime.date(year=2010, month=9, day=2))
 
 ########################################################################
 # ScriptCommand helper tests
@@ -1693,6 +1817,13 @@ class OpenOneLineTestCase(unittest.TestCase):
     unless there is an error.
     """
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        # For now, skip old versions of PowerWorld.
+        # TODO: remove this skip statement after saving the .pwd files
+        #   in different PowerWorld formats.
+        skip_if_version_below(21)
+
     def test_open_default(self):
         """Open the correct pwd file.
         """
@@ -1711,6 +1842,13 @@ class CloseOnelineTestCase(unittest.TestCase):
     anything for this script command, so we should always get None back
     unless there is an error.
     """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # For now, skip old versions of PowerWorld.
+        # TODO: remove this skip statement after saving the .pwd files
+        #   in different PowerWorld formats.
+        skip_if_version_below(21)
 
     def test_close_default(self):
         """Close the last focused oneline diagram.

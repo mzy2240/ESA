@@ -3,12 +3,17 @@ impedance values as weights. You'll need to have the NetworkX Python
 package installed into your virtual environment in order to execute
 this example on your machine (``python -m pip install networkx``).
 
+Please note that this example does NOT work with Simulator version 17 (
+and possibly other versions of Simulator older than version 21). For an
+unknown reason, PowerWorld throws an exception when trying to run the
+``SaveYbusInMatlabFormat`` script command.
+
 Before following along with the example, define the ``CASE_PATH``
 constant like so, adapting the path to your system:
 
 .. code:: python
 
-    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb"
+    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb"
 
 Onward!
 

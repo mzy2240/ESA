@@ -11,6 +11,8 @@ import logging
 import os
 from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
+import re
+import datetime
 
 import numpy as np
 import pandas as pd
@@ -32,12 +34,9 @@ DATA_TYPES = ['Integer', 'Real', 'String']
 NUMERIC_TYPES = DATA_TYPES[0:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
-# Message for NotImplementedErrors.
-NIE_MSG = ('This method is either not complete or untested. We appreciate '
-           'contributions, so if you would like to complete and test this '
-           'method, please read contributing.md. If there is commented out '
-           'code, you can uncomment it and re-install esa from source at '
-           'your own risk.')
+# RequestBuildDate uses Delphi conventions, which counts days since
+# Dec. 30th, 1899.
+DAY_0 = datetime.date(year=1899, month=12, day=30)
 
 
 # noinspection PyPep8Naming
@@ -60,6 +59,9 @@ class SAW(object):
     FIELD_LIST_COLUMNS = \
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
+
+    # Older versions of Simulator omit the "display name" field.
+    FIELD_LIST_COLUMNS_OLD = FIELD_LIST_COLUMNS[0:-1]
 
     # Class level property defining columns used for
     # GetSpecificFieldList method.
@@ -452,6 +454,45 @@ class SAW(object):
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
 
+    def get_simulator_version(self, filename: Union[str, None] = None,
+                              delete_when_done=True) -> int:
+        """Helper to get the version of PowerWorld Simulator that is
+        being used. See also the build_date and RequestBuildDate
+        properties.
+
+        At the time of writing, the only way to extract the PowerWorld
+        version via SimAuto is to ask PowerWorld to write the version to
+        a file. Thus, you must have write permissions for wherever this
+        file is written.
+
+        :param filename: Full path to file PowerWorld will write the
+            Simulator version to. If not specified (None), Simulator's
+            current working directory will be used, and the file will
+            be named version.txt.
+        :param delete_when_done: If True, the version file will be
+            deleted after this method has been called.
+        """
+        # Create a filename (full path) if one is not provided.
+        if filename is None:
+            cwd = self.CurrentDir
+            filename = os.path.join(cwd, 'version.txt')
+
+        try:
+            # Write the version to file.
+            self.RunScriptCommand(
+                'WriteTextToFile("{}", "@VERSION")'.format(filename))
+
+            # Extract the version from the file.
+            with open(filename, 'r') as f:
+                version = int(f.read().strip())
+
+        finally:
+            if delete_when_done:
+                os.remove(filename)
+
+        # All done.
+        return version
+
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
             np.ndarray:
@@ -540,7 +581,17 @@ class SAW(object):
                                  'not a valid path!'.format(property_value))
 
         # Set the property.
-        setattr(self._pwcom, property_name, property_value)
+        try:
+            setattr(self._pwcom, property_name, property_value)
+        except AttributeError as e:
+            if property_name == 'UIVisible':
+                self.log.warning(
+                    'UIVisible attribute could not be set. Note this SimAuto '
+                    'property was not introduced until Simulator version 20. '
+                    'Check your version with the get_simulator_version method.'
+                )
+            else:
+                raise e from None
 
     def update_ui(self) -> None:
         """Re-render the PowerWorld user interface (UI).
@@ -720,9 +771,9 @@ class SAW(object):
         :param copy: Whether or not to return a copy of the DataFrame.
             You may want a copy if you plan to make any modifications.
 
-        :returns: Pandas DataFrame with columns 'key_field,'
-            'internal_field_name,' 'field_data_type,' 'description,'
-            and 'display_name.'
+        :returns: Pandas DataFrame with columns from either
+            SAW.FIELD_LIST_COLUMNS or SAW.FIELD_LIST_COLUMNS_OLD,
+            depending on the version of PowerWorld Simulator being used.
 
         `PowerWorld Documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm>`__
@@ -735,10 +786,39 @@ class SAW(object):
             output = self._object_fields[object_type]
         except KeyError:
             # We haven't looked up fields for this object yet.
-            # Call SimAuto, and place results into a DataFrame.
+            # Call SimAuto.
             result = self._call_simauto('GetFieldList', ObjectType)
-            output = pd.DataFrame(np.array(result),
-                                  columns=self.FIELD_LIST_COLUMNS)
+
+            # Place result in a numpy array.
+            result_arr = np.array(result)
+
+            # Attempt to map results into a DataFrame using
+            # FIELD_LIST_COLUMNS. If that fails, use
+            # FIELD_LIST_COLUMNS_OLD.
+            try:
+                output = pd.DataFrame(result_arr,
+                                      columns=self.FIELD_LIST_COLUMNS)
+            except ValueError as e:
+                # We may be dealing with the older convention.
+                # The value error should read something like:
+                # "Shape of passed values is (259, 4), indices imply (259, 5)"
+                # Confirm via regular expressions.
+                exp_base = r'\([0-9]+,\s'
+                exp_end = r'{}\)'
+                # Get number of columns for new/old lists.
+                nf_old = len(self.FIELD_LIST_COLUMNS_OLD)
+                nf_new = len(self.FIELD_LIST_COLUMNS)
+                # Search the error's arguments.
+                r1 = re.search(exp_base + exp_end.format(nf_old), e.args[0])
+                r2 = re.search(exp_base + exp_end.format(nf_new), e.args[0])
+
+                # Both results should match, i.e., not be None.
+                if (r1 is None) or (r2 is None):
+                    raise e
+
+                # If we made it here, use the older columns.
+                output = pd.DataFrame(result_arr,
+                                      columns=self.FIELD_LIST_COLUMNS_OLD)
 
             # While it appears PowerWorld gives us the list sorted by
             # internal_field_name, let's make sure it's always sorted.
@@ -1554,6 +1634,10 @@ class SAW(object):
         process. The property returns an integer value that represents a
         date. This information is useful for verifying the release
         version of the executable.
+
+        After contacting PowerWorld, it seems the integer comes back
+        according to Delphi date conventions, which counts days since
+        December 30th, 1899.
         """
         return self._pwcom.RequestBuildDate
 
@@ -1565,7 +1649,24 @@ class SAW(object):
         while using SimAuto. Set this property through the
         ``set_simauto_property`` method.
         """
-        return self._pwcom.UIVisible
+        try:
+            return self._pwcom.UIVisible
+        except AttributeError:
+            self.log.warning(
+                'UIVisible attribute could not be accessed. Note this SimAuto '
+                'property was not introduced until Simulator version 20. '
+                'Check your version with the get_simulator_version method.')
+            return False
+
+    ####################################################################
+    # Other Properties
+    ####################################################################
+    @property
+    def build_date(self) -> datetime.date:
+        """Get the build date of the Simulator executable as a Python
+        datetime.date object.
+        """
+        return DAY_0 + datetime.timedelta(days=self.RequestBuildDate)
 
     ####################################################################
     # Private Methods

@@ -6,7 +6,7 @@ to your system.
 
 .. code:: python
 
-    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB"
+    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb"
     CANDIDATE_LINES = r"C:\Users\myuser\git\ESA\tests\data\CandidateLines.csv"
 
 Import packages/classes and read the ``CANDIDATE_LINES`` .csv file.
