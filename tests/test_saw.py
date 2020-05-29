@@ -1822,6 +1822,13 @@ class OpenOneLineTestCase(unittest.TestCase):
     unless there is an error.
     """
 
+    @classmethod
+    def setUpClass(cls) -> None:
+        # For now, skip old versions of PowerWorld.
+        # TODO: remove this skip statement after saving the .pwd files
+        #   in different PowerWorld formats.
+        skip_if_version_below(21)
+
     def test_open_default(self):
         """Open the correct pwd file.
         """
@@ -1840,6 +1847,13 @@ class CloseOnelineTestCase(unittest.TestCase):
     anything for this script command, so we should always get None back
     unless there is an error.
     """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # For now, skip old versions of PowerWorld.
+        # TODO: remove this skip statement after saving the .pwd files
+        #   in different PowerWorld formats.
+        skip_if_version_below(21)
 
     def test_close_default(self):
         """Close the last focused oneline diagram.
