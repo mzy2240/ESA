@@ -418,12 +418,22 @@ class GetKeyFieldListTestCase(unittest.TestCase):
         # Ensure this is NOT cached.
         self.assertNotIn('3wxformer', saw_14._object_key_fields)
 
+        # Key fields have changed for 3 winding transformers between
+        # versions.
+        if VERSION == 21:
+            expected = ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
+                        'LineCircuit']
+        elif VERSION == 17:
+            expected = ['BusName_NomVolt:4', 'BusNum3W:3', 'LineCircuit']
+        else:
+            raise NotImplementedError(
+                'We do not know when key fields for 3 winding transformers'
+                'changed, and have thus far only looked into PWS versions '
+                '17 and 21. Please update this test if you are running a '
+                'different version of Simulator.')
+
         # Ensure the list comes back correctly.
-        self.assertListEqual(
-            ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
-             'LineCircuit'],
-            saw_14.get_key_field_list('3WXFormer')
-        )
+        self.assertListEqual(expected, saw_14.get_key_field_list('3WXFormer'))
 
 
 class GetPowerFlowResultsTestCase(unittest.TestCase):
@@ -510,12 +520,23 @@ class IdentifyNumericFieldsTestCase(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_correct(self):
         # Intentionally make the fields out of alphabetical order.
-        fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
-        np.testing.assert_array_equal(
-            saw_14.identify_numeric_fields(
-                ObjectType='Branch', fields=fields),
-            np.array([False, False, True, True, True])
-        )
+        if VERSION == 21:
+            fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
+            expected = np.array([False, False, True, True, True])
+        elif VERSION == 17:
+            # The LockOut field is not present in version 17.
+            fields = ['LineStatus', 'LineR', 'LineX', 'BusNum']
+            expected = np.array([False, True, True, True])
+        else:
+            raise NotImplementedError(
+                'If you encounter this error, please update this test for the '
+                'version of PowerWorld Simulator that you are using. Thus far,'
+                ' it has only been tested with version 17 and 21.'
+            )
+
+        actual = \
+            saw_14.identify_numeric_fields(ObjectType='Branch', fields=fields)
+        np.testing.assert_array_equal(actual, expected)
 
 
 class SetSimAutoPropertyTestCase(unittest.TestCase):
