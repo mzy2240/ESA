@@ -44,8 +44,8 @@ from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, Error
 from esa.saw import convert_to_windows_path
 
 # noinspection PyUnresolvedReferences
-from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, PATH_2000_mod, \
-    PATH_9, THIS_DIR, LTC_AUX_FILE, DATA_DIR, VERSION
+from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, \
+    PATH_9, THIS_DIR, AREA_AUX_FILE, DATA_DIR, VERSION
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -1433,7 +1433,7 @@ class ProcessAuxFileTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.saw = SAW(FileName=PATH_2000_mod, early_bind=True, UIVisible=False)
+        cls.saw = SAW(FileName=PATH_2000, early_bind=True, UIVisible=False)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -1442,28 +1442,28 @@ class ProcessAuxFileTestCase(unittest.TestCase):
 
     def test_process_aux_ltc_filter(self):
         # Process the aux file. Note the aux file has a named filter,
-        # "ltc_filter"
-        self.saw.ProcessAuxFile(FileName=LTC_AUX_FILE)
+        # "area_filter"
+        self.saw.ProcessAuxFile(FileName=AREA_AUX_FILE)
 
-        # Get branch key fields.
-        kf = self.saw.get_key_field_list('branch')
+        # Get bus key fields.
+        kf = self.saw.get_key_field_list('bus')
 
-        # Get transformer data, using the named filter.
-        ltc = self.saw.GetParametersMultipleElement(
-            ObjectType='branch', ParamList=kf, FilterName="ltc_filter"
+        # Get bus data, using the named filter.
+        area_bus = self.saw.GetParametersMultipleElement(
+            ObjectType='bus', ParamList=kf, FilterName="area_filter"
         )
 
         # Check that the filter worked.
-        branch = self.saw.GetParametersMultipleElement(
-            ObjectType='branch', ParamList=kf + ['LineXFType']
+        bus = self.saw.GetParametersMultipleElement(
+            ObjectType='bus', ParamList=kf + ['AreaName']
         )
 
-        # Ensure the branch data is not getting filtered.
-        self.assertNotEqual(ltc.shape[0], branch.shape[0])
+        # Ensure the bus data is not getting filtered.
+        self.assertNotEqual(area_bus.shape[0], bus.shape[0])
 
-        # Ensure the number of LTC transformers matches up.
-        ltc_expected = branch['LineXFType'] == 'LTC'
-        self.assertEqual(ltc_expected.sum(), ltc.shape[0])
+        # Ensure the number of buses in the area matches up.
+        bus_expected = bus['AreaName'] == 'East'
+        self.assertEqual(bus_expected.sum(), area_bus.shape[0])
 
 
 class RunScriptCommandTestCase(unittest.TestCase):
