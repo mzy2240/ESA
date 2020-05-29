@@ -60,6 +60,9 @@ class SAW(object):
         ['key_field', 'internal_field_name', 'field_data_type', 'description',
          'display_name']
 
+    # Older versions of Simulator omit the "display name" field.
+    FIELD_LIST_COLUMNS_OLD = FIELD_LIST_COLUMNS[0:-1]
+
     # Class level property defining columns used for
     # GetSpecificFieldList method.
     SPECIFIC_FIELD_LIST_COLUMNS = \
@@ -768,9 +771,9 @@ class SAW(object):
         :param copy: Whether or not to return a copy of the DataFrame.
             You may want a copy if you plan to make any modifications.
 
-        :returns: Pandas DataFrame with columns 'key_field,'
-            'internal_field_name,' 'field_data_type,' 'description,'
-            and 'display_name.'
+        :returns: Pandas DataFrame with columns from either
+            SAW.FIELD_LIST_COLUMNS or SAW.FIELD_LIST_COLUMNS_OLD,
+            depending on the version of PowerWorld Simulator being used.
 
         `PowerWorld Documentation
         <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm>`__
@@ -783,10 +786,39 @@ class SAW(object):
             output = self._object_fields[object_type]
         except KeyError:
             # We haven't looked up fields for this object yet.
-            # Call SimAuto, and place results into a DataFrame.
+            # Call SimAuto.
             result = self._call_simauto('GetFieldList', ObjectType)
-            output = pd.DataFrame(np.array(result),
-                                  columns=self.FIELD_LIST_COLUMNS)
+
+            # Place result in a numpy array.
+            result_arr = np.array(result)
+
+            # Attempt to map results into a DataFrame using
+            # FIELD_LIST_COLUMNS. If that fails, use
+            # FIELD_LIST_COLUMNS_OLD.
+            try:
+                output = pd.DataFrame(result_arr,
+                                      columns=self.FIELD_LIST_COLUMNS)
+            except ValueError as e:
+                # We may be dealing with the older convention.
+                # The value error should read something like:
+                # "Shape of passed values is (259, 4), indices imply (259, 5)"
+                # Confirm via regular expressions.
+                exp_base = r'\([0-9]+,\s'
+                exp_end = r'{}\)'
+                # Get number of columns for new/old lists.
+                nf_old = len(self.FIELD_LIST_COLUMNS_OLD)
+                nf_new = len(self.FIELD_LIST_COLUMNS)
+                # Search the error's arguments.
+                r1 = re.search(exp_base + exp_end.format(nf_old), e.args[0])
+                r2 = re.search(exp_base + exp_end.format(nf_new), e.args[0])
+
+                # Both results should match, i.e., not be None.
+                if (r1 is None) or (r2 is None):
+                    raise e
+
+                # If we made it here, use the older columns.
+                output = pd.DataFrame(result_arr,
+                                      columns=self.FIELD_LIST_COLUMNS_OLD)
 
             # While it appears PowerWorld gives us the list sorted by
             # internal_field_name, let's make sure it's always sorted.

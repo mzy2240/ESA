@@ -117,10 +117,16 @@ class InitializationTestCase(unittest.TestCase):
         for f in ['bus', 'shunt']:
             df = my_saw_14._object_fields[f]
             self.assertIsInstance(df, pd.DataFrame)
-            self.assertSetEqual({'key_field', 'internal_field_name',
-                                 'field_data_type', 'description',
-                                 'display_name'},
-                                set(df.columns.to_numpy()))
+
+            cols = df.columns.to_numpy().tolist()
+            if len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS):
+                self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS)
+            elif len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS_OLD):
+                self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS_OLD)
+            else:
+                raise AssertionError(
+                    'Columns, {}, do not match either FIELD_LIST_COLUMNS or '
+                    'FIELD_LIST_COLUMNS_OLD.'.format(cols))
 
     def test_error_during_dispatch(self):
         """Ensure an exception is raised if dispatch fails."""
@@ -950,8 +956,29 @@ class GetFieldListTestCase(unittest.TestCase):
     def check_field_list(self, field_list):
         """Helper to check a returned field list DataFrame."""
         self.assertIsInstance(field_list, pd.DataFrame)
-        self.assertEqual(saw_14.FIELD_LIST_COLUMNS,
-                         field_list.columns.to_numpy().tolist())
+        actual = field_list.columns.to_numpy().tolist()
+
+        # Check FIELD_LIST_COLUMNS first, then check
+        # FIELD_LIST_COLUMNS_OLD
+        new = False
+        old = False
+
+        try:
+            self.assertEqual(saw_14.FIELD_LIST_COLUMNS, actual)
+        except AssertionError:
+            new = True
+
+        try:
+            self.assertEqual(saw_14.FIELD_LIST_COLUMNS_OLD, actual)
+        except AssertionError as e2:
+            old = True
+
+        if new and old:
+            raise AssertionError('Valid columns:\n{}\n{}\nReceived:{}'
+                                 .format(saw_14.FIELD_LIST_COLUMNS,
+                                         saw_14.FIELD_LIST_COLUMNS_OLD,
+                                         actual))
+
         pd.testing.assert_frame_equal(
             field_list, field_list.sort_values(by=['internal_field_name']))
 
@@ -1278,6 +1305,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
     def test_buses(self):
         """As the name implies, we should get 14 buses."""
         result = saw_14.ListOfDevices(ObjType="Bus")
+        # noinspection PyTypeChecker
         expected = pd.DataFrame(
             data=np.arange(1, 15, dtype=np.int64).reshape(14, 1),
             index=np.arange(0, 14),
