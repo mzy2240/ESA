@@ -3,7 +3,7 @@ Before running the example below, define a CASE_PATH variable like so
 
 .. code:: python
 
-    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb"
+    CASE_PATH = r"C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb"
 
 On to the quick start!
 
