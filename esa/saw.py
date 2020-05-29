@@ -424,7 +424,7 @@ class SAW(object):
         # Return a listing of the internal field name.
         return key_field_df['internal_field_name'].tolist()
 
-    def get_power_flow_results(self, ObjectType: str, OptionalFields: Union[
+    def get_power_flow_results(self, ObjectType: str, additional_fields: Union[
         None, List[str]] = None) -> \
             Union[None, pd.DataFrame]:
         """Get the power flow results from SimAuto server.
@@ -433,8 +433,8 @@ class SAW(object):
             are the keys in the POWER_FLOW_FIELDS class attribute (case
             insensitive).
 
-        :param OptionalFields: Pass a list of field names if the default
-            fields are not enough.
+        :param additional_fields: Pass a list of field names to extend the
+            default attributes in the POWER_FLOW_FIELDS.
 
         :returns: Pandas DataFrame with the corresponding results, or
             None if the given ObjectType is not present in the model.
@@ -445,8 +445,8 @@ class SAW(object):
         # Get the listing of fields for this object type.
         try:
             field_list = self.POWER_FLOW_FIELDS[object_type]
-            if OptionalFields:
-                field_list += OptionalFields
+            if additional_fields:
+                field_list += additional_fields
         except KeyError:
             raise ValueError('Unsupported ObjectType for power flow results, '
                              '{}.'.format(ObjectType))

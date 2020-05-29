@@ -469,6 +469,12 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         """There are no shunts in the IEEE 14 bus model."""
         self.assertIsNone(saw_14.get_power_flow_results('shunt'))
 
+    def test_with_additional_fields(self):
+        """Add additional fields to the result"""
+        result = saw_14.get_power_flow_results(ObjectType='Bus',
+                                               additional_fields=['AreaNum'])
+        self.assertTrue('AreaNum' in result.columns.values.tolist())
+
 
 class GetSimulatorVersionTestCase(unittest.TestCase):
     """Test get_simulator_version."""
