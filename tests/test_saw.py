@@ -51,6 +51,17 @@ from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, PATH_2000_mod, \
 # development easier.
 # noinspection PyTypeChecker
 saw_14 = None  # type: SAW
+# We'll skip the UI related tests for simulator versions below 20.
+# noinspection PyTypeChecker
+VERSION = None  # type: int
+
+
+def skip_if_version_below(version=21):
+    """Use this method to skip tests below a given PowerWorld Simulator
+    version.
+    """
+    if VERSION < version:
+        raise unittest.SkipTest('Simulator version < {}.'.format(version))
 
 
 # noinspection PyPep8Naming
@@ -62,6 +73,8 @@ def setUpModule():
     """
     global saw_14
     saw_14 = SAW(PATH_14)
+    global VERSION
+    VERSION = saw_14.get_simulator_version(delete_when_done=True)
 
 
 # noinspection PyPep8Naming
@@ -537,8 +550,13 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
         self.assertTrue(p.UIVisible)
 
     def test_set_ui_visible_false(self):
-        self.saw.set_simauto_property('UIVisible', False)
-        self.assertFalse(self.saw._pwcom.UIVisible)
+        # UIVisible introduced in version 20.
+        if VERSION >= 20:
+            self.saw.set_simauto_property('UIVisible', False)
+            self.assertFalse(self.saw._pwcom.UIVisible)
+        else:
+            with self.assertLogs(logger=self.saw.log, level='WARN'):
+                self.saw.set_simauto_property('UIVisible', False)
 
     def test_set_ui_visible_bad_value(self):
         with self.assertRaisesRegex(
@@ -1683,6 +1701,7 @@ class SendToExcel(unittest.TestCase):
 # Properties tests
 ########################################################################
 
+# noinspection PyStatementEffect
 class SimAutoPropertiesTestCase(unittest.TestCase):
     """Test the SimAuto attributes."""
 
@@ -1700,7 +1719,12 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
         self.assertIsInstance(bd, int)
 
     def test_ui_visible(self):
-        self.assertFalse(saw_14.UIVisible)
+        # UIVisible introduced in version 20.
+        if VERSION >= 20:
+            self.assertFalse(saw_14.UIVisible)
+        else:
+            with self.assertLogs(logger=saw_14.log, level='WARN'):
+                saw_14.UIVisible
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)

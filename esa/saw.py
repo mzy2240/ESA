@@ -578,7 +578,17 @@ class SAW(object):
                                  'not a valid path!'.format(property_value))
 
         # Set the property.
-        setattr(self._pwcom, property_name, property_value)
+        try:
+            setattr(self._pwcom, property_name, property_value)
+        except AttributeError as e:
+            if property_name == 'UIVisible':
+                self.log.warning(
+                    'UIVisible attribute could not be set. Note this SimAuto '
+                    'property was not introduced until Simulator version 20. '
+                    'Check your version with the get_simulator_version method.'
+                )
+            else:
+                raise e from None
 
     def update_ui(self) -> None:
         """Re-render the PowerWorld user interface (UI).
@@ -1607,7 +1617,14 @@ class SAW(object):
         while using SimAuto. Set this property through the
         ``set_simauto_property`` method.
         """
-        return self._pwcom.UIVisible
+        try:
+            return self._pwcom.UIVisible
+        except AttributeError:
+            self.log.warning(
+                'UIVisible attribute could not be accessed. Note this SimAuto '
+                'property was not introduced until Simulator version 20. '
+                'Check your version with the get_simulator_version method.')
+            return False
 
     ####################################################################
     # Other Properties
