@@ -143,6 +143,10 @@ class SAW(object):
         # Open the case.
         self.OpenCase(FileName=FileName)
 
+        # Get the version number and the build date
+        version_string, self.build_date = self.get_version_and_builddate()
+        self.version = int(re.search(r'\d+', version_string).group(0))
+
         # Look up and cache field listing and key fields for the given
         # object types in object_field_lookup.
         self._object_fields = dict()
@@ -454,46 +458,7 @@ class SAW(object):
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
 
-    def get_simulator_version(self, filename: Union[str, None] = None,
-                              delete_when_done=True) -> int:
-        """Helper to get the version of PowerWorld Simulator that is
-        being used. See also the build_date and RequestBuildDate
-        properties.
-
-        At the time of writing, the only way to extract the PowerWorld
-        version via SimAuto is to ask PowerWorld to write the version to
-        a file. Thus, you must have write permissions for wherever this
-        file is written.
-
-        :param filename: Full path to file PowerWorld will write the
-            Simulator version to. If not specified (None), Simulator's
-            current working directory will be used, and the file will
-            be named version.txt.
-        :param delete_when_done: If True, the version file will be
-            deleted after this method has been called.
-        """
-        # Create a filename (full path) if one is not provided.
-        if filename is None:
-            cwd = self.CurrentDir
-            filename = os.path.join(cwd, 'version.txt')
-
-        try:
-            # Write the version to file.
-            self.RunScriptCommand(
-                'WriteTextToFile("{}", "@VERSION")'.format(filename))
-
-            # Extract the version from the file.
-            with open(filename, 'r') as f:
-                version = int(re.search(r'\d+', f.read().strip()).group(0))
-
-        finally:
-            if delete_when_done:
-                os.remove(filename)
-
-        # All done.
-        return version
-
-    def get_version_and_builddate(self):
+    def get_version_and_builddate(self) -> tuple:
         return self._call_simauto("GetParametersSingleElement",
                                   "PowerWorldSession",
                                   convert_list_to_variant(["Version",
@@ -1674,16 +1639,6 @@ class SAW(object):
                 'property was not introduced until Simulator version 20. '
                 'Check your version with the get_simulator_version method.')
             return False
-
-    ####################################################################
-    # Other Properties
-    ####################################################################
-    @property
-    def build_date(self) -> datetime.date:
-        """Get the build date of the Simulator executable as a Python
-        datetime.date object.
-        """
-        return DAY_0 + datetime.timedelta(days=self.RequestBuildDate)
 
     ####################################################################
     # Private Methods

@@ -476,46 +476,6 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
         self.assertTrue('AreaNum' in result.columns.values.tolist())
 
 
-class GetSimulatorVersionTestCase(unittest.TestCase):
-    """Test get_simulator_version."""
-    @classmethod
-    def setUpClass(cls) -> None:
-        # We're expecting a file to be created.
-        cls.file = os.path.join(saw_14.CurrentDir, 'version.txt')
-
-    # noinspection PyUnresolvedReferences
-    @classmethod
-    def tearDownClass(cls) -> None:
-        # Delete the created file.
-        os.remove(cls.file)
-
-    def test_no_delete(self):
-        """Test running the method with no arguments."""
-        # Pull the version.
-        version = saw_14.get_simulator_version(delete_when_done=False)
-
-        # Ensure it's an integer.
-        self.assertIsInstance(version, int)
-
-        self.assertTrue(os.path.isfile(self.file))
-
-    def test_with_delete(self):
-        """Specify a custom file location, ensure it's deleted."""
-        # Specify file to create.
-        f = os.path.join(THIS_DIR, 'somefile.txt')
-
-        # Pull the version.
-        version = saw_14.get_simulator_version(
-            filename=f, delete_when_done=True
-        )
-
-        # The file should not exist.
-        self.assertFalse(os.path.isfile(f))
-
-        # Version should be an integer.
-        self.assertIsInstance(version, int)
-
-
 class IdentifyNumericFieldsTestCase(unittest.TestCase):
     """Test identify_numeric_fields."""
 
@@ -1860,20 +1820,6 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
 
-
-class OtherPropertiesTestCase(unittest.TestCase):
-    """Test other properties that aren't necessarily specifically
-    SimAuto properties."""
-
-    def test_build_date(self):
-        """Ensure the build date is a date. Also, ensure it's more
-        recent than September 2, 2010 when Simulator 16 seems to have
-        come out.
-        """
-        bd = saw_14.build_date
-
-        self.assertIsInstance(bd, datetime.date)
-        self.assertTrue(bd >= datetime.date(year=2010, month=9, day=2))
 
 ########################################################################
 # ScriptCommand helper tests

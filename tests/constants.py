@@ -13,7 +13,7 @@ SNIPPET_FILES = [os.path.join(SNIPPET_DIR, x) for x in
 
 # Use the dummy case to get the version of Simulator.
 saw = SAW(DUMMY_CASE)
-VERSION = saw.get_simulator_version(delete_when_done=True)
+VERSION = saw.version
 saw.exit()
 del saw
 

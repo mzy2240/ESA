@@ -39,7 +39,7 @@ def get_snippet_suites():
     # We need to get the Simulator version so we can skip tests that are
     # broken for certain versions.
     saw_14 = SAW(PATH_14)
-    version = saw_14.get_simulator_version(delete_when_done=True)
+    version = saw_14.version
     saw_14.exit()
     del saw_14
 
