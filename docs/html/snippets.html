@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Examples &#8212; ESA 1.0.2 documentation</title>
+    <title>Examples &#8212; ESA 1.0.3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -47,7 +47,7 @@ specifically the <code class="docutils literal notranslate"><span class="pre">te
 section.</p>
 <p>Before running the example below, define a CASE_PATH variable like so
 (adapt the path as needed for your system):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>On to the quick start!</p>
@@ -258,7 +258,7 @@ using ESA to improve your simulation and analysis work flows!</p>
 section.</p>
 <p>If you want to follow along, you’ll first need to define your own
 <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant, like so (adapt the path for your system):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>Then, import the SimAuto wrapper (SAW) class and initialize an instance:</p>
@@ -308,7 +308,7 @@ find the case and .csv file referenced in the <code class="docutils literal notr
 ESA repository. Before starting the example, please define the constants
 <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">CANDIDATE_LINES</span></code> like the following, adapting paths
 to your system.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 <span class="n">CANDIDATE_LINES</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\data\CandidateLines.csv&quot;</span>
 </pre></div>
 </div>
@@ -409,7 +409,7 @@ done by:</p>
 </div>
 <p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
 constant like so, adapting the path to your system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>On to the example!</p>
@@ -462,9 +462,13 @@ constant like so, adapting the path to your system:</p>
 impedance values as weights. You’ll need to have the NetworkX Python
 package installed into your virtual environment in order to execute
 this example on your machine (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">networkx</span></code>).</p>
+<p>Please note that this example does NOT work with Simulator version 17 (
+and possibly other versions of Simulator older than version 21). For an
+unknown reason, PowerWorld throws an exception when trying to run the
+<code class="docutils literal notranslate"><span class="pre">SaveYbusInMatlabFormat</span></code> script command.</p>
 <p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
 constant like so, adapting the path to your system:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>Onward!</p>
@@ -555,7 +559,7 @@ which is most easily done by:</p>
 </div>
 <p>Before following along with the example, define the CASE_PATH constant
 like so, adapting the path to your system.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base.PWB&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>Now let’s get started!</p>

@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>esa API Documentation &#8212; ESA 1.0.2 documentation</title>
+    <title>esa API Documentation &#8212; ESA 1.0.3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -304,6 +304,11 @@ when specifying files. Set this property through the
 <code class="sig-name descname">FIELD_LIST_COLUMNS</code><em class="property"> = ['key_field', 'internal_field_name', 'field_data_type', 'description', 'display_name']</em><a class="headerlink" href="#esa.saw.SAW.FIELD_LIST_COLUMNS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+<dl class="py attribute">
+<dt id="esa.saw.SAW.FIELD_LIST_COLUMNS_OLD">
+<code class="sig-name descname">FIELD_LIST_COLUMNS_OLD</code><em class="property"> = ['key_field', 'internal_field_name', 'field_data_type', 'description']</em><a class="headerlink" href="#esa.saw.SAW.FIELD_LIST_COLUMNS_OLD" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="esa.saw.SAW.GetCaseHeader">
 <code class="sig-name descname">GetCaseHeader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">filename</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
@@ -338,9 +343,9 @@ You may want a copy if you plan to make any modifications.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Pandas DataFrame with columns ‘key_field,’
-‘internal_field_name,’ ‘field_data_type,’ ‘description,’
-and ‘display_name.’</p>
+<dd class="field-even"><p>Pandas DataFrame with columns from either
+SAW.FIELD_LIST_COLUMNS or SAW.FIELD_LIST_COLUMNS_OLD,
+depending on the version of PowerWorld Simulator being used.</p>
 </dd>
 </dl>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/GetFieldList_Function.htm">PowerWorld Documentation</a></p>
@@ -792,7 +797,7 @@ of the Simulator/Retriever window height.</p></li>
 
 <dl class="py attribute">
 <dt id="esa.saw.SAW.POWER_FLOW_FIELDS">
-<code class="sig-name descname">POWER_FLOW_FIELDS</code><em class="property"> = {'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1'], 'bus': ['BusNum', 'BusName', 'AreaNum', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR'], 'gen': ['BusNum', 'GenID', 'AreaNum', 'GenMW', 'GenMVR'], 'load': ['BusNum', 'LoadID', 'AreaNum', 'LoadMW', 'LoadMVR'], 'shunt': ['BusNum', 'ShuntID', 'AreaNum', 'ShuntMW', 'ShuntMVR']}</em><a class="headerlink" href="#esa.saw.SAW.POWER_FLOW_FIELDS" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">POWER_FLOW_FIELDS</code><em class="property"> = {'branch': ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW', 'LineMW:1', 'LineMVR', 'LineMVR:1'], 'bus': ['BusNum', 'BusName', 'BusPUVolt', 'BusAngle', 'BusNetMW', 'BusNetMVR'], 'gen': ['BusNum', 'GenID', 'GenMW', 'GenMVR'], 'load': ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR'], 'shunt': ['BusNum', 'ShuntID', 'ShuntMW', 'ShuntMVR']}</em><a class="headerlink" href="#esa.saw.SAW.POWER_FLOW_FIELDS" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
@@ -833,6 +838,9 @@ Simulator executable currently running with the SimulatorAuto
 process. The property returns an integer value that represents a
 date. This information is useful for verifying the release
 version of the executable.</p>
+<p>After contacting PowerWorld, it seems the integer comes back
+according to Delphi date conventions, which counts days since
+December 30th, 1899.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1190,13 +1198,17 @@ field returned by the Simulator, but modified to be 0-based.</p>
 
 <dl class="py method">
 <dt id="esa.saw.SAW.get_power_flow_results">
-<code class="sig-name descname">get_power_flow_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_power_flow_results</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">additional_fields</span><span class="p">:</span> <span class="n">Union[None, List[str]]</span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; Union[None, pandas.core.frame.DataFrame]<a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the power flow results from SimAuto server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>ObjectType</strong> – Object type to get results for. Valid types
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ObjectType</strong> – Object type to get results for. Valid types
 are the keys in the POWER_FLOW_FIELDS class attribute (case
-insensitive).</p>
+insensitive).</p></li>
+<li><p><strong>additional_fields</strong> – Pass a list of field names to extend the
+default attributes in the POWER_FLOW_FIELDS.</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Pandas DataFrame with the corresponding results, or
@@ -1207,6 +1219,11 @@ None if the given ObjectType is not present in the model.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt id="esa.saw.SAW.get_version_and_builddate">
+<code class="sig-name descname">get_version_and_builddate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.get_version_and_builddate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="esa.saw.SAW.identify_numeric_fields">

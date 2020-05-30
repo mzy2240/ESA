@@ -5,12 +5,16 @@ versions prior to 1.0.0 are not listed here, but are still available on
 Version 1.0.3
 ^^^^^^^^^^^^^
 
-* New SAW property, ``build_date``
-* New SAW helper method, ``get_simulator_version``
+* New SAW attribute, ``build_date``
+* New SAW attribute, ``version``
+* New SAW helper method, ``get_version_and_builddate``
+* Add argument ``additional_fields`` for ``get_power_flow_results`` method
+  which provides an easy and consistent way to add more fields to the power
+  flow result
 * Updating so that ESA is compatible with Simulator version 17. Note
   that this does not imply ESA has been tested with versions 16, 18, 19,
   or 20. However, ESA *should* work with all these versions.
-* Added case files for Simulator versions 16-21 and renamed the cases
+* Added case files for Simulator versions 16-22(beta) and renamed the cases
   accordingly (suffixed with ``pws_version_<version goes here>.pwb``.
 * Updated documentation to discuss different versions of Simulator.
 

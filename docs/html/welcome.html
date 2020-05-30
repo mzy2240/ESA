@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Welcome! &#8212; ESA 1.0.2 documentation</title>
+    <title>Welcome! &#8212; ESA 1.0.3 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -74,7 +74,7 @@ further ease development. Below is a quick motivating example that
 shows how easy it is to use SimAuto.</p>
 <p>If you want to follow along, you’ll first need to define your own
 <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant, like so (adapt the path for your system):</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus.pwb&quot;</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
 <p>Then, import the SimAuto wrapper (SAW) class and initialize an instance:</p>
@@ -250,6 +250,23 @@ Thank you!</p>
 <p>Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 <a class="reference external" href="https://pypi.org/project/esa/#history">PyPi</a>.</p>
+<div class="section" id="version-1-0-3">
+<h3>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>New SAW attribute, <code class="docutils literal notranslate"><span class="pre">build_date</span></code></p></li>
+<li><p>New SAW attribute, <code class="docutils literal notranslate"><span class="pre">version</span></code></p></li>
+<li><p>New SAW helper method, <code class="docutils literal notranslate"><span class="pre">get_version_and_builddate</span></code></p></li>
+<li><p>Add argument <code class="docutils literal notranslate"><span class="pre">additional_fields</span></code> for <code class="docutils literal notranslate"><span class="pre">get_power_flow_results</span></code> method
+which provides an easy and consistent way to add more fields to the power
+flow result</p></li>
+<li><p>Updating so that ESA is compatible with Simulator version 17. Note
+that this does not imply ESA has been tested with versions 16, 18, 19,
+or 20. However, ESA <em>should</em> work with all these versions.</p></li>
+<li><p>Added case files for Simulator versions 16-22(beta) and renamed the cases
+accordingly (suffixed with <code class="docutils literal notranslate"><span class="pre">pws_version_&lt;version</span> <span class="pre">goes</span> <span class="pre">here&gt;.pwb</span></code>.</p></li>
+<li><p>Updated documentation to discuss different versions of Simulator.</p></li>
+</ul>
+</div>
 <div class="section" id="version-1-0-2">
 <h3>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
