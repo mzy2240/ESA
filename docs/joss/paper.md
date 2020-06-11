@@ -15,15 +15,12 @@ tags:
   - Numpy
   - Pandas
 authors:
-  - name: Brandon L. Thayer
+  - name: Brandon L. Thayer^[The first two authors of this paper contributed equally to this software.]
     orcid: 0000-0002-6517-1295
     affiliation: "1, 2"
-    footnote: 1
   - name: Zeyu Mao
     orcid: 0000-0003-0841-5123
     affiliation: 1
-    footnote: 1
-    equal: 1
   - name: Yijing Liu
     orcid: 0000-0002-5104-325X
     affiliation: 1

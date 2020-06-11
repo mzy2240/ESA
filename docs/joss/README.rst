@@ -1,3 +1,20 @@
+Current Directions
+------------------
+Use the `paper preview service <https://whedon.theoj.org/>`__ from JOSS to compile the paper.
+
+Files:
+^^^^^^
+
+- paper.bib: BibTex file for paper references.
+- paper.md: The actual paper, in MarkDown format.
+- paper.pdf: Current compiled .pdf version of the paper.
+- README.rst: This file.
+
+Old Directions
+--------------
+Please note the directions below are no longer applicable. JOSS does not
+allow for modification as mentioned in `this comment <https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-642588057>`__.
+
 The original latex.template is from `the whedon
 repository <https://github.com/openjournals/whedon/tree/master/resources
 /joss>`__.
