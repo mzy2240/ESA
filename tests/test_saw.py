@@ -1988,5 +1988,44 @@ class CallSimAutoTestCase(unittest.TestCase):
                     saw_14.GetParametersSingleElement('bus', ['BusNum'], [1])
 
 
+class ToNumericTestCase(unittest.TestCase):
+    """Test the _to_numeric method. Fortunately, most of the code in
+    the _to_numeric method is already covered by other existing tests,
+    so here we'll be focusing on using commas as a decimal delimiter.
+    """
+
+    # noinspection PyMethodMayBeStatic
+    def test_df_commas(self):
+        df_in = pd.DataFrame([['1,2', ' 3,5'], ['4,7 ', "  1,059"]])
+        expected = pd.DataFrame([[1.2, 3.5], [4.7, 1.059]])
+
+        with patch.object(saw_14, 'decimal_delimiter', new=','):
+            df_out = saw_14._to_numeric(df_in)
+
+        pd.testing.assert_frame_equal(expected, df_out)
+
+    # noinspection PyMethodMayBeStatic
+    def test_series_commas(self):
+        series_in = pd.Series(['456,3', '82,1', '97'])
+        expected = pd.Series([456.3, 82.1, 97])
+
+        with patch.object(saw_14, 'decimal_delimiter', new=','):
+            series_out = saw_14._to_numeric(series_in)
+
+        pd.testing.assert_series_equal(expected, series_out)
+
+    def test_bad_data_input(self):
+        """Only DataFrames and Series are allowed."""
+        with self.assertRaisesRegex(TypeError, 'data must be either a Data'):
+            # noinspection PyTypeChecker
+            saw_14._to_numeric('not a df')
+
+    def test_bad_errors_input(self):
+        """Pandas will throw an error if the errors input is invalid."""
+        s_in = pd.Series(np.array(['1.2'] * 3))
+        with self.assertRaisesRegex(ValueError, 'invalid error value'):
+            saw_14._to_numeric(data=s_in, errors='silly')
+
+
 if __name__ == '__main__':
     unittest.main()
