@@ -2,6 +2,16 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.0.4
+^^^^^^^^^^^^^
+
+* Added support for other locales by automatically detecting the
+  system's decimal delimiter. This should allow users in Europe and
+  elsewhere to leverage ESA. Thanks to
+  `robinroche <https://github.com/robinroche>`__ for pointing out the
+  problem during our `JOSS <https://joss.theoj.org/>`__ review in
+  `this comment <https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-643482550>`__.
+
 Version 1.0.3
 ^^^^^^^^^^^^^
 
