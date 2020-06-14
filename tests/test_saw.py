@@ -35,7 +35,6 @@ import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock, Mock, seal
-import datetime
 
 import numpy as np
 import pandas as pd
