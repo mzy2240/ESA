@@ -13,6 +13,7 @@ from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
 import re
 import datetime
+import locale
 
 import numpy as np
 import pandas as pd
@@ -104,6 +105,11 @@ class SAW(object):
         """
         # Initialize logger.
         self.log = logging.getLogger(self.__class__.__name__)
+
+        # Set the decimal delimiter based on this PC's locale.
+        locale_db = locale.localeconv()
+        self.decimal_delimiter = locale_db['decimal_point']
+
         # Useful reference for early vs. late binding:
         # https://docs.microsoft.com/en-us/office/troubleshoot/office-developer/binding-type-available-to-automation-clients
         #
@@ -281,7 +287,7 @@ class SAW(object):
         numeric_fields = fields[numeric]
 
         # Make the numeric fields, well, numeric.
-        obj[numeric_fields] = obj[numeric_fields].apply(pd.to_numeric)
+        obj[numeric_fields] = self._to_numeric(obj[numeric_fields])
 
         # Now handle the non-numeric cols.
         nn_cols = fields[~numeric]
@@ -380,8 +386,9 @@ class SAW(object):
             key_field_df['key_field'].str.replace('[A-Z]*', '')
 
         # Get numeric, 0-based index.
+        # noinspection PyTypeChecker
         key_field_df['key_field_index'] = \
-            pd.to_numeric(key_field_df['key_field']) - 1
+            self._to_numeric(key_field_df['key_field']) - 1
 
         # Drop the key_field column (we only wanted to convert to an
         # index).
@@ -459,10 +466,11 @@ class SAW(object):
                                                  ParamList=field_list)
 
     def get_version_and_builddate(self) -> tuple:
-        return self._call_simauto("GetParametersSingleElement",
-                                  "PowerWorldSession",
-                                  convert_list_to_variant(["Version",
-                                                           "ExeBuildDate"]), convert_list_to_variant(["", ""]))
+        return self._call_simauto(
+            "GetParametersSingleElement",
+            "PowerWorldSession",
+            convert_list_to_variant(["Version", "ExeBuildDate"]),
+            convert_list_to_variant(["", ""]))
 
     def identify_numeric_fields(self, ObjectType: str,
                                 fields: Union[List, np.ndarray]) -> \
@@ -1469,7 +1477,7 @@ class SAW(object):
         data.rename(columns={-1: 'time'}, inplace=True)
 
         # Attempt to convert all columns to numeric.
-        data = data.apply(lambda x: pd.to_numeric(x, errors='ignore'))
+        data = self._to_numeric(data, errors='ignore')
 
         # Return.
         return meta, data
@@ -1808,6 +1816,49 @@ class SAW(object):
                     merged[cols_out[str_cols]].to_numpy()
                 )
         )
+
+    def _to_numeric(self, data: Union[pd.DataFrame, pd.Series],
+                    errors='raise') -> \
+            Union[pd.DataFrame, pd.Series]:
+        """Helper to convert data from string to numeric. The primary
+        purpose for this function's existence is to handle European style
+        decimal separators (comma vs. period).
+
+        :param data: DataFrame or Series which will be have its data
+            converted to numeric types.
+        :param errors: Passed directly to pandas.to_numeric, please
+            consult the Pandas documentation. Available options at the
+            time of writing are 'ignore', 'raise', and 'coerce'
+        """
+        # Determine if we're dealing with a DataFrame or Series.
+        if isinstance(data, pd.DataFrame):
+            df_flag = True
+        elif isinstance(data, pd.Series):
+            df_flag = False
+        else:
+            raise TypeError('data must be either a DataFrame or Series.')
+
+        # to_numeric from Pandas does not at the time of writing
+        # (2020-06-12) have a decimal delimiter argument, while to_csv
+        # and from_csv do. So, we have to check.
+        if self.decimal_delimiter != '.':
+            # Replace commas with periods.
+
+            if df_flag:
+                # Need to use apply to strip strings from multiple columns.
+                data = data.apply(lambda x:
+                                  x.str.replace(self.decimal_delimiter, '.'))
+
+            else:
+                # A series is much simpler, and the .str.replace()
+                # method can be used directly.
+                data = data.str.replace(self.decimal_delimiter, '.')
+
+        # Convert to numeric and return.
+        if df_flag:
+            return data.apply(lambda x: pd.to_numeric(x, errors=errors))
+        else:
+            return data.apply(pd.to_numeric, errors=errors)
 
 
 def convert_to_windows_path(p):
