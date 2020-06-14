@@ -2025,6 +2025,64 @@ class ToNumericTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'invalid error value'):
             saw_14._to_numeric(data=s_in, errors='silly')
 
+    def test_get_power_flow_results_with_commas(self):
+        """This test isn't exactly in the right place, but the spirit
+        of it belongs here.
+
+        Essentially, we're going to take the output from the following
+        comment:
+        https://github.com/mzy2240/ESA/issues/56#issuecomment-643814343
+
+        And ensure things work without throwing an error.
+
+        Note the issue was originally brought up in this comment:
+        https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-643482550
+        """
+        # Hard-code expected output from the comment linked in the
+        # docstring.
+        output = (('    1', '    2', '    3', '    4', '    5', '    6',
+                   '    7', '    8', '    9', '   10', '   11', '   12',
+                   '   13', '   14'),
+                  ('Bus 1', 'Bus 2', 'Bus 3', 'Bus 4', 'Bus 5', 'Bus 6',
+                   'Bus 7', 'Bus 8', 'Bus 9', 'Bus 10', 'Bus 11', 'Bus 12',
+                   'Bus 13', 'Bus 14'),
+                  ('  1,05999994', '  1,04499996', '  1,00999999',
+                   '  1,01767162', '  1,01951459', '  1,07000005',
+                   '  1,06152019', '  1,09000003', '  1,05593281',
+                   '  1,05098559', '  1,05690694', '  1,05518907',
+                   '  1,05038265', '  1,03553058'), (
+                  '  0,00000000', ' -4,98255334', '-12,72502699',
+                  '-10,31282882', ' -8,77379918', '-14,22086891',
+                  '-13,35955842', '-13,35957101', '-14,93845750',
+                  '-15,09722071', '-14,79055172', '-15,07551240',
+                  '-15,15619553', '-16,03356498'), (
+                  '232,39169121', ' 18,30000132', '-94,19999719',
+                  '-47,79999852', ' -7,59999976', '-11,20000035',
+                  '  0,00000000', '  0,00000000', '-29,49999869',
+                  ' -9,00000036', ' -3,50000001', ' -6,10000007',
+                  '-13,50000054', '-14,90000039'), (
+                  '-16,54938906', ' 30,85595667', '  6,07485175',
+                  '  3,90000008', ' -1,60000008', '  5,22969961',
+                  '  0,00000000', ' 17,62306690', '  4,58488762',
+                  ' -5,79999983', ' -1,79999992', ' -1,60000008',
+                  ' -5,79999983', ' -5,00000007'))
+
+        # Force the decimal delimiter to be a comma.
+        with patch.object(saw_14, 'decimal_delimiter', new=','):
+            # Patch _call_simauto.
+            with patch.object(saw_14, '_call_simauto', return_value=output):
+                df = saw_14.get_power_flow_results('bus')
+
+        # Ensure it's a DataFrame.
+        self.assertIsInstance(df, pd.DataFrame)
+
+        # Ensure BusNum comes back as an integer. This isn't a great
+        # test, but it's something.
+        self.assertTrue(df['BusNum'].dtype == np.dtype('int64'))
+
+        # Ensure we get floats for voltage.
+        self.assertTrue(df['BusPUVolt'].dtype == np.dtype('float64'))
+
 
 if __name__ == '__main__':
     unittest.main()
