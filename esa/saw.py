@@ -444,8 +444,8 @@ class SAW(object):
             are the keys in the POWER_FLOW_FIELDS class attribute (case
             insensitive).
 
-        :param additional_fields: Pass a list of field names to extend the
-            default attributes in the POWER_FLOW_FIELDS.
+        :param additional_fields: Pass a list of field names to extend
+            the default attributes in the POWER_FLOW_FIELDS.
 
         :returns: Pandas DataFrame with the corresponding results, or
             None if the given ObjectType is not present in the model.
@@ -457,6 +457,9 @@ class SAW(object):
         try:
             field_list = self.POWER_FLOW_FIELDS[object_type]
             if additional_fields:
+                # Make a copy of the field list.
+                field_list = field_list[:]
+                # Extend it.
                 field_list += additional_fields
         except KeyError:
             raise ValueError('Unsupported ObjectType for power flow results, '

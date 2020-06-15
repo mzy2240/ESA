@@ -2,6 +2,17 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+=======
+Version 1.0.5
+^^^^^^^^^^^^^
+* It turns out version 1.0.4 did not fully/correctly handle automatic
+  locale setting. This version should now properly handle different
+  decimal delimiters automatically.
+* Bug fix: The ``additional_fields`` parameter to ``SAW``'s
+  ``get_power_flow_results`` was permanently adding the
+  ``additional_fields`` to the corresponding list in the ``SAW``
+  object's ``SAW.POWER_FLOW_FIELDS`` attribute.
+
 Version 1.0.4
 ^^^^^^^^^^^^^
 
