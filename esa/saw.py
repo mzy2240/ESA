@@ -1420,7 +1420,9 @@ class SAW(object):
             contingency be obtained at a time.
         :param ObjFieldList: A list of strings which may contain plots,
             subplots, or individual object/field pairs specifying the
-            result variables to obtain.
+            result variables to obtain. For field name please check
+            `here <https://mzy2240.github.io/ESA/html/overview.html#powerworld-variables>`__.
+
         :param StartTime: The time in seconds in the simulation to begin
             retrieving results. If not specified (None), the start time
             of the simulation is used.
