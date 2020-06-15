@@ -2,7 +2,6 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
-=======
 Version 1.0.5
 ^^^^^^^^^^^^^
 * It turns out version 1.0.4 did not fully/correctly handle automatic

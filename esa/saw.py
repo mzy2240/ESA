@@ -7,13 +7,13 @@ PowrWorld's documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
+import locale
 import logging
 import os
 from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
 import re
 import datetime
-import locale
 
 import numpy as np
 import pandas as pd
@@ -22,6 +22,10 @@ import win32com
 from win32com.client import VARIANT
 
 import tempfile
+
+# Before doing anything else, set up the locale. The docs note this is
+# not thread safe, and should thus be done right away.
+locale.setlocale(locale.LC_ALL, '')
 
 # TODO: Make logging more configurable.
 logging.basicConfig(
