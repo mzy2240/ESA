@@ -470,9 +470,16 @@ class GetPowerFlowResultsTestCase(unittest.TestCase):
 
     def test_with_additional_fields(self):
         """Add additional fields to the result"""
+        # Ensure the number of fields before and after doesn't change.
+        num_fields_before = len(saw_14.POWER_FLOW_FIELDS['bus'])
+
         result = saw_14.get_power_flow_results(ObjectType='Bus',
                                                additional_fields=['AreaNum'])
         self.assertTrue('AreaNum' in result.columns.values.tolist())
+
+        # Check fields.
+        num_fields_after = len(saw_14.POWER_FLOW_FIELDS['bus'])
+        self.assertEqual(num_fields_before, num_fields_after)
 
 
 class IdentifyNumericFieldsTestCase(unittest.TestCase):
