@@ -1838,6 +1838,11 @@ class SAW(object):
         :param errors: Passed directly to pandas.to_numeric, please
             consult the Pandas documentation. Available options at the
             time of writing are 'ignore', 'raise', and 'coerce'
+        :returns: data, but with all columns converted to numeric. Note
+            that if the errors parameter is 'ignore' that it's possible
+            not all data will be converted to numeric due to suppressed
+            errors. Also note that data which is already numeric will
+            remain unaltered.
         """
         # Determine if we're dealing with a DataFrame or Series.
         if isinstance(data, pd.DataFrame):
@@ -1855,19 +1860,34 @@ class SAW(object):
 
             if df_flag:
                 # Need to use apply to strip strings from multiple columns.
-                data = data.apply(lambda x:
-                                  x.str.replace(self.decimal_delimiter, '.'))
+                data = data.apply(self._replace_decimal_delimiter)
 
             else:
                 # A series is much simpler, and the .str.replace()
                 # method can be used directly.
-                data = data.str.replace(self.decimal_delimiter, '.')
+                data = self._replace_decimal_delimiter(data)
 
         # Convert to numeric and return.
         if df_flag:
             return data.apply(lambda x: pd.to_numeric(x, errors=errors))
         else:
             return data.apply(pd.to_numeric, errors=errors)
+
+    def _replace_decimal_delimiter(self, data: pd.Series):
+        """Helper to replace the decimal delimiter character with a
+        period. IMPORTANT NOTE: If the given Series does not have the
+        'str' attribute, this method assumes the data is already
+        numeric. the associated AttributeError will be ignored.
+
+        :param data: Pandas Series to replace self.decimal_delimiter
+            with a '.' character.
+        :returns: data, but with string replacement. If data does not
+            have the 'str' attribute, data is returned unmodified.
+        """
+        try:
+            return data.str.replace(self.decimal_delimiter, '.')
+        except AttributeError:
+            return data
 
 
 def convert_to_windows_path(p):
