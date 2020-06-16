@@ -103,7 +103,7 @@ bridge between power system simulation and machine learning libraries.
 ESA has already been utilized in several research projects past and
 present:
 
-- In [@gym-powerworld], [@brandon_thesis], ESA was used to create a
+- In [@gym-powerworld], [@brandon_arxiv], ESA was used to create a
 standardized reinforcement learning environment for power system voltage
 control. This environment was then used to carry out deep reinforcement
 learning (DRL) experiments in which the algorithm attempts to learn how
