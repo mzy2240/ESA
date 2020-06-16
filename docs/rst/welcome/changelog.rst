@@ -2,8 +2,17 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.0.6
+^^^^^^^^^^^^^
+
+* Hopefully finally fixing locale-based issues. Fixes began in 1.0.4,
+  and continued in 1.0.5.
+* Finalizing JOSS paper. Once published, the citation will be added to
+  the top-level README and the documentation.
+
 Version 1.0.5
 ^^^^^^^^^^^^^
+
 * It turns out version 1.0.4 did not fully/correctly handle automatic
   locale setting. This version should now properly handle different
   decimal delimiters automatically.
