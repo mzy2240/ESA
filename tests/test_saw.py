@@ -272,6 +272,43 @@ class ChangeParametersMultipleElementDFTestCase(unittest.TestCase):
              'ValueList': [[3, '1', 94.9, 29.0], [13, '1', 13.8, 5.1]]}
         )
 
+    def test_with_comma_decimal_delimiter(self):
+        """Ensure the method works with a comma decimal delimiter.
+
+        Test motivated by the following issue:
+
+        https://github.com/mzy2240/ESA/issues/61
+
+        Also note the following comments:
+        https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-644265540
+        https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-644371941
+
+        Note that the root of the problem in the aforementioned issues
+        and comment is the _to_numeric method itself, so this is a
+        high-level (and lazy?) way of getting at the problem.
+        """
+        # Create a DataFrame with mixed types for commands.
+        cols = ['BusNum', 'LoadID', 'LoadMW', 'LoadMVR']
+        command_df = pd.DataFrame(
+            [[13, '1', 13.8, '5.1'],
+             [3, ' 1 ', 94.9, '29.0']],
+            columns=cols
+        )
+
+        # For sanity sake, add some type assertions.
+        self.assertEqual(command_df['BusNum'].dtype, np.dtype('int64'))
+        self.assertEqual(command_df['LoadID'].dtype, np.dtype('object'))
+        self.assertEqual(command_df['LoadMW'].dtype, np.dtype('float64'))
+        self.assertEqual(command_df['LoadMVR'].dtype, np.dtype('object'))
+
+        # Alright, our command DataFrame is as we want it.
+        # Now, call the change_parameters_multiple_element_df method.
+        # Patch the comma delimiter and _call_simauto method.
+        with patch.object(saw_14, 'decimal_delimiter', new=','):
+            with patch.object(saw_14, '_call_simauto', return_value=None):
+                saw_14.change_parameters_multiple_element_df(
+                    'load', command_df)
+
 
 class CleanDFOrSeriesTestCase(unittest.TestCase):
     def test_bad_df_columns(self):
