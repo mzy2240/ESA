@@ -15,15 +15,12 @@ tags:
   - Numpy
   - Pandas
 authors:
-  - name: Brandon L. Thayer
+  - name: Brandon L. Thayer^[The first two authors of this paper contributed equally to this software.]
     orcid: 0000-0002-6517-1295
     affiliation: "1, 2"
-    footnote: 1
   - name: Zeyu Mao
     orcid: 0000-0003-0841-5123
     affiliation: 1
-    footnote: 1
-    equal: 1
   - name: Yijing Liu
     orcid: 0000-0002-5104-325X
     affiliation: 1
@@ -106,7 +103,7 @@ bridge between power system simulation and machine learning libraries.
 ESA has already been utilized in several research projects past and
 present:
 
-- In [@gym-powerworld], [@brandon_thesis], ESA was used to create a
+- In [@gym-powerworld], [@brandon_arxiv], ESA was used to create a
 standardized reinforcement learning environment for power system voltage
 control. This environment was then used to carry out deep reinforcement
 learning (DRL) experiments in which the algorithm attempts to learn how
