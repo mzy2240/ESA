@@ -124,7 +124,7 @@ place GIC blocking devices in test systems per the proposed algorithm,
 thus minimizing the effects of GMDs on the power grid.
 - ESA is used by an ongoing research project entitled "Real Time
 Monitoring Applications for the Power Grid under Geomagnetic
-Disturbances (GMD)", where recently, a real-world GMD monitoring system
+Disturbances (GMD)," where recently, a real-world GMD monitoring system
 consisting of six magnetometers was deployed in Texas. The resulting
 magnetic field measurements are coupled with ground conductivity models
 to calculate real-time electric fields. These can then be fed to a grid
