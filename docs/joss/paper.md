@@ -71,15 +71,15 @@ parsing, low-level interactions with Windows Component Object Model
 [Easy SimAuto (ESA)](https://github.com/mzy2240/ESA) is a Python package
 that significantly simplifies interfacing with PowerWorld Simulator
 [@esa]. ESA wraps all available SimAuto functions; provides high-level
-helper functions to streamline workflows and provide additional
+helper functions to streamline workflows, and provide additional
 functionality not provided by SimAuto; performs automatic error
 checking, data type conversions, and data parsing; is easily installable
-via Python's package manager (Pip); has 100% testing coverage; and is
+via Python's package installer (pip); has 100% testing coverage; and is
 fully documented. Similar packages have been created in the past, but
 lack functions, tests, documentation, and other useful features ESA
 provides [@pypowerworld], [@matpws]. Most SimAuto users tend to write
 their own one-off functions and boilerplate code for interfacing with
-SimAuto - ESA eliminates this redundancy and abstracts away all the
+SimAuto. ESA eliminates this redundancy and abstracts away all the
 low-level SimAuto interactions so that users can focus on performing
 higher-level tasks such as automating tasks, configuring simulations,
 and analyzing results.
@@ -90,11 +90,11 @@ more complex, researchers and developers need the ability to incorporate
 their programs, algorithms, control schemes, etc. into power system
 simulations. ESA enables its users to fully leverage, extend, and
 automate the large depth of functionality and tools built into
-PowerWorld Simulator: procedures which may have previously been
+PowerWorld Simulator: procedures that may have previously been
 performed via a sequence of manual tasks in Simulator's graphical user
 interface (GUI) can be rapidly built into Python scripts which can be
 stored in version control and run with a single click. Since ESA uses
-data types common to data science and scientific computing (e.g. Pandas
+data types common to data science and scientific computing (e.g., Pandas
 DataFrames and Numpy Arrays), it is well suited to both academic
 research and task automation in industry. Due to ESA's use of these
 common Python data types and libraries, ESA provides a much-needed
@@ -117,14 +117,14 @@ were all varied. The resulting scenarios were used in the
 hosted by the U.S. Department of Energy (DOE).
 - Geomagnetic disturbances (GMDs) affect the magnetic and electric field
 of the earth, inducing dc voltage sources superimposed on transmission
-lines. In [@OverbyeKPEC]^[accepted, to be published after delayed
+lines. In [@OverbyeKPEC]^[accepted, to be published after the delayed
 conference takes place], a planning-based GMD mitigation strategy was
 developed for large power systems. ESA is leveraged to programmatically
 place GIC blocking devices in test systems per the proposed algorithm,
 thus minimizing the effects of GMDs on the power grid.
 - ESA is used by an ongoing research project entitled "Real Time
 Monitoring Applications for the Power Grid under Geomagnetic
-Disturbances (GMD)": Recently, a real-world GMD monitoring system
+Disturbances (GMD)," where recently, a real-world GMD monitoring system
 consisting of six magnetometers was deployed in Texas. The resulting
 magnetic field measurements are coupled with ground conductivity models
 to calculate real-time electric fields. These can then be fed to a grid
