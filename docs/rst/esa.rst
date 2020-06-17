@@ -1,3 +1,5 @@
+.. _api:
+
 esa API Documentation
 =====================
 ESA is a single module package - the only Python file is ``saw.py``.
@@ -13,6 +15,8 @@ esa Package
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. _esa-saw-api:
 
 esa.saw Module
 --------------

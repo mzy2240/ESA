@@ -15,7 +15,8 @@ determining whether SimAuto has reported an error, and more.
 Additionally, ESA uses the scientific computing packages you know and
 love, including Numpy and Pandas. In addition to wrapping 100% of the
 functions provided by SimAuto, ESA provides helper functions that
-further ease development. Below is a quick motivating example that
-shows how easy it is to use SimAuto.
+further ease development. Below is a quick motivating example (also
+found in :ref:`increase-loading`) that shows how easy it is to use
+SimAuto.
 
 .. include:: snippets/increase_loading_14.rst

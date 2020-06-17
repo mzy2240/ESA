@@ -1,5 +1,17 @@
-Before running the example below, define a CASE_PATH variable like so
-(adapt the path as needed for your system):
+This "quick start" example has several purposes:
+
+*   Illustrate how ESA is used with a simple power system model.
+
+*   Demonstrate how to perform common tasks (e.g. solving the power
+    flow, retrieving simulation data such as bus voltages and power
+    injections).
+
+*   Show the usefulness of some of ESA's high level helper functions
+    which do more than simply wrap SimAuto functions.
+
+Before running the example below, define a CASE_PATH constant (the file
+path to a PowerWorld ``.pwb`` case file) like so (adapt the path as
+needed for your system):
 
 .. code:: python
 
@@ -63,6 +75,9 @@ Retrieve power flow results for generators:
     4       8     1    0.000000  17.623067
 
 
+To learn more about variables such as ``GenMW``, see
+:ref:`powerworld-variables`.
+
 Let's change generator injections! But first, we need to know which
 fields PowerWorld needs in order to identify generators. These fields
 are known as key fields.
@@ -84,7 +99,7 @@ function:
     >>> saw.ChangeParametersMultipleElement(ObjectType='gen', ParamList=params, ValueList=values)
 
 
-Did it work? Spoiler: it does!
+Did changing generator active power injections work? Let's confirm:
 
 .. code:: python
 

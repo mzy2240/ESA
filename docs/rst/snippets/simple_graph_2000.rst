@@ -1,16 +1,17 @@
 This example shows how to easily transform a grid model into a graph
-supported by NetworkX. NetworkX is a popular Python package for
-analyzing graph structure, building network models and designing new
-network algorithms. You'll first need to install NetworkX into your
-virtual environment (which should be activated!), which is most easily
-done by:
+supported by `NetworkX <https://networkx.github.io/>`__. NetworkX is a
+popular Python package for analyzing graph structure, building network
+models and designing new network algorithms. You'll first need to
+install NetworkX into your virtual environment (which should be
+activated!), which is most easily done by:
 
 .. code:: bat
 
     python -m pip install networkx
 
 Before following along with the example, define the ``CASE_PATH``
-constant like so, adapting the path to your system:
+constant (the file path to a PowerWorld ``.pwb`` case file) like so,
+adapting the path to your system:
 
 .. code:: python
 
@@ -50,6 +51,9 @@ Get a DataFrame with all branches (lines, transformers, etc.):
     3203    8160      8159           1
     <BLANKLINE>
     [3204 rows x 3 columns]
+
+To learn more about variables such as ``LineCircuit``, see
+:ref:`powerworld-variables`.
 
 Create the graph from the DataFrame. Yes, it is this simple. Use
 ``Graph`` instead of ``MultiGraph`` if there are no parallel branches.

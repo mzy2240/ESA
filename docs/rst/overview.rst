@@ -1,9 +1,11 @@
-Overview
+ESA Overview
 ============
+Please see :ref:`about-simauto` for a description of SimAuto as well as
+for links to PowerWorld's documentation.
+
 When using ESA, you'll likely only use a single class: ``SAW``, which is
 short for SimAuto Wrapper. After you've installed the esa package
-(refer to the installation section of this documentation), you'll import
-the ``SAW`` class like so:
+(refer to :ref:`installation`), you'll import the ``SAW`` class like so:
 
 .. code-block:: python
 
@@ -60,6 +62,8 @@ As mentioned in the `Naming Conventions`_ section, we recommend you use
 the high level helper functions (which use the
 lower_case_with_underscores convention) where possible.
 
+.. _runscriptcommand:
+
 RunScriptCommand
 ^^^^^^^^^^^^^^^^
 
@@ -96,6 +100,8 @@ documentation. Where possible, ``SAW`` methods return Pandas DataFrames
 or Pandas Series. If there's nothing to return, ``None`` will be
 returned. ESA makes extensive use of type hinting so that your IDE can
 automatically highlight issues related to data types.
+
+.. _powerworld-variables:
 
 PowerWorld Variables
 --------------------

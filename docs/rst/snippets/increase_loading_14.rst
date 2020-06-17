@@ -1,5 +1,9 @@
+This simple example uniformly increases the loading in a power system
+model by 50%.
+
 If you want to follow along, you'll first need to define your own
-``CASE_PATH`` constant, like so (adapt the path for your system):
+``CASE_PATH`` constant (the file path to a PowerWorld ``.pwb`` case
+file), like so (adapt the path for your system):
 
 .. code:: python
 
@@ -39,6 +43,9 @@ Pull load data including active and reactive power demand:
     9       13      1  13.500001   5.800000
     10      14      1  14.900000   5.000000
 
+To learn more about variables such as ``LoadSMW``, see
+:ref:`powerworld-variables`.
+
 Uniformly increase loading by 50% and solve the power flow:
 
 .. code:: python
@@ -46,6 +53,25 @@ Uniformly increase loading by 50% and solve the power flow:
     >>> load_frame[['LoadSMW', 'LoadSMVR']] *= 1.5
     >>> saw.change_parameters_multiple_element_df('load', load_frame)
     >>> saw.SolvePowerFlow()
+
+Let's confirm that the loading did indeed increase:
+
+.. code:: python
+
+    >>> new_loads = saw.GetParametersMultipleElement('load', kf + ['LoadSMW', 'LoadSMVR'])
+    >>> new_loads
+        BusNum LoadID     LoadSMW   LoadSMVR
+    0        2      1   32.549998  19.050001
+    1        3      1  141.299999  28.500000
+    2        4      1   71.699995  -5.850000
+    3        5      1   11.400000   2.400000
+    4        6      1   16.800001  11.250000
+    5        9      1   44.250000  24.900000
+    6       10      1   13.500001   8.700000
+    7       11      1    5.250000   2.700000
+    8       12      1    9.150000   2.400000
+    9       13      1   20.250002   8.700000
+    10      14      1   22.350000   7.500000
 
 Clean up when done:
 

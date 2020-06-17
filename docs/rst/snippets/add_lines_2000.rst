@@ -1,8 +1,11 @@
-This example shows how to add transmission lines to a model. You can
-find the case and .csv file referenced in the ``tests`` directory of the
-ESA repository. Before starting the example, please define the constants
-``CASE_PATH`` and ``CANDIDATE_LINES`` like the following, adapting paths
-to your system.
+This example shows how to add transmission lines to a model.
+
+Before starting the example, please define the constants
+``CASE_PATH`` (the file path to a PowerWorld ``.pwb`` case file) and
+``CANDIDATE_LINES`` (file path to a ``.csv`` file with data related to
+lines we'd like to add to the model) like the following, adapting paths
+to your system. You can find the case and .csv file referenced in the
+``tests`` directory of the ESA repository.
 
 .. code:: python
 
@@ -39,7 +42,9 @@ renaming variables from the "Concise Variable Name" convention to the
 "Variable Name" convention. See `power_world_object_fields.xlsx
 <https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx>`__.
 Also note `this issue
-<https://github.com/mzy2240/ESA/issues/1#issue-525219427>`__ is also relevant.
+<https://github.com/mzy2240/ESA/issues/1#issue-525219427>`__ is also
+relevant. To learn more about PowerWorld variables, see
+:ref:`powerworld-variables`.
 
 .. code:: python
 

@@ -1,15 +1,19 @@
 This example shows how one can create a weighted graph using branch
-impedance values as weights. You'll need to have the NetworkX Python
-package installed into your virtual environment in order to execute
-this example on your machine (``python -m pip install networkx``).
+impedance values from a PowerWorld grid model as weights. You'll need to
+have the `NetworkX <https://networkx.github.io/>`__ Python package
+installed into your virtual environment in order to execute this example
+on your machine (``python -m pip install networkx``).
 
 Please note that this example does NOT work with Simulator version 17 (
 and possibly other versions of Simulator older than version 21). For an
-unknown reason, PowerWorld throws an exception when trying to run the
-``SaveYbusInMatlabFormat`` script command.
+unknown reason, PowerWorld itself throws an exception when trying to run
+the ``SaveYbusInMatlabFormat`` script command. If you have a solution
+to this problem, please file an `issue
+<https://github.com/mzy2240/ESA/issues>`__.
 
 Before following along with the example, define the ``CASE_PATH``
-constant like so, adapting the path to your system:
+constant (the file path to a PowerWorld ``.pwb`` case file) like so,
+adapting the path to your system:
 
 .. code:: python
 

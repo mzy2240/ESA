@@ -1,3 +1,5 @@
+.. _examples:
+
 Examples
 ========
 For your convenience, several ESA usage examples are provided in this
@@ -15,6 +17,8 @@ The following example is also presented in the :ref:`quick-start`
 section.
 
 .. include:: snippets/quick_start_14.rst
+
+.. _increase-loading:
 
 Increase Loading in Case
 ------------------------

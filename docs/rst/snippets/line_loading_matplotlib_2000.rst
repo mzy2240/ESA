@@ -1,15 +1,18 @@
-This examples shows how to make various of plots using Matplotlib.
-Matplotlib is a comprehensive library for creating static, animated,
-and interactive visualizations in Python. You'll first need to install
-Matplotlib into your virtual environment (which should be activated!),
-which is most easily done by:
+This examples shows how to make a histogram of percent line loading in
+a power system model using SimAuto, ESA, and Matplotlib.
+
+`Matplotlib <https://matplotlib.org/>`__ is a "comprehensive library for
+creating static, animated, and interactive visualizations in Python."
+You'll first need to install Matplotlib into your virtual environment
+(which should be activated!), which is most easily done by:
 
 .. code:: bat
 
     python -m pip install -U matplotlib
 
 Before following along with the example, define the CASE_PATH constant
-like so, adapting the path to your system.
+(the file path to a PowerWorld ``.pwb`` case file) like so, adapting the
+path to your system.
 
 .. code:: python
 
@@ -67,6 +70,9 @@ Get line loading percentage at all buses via SimAuto function:
     3203    8160      8159           1    57.452701
     <BLANKLINE>
     [3204 rows x 4 columns]
+
+To learn more about variables such as ``LinePercent``, see
+:ref:`powerworld-variables`.
 
 Then let's start to plot with Matplotlib!
 
