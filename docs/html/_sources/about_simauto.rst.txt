@@ -1,0 +1,12 @@
+According to `PowerWorld
+<https://www.powerworld.com/products/simulator/add-ons-2/simauto>`__::
+
+    The Simulator Automation Server (SimAuto) allows you to take
+    advantage of the power of automation to extend the functionality of
+    PowerWorld Simulator to any external program that you write. Using
+    Simulator Automation Server you can launch and control PowerWorld
+    Simulator from within another application, enabling you to: access
+    the data of a Simulator case, perform defined Simulator functions
+    and other data manipulations, and send results back to your original
+    application, to a Simulator auxiliary file, or to a Microsoft® Excel
+    spreadsheet.

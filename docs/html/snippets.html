@@ -33,7 +33,7 @@
           <div class="body" role="main">
             
   <div class="section" id="examples">
-<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
 <p>For your convenience, several ESA usage examples are provided in this
 section. Some examples may also be presented earlier in the
 documentation. If you would like to share your own examples with us,
@@ -45,8 +45,18 @@ specifically the <code class="docutils literal notranslate"><span class="pre">te
 <h2>ESA Quick Start<a class="headerlink" href="#esa-quick-start" title="Permalink to this headline">¶</a></h2>
 <p>The following example is also presented in the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>
 section.</p>
-<p>Before running the example below, define a CASE_PATH variable like so
-(adapt the path as needed for your system):</p>
+<p>This “quick start” example has several purposes:</p>
+<ul class="simple">
+<li><p>Illustrate how ESA is used with a simple power system model.</p></li>
+<li><p>Demonstrate how to perform common tasks (e.g. solving the power
+flow, retrieving simulation data such as bus voltages and power
+injections).</p></li>
+<li><p>Show the usefulness of some of ESA’s high level helper functions
+which do more than simply wrap SimAuto functions.</p></li>
+</ul>
+<p>Before running the example below, define a CASE_PATH constant (the file
+path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) like so (adapt the path as
+needed for your system):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -95,6 +105,8 @@ DataFrame to make your life easier.</p>
 <span class="go">4       8     1    0.000000  17.623067</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">GenMW</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Let’s change generator injections! But first, we need to know which
 fields PowerWorld needs in order to identify generators. These fields
 are known as key fields.</p>
@@ -110,7 +122,7 @@ function:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">ChangeParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">ValueList</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Did it work? Spoiler: it does!</p>
+<p>Did changing generator active power injections work? Let’s confirm:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
 <span class="go">   BusNum GenID       GenMW</span>
@@ -253,11 +265,14 @@ objects hanging around.</p>
 using ESA to improve your simulation and analysis work flows!</p>
 </div>
 <div class="section" id="increase-loading-in-case">
-<h2>Increase Loading in Case<a class="headerlink" href="#increase-loading-in-case" title="Permalink to this headline">¶</a></h2>
+<span id="increase-loading"></span><h2>Increase Loading in Case<a class="headerlink" href="#increase-loading-in-case" title="Permalink to this headline">¶</a></h2>
 <p>The following example is also presented in the <a class="reference internal" href="welcome.html#what-is-esa"><span class="std std-ref">What Is ESA?</span></a>
 section.</p>
+<p>This simple example uniformly increases the loading in a power system
+model by 50%.</p>
 <p>If you want to follow along, you’ll first need to define your own
-<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant, like so (adapt the path for your system):</p>
+<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case
+file), like so (adapt the path for your system):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -289,10 +304,29 @@ section.</p>
 <span class="go">10      14      1  14.900000   5.000000</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">LoadSMW</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Uniformly increase loading by 50% and solve the power flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">load_frame</span><span class="p">[[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mf">1.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_parameters_multiple_element_df</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">load_frame</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Let’s confirm that the loading did indeed increase:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_loads</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">kf</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_loads</span>
+<span class="go">    BusNum LoadID     LoadSMW   LoadSMVR</span>
+<span class="go">0        2      1   32.549998  19.050001</span>
+<span class="go">1        3      1  141.299999  28.500000</span>
+<span class="go">2        4      1   71.699995  -5.850000</span>
+<span class="go">3        5      1   11.400000   2.400000</span>
+<span class="go">4        6      1   16.800001  11.250000</span>
+<span class="go">5        9      1   44.250000  24.900000</span>
+<span class="go">6       10      1   13.500001   8.700000</span>
+<span class="go">7       11      1    5.250000   2.700000</span>
+<span class="go">8       12      1    9.150000   2.400000</span>
+<span class="go">9       13      1   20.250002   8.700000</span>
+<span class="go">10      14      1   22.350000   7.500000</span>
 </pre></div>
 </div>
 <p>Clean up when done:</p>
@@ -303,11 +337,13 @@ section.</p>
 </div>
 <div class="section" id="add-lines-to-case">
 <h2>Add Lines to Case<a class="headerlink" href="#add-lines-to-case" title="Permalink to this headline">¶</a></h2>
-<p>This example shows how to add transmission lines to a model. You can
-find the case and .csv file referenced in the <code class="docutils literal notranslate"><span class="pre">tests</span></code> directory of the
-ESA repository. Before starting the example, please define the constants
-<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> and <code class="docutils literal notranslate"><span class="pre">CANDIDATE_LINES</span></code> like the following, adapting paths
-to your system.</p>
+<p>This example shows how to add transmission lines to a model.</p>
+<p>Before starting the example, please define the constants
+<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) and
+<code class="docutils literal notranslate"><span class="pre">CANDIDATE_LINES</span></code> (file path to a <code class="docutils literal notranslate"><span class="pre">.csv</span></code> file with data related to
+lines we’d like to add to the model) like the following, adapting paths
+to your system. You can find the case and .csv file referenced in the
+<code class="docutils literal notranslate"><span class="pre">tests</span></code> directory of the ESA repository.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 <span class="n">CANDIDATE_LINES</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\data\CandidateLines.csv&quot;</span>
 </pre></div>
@@ -335,7 +371,9 @@ that new lines can be added:</p>
 <p>Rename columns in the <code class="docutils literal notranslate"><span class="pre">line_df</span></code> to match PowerWorld variables. We are
 renaming variables from the “Concise Variable Name” convention to the
 “Variable Name” convention. See <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx">power_world_object_fields.xlsx</a>.
-Also note <a class="reference external" href="https://github.com/mzy2240/ESA/issues/1#issue-525219427">this issue</a> is also relevant.</p>
+Also note <a class="reference external" href="https://github.com/mzy2240/ESA/issues/1#issue-525219427">this issue</a> is also
+relevant. To learn more about PowerWorld variables, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">line_df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
 <span class="gp">... </span><span class="n">columns</span><span class="o">=</span><span class="p">{</span>
 <span class="gp">... </span><span class="s1">&#39;From Number&#39;</span><span class="p">:</span> <span class="s1">&#39;BusNum&#39;</span><span class="p">,</span>
@@ -399,16 +437,17 @@ the lines will be created.</p>
 <div class="section" id="create-simple-graph-model">
 <h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this headline">¶</a></h2>
 <p>This example shows how to easily transform a grid model into a graph
-supported by NetworkX. NetworkX is a popular Python package for
-analyzing graph structure, building network models and designing new
-network algorithms. You’ll first need to install NetworkX into your
-virtual environment (which should be activated!), which is most easily
-done by:</p>
+supported by <a class="reference external" href="https://networkx.github.io/">NetworkX</a>. NetworkX is a
+popular Python package for analyzing graph structure, building network
+models and designing new network algorithms. You’ll first need to
+install NetworkX into your virtual environment (which should be
+activated!), which is most easily done by:</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install networkx
 </pre></div>
 </div>
 <p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
-constant like so, adapting the path to your system:</p>
+constant (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) like so,
+adapting the path to your system:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -442,6 +481,8 @@ constant like so, adapting the path to your system:</p>
 <span class="go">[3204 rows x 3 columns]</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">LineCircuit</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Create the graph from the DataFrame. Yes, it is this simple. Use
 <code class="docutils literal notranslate"><span class="pre">Graph</span></code> instead of <code class="docutils literal notranslate"><span class="pre">MultiGraph</span></code> if there are no parallel branches.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">graph</span> <span class="o">=</span> <span class="n">nx</span><span class="o">.</span><span class="n">from_pandas_edgelist</span><span class="p">(</span><span class="n">branch_df</span><span class="p">,</span> <span class="s2">&quot;BusNum&quot;</span><span class="p">,</span> <span class="s2">&quot;BusNum:1&quot;</span><span class="p">,</span> <span class="n">create_using</span><span class="o">=</span><span class="n">nx</span><span class="o">.</span><span class="n">MultiGraph</span><span class="p">)</span>
@@ -459,15 +500,18 @@ constant like so, adapting the path to your system:</p>
 <div class="section" id="created-graph-model-with-edges-weighted-by-branch-impedance">
 <h2>Created Graph Model with Edges Weighted by Branch Impedance<a class="headerlink" href="#created-graph-model-with-edges-weighted-by-branch-impedance" title="Permalink to this headline">¶</a></h2>
 <p>This example shows how one can create a weighted graph using branch
-impedance values as weights. You’ll need to have the NetworkX Python
-package installed into your virtual environment in order to execute
-this example on your machine (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">networkx</span></code>).</p>
+impedance values from a PowerWorld grid model as weights. You’ll need to
+have the <a class="reference external" href="https://networkx.github.io/">NetworkX</a> Python package
+installed into your virtual environment in order to execute this example
+on your machine (<code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">networkx</span></code>).</p>
 <p>Please note that this example does NOT work with Simulator version 17 (
 and possibly other versions of Simulator older than version 21). For an
-unknown reason, PowerWorld throws an exception when trying to run the
-<code class="docutils literal notranslate"><span class="pre">SaveYbusInMatlabFormat</span></code> script command.</p>
+unknown reason, PowerWorld itself throws an exception when trying to run
+the <code class="docutils literal notranslate"><span class="pre">SaveYbusInMatlabFormat</span></code> script command. If you have a solution
+to this problem, please file an <a class="reference external" href="https://github.com/mzy2240/ESA/issues">issue</a>.</p>
 <p>Before following along with the example, define the <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code>
-constant like so, adapting the path to your system:</p>
+constant (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) like so,
+adapting the path to your system:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -549,16 +593,18 @@ diagonal Y bus matrix entries and buses which are not connected
 </div>
 <div class="section" id="plot-histogram-of-line-flows-with-matplotlib">
 <h2>Plot Histogram of Line Flows with Matplotlib<a class="headerlink" href="#plot-histogram-of-line-flows-with-matplotlib" title="Permalink to this headline">¶</a></h2>
-<p>This examples shows how to make various of plots using Matplotlib.
-Matplotlib is a comprehensive library for creating static, animated,
-and interactive visualizations in Python. You’ll first need to install
-Matplotlib into your virtual environment (which should be activated!),
-which is most easily done by:</p>
+<p>This examples shows how to make a histogram of percent line loading in
+a power system model using SimAuto, ESA, and Matplotlib.</p>
+<p><a class="reference external" href="https://matplotlib.org/">Matplotlib</a> is a “comprehensive library for
+creating static, animated, and interactive visualizations in Python.”
+You’ll first need to install Matplotlib into your virtual environment
+(which should be activated!), which is most easily done by:</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install -U matplotlib
 </pre></div>
 </div>
 <p>Before following along with the example, define the CASE_PATH constant
-like so, adapting the path to your system.</p>
+(the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) like so, adapting the
+path to your system.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -604,6 +650,8 @@ known as key fields.</p>
 <span class="go">[3204 rows x 4 columns]</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">LinePercent</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Then let’s start to plot with Matplotlib!</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">axes</span> <span class="o">=</span> <span class="n">branch_data</span><span class="o">.</span><span class="n">plot</span><span class="p">(</span><span class="n">kind</span><span class="o">=</span><span class="s1">&#39;hist&#39;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s1">&#39;LinePercent&#39;</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">axes</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s1">&#39;Line Percent Loading&#39;</span><span class="p">)</span>
@@ -642,7 +690,7 @@ known as key fields.</p>
 <li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">ESA Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#esa-quick-start">ESA Quick Start</a></li>
@@ -691,7 +739,7 @@ known as key fields.</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

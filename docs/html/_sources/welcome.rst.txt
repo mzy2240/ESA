@@ -1,5 +1,8 @@
+.. _welcome:
+
 Welcome!
 ========
+
 Welcome to Easy SimAuto's (ESA) documentation! If you encounter issues
 with ESA or the documentation, please file an issue on `GitHub
 <https://github.com/mzy2240/ESA/issues>`__.
@@ -17,6 +20,13 @@ What Is ESA?
 ------------
 
 .. include:: welcome/what.rst
+
+.. _about-simauto:
+
+About SimAuto
+-------------
+
+.. include:: welcome/about_simauto.rst
 
 Who Should Use ESA?
 -------------------
@@ -45,6 +55,8 @@ Credits and Thanks
 ^^^^^^^^^^^^^^^^^^
 
 .. include:: welcome/credits.rst
+
+.. _changelog:
 
 Changelog
 ---------

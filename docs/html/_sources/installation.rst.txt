@@ -1,3 +1,5 @@
+.. _installation:
+
 Installing ESA
 ==============
 Installing ESA is simple! Follow the directions below to get started.

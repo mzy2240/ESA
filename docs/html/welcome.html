@@ -33,11 +33,11 @@
           <div class="body" role="main">
             
   <div class="section" id="welcome">
-<h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
 <p>Welcome to Easy SimAuto’s (ESA) documentation! If you encounter issues
 with ESA or the documentation, please file an issue on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub</a>.</p>
 <div class="section" id="citation">
-<span id="id1"></span><h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
 <p>If you use ESA in any of your work, please use the citation below.
 Please note that the ESA team is in the midst of working on an academic
 journal submission for ESA, so please check back for an up-to-date
@@ -55,7 +55,7 @@ citation.</p>
 </div>
 </div>
 <div class="section" id="what-is-esa">
-<span id="id2"></span><h2>What Is ESA?<a class="headerlink" href="#what-is-esa" title="Permalink to this headline">¶</a></h2>
+<span id="id3"></span><h2>What Is ESA?<a class="headerlink" href="#what-is-esa" title="Permalink to this headline">¶</a></h2>
 <p>ESA is a “Pip-installable” Python package that eases interaction with
 the PowerWorld Simulator Automation Server (SimAuto). PowerWorld
 Simulator is a powerful, commercial-grade electric grid simulation tool
@@ -70,10 +70,14 @@ determining whether SimAuto has reported an error, and more.
 Additionally, ESA uses the scientific computing packages you know and
 love, including Numpy and Pandas. In addition to wrapping 100% of the
 functions provided by SimAuto, ESA provides helper functions that
-further ease development. Below is a quick motivating example that
-shows how easy it is to use SimAuto.</p>
+further ease development. Below is a quick motivating example (also
+found in <a class="reference internal" href="snippets.html#increase-loading"><span class="std std-ref">Increase Loading in Case</span></a>) that shows how easy it is to use
+SimAuto.</p>
+<p>This simple example uniformly increases the loading in a power system
+model by 50%.</p>
 <p>If you want to follow along, you’ll first need to define your own
-<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant, like so (adapt the path for your system):</p>
+<code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> constant (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case
+file), like so (adapt the path for your system):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -105,10 +109,29 @@ shows how easy it is to use SimAuto.</p>
 <span class="go">10      14      1  14.900000   5.000000</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">LoadSMW</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Uniformly increase loading by 50% and solve the power flow:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">load_frame</span><span class="p">[[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">]]</span> <span class="o">*=</span> <span class="mf">1.5</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">change_parameters_multiple_element_df</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">load_frame</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Let’s confirm that the loading did indeed increase:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_loads</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;load&#39;</span><span class="p">,</span> <span class="n">kf</span> <span class="o">+</span> <span class="p">[</span><span class="s1">&#39;LoadSMW&#39;</span><span class="p">,</span> <span class="s1">&#39;LoadSMVR&#39;</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">new_loads</span>
+<span class="go">    BusNum LoadID     LoadSMW   LoadSMVR</span>
+<span class="go">0        2      1   32.549998  19.050001</span>
+<span class="go">1        3      1  141.299999  28.500000</span>
+<span class="go">2        4      1   71.699995  -5.850000</span>
+<span class="go">3        5      1   11.400000   2.400000</span>
+<span class="go">4        6      1   16.800001  11.250000</span>
+<span class="go">5        9      1   44.250000  24.900000</span>
+<span class="go">6       10      1   13.500001   8.700000</span>
+<span class="go">7       11      1    5.250000   2.700000</span>
+<span class="go">8       12      1    9.150000   2.400000</span>
+<span class="go">9       13      1   20.250002   8.700000</span>
+<span class="go">10      14      1   22.350000   7.500000</span>
 </pre></div>
 </div>
 <p>Clean up when done:</p>
@@ -116,6 +139,89 @@ shows how easy it is to use SimAuto.</p>
 </pre></div>
 </div>
 <p>Easy, isn’t it?</p>
+</div>
+<div class="section" id="about-simauto">
+<span id="id4"></span><h2>About SimAuto<a class="headerlink" href="#about-simauto" title="Permalink to this headline">¶</a></h2>
+<p>From PowerWorld’s <a class="reference external" href="https://www.powerworld.com/products/simulator/add-ons-2/simauto">SimAuto page</a>:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&quot;The Simulator Automation Server (SimAuto) allows you to take
+advantage of the power of automation to extend the functionality of
+PowerWorld Simulator to any external program that you write. Using
+Simulator Automation Server you can launch and control PowerWorld
+Simulator from within another application, enabling you to: access
+the data of a Simulator case, perform defined Simulator functions
+and other data manipulations, and send results back to your original
+application, to a Simulator auxiliary file, or to a Microsoft® Excel
+spreadsheet.&quot;
+</pre></div>
+</div>
+<p>In essence, SimAuto is PowerWorld Simulator’s application programming
+interface (API). As such, SimAuto users can perform <em>almost</em> any task
+that can be done through Simulator’s graphic user interface (GUI), but
+via their own program. This opens up a wealth of opportunity to perform
+tasks such as:</p>
+<ul class="simple">
+<li><p>Task automation</p></li>
+<li><p>Sensitivity analysis</p></li>
+<li><p>Co-simulation</p></li>
+<li><p>Machine learning</p></li>
+<li><p>And more!</p></li>
+</ul>
+<p>For more SimAuto details, here are some PowerWorld links:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.powerworld.com/products/simulator/add-ons-2/simauto">SimAuto Description</a></p></li>
+<li><p><a class="reference external" href="https://www.powerworld.com/WebHelp/">PowerWorld Web Help</a></p></li>
+<li><p><a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">SimAuto Documentation</a></p></li>
+</ul>
+<p>Since SimAuto strives to be accessible to “any external” program and
+uses Windows <a class="reference external" href="https://docs.microsoft.com/en-us/windows/win32/com/the-component-object-model">COM</a>,
+it can be cumbersome, tedious, and difficult to use. That’s where ESA
+comes in!</p>
+<div class="section" id="simauto-functions">
+<h3>SimAuto Functions<a class="headerlink" href="#simauto-functions" title="Permalink to this headline">¶</a></h3>
+<p>Here’s a listing of the currently (as of 2020-06-17, Simulator version
+21) available SimAuto functions (documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a>):</p>
+<ul class="simple">
+<li><p>ChangeParameters</p></li>
+<li><p>ChangeParametersSingleElement</p></li>
+<li><p>ChangeParametersMultipleElement</p></li>
+<li><p>CloseCase</p></li>
+<li><p>GetFieldList</p></li>
+<li><p>GetParametersSingleElement</p></li>
+<li><p>GetParametersMultipleElement</p></li>
+<li><p>GetParameters</p></li>
+<li><p>GetSpecificFieldList</p></li>
+<li><p>GetSpecificFieldMaxNum</p></li>
+<li><p>ListOfDevices</p></li>
+<li><p>LoadState</p></li>
+<li><p>OpenCase</p></li>
+<li><p>ProcessAuxFile</p></li>
+<li><p><a class="reference internal" href="overview.html#runscriptcommand"><span class="std std-ref">RunScriptCommand</span></a></p></li>
+<li><p>SaveCase</p></li>
+<li><p>SaveState</p></li>
+<li><p>SendToExcel (not recommended for use with ESA as documented in
+<a class="reference internal" href="esa.html#esa-saw-api"><span class="std std-ref">esa.saw Module</span></a>)</p></li>
+<li><p>TSGetContingencyResults</p></li>
+<li><p>WriteAuxFile</p></li>
+</ul>
+<p>For ESA’s implementation/wrapping of these methods, see
+<a class="reference internal" href="esa.html#esa-saw-api"><span class="std std-ref">esa.saw Module</span></a>.</p>
+</div>
+<div class="section" id="simauto-properties">
+<h3>SimAuto Properties<a class="headerlink" href="#simauto-properties" title="Permalink to this headline">¶</a></h3>
+<p>Here’s a listing of the currently (as of 2020-06-17, Simulator version
+21) available SimAuto properties (documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a>):</p>
+<ul class="simple">
+<li><p>ExcelApp (like <code class="docutils literal notranslate"><span class="pre">SendToExcel</span></code> function, not recommended for use
+with ESA)</p></li>
+<li><p>CreateIfNotFound</p></li>
+<li><p>CurrentDir</p></li>
+<li><p>ProcessID</p></li>
+<li><p>RequestBuildDate</p></li>
+<li><p>UIVisible (Simulator versions &gt;= 20)</p></li>
+</ul>
+<p>For ESA’s implementation/wrapping of these properties, see
+<a class="reference internal" href="esa.html#esa-saw-api"><span class="std std-ref">esa.saw Module</span></a>.</p>
+</div>
 </div>
 <div class="section" id="who-should-use-esa">
 <h2>Who Should Use ESA?<a class="headerlink" href="#who-should-use-esa" title="Permalink to this headline">¶</a></h2>
@@ -246,7 +352,7 @@ Thank you!</p>
 </div>
 </div>
 <div class="section" id="changelog">
-<h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
+<span id="id5"></span><h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
 <p>Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 <a class="reference external" href="https://pypi.org/project/esa/#history">PyPi</a>.</p>
@@ -350,6 +456,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome!</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#what-is-esa">What Is ESA?</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#about-simauto">About SimAuto</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#who-should-use-esa">Who Should Use ESA?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#why-use-esa">Why Use ESA?</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#projects-that-use-esa">Projects That Use ESA</a></li>
@@ -359,7 +466,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
 <li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">ESA Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snippets.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
@@ -400,7 +507,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

@@ -14,7 +14,7 @@
     <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Overview" href="overview.html" />
+    <link rel="next" title="ESA Overview" href="overview.html" />
     <link rel="prev" title="Installing ESA" href="installation.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -43,8 +43,18 @@ Notes related to the case are available from the <a class="reference external" h
 <p>You can find API documentation
 <a class="reference external" href="https://mzy2240.github.io/ESA/html/esa.html">here</a> and more examples
 <a class="reference external" href="https://mzy2240.github.io/ESA/html/snippets.html">here</a>.</p>
-<p>Before running the example below, define a CASE_PATH variable like so
-(adapt the path as needed for your system):</p>
+<p>This “quick start” example has several purposes:</p>
+<ul class="simple">
+<li><p>Illustrate how ESA is used with a simple power system model.</p></li>
+<li><p>Demonstrate how to perform common tasks (e.g. solving the power
+flow, retrieving simulation data such as bus voltages and power
+injections).</p></li>
+<li><p>Show the usefulness of some of ESA’s high level helper functions
+which do more than simply wrap SimAuto functions.</p></li>
+</ul>
+<p>Before running the example below, define a CASE_PATH constant (the file
+path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) like so (adapt the path as
+needed for your system):</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\ieee_14\IEEE 14 bus_pws_version_21.pwb&quot;</span>
 </pre></div>
 </div>
@@ -93,6 +103,8 @@ DataFrame to make your life easier.</p>
 <span class="go">4       8     1    0.000000  17.623067</span>
 </pre></div>
 </div>
+<p>To learn more about variables such as <code class="docutils literal notranslate"><span class="pre">GenMW</span></code>, see
+<a class="reference internal" href="overview.html#powerworld-variables"><span class="std std-ref">PowerWorld Variables</span></a>.</p>
 <p>Let’s change generator injections! But first, we need to know which
 fields PowerWorld needs in order to identify generators. These fields
 are known as key fields.</p>
@@ -108,7 +120,7 @@ function:</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">ChangeParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">ValueList</span><span class="o">=</span><span class="n">values</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Did it work? Spoiler: it does!</p>
+<p>Did changing generator active power injections work? Let’s confirm:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="n">ObjectType</span><span class="o">=</span><span class="s1">&#39;gen&#39;</span><span class="p">,</span> <span class="n">ParamList</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">new_gen_data</span>
 <span class="go">   BusNum GenID       GenMW</span>
@@ -274,7 +286,7 @@ using ESA to improve your simulation and analysis work flows!</p>
 <li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">ESA Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="snippets.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
@@ -285,7 +297,7 @@ using ESA to improve your simulation and analysis work flows!</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
       <li>Previous: <a href="installation.html" title="previous chapter">Installing ESA</a></li>
-      <li>Next: <a href="overview.html" title="next chapter">Overview</a></li>
+      <li>Next: <a href="overview.html" title="next chapter">ESA Overview</a></li>
   </ul></li>
 </ul>
 </div>
@@ -315,7 +327,7 @@ using ESA to improve your simulation and analysis work flows!</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
