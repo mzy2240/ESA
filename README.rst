@@ -4,6 +4,8 @@ Easy SimAuto (ESA)
    :target: https://pypi.org/project/esa/
 .. image:: https://joss.theoj.org/papers/10.21105/joss.02289/status.svg
    :target: https://doi.org/10.21105/joss.02289
+.. image:: https://img.shields.io/pypi/l/esa.svg
+   :target: https://github.com/mzy2240/ESA/blob/master/LICENSE
 
 Easy SimAuto (ESA) is an easy-to-use Python package that simplifies
 interfacing with PowerWorld's Simulator Automation Server (SimAuto). ESA
