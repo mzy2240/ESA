@@ -35,9 +35,13 @@ import os
 import tempfile
 import unittest
 from unittest.mock import patch, MagicMock, Mock, seal
+import threading
+import signal
+import time
 
 import numpy as np
 import pandas as pd
+from scipy.sparse import csr_matrix
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, \
     Error
@@ -635,6 +639,29 @@ class SetSimAutoPropertyTestCase(unittest.TestCase):
                           side_effect=AttributeError('my special error')):
             with self.assertRaisesRegex(AttributeError, 'my special error'):
                 self.saw.set_simauto_property('CreateIfNotFound', False)
+
+
+class GetYbusTestCase(unittest.TestCase):
+    """Test get_ybus function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_ybus_default(self):
+        """It should return a scipy csr_matrix.
+        """
+        self.assertIsInstance(self.saw.get_ybus(), csr_matrix)
+
+    def test_get_ybus_full(self):
+        """It should return a numpy array of full matrix.
+        """
+        self.assertIsInstance(self.saw.get_ybus(True), np.ndarray)
 
 
 class UpdateUITestCase(unittest.TestCase):

@@ -14,9 +14,11 @@ from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
 import re
 import datetime
+import signal
 
 import numpy as np
 import pandas as pd
+from scipy.sparse import csr_matrix
 import pythoncom
 import win32com
 from win32com.client import VARIANT
@@ -323,6 +325,7 @@ class SAW(object):
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
+        print("exit haha")
         # Clean the empty aux file
         os.unlink(self.ntf.name)
         # Close the case and delete the COM object
@@ -579,6 +582,52 @@ class SAW(object):
                 )
             else:
                 raise e from None
+
+    def get_ybus(self, full: bool = False) -> Union[np.ndarray, csr_matrix]:
+        """Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
+        matrix format) and then convert to scipy csr_matrix by default.
+        :param full: Convert the csr_matrix to the numpy array (full matrix).
+        """
+        _tempfile = tempfile.NamedTemporaryFile(mode='w', suffix='.mat',
+                                                delete=False)
+        _tempfile_path = Path(_tempfile.name).as_posix()
+        _tempfile.close()
+        cmd = 'SaveYbusInMatlabFormat("{}", NO)'.format(_tempfile_path)
+        self.RunScriptCommand(cmd)
+        with open(_tempfile_path, 'r') as f:
+            f.readline()
+            f.readline()
+            mat_str = f.read()
+        os.unlink(_tempfile.name)
+        mat_str = re.sub(r'\s', '', mat_str)
+        lines = re.split(';', mat_str)
+        ie = r'[0-9]+'
+        fe = r'-*[0-9]+\.[0-9]+'
+        exp = re.compile(
+            r'(?:Ybus\()({ie}),({ie})(?:\)=)({fe})(?:\+j\*)(?:\()({fe})'.format(
+                ie=ie, fe=fe))
+        row = []
+        col = []
+        data = []
+        for line in lines:
+            match = exp.match(line)
+            if match is None:
+                continue
+            idx1, idx2, real, imag = match.groups()
+            # Type conversion can be optimized to provide slightly improvement
+            admittance = float(real) + 1j * float(imag)
+            row.append(int(idx1))
+            col.append(int(idx2))
+            data.append(admittance)
+        # The row index is always in the ascending order in the mat file
+        n = row[-1]
+        sparse_matrix = csr_matrix(
+            (data, (np.array(row) - 1, np.array(col) - 1)), shape=(n, n),
+            dtype=complex)
+        if full:
+            return sparse_matrix.toarray()
+        else:
+            return sparse_matrix
 
     def _set_simauto_property(self, property_name, property_value):
         """Helper to just set a property name and value. Primary purpose
