@@ -664,6 +664,29 @@ class GetYbusTestCase(unittest.TestCase):
         self.assertIsInstance(self.saw.get_ybus(True), np.ndarray)
 
 
+class GetJacobianTestCase(unittest.TestCase):
+    """Test get_jacobian function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_jacobian_default(self):
+        """It should return a scipy csr_matrix.
+        """
+        self.assertIsInstance(self.saw.get_jacobian(), csr_matrix)
+
+    def test_get_jacobian_full(self):
+        """It should return a numpy array of full matrix.
+        """
+        self.assertIsInstance(self.saw.get_jacobian(full=True), np.ndarray)
+
+
 class UpdateUITestCase(unittest.TestCase):
     """Test the update_ui method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.

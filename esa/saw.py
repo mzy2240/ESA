@@ -596,34 +596,84 @@ class SAW(object):
         self.RunScriptCommand(cmd)
         with open(_tempfile_path, 'r') as f:
             f.readline()
-            f.readline()
             mat_str = f.read()
         os.unlink(_tempfile.name)
         mat_str = re.sub(r'\s', '', mat_str)
         lines = re.split(';', mat_str)
         ie = r'[0-9]+'
         fe = r'-*[0-9]+\.[0-9]+'
+        dr = re.compile(r'(?:Ybus)=(?:sparse\()({ie})'.format(ie=ie))
         exp = re.compile(
             r'(?:Ybus\()({ie}),({ie})(?:\)=)({fe})(?:\+j\*)(?:\()({fe})'.format(
                 ie=ie, fe=fe))
+        # Get the dimension from the first line in lines
+        dim = dr.match(lines[0]).group(1)
+        n = int(dim)
         row = []
         col = []
         data = []
-        for line in lines:
+        for line in lines[1:]:
             match = exp.match(line)
             if match is None:
                 continue
             idx1, idx2, real, imag = match.groups()
-            # Type conversion can be optimized to provide slightly improvement
+            # Type conversion can be optimized to provide slightly
+            # improvement
             admittance = float(real) + 1j * float(imag)
             row.append(int(idx1))
             col.append(int(idx2))
             data.append(admittance)
         # The row index is always in the ascending order in the mat file
-        n = row[-1]
         sparse_matrix = csr_matrix(
-            (data, (np.array(row) - 1, np.array(col) - 1)), shape=(n, n),
+            (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n),
             dtype=complex)
+        if full:
+            return sparse_matrix.toarray()
+        else:
+            return sparse_matrix
+
+    def get_jacobian(self, full=False):
+        """Helper function to get the Jacobian matrix, by default return a
+        scipy sparse matrix in the csr format
+        :param full: Convert the csr_matrix to the numpy array (full matrix).
+        """
+        jacfile = tempfile.NamedTemporaryFile(mode='w', suffix='.m',
+                                              delete=False)
+        jacfile_path = Path(jacfile.name).as_posix()
+        jacfile.close()
+        jidfile = tempfile.NamedTemporaryFile(mode='w', delete=False)
+        jidfile_path = Path(jidfile.name).as_posix()
+        jidfile.close()
+        cmd = 'SaveJacobian("{}","{}",M,R);'.format(jacfile_path, jidfile_path)
+        self.RunScriptCommand(cmd)
+        with open(jacfile_path, 'r') as f:
+            mat_str = f.read()
+        os.unlink(jacfile.name)
+        os.unlink(jidfile.name)
+        mat_str = re.sub(r'\s', '', mat_str)
+        lines = re.split(';', mat_str)
+        ie = r'[0-9]+'
+        fe = r'-*[0-9]+\.[0-9]+'
+        dr = re.compile(r'(?:Jac)=(?:sparse\()({ie})'.format(ie=ie))
+        exp = re.compile(
+            r'(?:Jac\()({ie}),({ie})(?:\)=)({fe})'.format(
+                ie=ie, fe=fe))
+        row = []
+        col = []
+        data = []
+        # Get the dimension from the first line in lines
+        dim = dr.match(lines[0]).group(1)
+        n = int(dim)
+        for line in lines[1:]:
+            match = exp.match(line)
+            if match is None:
+                continue
+            idx1, idx2, real = match.groups()
+            row.append(int(idx1))
+            col.append(int(idx2))
+            data.append(float(real))
+        sparse_matrix = csr_matrix(
+            (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n))
         if full:
             return sparse_matrix.toarray()
         else:
