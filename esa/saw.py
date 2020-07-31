@@ -325,7 +325,6 @@ class SAW(object):
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
-        print("exit haha")
         # Clean the empty aux file
         os.unlink(self.ntf.name)
         # Close the case and delete the COM object
