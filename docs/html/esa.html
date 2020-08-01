@@ -4,7 +4,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>esa API Documentation &#8212; ESA 1.0.6 documentation</title>
+    <title>esa API Documentation &#8212; ESA 1.0.7 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -1160,6 +1160,14 @@ Series.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt id="esa.saw.SAW.get_jacobian">
+<code class="sig-name descname">get_jacobian</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">full</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_jacobian" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper function to get the Jacobian matrix, by default return a
+scipy sparse matrix in the csr format
+:param full: Convert the csr_matrix to the numpy array (full matrix).</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="esa.saw.SAW.get_key_field_list">
 <code class="sig-name descname">get_key_field_list</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ObjectType</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>str<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function to get a list of key fields for a given
@@ -1225,6 +1233,14 @@ None if the given ObjectType is not present in the model.</p>
 <dt id="esa.saw.SAW.get_version_and_builddate">
 <code class="sig-name descname">get_version_and_builddate</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; tuple<a class="headerlink" href="#esa.saw.SAW.get_version_and_builddate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt id="esa.saw.SAW.get_ybus">
+<code class="sig-name descname">get_ybus</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">full</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>numpy.ndarray<span class="p">, </span>scipy.sparse.csr.csr_matrix<span class="p">]</span><a class="headerlink" href="#esa.saw.SAW.get_ybus" title="Permalink to this definition">¶</a></dt>
+<dd><p>Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
+matrix format) and then convert to scipy csr_matrix by default.
+:param full: Convert the csr_matrix to the numpy array (full matrix).</p>
+</dd></dl>
 
 <dl class="py method">
 <dt id="esa.saw.SAW.identify_numeric_fields">
@@ -1378,7 +1394,7 @@ UIVisible.</p></li>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
