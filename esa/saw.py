@@ -19,6 +19,7 @@ import signal
 import numpy as np
 import pandas as pd
 from scipy.sparse import csr_matrix
+import networkx as nx
 import pythoncom
 import win32com
 from win32com.client import VARIANT
@@ -677,6 +678,86 @@ class SAW(object):
             return sparse_matrix.toarray()
         else:
             return sparse_matrix
+
+    def to_graph(self, node: str = 'bus', geographic: bool = False,
+                 directed: bool = False, node_attr=None, edge_attr=None) \
+            -> Union[nx.MultiGraph, nx.MultiDiGraph]:
+        """Generate the graph network model (NetworkX) from the topology.
+        Currently supports the bus-level topology and the inter-substation
+        level topology. Parallel lines (if exist) are preserved in the
+        model.
+        :param edge_attr:  A valid field name(str) or iterable of
+        field names that are used to retrieve values and add them to the
+        graph as edge attributes. All fields belonging to object branch are
+        available.
+        :param node_attr: A valid field name(str) or iterable of
+        field names that are used to retrieve values and add them to the
+        graph as node attributes. All fields belonging to the node type are
+        available.
+        :param directed: Whether to convert to a directed graph (based on
+        the direction of real power flow).
+        :param geographic: Include latitude and longitude in the node's
+        attributes. If geographic information is unavailable in the case,
+        the latitude and the longitude will be NaN.
+        :param node: Elements to be represented by nodes. Only 'bus' or
+        'substation' is supported.
+        """
+        if node not in ['bus', 'substation']:
+            raise ValueError(
+                "Currently only support 'bus' or 'substation' as the node "
+                "type.")
+        qf = []
+        nf = []
+        node_from = None
+        node_to = None
+        if node == 'bus':
+            qf = self.get_key_field_list('branch') + ['LineMW']
+            node_from = "BusNum"
+            node_to = "BusNum:1"
+            nf = ['BusNum']
+            if geographic:
+                nf += ['Latitude:1', 'Longitude:1']
+        elif node == 'substation':
+            qf = self.get_key_field_list('branch') + ['SubNum', 'SubNum:1',
+                                                      'LineMW']
+            node_from = "SubNum"
+            node_to = "SubNum:1"
+            nf = ['SubNum']
+            if geographic:
+                nf += ['Latitude', 'Longitude']
+        if edge_attr:
+            if isinstance(edge_attr, (list, tuple)):
+                qf.extend(edge_attr)
+            else:
+                qf.append(edge_attr)
+                edge_attr = [edge_attr]
+        branch_df = self.GetParametersMultipleElement('branch', qf)
+        if directed:
+            graph_type = nx.MultiDiGraph
+            for index, row in branch_df.iterrows():
+                linemw = row['LineMW']
+                if linemw < 0:
+                    original_from = row[node_from]
+                    original_to = row[node_to]
+                    branch_df.loc[index, 'LineMW'] = abs(linemw)
+                    branch_df.loc[index, node_from] = original_to
+                    branch_df.loc[index, node_to] = original_from
+        else:
+            graph_type = nx.MultiGraph
+        graph = nx.from_pandas_edgelist(branch_df, node_from, node_to,
+                                        create_using=graph_type,
+                                        edge_key="LineCircuit",
+                                        edge_attr=edge_attr)
+        if node_attr:
+            if isinstance(node_attr, (list, tuple)):
+                nf.extend(node_attr)
+            else:
+                nf.append(node_attr)
+        if geographic or node_attr:
+            node_df = self.GetParametersMultipleElement(node, nf)
+            node_attr_reformat = node_df.set_index(node_from).to_dict('index')
+            nx.set_node_attributes(graph, node_attr_reformat)
+        return graph
 
     def _set_simauto_property(self, property_name, property_value):
         """Helper to just set a property name and value. Primary purpose
@@ -1636,7 +1717,7 @@ class SAW(object):
     def OpenOneLine(self, filename: str, view: str = "",
                     FullScreen: str = "NO", ShowFull: str = "NO",
                     LinkMethod: str = "LABELS", Left: float = 0.0,
-                    Top: float = 0.0, Width: float = 0.0, Height: float = 0.0)\
+                    Top: float = 0.0, Width: float = 0.0, Height: float = 0.0) \
             -> None:
         """Use this function to open a oneline diagram. This function
         can be used to associate onelines with a PWB file.

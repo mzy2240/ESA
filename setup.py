@@ -59,7 +59,7 @@ setuptools.setup(
               'Automation', 'Power Systems', 'Electric Power', 'Power',
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
     install_requires=['pandas >= 0.25', 'numpy >= 1.13.3', 'scipy', 'pywin32',
-                      'pypiwin32'],
+                      'pypiwin32', 'networkx'],
     python_requires='>=3.5',
     # There are a couple tests that use networkx, and we use the magic
     # of sphinx for documentation. Coverage is necessary to keep the
