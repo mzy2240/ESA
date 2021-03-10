@@ -731,7 +731,10 @@ class SAW(object):
             else:
                 qf.append(edge_attr)
                 edge_attr = [edge_attr]
-        branch_df = self.GetParametersMultipleElement('branch', qf)
+        try:
+            branch_df = self.GetParametersMultipleElement('branch', qf)
+        except ValueError as e:
+            raise e
         if directed:
             graph_type = nx.MultiDiGraph
             for index, row in branch_df.iterrows():
@@ -754,9 +757,12 @@ class SAW(object):
             else:
                 nf.append(node_attr)
         if geographic or node_attr:
-            node_df = self.GetParametersMultipleElement(node, nf)
-            node_attr_reformat = node_df.set_index(node_from).to_dict('index')
-            nx.set_node_attributes(graph, node_attr_reformat)
+            try:
+                node_df = self.GetParametersMultipleElement(node, nf)
+                node_attr_reformat = node_df.set_index(node_from).to_dict('index')
+                nx.set_node_attributes(graph, node_attr_reformat)
+            except ValueError as e:
+                raise e
         return graph
 
     def _set_simauto_property(self, property_name, property_value):

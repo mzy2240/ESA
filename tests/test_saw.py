@@ -41,6 +41,7 @@ import time
 
 import numpy as np
 import pandas as pd
+import networkx as nx
 from scipy.sparse import csr_matrix
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, \
@@ -685,6 +686,76 @@ class GetJacobianTestCase(unittest.TestCase):
         """It should return a numpy array of full matrix.
         """
         self.assertIsInstance(self.saw.get_jacobian(full=True), np.ndarray)
+
+
+class ToGraphTestCase(unittest.TestCase):
+    """Test the to_graph function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_to_graph_default(self):
+        """It should return a networkx multigraph object.
+        """
+        self.assertIsInstance(self.saw.to_graph(), nx.MultiGraph)
+
+    def test_to_graph_invalid_node_type(self):
+        """It should raise a value exception.
+        """
+        self.assertRaises(ValueError, self.saw.to_graph, node='area')
+
+    def test_to_graph_bus_with_node_attr(self):
+        """Node should have an attribute named BusName"""
+        graph = self.saw.to_graph(node='bus', node_attr='BusName')
+        self.assertIsNotNone(graph.nodes(data='BusName'))
+
+    def test_to_graph_directed(self):
+        """It should return a networkx multidigraph object."""
+        self.assertIsInstance(self.saw.to_graph(directed=True),
+                              nx.MultiDiGraph)
+
+    def test_to_graph_geographic(self):
+        """Geographic information should exist in the node's attributes"""
+        graph = self.saw.to_graph(node='bus', geographic=True)
+        self.assertIsNotNone(graph.nodes(data='Latitude:1'))
+
+    def test_to_graph_with_edge_attr(self):
+        """Edge attributes should exist"""
+        graph = self.saw.to_graph(node='bus', edge_attr='LineMVA')
+        self.assertIsNotNone(graph.edges(data='LineMVA'))
+
+    def test_to_graph_with_edge_attrs(self):
+        """Edge attributes should exist"""
+        graph = self.saw.to_graph(node='bus', edge_attr=['LineMVR', 'LineMVA'])
+        self.assertIsNotNone(graph.edges(data='LineMVA'))
+
+    def test_to_graph_with_invalid_edge_attrs(self):
+        """ValueError should raise"""
+        with self.assertRaisesRegex(ValueError, 'The given object has fields '
+                                                'which do not match a '
+                                                'PowerWorld internal field '
+                                                'name!'):
+            self.saw.to_graph(node='bus', edge_attr=['TAMU'])
+
+    def test_to_graph_with_invalid_node_attrs(self):
+        """ValueError should raise"""
+        with self.assertRaisesRegex(ValueError, 'The given object has fields '
+                                                'which do not match a '
+                                                'PowerWorld internal field '
+                                                'name!'):
+            self.saw.to_graph(node='bus', node_attr=['TAMU'])
+
+    def test_to_graph_substation(self):
+        """AttributeError should raise cause the 14 bus case does not have
+        any substation assigned"""
+        with self.assertRaises(AttributeError):
+            self.saw.to_graph(node='substation', geographic=True)
 
 
 class UpdateUITestCase(unittest.TestCase):
