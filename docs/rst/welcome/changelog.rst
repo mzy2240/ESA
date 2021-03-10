@@ -2,6 +2,15 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.0.8
+^^^^^^^^^^^^^
+
+* Add new helper function 'to_graph'. The new function could help
+  generate NetworkX graph model from the case, in two different levels:
+  bus-as-node and substation-as-node. Parallel lines are preserved, and
+  directedgraph is supported (currently the direction is fixed to be
+  the same as real power flow).
+
 Version 1.0.7
 ^^^^^^^^^^^^^
 

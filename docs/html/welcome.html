@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Welcome! &#8212; ESA 1.0.7 documentation</title>
+    <title>Welcome! &#8212; ESA 1.0.8 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -356,6 +356,16 @@ Thank you!</p>
 <p>Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 <a class="reference external" href="https://pypi.org/project/esa/#history">PyPi</a>.</p>
+<div class="section" id="version-1-0-8">
+<h3>Version 1.0.8<a class="headerlink" href="#version-1-0-8" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Add new helper function ‘to_graph’. The new function could help
+generate NetworkX graph model from the case, in two different levels:
+bus-as-node and substation-as-node. Parallel lines are preserved, and
+directedgraph is supported (currently the direction is fixed to be
+the same as real power flow).</p></li>
+</ul>
+</div>
 <div class="section" id="version-1-0-7">
 <h3>Version 1.0.7<a class="headerlink" href="#version-1-0-7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
@@ -513,7 +523,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 3.0.3</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
