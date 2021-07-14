@@ -11,3 +11,10 @@ execute the following:
 The authors have found that the ``--only-binary`` flag is often
 necessary to get pywin32 to work - without it, pywin32 is unable to find
 some necessary libraries.
+
+If you are using a conda environment, a simpler way is to use conda
+to install instead of pip:
+
+.. code:: bat
+
+    conda install pywin32

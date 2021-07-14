@@ -144,3 +144,16 @@ ModuleNotFoundError: no module pywintypes
 If you see an error like that listed above, try reinstalling pywin32
 and pypiwin32 with the ``--only-binary`` option, as described in the
 :ref:`venv-issues` section.
+
+esa.saw.PowerWorldError: Access Violation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you see an error like that listed above, you probably could observe
+the same errors using script functionality in the PowerWorld Simulator
+interface. When you start the simulator (either the GUI or ESA) in a
+remote desktop environment, due to security reasons the system may block
+the simulator to save or create any files. As a result, any functions
+that require the simulator to generate files will fail with such errors.
+There are not much things we could do from our side, but one possible
+hack is to login locally and use the simulator first, then use the
+remote desktop to continue your work.
