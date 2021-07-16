@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>Common Issues &#8212; ESA 1.0.8 documentation</title>
+    <title>Common Issues &#8212; ESA 1.0.9 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -161,6 +161,18 @@ use Windows to search for <code class="docutils literal notranslate"><span class
 <p>If you see an error like that listed above, try reinstalling pywin32
 and pypiwin32 with the <code class="docutils literal notranslate"><span class="pre">--only-binary</span></code> option, as described in the
 <a class="reference internal" href="#venv-issues"><span class="std std-ref">Installation/Virtual Environment Issues</span></a> section.</p>
+</div>
+<div class="section" id="esa-saw-powerworlderror-access-violation">
+<h3>esa.saw.PowerWorldError: Access Violation<a class="headerlink" href="#esa-saw-powerworlderror-access-violation" title="Permalink to this headline">¶</a></h3>
+<p>If you see an error like that listed above, you probably could observe
+the same errors using script functionality in the PowerWorld Simulator
+interface. When you start the simulator (either the GUI or ESA) in a
+remote desktop environment, due to security reasons the system may block
+the simulator to save or create any files. As a result, any functions
+that require the simulator to generate files will fail with such errors.
+There are not much things we could do from our side, but one possible
+hack is to login locally and use the simulator first, then use the
+remote desktop to continue your work.</p>
 </div>
 </div>
 </div>

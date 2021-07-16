@@ -647,7 +647,7 @@ class GetYbusTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.saw = SAW(PATH_14, early_bind=True)
+        cls.saw = SAW(PATH_14, early_bind=False)
 
     @classmethod
     def tearDownClass(cls) -> None:
@@ -663,6 +663,13 @@ class GetYbusTestCase(unittest.TestCase):
         """It should return a numpy array of full matrix.
         """
         self.assertIsInstance(self.saw.get_ybus(True), np.ndarray)
+
+    def test_get_ybus_external(self):
+        """
+        Test get_ybus function with external ybus file.
+        """
+        self.assertIsInstance(self.saw.get_ybus(file="data/ybus.mat"),
+                              csr_matrix)
 
 
 class GetJacobianTestCase(unittest.TestCase):

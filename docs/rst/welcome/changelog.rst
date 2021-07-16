@@ -2,6 +2,13 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.0.9
+^^^^^^^^^^^^^
+
+* Update the pre-install process and the common issues
+* Update the helper function 'get_ybus' with a new argument to accept
+  external ybus file
+
 Version 1.0.8
 ^^^^^^^^^^^^^
 

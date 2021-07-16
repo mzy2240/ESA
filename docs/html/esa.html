@@ -4,7 +4,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>esa API Documentation &#8212; ESA 1.0.8 documentation</title>
+    <title>esa API Documentation &#8212; ESA 1.0.9 documentation</title>
     <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -1236,10 +1236,11 @@ None if the given ObjectType is not present in the model.</p>
 
 <dl class="method">
 <dt id="esa.saw.SAW.get_ybus">
-<code class="sig-name descname">get_ybus</code><span class="sig-paren">(</span><em class="sig-param">full: bool = False</em><span class="sig-paren">)</span> &#x2192; Union[numpy.ndarray, scipy.sparse.csr.csr_matrix]<a class="headerlink" href="#esa.saw.SAW.get_ybus" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">get_ybus</code><span class="sig-paren">(</span><em class="sig-param">full: bool = False</em>, <em class="sig-param">file: Optional[str] = None</em><span class="sig-paren">)</span> &#x2192; Union[numpy.ndarray, scipy.sparse.csr.csr_matrix]<a class="headerlink" href="#esa.saw.SAW.get_ybus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
 matrix format) and then convert to scipy csr_matrix by default.
-:param full: Convert the csr_matrix to the numpy array (full matrix).</p>
+:param full: Convert the csr_matrix to the numpy array (full matrix).
+:param file: Path to the external Ybus file.</p>
 </dd></dl>
 
 <dl class="method">

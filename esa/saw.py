@@ -583,21 +583,25 @@ class SAW(object):
             else:
                 raise e from None
 
-    def get_ybus(self, full: bool = False) -> Union[np.ndarray, csr_matrix]:
+    def get_ybus(self, full: bool = False, file: Union[str, None] = None) -> \
+            Union[np.ndarray, csr_matrix]:
         """Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
         matrix format) and then convert to scipy csr_matrix by default.
         :param full: Convert the csr_matrix to the numpy array (full matrix).
+        :param file: Path to the external Ybus file.
         """
-        _tempfile = tempfile.NamedTemporaryFile(mode='w', suffix='.mat',
-                                                delete=False)
-        _tempfile_path = Path(_tempfile.name).as_posix()
-        _tempfile.close()
-        cmd = 'SaveYbusInMatlabFormat("{}", NO)'.format(_tempfile_path)
-        self.RunScriptCommand(cmd)
+        if file:
+            _tempfile_path = file
+        else:
+            _tempfile = tempfile.NamedTemporaryFile(mode='w', suffix='.mat',
+                                                    delete=False)
+            _tempfile_path = Path(_tempfile.name).as_posix()
+            _tempfile.close()
+            cmd = 'SaveYbusInMatlabFormat("{}", NO)'.format(_tempfile_path)
+            self.RunScriptCommand(cmd)
         with open(_tempfile_path, 'r') as f:
             f.readline()
             mat_str = f.read()
-        os.unlink(_tempfile.name)
         mat_str = re.sub(r'\s', '', mat_str)
         lines = re.split(';', mat_str)
         ie = r'[0-9]+'
