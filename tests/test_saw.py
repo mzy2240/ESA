@@ -41,6 +41,7 @@ import time
 
 import numpy as np
 import pandas as pd
+from pandas._testing import assert_frame_equal
 import networkx as nx
 from scipy.sparse import csr_matrix
 
@@ -359,6 +360,17 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'The given object has fields'):
             saw_14.clean_df_or_series(obj=bad_series, ObjectType='gen')
 
+    def test_no_sort(self):
+        """
+        If pw_order = True, the order should be the same as shown in
+        Simulator.
+        """
+        saw = SAW(PATH_14, pw_order=True)
+        key_field = saw.get_key_field_list("branch")
+        device_list = saw.ListOfDevices("branch")
+        df = saw.GetParametersMultipleElement("branch", key_field)
+        assert_frame_equal(device_list, df)
+
 
 class GetKeyFieldsForObjectType(unittest.TestCase):
     """Test the get_key_fields_for_object_type method."""
@@ -555,6 +567,17 @@ class GetVersionAndBuildDateTestCase(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_correct(self):
         self.assertIsInstance(saw_14.get_version_and_builddate(), tuple)
+
+
+class GetLODFMatrix(unittest.TestCase):
+    """Test get_lodf_matrix."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_correct(self):
+        mat = saw_14.get_lodf_matrix()
+        diag = np.diag(mat)
+        result = np.all(diag == diag[0])
+        self.assertTrue(result)
 
 
 class SetSimAutoPropertyTestCase(unittest.TestCase):

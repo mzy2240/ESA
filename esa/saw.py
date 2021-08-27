@@ -85,7 +85,7 @@ class SAW(object):
     def __init__(self, FileName, early_bind=False, UIVisible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch'),
-                 CreateIfNotFound=False):
+                 CreateIfNotFound=False, pw_order=False):
         """Initialize SimAuto wrapper. The case will be opened, and
         object fields given in object_field_lookup will be retrieved.
 
@@ -104,6 +104,9 @@ class SAW(object):
             initially look up available fields for. Objects not
             specified for lookup here will be looked up later as
             necessary.
+        :param pw_order: Set pw_order = True if you want to have exact
+            same order as shown in PW Simulator. Default is False, which
+            generally sorts the data in a bus ascending order.
 
         Note that
         `Microsoft recommends
@@ -146,6 +149,8 @@ class SAW(object):
         # Set the CreateIfNotFound and UIVisible properties.
         self.set_simauto_property('CreateIfNotFound', CreateIfNotFound)
         self.set_simauto_property('UIVisible', UIVisible)
+        # Set the pw_order property.
+        self.pw_order = pw_order
 
         # Prepare an empty auxiliary file used for updating the UI.
         self.ntf = tempfile.NamedTemporaryFile(mode='w', suffix='.axd',
@@ -311,16 +316,18 @@ class SAW(object):
             # be used directly.
             obj[nn_cols] = obj[nn_cols].str.strip()
 
-        # Sort by BusNum if present.
-        if df_flag:
-            try:
-                obj.sort_values(by='BusNum', axis=0, inplace=True)
-            except KeyError:
-                # If there's no BusNum don't sort the DataFrame.
-                pass
-            else:
-                # Re-index with simple monotonically increasing values.
-                obj.index = np.arange(start=0, stop=obj.shape[0])
+        # Do not sort if pw_order = True
+        if not self.pw_order:
+            # Sort by BusNum if present.
+            if df_flag:
+                try:
+                    obj.sort_values(by='BusNum', axis=0, inplace=True)
+                except KeyError:
+                    # If there's no BusNum don't sort the DataFrame.
+                    pass
+                else:
+                    # Re-index with simple monotonically increasing values.
+                    obj.index = np.arange(start=0, stop=obj.shape[0])
 
         return obj
 
@@ -768,6 +775,19 @@ class SAW(object):
             except ValueError as e:
                 raise e
         return graph
+
+    def get_lodf_matrix(self):
+        """Get LODF matrix in numpy array format.
+        """
+        matrix = []
+        branch = self.ListOfDevices("branch")
+        key_fields = self.get_key_field_list("branch")
+        for index, row in branch.iterrows():
+            statement = "CalculateLODF(Branch %s %s %s)" % (row['BusNum'], row['BusNum:1'], row['LineCircuit'])
+            self.RunScriptCommand(statement)
+            result = self.GetParametersMultipleElement('branch', key_fields + ['LineLODF'])
+            matrix.append(result['LineLODF'].tolist())
+        return np.array(matrix)
 
     def _set_simauto_property(self, property_name, property_value):
         """Helper to just set a property name and value. Primary purpose
