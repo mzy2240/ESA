@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Installing ESA &#8212; ESA 1.0.9 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Installing ESA &#8212; ESA 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Quick Start" href="quick_start.html" />
@@ -32,10 +33,10 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="installing-esa">
+  <section id="installing-esa">
 <span id="installation"></span><h1>Installing ESA<a class="headerlink" href="#installing-esa" title="Permalink to this headline">¶</a></h1>
 <p>Installing ESA is simple! Follow the directions below to get started.</p>
-<div class="section" id="overview">
+<section id="overview">
 <h2>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h2>
 <p>TL;DR:</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install --only-binary pywin32,pypiwin32 pywin32 pypiwin32 esa
@@ -44,8 +45,8 @@
 <p>Installing ESA is easy, and most users will simply want to use Python’s
 package manager, Pip, to install ESA. Users who want to extend or modify
 ESA should install from source.</p>
-</div>
-<div class="section" id="prerequisites">
+</section>
+<section id="prerequisites">
 <h2>Prerequisites<a class="headerlink" href="#prerequisites" title="Permalink to this headline">¶</a></h2>
 <p>ESA has the following prerequisites:</p>
 <ul class="simple">
@@ -72,8 +73,8 @@ and run <code class="docutils literal notranslate"><span class="pre">git</span> 
 LFS. After initial setup, you shouldn’t need to do anything else
 with Git LFS.</p></li>
 </ul>
-</div>
-<div class="section" id="virtual-environment-configuration">
+</section>
+<section id="virtual-environment-configuration">
 <h2>Virtual Environment Configuration<a class="headerlink" href="#virtual-environment-configuration" title="Permalink to this headline">¶</a></h2>
 <p>Like any Python project, the use of virtual environments is <strong>strongly</strong>
 encouraged. If you’re new to virtual environments, Python provides a
@@ -96,8 +97,8 @@ activated.</strong></p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install --upgrade --force-reinstall pip setuptools
 </pre></div>
 </div>
-</div>
-<div class="section" id="install-prerequisite-packages">
+</section>
+<section id="install-prerequisite-packages">
 <h2>Install Prerequisite Packages<a class="headerlink" href="#install-prerequisite-packages" title="Permalink to this headline">¶</a></h2>
 <p>ESA depends on the pywin32 Python package in order to interface with
 Windows components. Unfortunately, pywin32 does not always cleanly
@@ -115,16 +116,16 @@ to install instead of pip:</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>conda install pywin32
 </pre></div>
 </div>
-</div>
-<div class="section" id="install-esa-via-pip">
+</section>
+<section id="install-esa-via-pip">
 <h2>Install ESA via Pip<a class="headerlink" href="#install-esa-via-pip" title="Permalink to this headline">¶</a></h2>
 <p>To install ESA with pip, run the following in your activated virtual
 environment:</p>
 <div class="highlight-bat notranslate"><div class="highlight"><pre><span></span>python -m pip install esa
 </pre></div>
 </div>
-</div>
-<div class="section" id="install-esa-from-source">
+</section>
+<section id="install-esa-from-source">
 <h2>Install ESA from Source<a class="headerlink" href="#install-esa-from-source" title="Permalink to this headline">¶</a></h2>
 <p>Installing ESA from source is quite simple, and does not require any
 extra tools. One might choose to install ESA from source if you plan
@@ -167,12 +168,12 @@ testing dependencies:</p>
 </div>
 <p>You can find the specified “extras” in setup.py - look for
 <code class="docutils literal notranslate"><span class="pre">extras_require</span></code>.</p>
-</div>
-<div class="section" id="post-installation">
+</section>
+<section id="post-installation">
 <h2>Post-Installation<a class="headerlink" href="#post-installation" title="Permalink to this headline">¶</a></h2>
 <p>The post-installation steps found here are optional, but may save you
 some headache down the line.</p>
-<div class="section" id="cursory-verification-of-successful-installation">
+<section id="cursory-verification-of-successful-installation">
 <h3>Cursory Verification of Successful Installation<a class="headerlink" href="#cursory-verification-of-successful-installation" title="Permalink to this headline">¶</a></h3>
 <p>The simplest way to verify that ESA installed correctly is to attempt
 to import it. Most (but not all) installation issues will rear their
@@ -185,8 +186,8 @@ window (ensure your virtual environment is activated!):</p>
 installed. If you’re unable to figure it out on your own, feel free to
 file an issue on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub</a>. We
 do not guarantee that we can help everyone.</p>
-</div>
-<div class="section" id="execute-esa-unittests">
+</section>
+<section id="execute-esa-unittests">
 <h3>Execute ESA Unittests<a class="headerlink" href="#execute-esa-unittests" title="Permalink to this headline">¶</a></h3>
 <p>At this point in time, one can only run unittests if ESA is installed
 from source and if you’ve installed the <code class="docutils literal notranslate"><span class="pre">test</span></code> dependencies. A
@@ -220,8 +221,8 @@ coverage report -m
 </div>
 <p>Note that the arguments to <code class="docutils literal notranslate"><span class="pre">coverage</span> <span class="pre">run</span></code> are provided by
 <code class="docutils literal notranslate"><span class="pre">.coveragerc</span></code> at the top-level of the repository.</p>
-</div>
-<div class="section" id="pywin32-post-installation">
+</section>
+<section id="pywin32-post-installation">
 <h3>pywin32 Post-Installation<a class="headerlink" href="#pywin32-post-installation" title="Permalink to this headline">¶</a></h3>
 <p>From the <a class="reference external" href="https://github.com/mhammond/pywin32">pywin32 GitHub page</a>:</p>
 <blockquote>
@@ -235,9 +236,9 @@ prompt:</p>
 </div></blockquote>
 <p>Note that the aforementioned “Scripts” directory can be found inside
 your virtual environment directory.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -256,7 +257,7 @@ your virtual environment directory.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installing ESA</a><ul>
@@ -289,7 +290,7 @@ your virtual environment directory.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -311,7 +312,7 @@ your virtual environment directory.</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

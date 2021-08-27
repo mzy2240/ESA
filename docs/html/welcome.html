@@ -1,17 +1,18 @@
 
 <!DOCTYPE html>
 
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
   <head>
     <meta charset="utf-8" />
-    <title>Welcome! &#8212; ESA 1.0.9 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <script id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+    <title>Welcome! &#8212; ESA 1.1.0 documentation</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
     <script src="_static/doctools.js"></script>
-    <script src="_static/language_data.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Installing ESA" href="installation.html" />
@@ -32,11 +33,11 @@
 
           <div class="body" role="main">
             
-  <div class="section" id="welcome">
+  <section id="welcome">
 <span id="id1"></span><h1>Welcome!<a class="headerlink" href="#welcome" title="Permalink to this headline">¶</a></h1>
 <p>Welcome to Easy SimAuto’s (ESA) documentation! If you encounter issues
 with ESA or the documentation, please file an issue on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub</a>.</p>
-<div class="section" id="citation">
+<section id="citation">
 <span id="id2"></span><h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
 <p>If you use ESA in any of your work, please use the citation below.</p>
 <div class="highlight-latex notranslate"><div class="highlight"><pre><span></span>@article<span class="nb">{</span>ESA,
@@ -53,8 +54,8 @@ with ESA or the documentation, please file an issue on <a class="reference exter
 <span class="nb">}</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="what-is-esa">
+</section>
+<section id="what-is-esa">
 <span id="id3"></span><h2>What Is ESA?<a class="headerlink" href="#what-is-esa" title="Permalink to this headline">¶</a></h2>
 <p>ESA is a “Pip-installable” Python package that eases interaction with
 the PowerWorld Simulator Automation Server (SimAuto). PowerWorld
@@ -139,8 +140,8 @@ file), like so (adapt the path for your system):</p>
 </pre></div>
 </div>
 <p>Easy, isn’t it?</p>
-</div>
-<div class="section" id="about-simauto">
+</section>
+<section id="about-simauto">
 <span id="id4"></span><h2>About SimAuto<a class="headerlink" href="#about-simauto" title="Permalink to this headline">¶</a></h2>
 <p>From PowerWorld’s <a class="reference external" href="https://www.powerworld.com/products/simulator/add-ons-2/simauto">SimAuto page</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>&quot;The Simulator Automation Server (SimAuto) allows you to take
@@ -176,7 +177,7 @@ tasks such as:</p>
 uses Windows <a class="reference external" href="https://docs.microsoft.com/en-us/windows/win32/com/the-component-object-model">COM</a>,
 it can be cumbersome, tedious, and difficult to use. That’s where ESA
 comes in!</p>
-<div class="section" id="simauto-functions">
+<section id="simauto-functions">
 <h3>SimAuto Functions<a class="headerlink" href="#simauto-functions" title="Permalink to this headline">¶</a></h3>
 <p>Here’s a listing of the currently (as of 2020-06-17, Simulator version
 21) available SimAuto functions (documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a>):</p>
@@ -205,8 +206,8 @@ comes in!</p>
 </ul>
 <p>For ESA’s implementation/wrapping of these methods, see
 <a class="reference internal" href="esa.html#esa-saw-api"><span class="std std-ref">esa.saw Module</span></a>.</p>
-</div>
-<div class="section" id="simauto-properties">
+</section>
+<section id="simauto-properties">
 <h3>SimAuto Properties<a class="headerlink" href="#simauto-properties" title="Permalink to this headline">¶</a></h3>
 <p>Here’s a listing of the currently (as of 2020-06-17, Simulator version
 21) available SimAuto properties (documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1">here</a>):</p>
@@ -221,9 +222,9 @@ with ESA)</p></li>
 </ul>
 <p>For ESA’s implementation/wrapping of these properties, see
 <a class="reference internal" href="esa.html#esa-saw-api"><span class="std std-ref">esa.saw Module</span></a>.</p>
-</div>
-</div>
-<div class="section" id="who-should-use-esa">
+</section>
+</section>
+<section id="who-should-use-esa">
 <h2>Who Should Use ESA?<a class="headerlink" href="#who-should-use-esa" title="Permalink to this headline">¶</a></h2>
 <p>ESA is useful for a wide range of audiences, including:</p>
 <ul class="simple">
@@ -246,8 +247,8 @@ details away. Advanced users will have a solid understanding of
 PowerWorld variables and object types, and will make extensive use of
 the <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code> method to enable the execution of PowerWorld
 functions previously only accessible via <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">“Auxiliary Files”</a>.</p>
-</div>
-<div class="section" id="why-use-esa">
+</section>
+<section id="why-use-esa">
 <h2>Why Use ESA?<a class="headerlink" href="#why-use-esa" title="Permalink to this headline">¶</a></h2>
 <p>Simply put, ESA makes working with SimAuto a breeze! ESA has the
 following desirable properties:</p>
@@ -279,8 +280,8 @@ tuning</p></li>
 <p>Whether you’re an energy trader, transmission planner, or academic
 researcher, ESA will help simplify your simulation an analysis work
 flows.</p>
-</div>
-<div class="section" id="projects-that-use-esa">
+</section>
+<section id="projects-that-use-esa">
 <h2>Projects That Use ESA<a class="headerlink" href="#projects-that-use-esa" title="Permalink to this headline">¶</a></h2>
 <p>ESA has already been utilized in several research projects past and
 present. If you use ESA in your work, please file an issue on
@@ -325,17 +326,17 @@ Analysis Based on Graph Theory Concepts and Line Outage Distribution
 Factors (LODF).” In this project, ESA is leveraged to extract the
 topology of the power system model and obtain the LODF matrix.</p></li>
 </ul>
-</div>
-<div class="section" id="disclaimer-and-credits">
+</section>
+<section id="disclaimer-and-credits">
 <h2>Disclaimer and Credits<a class="headerlink" href="#disclaimer-and-credits" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="disclaimer">
+<section id="disclaimer">
 <h3>Disclaimer<a class="headerlink" href="#disclaimer" title="Permalink to this headline">¶</a></h3>
 <p>As noted in <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/LICENSE">ESA’s license</a>, no warranty
 is provided, and the authors cannot be held liable for any issues
 related to using ESA. If you encounter an issue, find a bug, or would
 like to provide feedback, please file a ticket on <a class="reference external" href="https://github.com/mzy2240/ESA/issues">Github</a>.</p>
-</div>
-<div class="section" id="credits-and-thanks">
+</section>
+<section id="credits-and-thanks">
 <h3>Credits and Thanks<a class="headerlink" href="#credits-and-thanks" title="Permalink to this headline">¶</a></h3>
 <p>ESA was developed at Texas A&amp;M University by <a class="reference external" href="https://github.com/blthayer">Brandon Thayer</a>, <a class="reference external" href="https://github.com/mzy2240">Zeyu Mao</a>, and <a class="reference external" href="https://github.com/SmartJingJing123">Yijing Liu</a>. Significant guidance and
 oversight was provided by <a class="reference external" href="https://engineering.tamu.edu/electrical/profiles/overbye-thomas.html">Professor Thomas Overbye</a>,
@@ -349,22 +350,30 @@ Additionally, we’ve received help from some of our colleagues along the
 way, including (but not limited to!) Wei Trinh and Diana Wallison.
 Thank you!</p>
 <p>We hope you enjoy using ESA as much as we’ve enjoyed creating it.</p>
-</div>
-</div>
-<div class="section" id="changelog">
+</section>
+</section>
+<section id="changelog">
 <span id="id5"></span><h2>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h2>
 <p>Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 <a class="reference external" href="https://pypi.org/project/esa/#history">PyPi</a>.</p>
-<div class="section" id="version-1-0-9">
+<section id="version-1-1-0">
+<h3>Version 1.1.0<a class="headerlink" href="#version-1-1-0" title="Permalink to this headline">¶</a></h3>
+<ul class="simple">
+<li><p>Allow users to use the same order as shown in simulator for all the
+dataframes</p></li>
+<li><p>Add a helper function to generate LODF matrix</p></li>
+</ul>
+</section>
+<section id="version-1-0-9">
 <h3>Version 1.0.9<a class="headerlink" href="#version-1-0-9" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Update the pre-install process and the common issues</p></li>
 <li><p>Update the helper function ‘get_ybus’ with a new argument to accept
 external ybus file</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-8">
+</section>
+<section id="version-1-0-8">
 <h3>Version 1.0.8<a class="headerlink" href="#version-1-0-8" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Add new helper function ‘to_graph’. The new function could help
@@ -373,14 +382,14 @@ bus-as-node and substation-as-node. Parallel lines are preserved, and
 directedgraph is supported (currently the direction is fixed to be
 the same as real power flow).</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-7">
+</section>
+<section id="version-1-0-7">
 <h3>Version 1.0.7<a class="headerlink" href="#version-1-0-7" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Add new functions: get_ybus, get_jacobian</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-6">
+</section>
+<section id="version-1-0-6">
 <h3>Version 1.0.6<a class="headerlink" href="#version-1-0-6" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Hopefully finally fixing locale-based issues. Fixes began in 1.0.4,
@@ -388,8 +397,8 @@ and continued in 1.0.5.</p></li>
 <li><p>Finalizing JOSS paper. Once published, the citation will be added to
 the top-level README and the documentation.</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-5">
+</section>
+<section id="version-1-0-5">
 <h3>Version 1.0.5<a class="headerlink" href="#version-1-0-5" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>It turns out version 1.0.4 did not fully/correctly handle automatic
@@ -400,8 +409,8 @@ decimal delimiters automatically.</p></li>
 <code class="docutils literal notranslate"><span class="pre">additional_fields</span></code> to the corresponding list in the <code class="docutils literal notranslate"><span class="pre">SAW</span></code>
 object’s <code class="docutils literal notranslate"><span class="pre">SAW.POWER_FLOW_FIELDS</span></code> attribute.</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-4">
+</section>
+<section id="version-1-0-4">
 <h3>Version 1.0.4<a class="headerlink" href="#version-1-0-4" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Added support for other locales by automatically detecting the
@@ -411,8 +420,8 @@ elsewhere to leverage ESA. Thanks to
 problem during our <a class="reference external" href="https://joss.theoj.org/">JOSS</a> review in
 <a class="reference external" href="https://github.com/openjournals/joss-reviews/issues/2289#issuecomment-643482550">this comment</a>.</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-3">
+</section>
+<section id="version-1-0-3">
 <h3>Version 1.0.3<a class="headerlink" href="#version-1-0-3" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>New SAW attribute, <code class="docutils literal notranslate"><span class="pre">build_date</span></code></p></li>
@@ -428,8 +437,8 @@ or 20. However, ESA <em>should</em> work with all these versions.</p></li>
 accordingly (suffixed with <code class="docutils literal notranslate"><span class="pre">pws_version_&lt;version</span> <span class="pre">goes</span> <span class="pre">here&gt;.pwb</span></code>.</p></li>
 <li><p>Updated documentation to discuss different versions of Simulator.</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-2">
+</section>
+<section id="version-1-0-2">
 <h3>Version 1.0.2<a class="headerlink" href="#version-1-0-2" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Add area number to the power flow result</p></li>
@@ -437,8 +446,8 @@ accordingly (suffixed with <code class="docutils literal notranslate"><span clas
 <li><p>Fix a bug in the test file that will result in a failure if some
 default names are changed in PowerWorld</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-1">
+</section>
+<section id="version-1-0-1">
 <h3>Version 1.0.1<a class="headerlink" href="#version-1-0-1" title="Permalink to this headline">¶</a></h3>
 <ul class="simple">
 <li><p>Add new functions: update_ui, OpenOneline and CloseOneline</p></li>
@@ -449,14 +458,14 @@ that get printed during testing are as expected.</p></li>
 <li><p>Update the release process</p></li>
 <li><p>Fix minor typos</p></li>
 </ul>
-</div>
-<div class="section" id="version-1-0-0">
+</section>
+<section id="version-1-0-0">
 <h3>Version 1.0.0<a class="headerlink" href="#version-1-0-0" title="Permalink to this headline">¶</a></h3>
 <p>ESA version 1.0.0 is the first ESA release in which 100% of SimAuto
 functions are wrapped, and testing coverage is at 100%.</p>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
           </div>
@@ -475,7 +484,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
 
 
 <h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Welcome!</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#citation">Citation</a></li>
@@ -509,7 +518,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" />
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -531,7 +540,7 @@ functions are wrapped, and testing coverage is at 100%.</p>
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 2.4.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
