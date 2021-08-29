@@ -186,7 +186,8 @@ class SAW(object):
     # Helper Functions
     ####################################################################
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
-                                                   command_df: pd.DataFrame) \
+                                                   command_df: pd.DataFrame,
+                                                   fields_match=True) \
             -> None:
         """Change parameters for multiple objects of the same type, and
         confirm that the change was respected by PowerWorld.
@@ -202,6 +203,7 @@ class SAW(object):
             key fields are used internally by PowerWorld to look up
             objects. Each row of the DataFrame represents a single
             element.
+        :fields_match: Optional argument. Default is True.
 
         :raises CommandNotRespectedError: if PowerWorld does not
             actually change the parameters.
@@ -212,11 +214,11 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self._change_parameters_multiple_element_df(
-            ObjectType=ObjectType, command_df=command_df)
+            ObjectType=ObjectType, command_df=command_df, fields_match=fields_match)
 
         # Now, query for the given parameters.
         df = self.GetParametersMultipleElement(
-            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist())
+            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist(), fields_match=fields_match)
 
         # Check to see if the two DataFrames are equivalent.
         eq = self._df_equiv_subset_of_other(df1=cleaned_df, df2=df,
@@ -235,7 +237,7 @@ class SAW(object):
         return None
 
     def change_parameters_multiple_element_df(
-            self, ObjectType: str, command_df: pd.DataFrame) -> None:
+            self, ObjectType: str, command_df: pd.DataFrame, fields_match=True) -> None:
         """Helper to call ChangeParametersMultipleElement, but uses a
         DataFrame to determine parameters and values. This method is
         lighter weight but perhaps "riskier" than the
@@ -253,13 +255,15 @@ class SAW(object):
             key fields are used internally by PowerWorld to look up
             objects. Each row of the DataFrame represents a single
             element.
+        :param fields_match: Optional argument. Default is True. Set it
+            to False only when ValueError.
         """
         # Simply call the helper function.
         self._change_parameters_multiple_element_df(
-            ObjectType=ObjectType, command_df=command_df)
+            ObjectType=ObjectType, command_df=command_df, fields_match=fields_match)
 
     def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
-                           ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
+                           ObjectType: str, fields_match=True) -> Union[pd.DataFrame, pd.Series]:
         """Helper to cast data to the correct types, clean up strings,
         and sort DataFrame by BusNum (if applicable/present).
 
@@ -275,6 +279,9 @@ class SAW(object):
             GetFieldList for the given object type).
         :param ObjectType: Object type the data in the DataFrame relates
             to. E.g. 'gen'
+        :param fields_match: Whether to match the fields. Set to False
+            if you believe you are using the correct fields. If you are
+            not sure, stay with the default value.
 
         :raises ValueError: if the DataFrame (Series) columns (index)
             are not valid fields for the given object type.
@@ -293,19 +300,22 @@ class SAW(object):
             raise TypeError('The given object is not a DataFrame or '
                             'Series!')
 
-        # Determine which types are numeric.
-        numeric = self.identify_numeric_fields(ObjectType=ObjectType,
-                                               fields=fields)
-        numeric_fields = fields[numeric]
+        if fields_match:
+            # Determine which types are numeric.
+            numeric = self.identify_numeric_fields(ObjectType=ObjectType,
+                                                   fields=fields)
+            numeric_fields = fields[numeric]
 
-        # Make the numeric fields, well, numeric.
-        obj[numeric_fields] = self._to_numeric(obj[numeric_fields])
+            # Make the numeric fields, well, numeric.
+            obj[numeric_fields] = self._to_numeric(obj[numeric_fields])
 
-        # Now handle the non-numeric cols.
-        nn_cols = fields[~numeric]
+            # Now handle the non-numeric cols.
+            nn_cols = fields[~numeric]
 
-        # Start by ensuring the non-numeric columns are indeed strings.
-        obj[nn_cols] = obj[nn_cols].astype(str)
+            # Start by ensuring the non-numeric columns are indeed strings.
+            obj[nn_cols] = obj[nn_cols].astype(str)
+        else:
+            nn_cols = fields
 
         # Here we'll strip off the white space.
         if df_flag:
@@ -513,6 +523,7 @@ class SAW(object):
         # Rely on the fact that the field_list is already sorted by
         # internal_field_name to get indices related to the given
         # internal field names.
+        # fields = list(fields)
         idx = field_list['internal_field_name'].to_numpy().searchsorted(fields)
 
         # Ensure the columns are actually in the field_list. This is
@@ -788,6 +799,44 @@ class SAW(object):
             result = self.GetParametersMultipleElement('branch', key_fields + ['LineLODF'])
             matrix.append(result['LineLODF'].tolist())
         return np.array(matrix)
+
+    def ctg_autoinsert(self, object_type: str, options: Union[None, dict]=None):
+        """Auto insert contingencies.
+
+        :param object_type: Object type, e.g. branch.
+        :param options: Optional. Pass a custom dictionary if you need
+            to modify the Ctg_AutoInsert_Options.
+
+        :returns: List of contingencies.
+        """
+        option = self.GetParametersMultipleElement('CTG_AutoInsert_Options_Value', ['Option', 'Value'],
+                                                   fields_match=False)
+        if object_type.lower() == 'branch':
+            _object_type = 'LINE'
+        elif object_type.lower() == 'bus':
+            _object_type = 'BUS'
+        elif object_type.lower() == 'load':
+            _object_type = 'LOAD'
+        elif object_type.lower() == 'transformer':
+            _object_type = 'TRANSFORMER'
+        mask = option['Option'] == 'ElementType'
+        option.loc[mask, 'Value'] = _object_type
+        if options:
+            for key, value in options.items():
+                _mask = option['Option'] == key
+                option.loc[_mask, 'Value'] = value
+        self.change_parameters_multiple_element_df('CTG_AutoInsert_Options_Value', option, fields_match=False)
+        self.RunScriptCommand("CTGAutoInsert;")
+        return self.GetParametersMultipleElement('Contingency', ['Name', 'Skip'], fields_match=False)
+
+    def ctg_solveall(self):
+        """
+        Solve all of the contingencies that are not marked to be skipped.
+
+        :returns: List of results.
+        """
+        self.RunScriptCommand("CTGSolveALL(NO,YES)")
+        return self.GetParametersMultipleElement('Contingency', ['Name', 'Solved', 'Violations'], fields_match=False)
 
     def _set_simauto_property(self, property_name, property_value):
         """Helper to just set a property name and value. Primary purpose
@@ -1082,7 +1131,7 @@ class SAW(object):
         return self.clean_df_or_series(obj=s, ObjectType=ObjectType)
 
     def GetParametersMultipleElement(self, ObjectType: str, ParamList: list,
-                                     FilterName: str = '') -> \
+                                     FilterName: str = '', fields_match=True) -> \
             Union[pd.DataFrame, None]:
         """Request values of specified fields for a set of objects in
         the load flow case.
@@ -1100,6 +1149,7 @@ class SAW(object):
             get_key_fields_for_object_type method.
         :param FilterName: Name of an advanced filter defined in the
             load flow case.
+        :param fields_match: Whether to match the PW internal fields.
 
         :returns: Pandas DataFrame with columns matching the given
             ParamList. If the provided ObjectType is not present in the
@@ -1125,7 +1175,7 @@ class SAW(object):
                           columns=ParamList)
 
         # Clean DataFrame and return it.
-        return self.clean_df_or_series(obj=df, ObjectType=ObjectType)
+        return self.clean_df_or_series(obj=df, ObjectType=ObjectType, fields_match=fields_match)
 
     def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
                                                ParamList: list,
@@ -1956,7 +2006,7 @@ class SAW(object):
             return output[1:]
 
     def _change_parameters_multiple_element_df(
-            self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
+            self, ObjectType: str, command_df: pd.DataFrame, fields_match=True) -> pd.DataFrame:
         """Private helper for changing parameters for multiple elements
         with a command DataFrame as input. See docstring for public
         method "change_parameters_multiple_element_df" for more details.
@@ -1967,7 +2017,8 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self.clean_df_or_series(obj=command_df,
-                                             ObjectType=ObjectType)
+                                             ObjectType=ObjectType,
+                                             fields_match=fields_match)
 
         # Convert columns and data to lists and call PowerWorld.
         # noinspection PyTypeChecker
