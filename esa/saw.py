@@ -790,15 +790,20 @@ class SAW(object):
     def get_lodf_matrix(self):
         """Get LODF matrix in numpy array format.
         """
-        matrix = []
-        branch = self.ListOfDevices("branch")
-        key_fields = self.get_key_field_list("branch")
-        for index, row in branch.iterrows():
-            statement = "CalculateLODF(Branch %s %s %s)" % (row['BusNum'], row['BusNum:1'], row['LineCircuit'])
-            self.RunScriptCommand(statement)
-            result = self.GetParametersMultipleElement('branch', key_fields + ['LineLODF'])
-            matrix.append(result['LineLODF'].tolist())
-        return np.array(matrix)
+        # matrix = []
+        # branch = self.ListOfDevices("branch")
+        # key_fields = self.get_key_field_list("branch")
+        # for index, row in branch.iterrows():
+        #     statement = "CalculateLODF(Branch %s %s %s)" % (row['BusNum'], row['BusNum:1'], row['LineCircuit'])
+        #     self.RunScriptCommand(statement)
+        #     result = self.GetParametersMultipleElement('branch', key_fields + ['LineLODF'])
+        #     matrix.append(result['LineLODF'].tolist())
+        statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
+        self.RunScriptCommand(statement)
+        count = self.ListOfDevices('branch').shape[0]
+        array = [f"LODFMult:{x}" for x in range(count)]
+        df = self.GetParametersMultipleElement('branch', array, fields_match=False)
+        return df.to_numpy(dtype=np.float16)
 
     def ctg_autoinsert(self, object_type: str, options: Union[None, dict]=None):
         """Auto insert contingencies.
