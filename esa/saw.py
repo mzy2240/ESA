@@ -1330,7 +1330,7 @@ class SAW(object):
         # Unfortunately, at the time of writing this method does not
         return self._call_simauto('GetSpecificFieldMaxNum', ObjectType, Field)
 
-    def ListOfDevices(self, ObjType: str, FilterName='') -> \
+    def ListOfDevices(self, ObjType: str, FilterName='', fields_match=True) -> \
             Union[None, pd.DataFrame]:
         """Request a list of objects and their key fields. This function
         is general, and you may be better off running more specific
@@ -1344,6 +1344,8 @@ class SAW(object):
             empty string (default) if no filter is desired. If the
             given filter cannot be found, the server will default to
             returning all objects in the case of type ObjectType.
+        :param fields_match: Set it to False if you dont want the order
+            to be sorted.
 
         :returns: None if there are no objects of the given type in the
             model. Otherwise, a DataFrame of key fields will be
@@ -1378,7 +1380,7 @@ class SAW(object):
 
         # Ensure the DataFrame has the correct types, is sorted by
         # BusNum, and has leading/trailing white space stripped.
-        df = self.clean_df_or_series(obj=df, ObjectType=ObjType)
+        df = self.clean_df_or_series(obj=df, ObjectType=ObjType, fields_match=fields_match)
 
         # All done.
         return df
