@@ -787,23 +787,27 @@ class SAW(object):
                 raise e
         return graph
 
-    def get_lodf_matrix(self):
-        """Get LODF matrix in numpy array format.
+    def parse_lodf_matrix(self, file):
+        """Parse LODF matrix from csv into numpy array.
+
+        :param file: LODF matrix csv file generated from PW.
         """
-        # matrix = []
-        # branch = self.ListOfDevices("branch")
-        # key_fields = self.get_key_field_list("branch")
-        # for index, row in branch.iterrows():
-        #     statement = "CalculateLODF(Branch %s %s %s)" % (row['BusNum'], row['BusNum:1'], row['LineCircuit'])
-        #     self.RunScriptCommand(statement)
-        #     result = self.GetParametersMultipleElement('branch', key_fields + ['LineLODF'])
-        #     matrix.append(result['LineLODF'].tolist())
-        statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
-        self.RunScriptCommand(statement)
-        count = self.ListOfDevices('branch').shape[0]
-        array = [f"LODFMult:{x}" for x in range(count)]
-        df = self.GetParametersMultipleElement('branch', array, fields_match=False)
-        return df.to_numpy(dtype=np.float16)
+        df = pd.read_csv(file, skiprows=2, header=None)
+        df = df.iloc[:, 6:]
+        return df.to_numpy(dtype=float)
+
+    def get_incidence_matrix(self):
+        """
+        Obtain the incidence matrix.
+        """
+        branch = self.ListOfDevices("branch")
+        bus = self.ListOfDevices("bus")
+        incidence = np.zeros([branch.shape[0], bus.shape[0]], dtype=int)
+
+        for i, row in branch.iterrows():
+            incidence[i, row["BusNum"] - 1] = 1
+            incidence[i, row["BusNum:1"] - 1] = -1
+        return incidence
 
     def ctg_autoinsert(self, object_type: str, options: Union[None, dict]=None):
         """Auto insert contingencies.
