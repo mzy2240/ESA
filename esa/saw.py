@@ -397,11 +397,11 @@ class SAW(object):
 
         # Replace '*' with the empty string.
         key_field_df['key_field'] = \
-            key_field_df['key_field'].str.replace(r'\*', '')
+            key_field_df['key_field'].str.replace(r'\*', '', regex=True)
 
         # Remove letters.
         key_field_df['key_field'] = \
-            key_field_df['key_field'].str.replace('[A-Z]*', '')
+            key_field_df['key_field'].str.replace('[A-Z]*', '', regex=True)
 
         # Get numeric, 0-based index.
         # noinspection PyTypeChecker
@@ -839,7 +839,7 @@ class SAW(object):
         df = df.astype(convert_dict)
         if np.any(df['LineLimMVA'] == 0):
             raise(Error("Branch without limit is detected. Please fix and try again."))
-        if np.any((df['MVAMax'] >= df['LineLimMVA'])):
+        if np.any((df['MVAMax'] > df['LineLimMVA'])):
             raise(Error("The current operational states has violations. Please fix and try again."))
 
         if not self.lodf:
@@ -857,6 +857,7 @@ class SAW(object):
             if secure:
                 secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
             else:
+                # Adjust line limits to eliminate N-1 contingencies
                 lim = self.n1_protect(margins, lines, lim)
                 secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
         return secure, result
