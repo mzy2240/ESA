@@ -17,6 +17,7 @@ import datetime
 import signal
 
 import numpy as np
+from numpy.linalg import multi_dot, det, solve, inv
 import pandas as pd
 from scipy.sparse import csr_matrix
 import networkx as nx
@@ -842,7 +843,7 @@ class SAW(object):
         if np.any((df['MVAMax'] > df['LineLimMVA'])):
             raise(Error("The current operational states has violations. Please fix and try again."))
 
-        if not self.lodf:
+        if self.lodf is None:
             self.lodf = self.get_lodf_matrix()
 
         lim = df['LineLimMVA'].to_numpy().flatten()
