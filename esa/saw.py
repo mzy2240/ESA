@@ -21,6 +21,7 @@ from numpy.linalg import multi_dot, det, solve, inv
 import pandas as pd
 from scipy.sparse import csr_matrix
 import networkx as nx
+from tqdm import trange
 import pythoncom
 import win32com
 from win32com.client import VARIANT
