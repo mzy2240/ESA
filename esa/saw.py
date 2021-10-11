@@ -165,6 +165,9 @@ class SAW(object):
         version_string, self.build_date = self.get_version_and_builddate()
         self.version = int(re.search(r'\d+', version_string).group(0))
 
+        # Sensitivity-related initialization
+        self.lodf = None
+
         # Look up and cache field listing and key fields for the given
         # object types in object_field_lookup.
         self._object_fields = dict()
@@ -186,8 +189,7 @@ class SAW(object):
     # Helper Functions
     ####################################################################
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
-                                                   command_df: pd.DataFrame,
-                                                   fields_match=True) \
+                                                   command_df: pd.DataFrame) \
             -> None:
         """Change parameters for multiple objects of the same type, and
         confirm that the change was respected by PowerWorld.
@@ -203,7 +205,6 @@ class SAW(object):
             key fields are used internally by PowerWorld to look up
             objects. Each row of the DataFrame represents a single
             element.
-        :fields_match: Optional argument. Default is True.
 
         :raises CommandNotRespectedError: if PowerWorld does not
             actually change the parameters.
@@ -214,11 +215,11 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self._change_parameters_multiple_element_df(
-            ObjectType=ObjectType, command_df=command_df, fields_match=fields_match)
+            ObjectType=ObjectType, command_df=command_df)
 
         # Now, query for the given parameters.
         df = self.GetParametersMultipleElement(
-            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist(), fields_match=fields_match)
+            ObjectType=ObjectType, ParamList=cleaned_df.columns.tolist())
 
         # Check to see if the two DataFrames are equivalent.
         eq = self._df_equiv_subset_of_other(df1=cleaned_df, df2=df,
@@ -237,7 +238,7 @@ class SAW(object):
         return None
 
     def change_parameters_multiple_element_df(
-            self, ObjectType: str, command_df: pd.DataFrame, fields_match=True) -> None:
+            self, ObjectType: str, command_df: pd.DataFrame) -> None:
         """Helper to call ChangeParametersMultipleElement, but uses a
         DataFrame to determine parameters and values. This method is
         lighter weight but perhaps "riskier" than the
@@ -255,15 +256,13 @@ class SAW(object):
             key fields are used internally by PowerWorld to look up
             objects. Each row of the DataFrame represents a single
             element.
-        :param fields_match: Optional argument. Default is True. Set it
-            to False only when ValueError.
         """
         # Simply call the helper function.
         self._change_parameters_multiple_element_df(
-            ObjectType=ObjectType, command_df=command_df, fields_match=fields_match)
+            ObjectType=ObjectType, command_df=command_df)
 
     def clean_df_or_series(self, obj: Union[pd.DataFrame, pd.Series],
-                           ObjectType: str, fields_match=True) -> Union[pd.DataFrame, pd.Series]:
+                           ObjectType: str) -> Union[pd.DataFrame, pd.Series]:
         """Helper to cast data to the correct types, clean up strings,
         and sort DataFrame by BusNum (if applicable/present).
 
@@ -279,9 +278,6 @@ class SAW(object):
             GetFieldList for the given object type).
         :param ObjectType: Object type the data in the DataFrame relates
             to. E.g. 'gen'
-        :param fields_match: Whether to match the fields. Set to False
-            if you believe you are using the correct fields. If you are
-            not sure, stay with the default value.
 
         :raises ValueError: if the DataFrame (Series) columns (index)
             are not valid fields for the given object type.
@@ -300,7 +296,9 @@ class SAW(object):
             raise TypeError('The given object is not a DataFrame or '
                             'Series!')
 
-        if fields_match:
+        # Do not sort if pw_order = True
+        if not self.pw_order:
+
             # Determine which types are numeric.
             numeric = self.identify_numeric_fields(ObjectType=ObjectType,
                                                    fields=fields)
@@ -314,20 +312,16 @@ class SAW(object):
 
             # Start by ensuring the non-numeric columns are indeed strings.
             obj[nn_cols] = obj[nn_cols].astype(str)
-        else:
-            nn_cols = fields
 
-        # Here we'll strip off the white space.
-        if df_flag:
-            # Need to use apply to strip strings from multiple columns.
-            obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
-        else:
-            # A series is much simpler, and the .str.strip() method can
-            # be used directly.
-            obj[nn_cols] = obj[nn_cols].str.strip()
+            # Here we'll strip off the white space.
+            if df_flag:
+                # Need to use apply to strip strings from multiple columns.
+                obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
+            else:
+                # A series is much simpler, and the .str.strip() method can
+                # be used directly.
+                obj[nn_cols] = obj[nn_cols].str.strip()
 
-        # Do not sort if pw_order = True
-        if not self.pw_order:
             # Sort by BusNum if present.
             if df_flag:
                 try:
@@ -787,18 +781,34 @@ class SAW(object):
                 raise e
         return graph
 
-    def parse_lodf_matrix(self, file):
-        """Parse LODF matrix from csv into numpy array.
+    def get_lodf_matrix(self, file=None):
+        """Obtain LODF matrix in numpy array format.
+        By default, it obtains the lodf matrix directly from PW.
+        A csv file containing lodf matrix will be parsed if file
+        path is given.
 
-        :param file: LODF matrix csv file generated from PW.
+        :param file: LODF matrix csv file generated from PW
+        :returns: LODF matrix
         """
-        df = pd.read_csv(file, skiprows=2, header=None)
-        df = df.iloc[:, 6:]
-        return df.to_numpy(dtype=float)
+        if file:
+            df = pd.read_csv(file, skiprows=2, header=None)
+            df = df.iloc[:, 6:]
+            self.lodf = df.to_numpy(dtype=float)/100
+        else:
+            self.pw_order = True
+            statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
+            self.RunScriptCommand(statement)
+            count = self.ListOfDevices('branch').shape[0]
+            array = [f"LODFMult:{x}" for x in range(count)]
+            df = self.GetParametersMultipleElement('branch', array)
+            self.lodf = df.to_numpy(dtype=float)/100
+        return self.lodf
 
     def get_incidence_matrix(self):
         """
         Obtain the incidence matrix.
+
+        :returns: Incidence matrix
         """
         branch = self.ListOfDevices("branch")
         bus = self.ListOfDevices("bus")
@@ -809,6 +819,201 @@ class SAW(object):
             incidence[i, row["BusNum:1"] - 1] = -1
         return incidence
 
+    def run_contingency_analysis(self, option: str = "N-1"):
+        """
+        ESA implementation of fast N-1 and N-2 contingency analysis.
+
+        :param option: Choose between N-1 and N-2 mode
+        :returns: A tuple of system security status (bool) and a matrix
+        showing the result of contingency analysis (if exist)
+        """
+        assert self.lodf is not None, "LODF matrix not available."
+
+        self.pw_order = True
+        df = self.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MVAMax', 'LineLimMVA'])
+        convert_dict = {'BusNum': int,
+                        'BusNum:1': int,
+                        'MVAMax': float,
+                        'LineLimMVA': float
+                        }
+        df = df.astype(convert_dict)
+        if np.any(df['LineLimMVA'] == 0):
+            raise(Error("Branch without limit is detected. Please fix and try again."))
+        if np.any((df['MVAMax'] >= df['LineLimMVA'])):
+            raise(Error("The current operational states has violations. Please fix and try again."))
+
+        if not self.lodf:
+            self.lodf = self.get_lodf_matrix()
+
+        lim = df['LineLimMVA'].to_numpy().flatten()
+        f = df['MVAMax'].to_numpy().flatten()
+        isl = np.any(self.lodf >= 10, axis=1)
+        count = df.shape[0]
+        c1_isl = np.zeros(count)
+        c1_isl[isl] = 1
+        secure, margins, lines = self.n1_fast(c1_isl, count, self.lodf, f, lim)
+        result = lines
+        if option == 'N-2':
+            if secure:
+                secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
+            else:
+                lim = self.n1_protect(margins, lines, lim)
+                secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
+        return secure, result
+
+    def n1_fast(self, c1_isl, count, lodf, f, lim):
+        """ A modified fast N-1 method.
+
+        :param c1_isl: Array of islanding lines
+        :param count: Number of lines
+        :param lodf: LODF matrix
+        :param f: Flow on the lines
+        :param lim: Array of line limits
+
+        :returns: A tuple of N-1 status (bool) and the N-1 result (if exist)
+        """
+        lines = np.zeros(count)
+        margins = np.zeros(count)
+        tr = 1e-10
+        k = 0
+        for i in range(count):
+            if c1_isl[i] == 0:
+                flows = f + lodf[:, i] * f[i]
+                qq = abs(flows) / lim
+                num_of_violations = sum(abs(flows.flatten()) > lim)
+                margins = np.maximum(margins, qq)
+                lines[lim - abs(flows) < tr] += 1
+                if num_of_violations:
+                    k += 1
+        print(f"The size of N-1 islanding set is {sum(c1_isl)}")
+        print(
+            f"N-1 analysis was performed, {k} dangerous N-1 contigencies were found, {sum(lines > 0)} lines are violated")
+        if sum(lines > 0) > 0:
+            print(
+                "Grid is not N-1 secure. Invoke n1_protect function to automatically increasing limits through lines.")
+            return False, margins, lines
+        else:
+            print("Grid is N-1 secure.")
+            return True, None, None
+
+    def n1_protect(self, margins, lines, lim):
+        """Adjust line limits to eliminate N-1 contingencies.
+
+        :param margins: Array of line loading margins.
+        :param lines: Array of number of line overloading contingencies.
+        :param lim: Array of line limits.
+
+        :return lim: Array of line limits after adjustment.
+        """
+        print("Automatically adjust line limits to achieve N-1 secure.")
+        mm = margins[lines[:] == 0].max(0)
+        lim[lines > 0] = margins[lines > 0] * lim[lines > 0] / mm
+        return lim
+
+    def n2_fast(self, c1_isl, count, lodf, f, lim):
+        """A modified fast N-2 method.
+
+        :param c1_isl: Array of islanding lines
+        :param count: Number of lines
+        :param lodf: LODF matrix
+        :param f: Flow on the lines
+        :param lim: Array of line limits
+
+        :returns: A tuple of N-2 status (bool) and the N-2 result (if exist)
+        """
+        print("Start fast N-2 analysis")
+        c2_isl = np.zeros([count, count])
+        A0 = np.ones([count, count]) - np.eye(count)
+        B0 = np.ones([count, count])
+        A = np.zeros([count, count])
+        denominator = np.ones([count, count])
+        numerator = np.ones([count, count])
+        tr = 1e-8
+        A0[c1_isl == 1, :] = 0
+        A0[:, c1_isl == 1] = 0
+        A0[abs(f) < tr, :] = 0
+        A0[:, abs(f) < tr] = 0
+        qq = lodf * (lodf.conj().T)
+        A0[abs(qq - 1) <= tr] = 0
+        c2_isl[abs(qq - 1) <= tr] = 1
+        print("Size of C2_isl is", (sum(c2_isl.flatten()) - count) / 2)
+        denominator -= lodf * (lodf.conj().T)
+        numerator += multi_dot([np.diag(1 / f), lodf, np.diag(f)])
+        A[A0.nonzero()] = numerator[A0.nonzero()] / denominator[A0.nonzero()]
+        bp = multi_dot([np.diag(1 / (lim - f)), lodf, np.diag(f)])
+        bn = multi_dot([-np.diag(1 / (lim + f)), lodf, np.diag(f)])
+        bn -= np.diag(np.diag(bn))
+        bp -= np.diag(np.diag(bp))
+        B0 -= np.diag(np.diag(B0))
+        k = 0
+        changing = 1
+        num_isl_ctg = sum(c1_isl.flatten()) * count - sum(c1_isl.flatten()) + sum(c2_isl.flatten()) / 2
+        kmax = 10
+        storage = dict()
+
+        while changing == 1 and k < kmax:
+            oldA = sum(A0.flatten())
+            oldB = sum(B0.flatten())
+            print(
+                f"{k} iteration: number of potential contingencies::{oldA / 2: <10}, B::{oldB: <10};   islanding contingencies: {num_isl_ctg: <10}")
+
+            # PHASE I
+            Wbuf1 = np.maximum(np.diag(bp.max(0)).dot(A), np.diag(bp.min(0)).dot(A))
+            Wbuf2 = np.maximum(np.diag(bn.max(0)).dot(A), np.diag(bn.min(0)).dot(A))
+            W = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
+
+            storage[k + 1, 1] = A0
+            storage[k + 1, 2] = B0
+            storage[k + 1, 6] = W
+            storage[k + 1, 3] = A
+            storage[k + 1, 4] = bp
+            storage[k + 1, 5] = bn
+            A0[W <= 1] = 0
+            A[A0 == 0] = 0
+
+            # PHASE II
+            Wbuf1 = np.maximum(np.outer(bp.max(1), A.max(0)), np.outer(bp.min(1), A.min(0)))
+            Wbuf2 = np.maximum(np.outer(bn.max(1), A.max(0)), np.outer(bn.min(1), A.min(0)))
+            Wb1 = np.maximum(bp.dot(np.diag(A.max(1))) + Wbuf1, bp.dot(np.diag(A.min(1))) + Wbuf1)
+            Wb2 = np.maximum(bn.dot(np.diag(A.max(1))) + Wbuf2, bn.dot(np.diag(A.min(1))) + Wbuf2)
+            W = np.maximum(Wb1, Wb2)  # bounding matrix for the set B
+            storage[k + 1, 7] = W
+            B0[W <= 1] = 0
+            bn[B0 == 0] = 0
+            bp[B0 == 0] = 0
+            k = k + 1
+            if oldA == sum(A0.flatten()) and oldB == sum(B0.flatten()):
+                changing = 0
+
+        # Bruteforce the filtered contingencies
+        k = 0
+        brute_cont = dict()
+        c2 = np.zeros([count, count])
+        print(f"Bruteforce enumeration over {int(sum(A0.flatten()) / 2)} pairs")
+        for i in trange(count - 1):
+            if sum(A0[i, :] > 0):
+                for j in range(i + 1, count):
+                    if A0[i, j]:
+                        if abs(det(lodf[np.ix_([i, j], [i, j])])) < 1e-10:
+                            c2[i, j] = 1
+                            c2[j, i] = 1
+                        else:
+                            xq = solve(lodf[np.ix_([i, j], [i, j])], f[[i, j]])
+                            f_new = f - lodf[:, [i, j]] @ xq
+                            f_new[i] = 0
+                            f_new[j] = 0
+                            if sum(lim - abs(f_new) < 1e-10) > 0:
+                                k += 1
+                                brute_cont[k, 0] = i
+                                brute_cont[k, 1] = j
+                                brute_cont[k, 2] = sum(lim < abs(f_new))
+                        completed = (count * i + 1 - (i + 2) * (i + 1) / 2 + j - i) / ((count - 1) * count / 2)
+        print(f"Processed {100}% percent. Number of contingencies {k}; fake {sum(c2.flatten()) / 2}")
+        if k:
+            return False, brute_cont
+        else:
+            return True, None
+
     def ctg_autoinsert(self, object_type: str, options: Union[None, dict]=None):
         """Auto insert contingencies.
 
@@ -818,8 +1023,8 @@ class SAW(object):
 
         :returns: List of contingencies.
         """
-        option = self.GetParametersMultipleElement('CTG_AutoInsert_Options_Value', ['Option', 'Value'],
-                                                   fields_match=False)
+        self.pw_order = True
+        option = self.GetParametersMultipleElement('CTG_AutoInsert_Options_Value', ['Option', 'Value'])
         if object_type.lower() == 'branch':
             _object_type = 'LINE'
         elif object_type.lower() == 'bus':
@@ -834,9 +1039,9 @@ class SAW(object):
             for key, value in options.items():
                 _mask = option['Option'] == key
                 option.loc[_mask, 'Value'] = value
-        self.change_parameters_multiple_element_df('CTG_AutoInsert_Options_Value', option, fields_match=False)
+        self.change_parameters_multiple_element_df('CTG_AutoInsert_Options_Value', option)
         self.RunScriptCommand("CTGAutoInsert;")
-        return self.GetParametersMultipleElement('Contingency', ['Name', 'Skip'], fields_match=False)
+        return self.GetParametersMultipleElement('Contingency', ['Name', 'Skip'])
 
     def ctg_solveall(self):
         """
@@ -844,8 +1049,9 @@ class SAW(object):
 
         :returns: List of results.
         """
+        self.pw_order = True
         self.RunScriptCommand("CTGSolveALL(NO,YES)")
-        return self.GetParametersMultipleElement('Contingency', ['Name', 'Solved', 'Violations'], fields_match=False)
+        return self.GetParametersMultipleElement('Contingency', ['Name', 'Solved', 'Violations'])
 
     def _set_simauto_property(self, property_name, property_value):
         """Helper to just set a property name and value. Primary purpose
@@ -1140,7 +1346,7 @@ class SAW(object):
         return self.clean_df_or_series(obj=s, ObjectType=ObjectType)
 
     def GetParametersMultipleElement(self, ObjectType: str, ParamList: list,
-                                     FilterName: str = '', fields_match=True) -> \
+                                     FilterName: str = '') -> \
             Union[pd.DataFrame, None]:
         """Request values of specified fields for a set of objects in
         the load flow case.
@@ -1158,7 +1364,6 @@ class SAW(object):
             get_key_fields_for_object_type method.
         :param FilterName: Name of an advanced filter defined in the
             load flow case.
-        :param fields_match: Whether to match the PW internal fields.
 
         :returns: Pandas DataFrame with columns matching the given
             ParamList. If the provided ObjectType is not present in the
@@ -1184,7 +1389,7 @@ class SAW(object):
                           columns=ParamList)
 
         # Clean DataFrame and return it.
-        return self.clean_df_or_series(obj=df, ObjectType=ObjectType, fields_match=fields_match)
+        return self.clean_df_or_series(obj=df, ObjectType=ObjectType)
 
     def GetParametersMultipleElementFlatOutput(self, ObjectType: str,
                                                ParamList: list,
@@ -1334,7 +1539,7 @@ class SAW(object):
         # Unfortunately, at the time of writing this method does not
         return self._call_simauto('GetSpecificFieldMaxNum', ObjectType, Field)
 
-    def ListOfDevices(self, ObjType: str, FilterName='', fields_match=True) -> \
+    def ListOfDevices(self, ObjType: str, FilterName='') -> \
             Union[None, pd.DataFrame]:
         """Request a list of objects and their key fields. This function
         is general, and you may be better off running more specific
@@ -1348,8 +1553,6 @@ class SAW(object):
             empty string (default) if no filter is desired. If the
             given filter cannot be found, the server will default to
             returning all objects in the case of type ObjectType.
-        :param fields_match: Set it to False if you dont want the order
-            to be sorted.
 
         :returns: None if there are no objects of the given type in the
             model. Otherwise, a DataFrame of key fields will be
@@ -1384,7 +1587,7 @@ class SAW(object):
 
         # Ensure the DataFrame has the correct types, is sorted by
         # BusNum, and has leading/trailing white space stripped.
-        df = self.clean_df_or_series(obj=df, ObjectType=ObjType, fields_match=fields_match)
+        df = self.clean_df_or_series(obj=df, ObjectType=ObjType)
 
         # All done.
         return df
@@ -2017,7 +2220,7 @@ class SAW(object):
             return output[1:]
 
     def _change_parameters_multiple_element_df(
-            self, ObjectType: str, command_df: pd.DataFrame, fields_match=True) -> pd.DataFrame:
+            self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
         """Private helper for changing parameters for multiple elements
         with a command DataFrame as input. See docstring for public
         method "change_parameters_multiple_element_df" for more details.
@@ -2028,8 +2231,7 @@ class SAW(object):
         # Start by cleaning up the DataFrame. This will avoid silly
         # issues later (e.g. comparing ' 1 ' and '1').
         cleaned_df = self.clean_df_or_series(obj=command_df,
-                                             ObjectType=ObjectType,
-                                             fields_match=fields_match)
+                                             ObjectType=ObjectType)
 
         # Convert columns and data to lists and call PowerWorld.
         # noinspection PyTypeChecker
