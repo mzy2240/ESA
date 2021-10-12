@@ -795,7 +795,11 @@ class SAW(object):
         if file:
             df = pd.read_csv(file, skiprows=2, header=None)
             df = df.iloc[:, 6:]
-            self.lodf = df.to_numpy(dtype=float)/100
+            temp = df.to_numpy(dtype=float)/100
+            self.isl = np.any(temp >= 10, axis=1)
+            temp[self.isl, :] = 0
+            temp[self.isl, self.isl] = -1
+            self.lodf = temp
         else:
             self.pw_order = True
             statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
@@ -803,8 +807,12 @@ class SAW(object):
             count = self.ListOfDevices('branch').shape[0]
             array = [f"LODFMult:{x}" for x in range(count)]
             df = self.GetParametersMultipleElement('branch', array)
-            self.lodf = df.to_numpy(dtype=float)/100
-        return self.lodf
+            temp = df.to_numpy(dtype=float)/100
+            self.isl = np.any(temp >= 10, axis=1)
+            temp[self.isl, :] = 0
+            temp[self.isl, self.isl] = -1
+            self.lodf = temp
+        return self.lodf, self.isl
 
     def get_incidence_matrix(self):
         """
@@ -837,33 +845,33 @@ class SAW(object):
         self.pw_order = True
         validation_result = None
 
-        df = self.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MVAMax', 'LineLimMVA'])
-        convert_dict = {'MVAMax': float,
+        df = self.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom', 'LineLimMVA'])
+        convert_dict = {'MWFrom': float,
                         'LineLimMVA': float
                         }
         df = df.astype(convert_dict)
         if np.any(df['LineLimMVA'] == 0):
             raise(Error("Branch without limit is detected. Please fix and try again."))
-        if np.any((df['MVAMax'] > df['LineLimMVA'])):
+        if np.any((df['MWFrom'] > df['LineLimMVA'])):
             raise(Error("The current operational states has violations. Please fix and try again."))
 
         if self.lodf is None:
-            self.lodf = self.get_lodf_matrix()
+            self.lodf, self.isl = self.get_lodf_matrix()
 
         lim = df['LineLimMVA'].to_numpy().flatten()
-        f = df['MVAMax'].to_numpy().flatten()
-        isl = np.any(self.lodf >= 10, axis=1)
+        f = df['MWFrom'].to_numpy().flatten()
+        # isl = np.any(self.lodf >= 10, axis=1)
         count = df.shape[0]
         c1_isl = np.zeros(count)
-        c1_isl[isl] = 1
-        secure, margins, lines, insecure_ctg = self.n1_fast(c1_isl, count, self.lodf, f, lim)
-        result = insecure_ctg
+        c1_isl[self.isl] = 1
+        secure, margins, ctg, violations = self.n1_fast(c1_isl, count, self.lodf, f, lim)
+        result = ctg
         if option == 'N-2':
             if secure:
                 secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
             else:
                 # Adjust line limits to eliminate N-1 contingencies
-                lim = self.n1_protect(margins, lines, lim)
+                lim = self.n1_protect(margins, violations, lim)
                 df['LineLimMVA'] = pd.Series(lim)
                 # Update the line limits in the case as well
                 # Of course without saving it won't affect the original case
@@ -913,28 +921,28 @@ class SAW(object):
 
         :returns: A tuple of N-1 status (bool) and the N-1 result (if exist)
         """
-        lines = np.zeros(count)
-        insecure_ctg = np.zeros(count)
+        ctg = np.zeros(count, dtype=int)
+        violations = np.zeros(count, dtype=int)
         margins = np.zeros(count)
         tr = 1e-10
         k = 0
         for i in range(count):
             if c1_isl[i] == 0:
-                flows = f + lodf[:, i] * f[i]
+                flows = f + lodf[i, :] * f[i]
                 qq = abs(flows) / lim
                 num_of_violations = sum(abs(flows.flatten()) > lim)
                 margins = np.maximum(margins, qq)
-                lines[lim - abs(flows) < tr] += 1
                 if num_of_violations:
-                    k += 1
-                    insecure_ctg[i] = 1
+                    ctg[i] = 1
+                    violations[abs(flows)>lim] += 1
         print(f"The size of N-1 islanding set is {sum(c1_isl)}")
         print(
-            f"N-1 analysis was performed, {k} dangerous N-1 contigencies were found, {sum(lines > 0)} lines are violated")
-        if sum(lines > 0) > 0:
+            f"Fast N-1 analysis was performed, {sum(ctg)} dangerous N-1 contigencies were found, "
+            f"{sum(violations > 0)} lines are violated")
+        if sum(ctg):
             print(
                 "Grid is not N-1 secure. Invoke n1_protect function to automatically increasing limits through lines.")
-            return False, margins, lines, insecure_ctg
+            return False, margins, ctg, violations
         else:
             print("Grid is N-1 secure.")
             return True, None, None, None
@@ -998,7 +1006,8 @@ class SAW(object):
             oldA = sum(A0.flatten())
             oldB = sum(B0.flatten())
             print(
-                f"{k} iteration: number of potential contingencies::{oldA / 2: <10}, B::{oldB: <10};   islanding contingencies: {num_isl_ctg: <10}")
+                f"{k} iteration: number of potential contingencies::{oldA / 2: <10}, B::{oldB: <10}; Islanding "
+                f"contingencies: {num_isl_ctg: <10}")
 
             # PHASE I
             Wbuf1 = np.maximum(np.diag(bp.max(0)).dot(A), np.diag(bp.min(0)).dot(A))
