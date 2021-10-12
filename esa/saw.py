@@ -924,17 +924,16 @@ class SAW(object):
         ctg = np.zeros(count, dtype=int)
         violations = np.zeros(count, dtype=int)
         margins = np.zeros(count)
-        tr = 1e-10
-        k = 0
         for i in range(count):
             if c1_isl[i] == 0:
                 flows = f + lodf[i, :] * f[i]
                 qq = abs(flows) / lim
-                num_of_violations = sum(abs(flows.flatten()) > lim)
+                violating_lines = abs(flows) > lim
+                num_of_violations = sum(violating_lines)
                 margins = np.maximum(margins, qq)
                 if num_of_violations:
                     ctg[i] = 1
-                    violations[abs(flows)>lim] += 1
+                    violations[violating_lines] += 1
         print(f"The size of N-1 islanding set is {sum(c1_isl)}")
         print(
             f"Fast N-1 analysis was performed, {sum(ctg)} dangerous N-1 contigencies were found, "
