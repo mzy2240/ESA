@@ -1050,10 +1050,10 @@ class SAW(object):
                             c2[j, i] = 1
                         else:
                             xq = solve(lodf[np.ix_([i, j], [i, j])], f[[i, j]])
-                            f_new = f - lodf[:, [i, j]] @ xq
+                            f_new = f - lodf[[i, j], :].T @ xq
                             f_new[i] = 0
                             f_new[j] = 0
-                            if sum(lim - abs(f_new) < 1e-10) > 0:
+                            if sum(lim - abs(f_new) < tr) > 0:
                                 k += 1
                                 brute_cont[i, j] = sum(lim < abs(f_new))
                                 # brute_cont[k, 0] = i
