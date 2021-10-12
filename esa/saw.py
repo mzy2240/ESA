@@ -821,21 +821,24 @@ class SAW(object):
             incidence[i, row["BusNum:1"] - 1] = -1
         return incidence
 
-    def run_contingency_analysis(self, option: str = "N-1"):
+    def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
         """
         ESA implementation of fast N-1 and N-2 contingency analysis.
 
         :param option: Choose between N-1 and N-2 mode
+        :param validate: Use PW internal CA to validate the result. Default is False.
+
         :returns: A tuple of system security status (bool) and a matrix
         showing the result of contingency analysis (if exist)
         """
         assert self.lodf is not None, "LODF matrix not available."
 
+        self.set_simauto_property('CreateIfNotFound', True)
         self.pw_order = True
+        validation_result = None
+
         df = self.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MVAMax', 'LineLimMVA'])
-        convert_dict = {'BusNum': int,
-                        'BusNum:1': int,
-                        'MVAMax': float,
+        convert_dict = {'MVAMax': float,
                         'LineLimMVA': float
                         }
         df = df.astype(convert_dict)
@@ -853,16 +856,51 @@ class SAW(object):
         count = df.shape[0]
         c1_isl = np.zeros(count)
         c1_isl[isl] = 1
-        secure, margins, lines = self.n1_fast(c1_isl, count, self.lodf, f, lim)
-        result = lines
+        secure, margins, lines, insecure_ctg = self.n1_fast(c1_isl, count, self.lodf, f, lim)
+        result = insecure_ctg
         if option == 'N-2':
             if secure:
                 secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
             else:
                 # Adjust line limits to eliminate N-1 contingencies
                 lim = self.n1_protect(margins, lines, lim)
+                df['LineLimMVA'] = pd.Series(lim)
+                # Update the line limits in the case as well
+                # Of course without saving it won't affect the original case
+                self.change_parameters_multiple_element_df('branch', df)
                 secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
-        return secure, result
+        if validate and not secure:
+            if option == 'N-1':
+                f_result = df[result>0]
+                ctg = pd.DataFrame()
+                ctg_ele = pd.DataFrame()
+                temp = 'BRANCH' + f_result['BusNum'] + f_result['BusNum:1'] + f_result['LineCircuit']
+                ctg['Name'] = temp
+                ctg_ele['Contingency'] = temp
+                ctg_ele['Object'] = temp
+                ctg_ele['Action'] = 'OPEN'
+            elif option == 'N-2':
+                b0 = [x[0] for x in result.keys()]
+                b1 = [x[1] for x in result.keys()]
+                bf0 = df.iloc[b0, :].reset_index(drop=True)
+                bf1 = df.iloc[b1, :].reset_index(drop=True)
+                ctg = pd.DataFrame()
+                ctg_ele0 = pd.DataFrame()
+                ctg_ele1 = pd.DataFrame()
+                temp = 'L' + bf0['BusNum'] + bf0['BusNum:1'] + bf0['LineCircuit'] + bf1['BusNum'] + bf1['BusNum:1'] + \
+                       bf1['LineCircuit']
+                ctg['Name'] = temp
+                ctg_ele0['Contingency'] = temp
+                ctg_ele0['Object'] = 'BRANCH' + bf0['BusNum'] + bf0['BusNum:1'] + bf0['LineCircuit']
+                ctg_ele0['Action'] = 'OPEN'
+                ctg_ele1['Contingency'] = temp
+                ctg_ele1['Object'] = 'BRANCH' + bf1['BusNum'] + bf1['BusNum:1'] + bf1['LineCircuit']
+                ctg_ele1['Action'] = 'OPEN'
+                ctg_ele = pd.concat([ctg_ele0, ctg_ele1]).sort_index().reset_index(drop=True)
+            self.change_parameters_multiple_element_df('Contingency', ctg)
+            self.change_parameters_multiple_element_df('ContingencyElement', ctg_ele)
+            validation_result = self.ctg_solveall()
+        return secure, result, validation_result
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
         """ A modified fast N-1 method.
@@ -876,6 +914,7 @@ class SAW(object):
         :returns: A tuple of N-1 status (bool) and the N-1 result (if exist)
         """
         lines = np.zeros(count)
+        insecure_ctg = np.zeros(count)
         margins = np.zeros(count)
         tr = 1e-10
         k = 0
@@ -888,16 +927,17 @@ class SAW(object):
                 lines[lim - abs(flows) < tr] += 1
                 if num_of_violations:
                     k += 1
+                    insecure_ctg[i] = 1
         print(f"The size of N-1 islanding set is {sum(c1_isl)}")
         print(
             f"N-1 analysis was performed, {k} dangerous N-1 contigencies were found, {sum(lines > 0)} lines are violated")
         if sum(lines > 0) > 0:
             print(
                 "Grid is not N-1 secure. Invoke n1_protect function to automatically increasing limits through lines.")
-            return False, margins, lines
+            return False, margins, lines, insecure_ctg
         else:
             print("Grid is N-1 secure.")
-            return True, None, None
+            return True, None, None, None
 
     def n1_protect(self, margins, lines, lim):
         """Adjust line limits to eliminate N-1 contingencies.
@@ -1007,9 +1047,10 @@ class SAW(object):
                             f_new[j] = 0
                             if sum(lim - abs(f_new) < 1e-10) > 0:
                                 k += 1
-                                brute_cont[k, 0] = i
-                                brute_cont[k, 1] = j
-                                brute_cont[k, 2] = sum(lim < abs(f_new))
+                                brute_cont[i, j] = sum(lim < abs(f_new))
+                                # brute_cont[k, 0] = i
+                                # brute_cont[k, 1] = j
+                                # brute_cont[k, 2] = sum(lim < abs(f_new))
                         completed = (count * i + 1 - (i + 2) * (i + 1) / 2 + j - i) / ((count - 1) * count / 2)
         print(f"Processed {100}% percent. Number of contingencies {k}; fake {sum(c2.flatten()) / 2}")
         if k:
