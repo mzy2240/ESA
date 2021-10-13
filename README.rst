@@ -7,12 +7,13 @@ Easy SimAuto (ESA)
 .. image:: https://img.shields.io/pypi/l/esa.svg
    :target: https://github.com/mzy2240/ESA/blob/master/LICENSE
 
-Easy SimAuto (ESA) is an easy-to-use Python package that simplifies
-interfacing with PowerWorld's Simulator Automation Server (SimAuto). ESA
-wraps all PowerWorld SimAuto functions, and also provides helper
-functions to further simplify working with SimAuto. Wherever possible,
-data is returned as Pandas DataFrames, making analysis a breeze. ESA is
-well tested and fully `documented`_.
+Easy SimAuto (ESA) is an easy-to-use Power System Analysis Automation
+Platform atop PowerWorld's Simulator Automation Server (SimAuto).
+ESA wraps all PowerWorld SimAuto functions, supports Auxiliary scripts,
+provides helper functions to further simplify working with SimAuto and
+also turbocharges with native implementation of SOTA algorithms. Wherever
+possible, data is returned as Pandas DataFrames, making analysis a breeze.
+ESA is well tested and fully `documented`_.
 
 `Documentation`_
 ----------------
