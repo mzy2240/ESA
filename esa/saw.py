@@ -783,35 +783,23 @@ class SAW(object):
                 raise e
         return graph
 
-    def get_lodf_matrix(self, file=None):
+    def get_lodf_matrix(self):
         """Obtain LODF matrix in numpy array format.
         By default, it obtains the lodf matrix directly from PW.
-        A csv file containing lodf matrix will be parsed if file
-        path is given.
 
-        :param file: LODF matrix csv file generated from PW
         :returns: LODF matrix
         """
-        if file:
-            df = pd.read_csv(file, skiprows=2, header=None)
-            df = df.iloc[:, 6:]
-            temp = df.to_numpy(dtype=float)/100
-            self.isl = np.any(temp >= 10, axis=1)
-            temp[self.isl, :] = 0
-            temp[self.isl, self.isl] = -1
-            self.lodf = temp
-        else:
-            self.pw_order = True
-            statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
-            self.RunScriptCommand(statement)
-            count = self.ListOfDevices('branch').shape[0]
-            array = [f"LODFMult:{x}" for x in range(count)]
-            df = self.GetParametersMultipleElement('branch', array)
-            temp = df.to_numpy(dtype=float)/100
-            self.isl = np.any(temp >= 10, axis=1)
-            temp[self.isl, :] = 0
-            temp[self.isl, self.isl] = -1
-            self.lodf = temp
+        self.pw_order = True
+        statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
+        self.RunScriptCommand(statement)
+        count = self.ListOfDevices('branch').shape[0]
+        array = [f"LODFMult:{x}" for x in range(count)]
+        df = self.GetParametersMultipleElement('branch', array)
+        temp = df.to_numpy(dtype=float)/100
+        self.isl = np.any(temp >= 10, axis=1)
+        temp[self.isl, :] = 0
+        temp[self.isl, self.isl] = -1
+        self.lodf = temp
         return self.lodf, self.isl
 
     def get_incidence_matrix(self):
@@ -839,8 +827,6 @@ class SAW(object):
         :returns: A tuple of system security status (bool) and a matrix
         showing the result of contingency analysis (if exist)
         """
-        assert self.lodf is not None, "LODF matrix not available."
-
         self.set_simauto_property('CreateIfNotFound', True)
         self.pw_order = True
         validation_result = None

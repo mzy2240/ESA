@@ -569,17 +569,6 @@ class GetVersionAndBuildDateTestCase(unittest.TestCase):
         self.assertIsInstance(saw_14.get_version_and_builddate(), tuple)
 
 
-class GetLODFMatrix(unittest.TestCase):
-    """Test get_lodf_matrix."""
-
-    # noinspection PyMethodMayBeStatic
-    def test_correct(self):
-        mat = saw_14.get_lodf_matrix()
-        diag = np.diag(mat)
-        result = np.all(diag == diag[0])
-        self.assertTrue(result)
-
-
 class SetSimAutoPropertyTestCase(unittest.TestCase):
     """Test the set_simauto_property method. To avoid conflicts with
     other tests we'll create a fresh SAW instance here.
@@ -786,6 +775,85 @@ class ToGraphTestCase(unittest.TestCase):
         any substation assigned"""
         with self.assertRaises(AttributeError):
             self.saw.to_graph(node='substation', geographic=True)
+
+
+class FastCATestCase(unittest.TestCase):
+    """Test all the methods related to fast contingency
+    analysis.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, CreateIfNotFound=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_lodf_matrix_default(self):
+        """Should return an N*N square matrix
+        """
+        lodf, isl = self.saw.get_lodf_matrix()
+        self.assertIsInstance(lodf, np.ndarray)
+        self.assertEqual(lodf.shape[0], lodf.shape[1])
+        self.assertEqual(lodf.shape[0], lodf.shape[0])
+
+    def test_get_incidence_matrix(self):
+        """ Should return an N*M matrix
+        """
+        b = self.saw.get_incidence_matrix()
+        self.assertNotEqual(b.shape[0], b.shape[1])
+
+    def test_run_contingency_analysis(self):
+        """ Test fast contingency analysis
+        """
+        self.assertRaises(Error, self.saw.run_contingency_analysis)
+        self.saw.pw_order = True
+        df = self.saw.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom',
+                                                            'LineLimMVA'])
+        convert_dict = {'MWFrom': float,
+                        'LineLimMVA': float
+                        }
+        df = df.astype(convert_dict)
+        df['LineLimMVA'] = df['LineLimMVA'] + 1
+        # Slightly increase the line limits. Just for testing.
+        self.saw.change_parameters_multiple_element_df('branch', df)
+        self.assertRaises(Error, self.saw.run_contingency_analysis)
+        df['LineLimMVA'] = df['LineLimMVA'] + 156
+        self.saw.change_parameters_multiple_element_df('branch', df)
+        self.saw.lodf = None
+        secure, result, validation_result = self.saw.run_contingency_analysis('N-1', validate=True)
+        self.assertFalse(secure)
+        secure, result, validation_result = self.saw.run_contingency_analysis('N-2', validate=True)
+        self.assertFalse(secure)
+        df['LineLimMVA'] = df['LineLimMVA'] + 100
+        self.saw.change_parameters_multiple_element_df('branch', df)
+        secure, result, validation_result = self.saw.run_contingency_analysis('N-1', validate=True)
+        self.assertTrue(secure)
+        secure, result, validation_result = self.saw.run_contingency_analysis('N-2')
+        self.assertFalse(secure)
+
+
+class CTGAutoInsertTestCase(unittest.TestCase):
+    """ Test the ctg_autoinsert method.
+    """
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_ctg_autoinsert(self):
+        """ Returns a dataframe with auto generated ctg.
+        """
+        self.assertIsInstance(self.saw.ctg_autoinsert('branch'), pd.DataFrame)
+        self.assertIsInstance(self.saw.ctg_autoinsert('bus'), pd.DataFrame)
+        self.assertIsInstance(self.saw.ctg_autoinsert('load'), pd.DataFrame)
+        self.assertIsInstance(self.saw.ctg_autoinsert('transformer'), pd.DataFrame)
 
 
 class UpdateUITestCase(unittest.TestCase):
