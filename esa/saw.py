@@ -818,14 +818,13 @@ class SAW(object):
         return incidence
 
     def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
-        """
-        ESA implementation of fast N-1 and N-2 contingency analysis.
+        """ESA implementation of fast N-1 and N-2 contingency analysis.
 
         :param option: Choose between N-1 and N-2 mode
         :param validate: Use PW internal CA to validate the result. Default is False.
 
         :returns: A tuple of system security status (bool) and a matrix
-        showing the result of contingency analysis (if exist)
+            showing the result of contingency analysis (if exist)
         """
         self.set_simauto_property('CreateIfNotFound', True)
         self.pw_order = True

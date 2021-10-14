@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>esa API Documentation &#8212; ESA 1.1.0 documentation</title>
+    <title>esa API Documentation &#8212; ESA 1.2.0 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -132,7 +132,7 @@ generally sorts the data in a bus ascending order.</p></li>
 early binding in most cases.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ChangeParameters">
-<span class="sig-name descname"><span class="pre">ChangeParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ChangeParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.ChangeParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ChangeParameters function has been replaced by the
 ChangeParametersSingleElement function. ChangeParameters
 can still be called as before, but will now just automatically
@@ -168,7 +168,7 @@ the ParamList.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ChangeParametersMultipleElement">
-<span class="sig-name descname"><span class="pre">ChangeParametersMultipleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ValueList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ChangeParametersMultipleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ValueList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set parameters for multiple objects of the same type.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -199,7 +199,7 @@ simply be None.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ChangeParametersMultipleElementFlatInput">
-<span class="sig-name descname"><span class="pre">ChangeParametersMultipleElementFlatInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NoOfObjects</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ValueList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ChangeParametersMultipleElementFlatInput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">NoOfObjects</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ValueList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersMultipleElementFlatInput" title="Permalink to this definition">¶</a></dt>
 <dd><p>The ChangeParametersMultipleElementFlatInput function allows
 you to set parameters for multiple objects of the same type in
 a case loaded into the Simulator Automation Server. This
@@ -240,7 +240,7 @@ simply be None.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ChangeParametersSingleElement">
-<span class="sig-name descname"><span class="pre">ChangeParametersSingleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ChangeParametersSingleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.ChangeParametersSingleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set a list of parameters for a single object.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/ChangeParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -268,7 +268,7 @@ the ParamList.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.CloseOneline">
-<span class="sig-name descname"><span class="pre">CloseOneline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OnelineName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.CloseOneline" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">CloseOneline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">OnelineName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.CloseOneline" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this action to close an open oneline diagram without
 saving it. If the name is omitted, the last focused oneline 
 diagram will be closed.</p>
@@ -315,7 +315,7 @@ when specifying files. Set this property through the
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetCaseHeader">
-<span class="sig-name descname"><span class="pre">GetCaseHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetCaseHeader</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.GetCaseHeader" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetCaseHeader function is used to extract the case header
 information from the file specified. A tuple of strings
 containing the contents of the case header or description is
@@ -335,7 +335,7 @@ header or description.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetFieldList">
-<span class="sig-name descname"><span class="pre">GetFieldList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#esa.saw.SAW.GetFieldList" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetFieldList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">copy</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.frame.DataFrame</span><a class="headerlink" href="#esa.saw.SAW.GetFieldList" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all fields associated with a given ObjectType.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -357,7 +357,7 @@ depending on the version of PowerWorld Simulator being used.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetParameters">
-<span class="sig-name descname"><span class="pre">GetParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetParameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.series.Series</span><a class="headerlink" href="#esa.saw.SAW.GetParameters" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function is maintained in versions of Simulator later 
 than version 9 for compatibility with Simulator version 9. This 
 function will call the GetParametersSingleElement implicitly.</p>
@@ -395,7 +395,7 @@ not have the same length.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetParametersMultipleElement">
-<span class="sig-name descname"><span class="pre">GetParametersMultipleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetParametersMultipleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request values of specified fields for a set of objects in
 the load flow case.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersMultipleElement_Function.htm">PowerWorld Documentation</a></p>
@@ -435,7 +435,7 @@ are not valid for the given object type.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetParametersMultipleElementFlatOutput">
-<span class="sig-name descname"><span class="pre">GetParametersMultipleElementFlatOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetParametersMultipleElementFlatOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.GetParametersMultipleElementFlatOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>This function operates the same as the
 GetParametersMultipleElement function, only with one notable
 difference. The values returned as the output of the function
@@ -481,7 +481,7 @@ type does not exist, the method will return None.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetParametersSingleElement">
-<span class="sig-name descname"><span class="pre">GetParametersSingleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.series.Series</span></span></span><a class="headerlink" href="#esa.saw.SAW.GetParametersSingleElement" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetParametersSingleElement</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ParamList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.series.Series</span><a class="headerlink" href="#esa.saw.SAW.GetParametersSingleElement" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request values of specified fields for a particular object.</p>
 <p><a class="reference external" href="https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm">PowerWorld Documentation</a></p>
 <dl class="field-list simple">
@@ -517,7 +517,7 @@ not have the same length.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetSpecificFieldList">
-<span class="sig-name descname"><span class="pre">GetSpecificFieldList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FieldList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetSpecificFieldList</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FieldList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.frame.DataFrame</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldList" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetSpecificFieldList function is used to return identifying
 information about specific fields used by an object type. Note
 that in many cases simply using the GetFieldList method is
@@ -551,7 +551,7 @@ alphabetically by the variablenames.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.GetSpecificFieldMaxNum">
-<span class="sig-name descname"><span class="pre">GetSpecificFieldMaxNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Field</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">GetSpecificFieldMaxNum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Field</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#esa.saw.SAW.GetSpecificFieldMaxNum" title="Permalink to this definition">¶</a></dt>
 <dd><p>The GetSpecificFieldMaxNum function is used to return the
 maximum number of a fields that use a particular variablename
 for a specific object type.</p>
@@ -585,7 +585,7 @@ valid fields.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ListOfDevices">
-<span class="sig-name descname"><span class="pre">ListOfDevices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.ListOfDevices" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ListOfDevices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.ListOfDevices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Request a list of objects and their key fields. This function
 is general, and you may be better off running more specific
 methods like “get_gens”</p>
@@ -614,7 +614,7 @@ key field is present, the data will be sorted by BusNum.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ListOfDevicesAsVariantStrings">
-<span class="sig-name descname"><span class="pre">ListOfDevicesAsVariantStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ListOfDevicesAsVariantStrings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesAsVariantStrings" title="Permalink to this definition">¶</a></dt>
 <dd><p>While this method is implemented, you are almost certainly
 better off using ListOfDevices instead. Since this method isn’t
 particularly useful, no type casting will be performed on the
@@ -653,7 +653,7 @@ ListOfDevices function.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.ListOfDevicesFlatOutput">
-<span class="sig-name descname"><span class="pre">ListOfDevicesFlatOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">ListOfDevicesFlatOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="headerlink" href="#esa.saw.SAW.ListOfDevicesFlatOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>While this method is implemented, you are almost certainly
 better off using ListOfDevices instead. Since this method isn’t
 particularly useful, no type casting, data type changing, or
@@ -701,7 +701,7 @@ parameters for objects and fields.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.LoadState">
-<span class="sig-name descname"><span class="pre">LoadState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">LoadState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.LoadState" title="Permalink to this definition">¶</a></dt>
 <dd><p>LoadState is used to load the system state previously saved
 with the SaveState function. Note that LoadState will not
 properly function if the system topology has changed due to the
@@ -711,7 +711,7 @@ addition or removal of the system elements.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.OpenCase">
-<span class="sig-name descname"><span class="pre">OpenCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FileName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.OpenCase" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">OpenCase</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FileName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.OpenCase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Load PowerWorld case into the automation server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -729,7 +729,7 @@ been called before.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.OpenCaseType">
-<span class="sig-name descname"><span class="pre">OpenCaseType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FileName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">OpenCaseType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">FileName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FileType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">list</span><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.OpenCaseType" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="simple">
 <dt>The OpenCaseType function will load a PowerWorld Simulator load</dt><dd><dl class="simple">
 <dt>flow file into the Simulator Automation Server. This is similar</dt><dd><p>to opening a file using the File &gt; Open Case menu option in
@@ -760,7 +760,7 @@ documentation for more details.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.OpenOneLine">
-<span class="sig-name descname"><span class="pre">OpenOneLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FullScreen</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'NO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ShowFull</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'NO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LinkMethod</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'LABELS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Left</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Top</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Height</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">OpenOneLine</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">view</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FullScreen</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'NO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ShowFull</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'NO'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LinkMethod</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'LABELS'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Left</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Top</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Width</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">Height</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.OpenOneLine" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use this function to open a oneline diagram. This function
 can be used to associate onelines with a PWB file.</p>
 <dl class="field-list simple">
@@ -904,7 +904,7 @@ already exists, an exception will be raised.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.SaveState">
-<span class="sig-name descname"><span class="pre">SaveState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">SaveState</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.SaveState" title="Permalink to this definition">¶</a></dt>
 <dd><p>SaveState is used to save the current state of the power
 system. This can be useful if you are interested in comparing
 various cases, much as the “Difference Flows” feature works in
@@ -914,7 +914,7 @@ the Simulator application.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.SendToExcel">
-<span class="sig-name descname"><span class="pre">SendToExcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FieldList</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">SendToExcel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FilterName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">FieldList</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.SendToExcel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Send data from SimAuto to an Excel spreadsheet. While ESA
 provides this function, we strongly recommend you to use the
 <code class="docutils literal notranslate"><span class="pre">GetParametersMultipleElement</span></code> function and save the DataFrame
@@ -952,7 +952,7 @@ fields when exporting the data.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.SolvePowerFlow">
-<span class="sig-name descname"><span class="pre">SolvePowerFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SolMethod</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'RECTNEWT'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">SolvePowerFlow</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">SolMethod</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'RECTNEWT'</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.SolvePowerFlow" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run the SolvePowerFlow command.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -973,7 +973,7 @@ for more details.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.TSGetContingencyResults">
-<span class="sig-name descname"><span class="pre">TSGetContingencyResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CtgName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ObjFieldList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">StartTime</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">StopTime</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">TSGetContingencyResults</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">CtgName</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ObjFieldList</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">StartTime</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">StopTime</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">None</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.TSGetContingencyResults" title="Permalink to this definition">¶</a></dt>
 <dd><p>WARNING: This function should only be used after the simulation
 is run (for example, use this after running script commands
 TSSolveAll or TSSolve).</p>
@@ -1065,7 +1065,7 @@ filter cannot be found in the loaded case, no filter is used.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.change_and_confirm_params_multiple_element">
-<span class="sig-name descname"><span class="pre">change_and_confirm_params_multiple_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.change_and_confirm_params_multiple_element" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">change_and_confirm_params_multiple_element</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.change_and_confirm_params_multiple_element" title="Permalink to this definition">¶</a></dt>
 <dd><p>Change parameters for multiple objects of the same type, and
 confirm that the change was respected by PowerWorld.</p>
 <dl class="field-list simple">
@@ -1099,7 +1099,7 @@ actually change the parameters.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.change_parameters_multiple_element_df">
-<span class="sig-name descname"><span class="pre">change_parameters_multiple_element_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.change_parameters_multiple_element_df" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">change_parameters_multiple_element_df</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">command_df</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">pandas.core.frame.DataFrame</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.change_parameters_multiple_element_df" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to call ChangeParametersMultipleElement, but uses a
 DataFrame to determine parameters and values. This method is
 lighter weight but perhaps “riskier” than the
@@ -1126,7 +1126,7 @@ element.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.clean_df_or_series">
-<span class="sig-name descname"><span class="pre">clean_df_or_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.clean_df_or_series" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">clean_df_or_series</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">obj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.series.Series</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.clean_df_or_series" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to cast data to the correct types, clean up strings,
 and sort DataFrame by BusNum (if applicable/present).</p>
 <dl class="field-list simple">
@@ -1158,9 +1158,49 @@ Series.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.ctg_autoinsert">
+<span class="sig-name descname"><span class="pre">ctg_autoinsert</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">object_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">options</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ctg_autoinsert" title="Permalink to this definition">¶</a></dt>
+<dd><p>Auto insert contingencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>object_type</strong> – Object type, e.g. branch.</p></li>
+<li><p><strong>options</strong> – Optional. Pass a custom dictionary if you need
+to modify the Ctg_AutoInsert_Options.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List of contingencies.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.ctg_solveall">
+<span class="sig-name descname"><span class="pre">ctg_solveall</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.ctg_solveall" title="Permalink to this definition">¶</a></dt>
+<dd><p>Solve all of the contingencies that are not marked to be skipped.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>List of results.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.exit">
 <span class="sig-name descname"><span class="pre">exit</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.exit" title="Permalink to this definition">¶</a></dt>
 <dd><p>Clean up for the PowerWorld COM object</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.get_incidence_matrix">
+<span class="sig-name descname"><span class="pre">get_incidence_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_incidence_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Obtain the incidence matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Incidence matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
@@ -1173,7 +1213,7 @@ scipy sparse matrix in the csr format
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_key_field_list">
-<span class="sig-name descname"><span class="pre">get_key_field_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_key_field_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.get_key_field_list" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convenience function to get a list of key fields for a given
 object type.</p>
 <dl class="field-list simple">
@@ -1190,7 +1230,7 @@ like a list of key fields. E.g. ‘gen’.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_key_fields_for_object_type">
-<span class="sig-name descname"><span class="pre">get_key_fields_for_object_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">pandas.core.frame.DataFrame</span></span></span><a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_key_fields_for_object_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">pandas.core.frame.DataFrame</span><a class="headerlink" href="#esa.saw.SAW.get_key_fields_for_object_type" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get all key fields for an object type.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1212,12 +1252,18 @@ field returned by the Simulator, but modified to be 0-based.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_lodf_matrix">
 <span class="sig-name descname"><span class="pre">get_lodf_matrix</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_lodf_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get LODF matrix in numpy array format.</p>
+<dd><p>Obtain LODF matrix in numpy array format.
+By default, it obtains the lodf matrix directly from PW.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>LODF matrix</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_power_flow_results">
-<span class="sig-name descname"><span class="pre">get_power_flow_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_fields</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_power_flow_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_fields</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the power flow results from SimAuto server.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1241,12 +1287,12 @@ None if the given ObjectType is not present in the model.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_version_and_builddate">
-<span class="sig-name descname"><span class="pre">get_version_and_builddate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#esa.saw.SAW.get_version_and_builddate" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_version_and_builddate</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">tuple</span><a class="headerlink" href="#esa.saw.SAW.get_version_and_builddate" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_ybus">
-<span class="sig-name descname"><span class="pre">get_ybus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">scipy.sparse.csr.csr_matrix</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.get_ybus" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_ybus</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">full</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">scipy.sparse.csr.csr_matrix</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.get_ybus" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
 matrix format) and then convert to scipy csr_matrix by default.
 :param full: Convert the csr_matrix to the numpy array (full matrix).
@@ -1255,7 +1301,7 @@ matrix format) and then convert to scipy csr_matrix by default.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.identify_numeric_fields">
-<span class="sig-name descname"><span class="pre">identify_numeric_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#esa.saw.SAW.identify_numeric_fields" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">identify_numeric_fields</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fields</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#esa.saw.SAW.identify_numeric_fields" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper which looks up PowerWorld internal field names to
 determine if they’re numeric (True) or not (False).</p>
 <dl class="field-list simple">
@@ -1272,6 +1318,87 @@ E.g. [‘BusNum’, ‘BusNum:1’, ‘LineCircuit’, ‘LineStatus’]</p></li
 <dd class="field-even"><p>Numpy boolean array indicating which of the given
 fields are numeric. Going along with the example given for
 “fields”: np.array([True, True, False, False])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.n1_fast">
+<span class="sig-name descname"><span class="pre">n1_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c1_isl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lodf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.n1_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>A modified fast N-1 method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c1_isl</strong> – Array of islanding lines</p></li>
+<li><p><strong>count</strong> – Number of lines</p></li>
+<li><p><strong>lodf</strong> – LODF matrix</p></li>
+<li><p><strong>f</strong> – Flow on the lines</p></li>
+<li><p><strong>lim</strong> – Array of line limits</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of N-1 status (bool) and the N-1 result (if exist)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.n1_protect">
+<span class="sig-name descname"><span class="pre">n1_protect</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">margins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lines</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.n1_protect" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adjust line limits to eliminate N-1 contingencies.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>margins</strong> – Array of line loading margins.</p></li>
+<li><p><strong>lines</strong> – Array of number of line overloading contingencies.</p></li>
+<li><p><strong>lim</strong> – Array of line limits.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Return lim</dt>
+<dd class="field-even"><p>Array of line limits after adjustment.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.n2_bruteforce">
+<span class="sig-name descname"><span class="pre">n2_bruteforce</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">A0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lodf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.n2_bruteforce" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.n2_fast">
+<span class="sig-name descname"><span class="pre">n2_fast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">c1_isl</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">count</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lodf</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lim</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.n2_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>A modified fast N-2 method.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>c1_isl</strong> – Array of islanding lines</p></li>
+<li><p><strong>count</strong> – Number of lines</p></li>
+<li><p><strong>lodf</strong> – LODF matrix</p></li>
+<li><p><strong>f</strong> – Flow on the lines</p></li>
+<li><p><strong>lim</strong> – Array of line limits</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of N-2 status (bool) and the N-2 result (if exist)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.run_contingency_analysis">
+<span class="sig-name descname"><span class="pre">run_contingency_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">option</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'N-1'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.run_contingency_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>ESA implementation of fast N-1 and N-2 contingency analysis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>option</strong> – Choose between N-1 and N-2 mode</p></li>
+<li><p><strong>validate</strong> – Use PW internal CA to validate the result. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A tuple of system security status (bool) and a matrix
+showing the result of contingency analysis (if exist)</p>
 </dd>
 </dl>
 </dd></dl>
@@ -1296,7 +1423,7 @@ UIVisible.</p></li>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.to_graph">
-<span class="sig-name descname"><span class="pre">to_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'bus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geographic</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">networkx.classes.multigraph.MultiGraph</span><span class="p"><span class="pre">,</span> </span><span class="pre">networkx.classes.multidigraph.MultiDiGraph</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.to_graph" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">to_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">node</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'bus'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">geographic</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">node_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">edge_attr</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">networkx.classes.multigraph.MultiGraph</span><span class="p"><span class="pre">,</span> </span><span class="pre">networkx.classes.multidigraph.MultiDiGraph</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.SAW.to_graph" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generate the graph network model (NetworkX) from the topology.
 Currently supports the bus-level topology and the inter-substation
 level topology. Parallel lines (if exist) are preserved in the
@@ -1320,7 +1447,7 @@ the latitude and the longitude will be NaN.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.update_ui">
-<span class="sig-name descname"><span class="pre">update_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#esa.saw.SAW.update_ui" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">update_ui</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#esa.saw.SAW.update_ui" title="Permalink to this definition">¶</a></dt>
 <dd><p>Re-render the PowerWorld user interface (UI).</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -1333,7 +1460,7 @@ the latitude and the longitude will be NaN.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esa.saw.convert_list_to_variant">
-<span class="sig-prename descclassname"><span class="pre">esa.saw.</span></span><span class="sig-name descname"><span class="pre">convert_list_to_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">win32com.client.VARIANT</span></span></span><a class="headerlink" href="#esa.saw.convert_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esa.saw.</span></span><span class="sig-name descname"><span class="pre">convert_list_to_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">win32com.client.VARIANT</span><a class="headerlink" href="#esa.saw.convert_list_to_variant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list, convert to a variant array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1344,7 +1471,7 @@ the latitude and the longitude will be NaN.
 
 <dl class="py function">
 <dt class="sig sig-object py" id="esa.saw.convert_nested_list_to_variant">
-<span class="sig-prename descclassname"><span class="pre">esa.saw.</span></span><span class="sig-name descname"><span class="pre">convert_nested_list_to_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">win32com.client.VARIANT</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.convert_nested_list_to_variant" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">esa.saw.</span></span><span class="sig-name descname"><span class="pre">convert_nested_list_to_variant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">win32com.client.VARIANT</span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#esa.saw.convert_nested_list_to_variant" title="Permalink to this definition">¶</a></dt>
 <dd><p>Given a list of lists, convert to a variant array.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -1379,7 +1506,7 @@ the latitude and the longitude will be NaN.
 
 
 <h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<p class="caption"><span class="caption-text">Contents:</span></p>
 <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
 <li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
@@ -1407,7 +1534,7 @@ the latitude and the longitude will be NaN.
   <h3 id="searchlabel">Quick search</h3>
     <div class="searchformwrapper">
     <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="text" name="q" aria-labelledby="searchlabel" />
       <input type="submit" value="Go" />
     </form>
     </div>
@@ -1429,7 +1556,7 @@ the latitude and the longitude will be NaN.
       &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.0.2</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

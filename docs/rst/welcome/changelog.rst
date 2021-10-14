@@ -2,6 +2,17 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.2.0
+^^^^^^^^^^^^^
+
+* Optimize the process to use the same order as shown in simulator
+  (note: if pw_order is used, all data in the dataframe will be string type)
+* Add a method to obtain the incidence matrix
+* Implement a modified fast N-1 and N-2 contingency analysis algorithm.
+  The algorithm is originally developed by Prof. Kostya Turitsyn from MIT and
+  the implementation has been slightly modified and adapted to work with ESA.
+* Add a few helper functions to facilitate contingency analysis powered by the simulator.
+
 Version 1.1.0
 ^^^^^^^^^^^^^
 

@@ -64,16 +64,16 @@ The ESA team works hard to ensure ESA is well tested, and we strive for
 testing coverage data for ESA, using `coverage
 <https://pypi.org/project/coverage/>`__.
 
-.. table:: ESA's testing coverage as of 2021-10-13 (Git commit: 4d36082)
+.. table:: ESA's testing coverage as of 2021-10-13 (Git commit: ad265e6)
     :widths: auto
     :align: left
 
     +-----------------+-------------------+-----------------+-----------------+--------------------+
     | Name            |   Num. Statements |   Missing Lines |   Covered Lines |   Percent Coverage |
     +=================+===================+=================+=================+====================+
-    | esa/__init__.py |                 2 |               0 |               2 |           100      |
+    | esa/__init__.py |                 2 |               0 |               2 |                100 |
     +-----------------+-------------------+-----------------+-----------------+--------------------+
-    | esa/saw.py      |               733 |             132 |             601 |            81.9918 |
+    | esa/saw.py      |               733 |               0 |             733 |                100 |
     +-----------------+-------------------+-----------------+-----------------+--------------------+
 
 License
