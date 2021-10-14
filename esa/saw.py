@@ -1024,6 +1024,16 @@ class SAW(object):
         return secure, result
 
     def n2_bruteforce(self, count, A0, lodf, lim, f):
+        """ Bruteforce for fast N-2 method
+
+        :param count: number of branches
+        :param A0: filtered contingencies
+        :param lodf: LODF matrix
+        :param lim: branch limits
+        :param f: branch flow
+
+        :returns: Security status and detailed results
+        """
         # Bruteforce the filtered contingencies
         k = 0
         brute_cont = dict()
