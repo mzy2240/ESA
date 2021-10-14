@@ -1021,7 +1021,10 @@ class SAW(object):
             k = k + 1
             if oldA == sum(A0.flatten()) and oldB == sum(B0.flatten()):
                 changing = 0
+        secure, result = self.n2_bruteforce(count, A0, lodf, lim, f)
+        return secure, result
 
+    def n2_bruteforce(self, count, A0, lodf, lim, f):
         # Bruteforce the filtered contingencies
         k = 0
         brute_cont = dict()
@@ -1031,7 +1034,7 @@ class SAW(object):
             if sum(A0[i, :] > 0):
                 for j in range(i + 1, count):
                     if A0[i, j]:
-                        if abs(det(lodf[np.ix_([i, j], [i, j])])) < 1e-10:
+                        if abs(det(lodf[np.ix_([i, j], [i, j])])) < 1e-8:
                             c2[i, j] = 1
                             c2[j, i] = 1
                         else:
@@ -1039,7 +1042,7 @@ class SAW(object):
                             f_new = f - lodf[[i, j], :].T @ xq
                             f_new[i] = 0
                             f_new[j] = 0
-                            if sum(lim - abs(f_new) < tr) > 0:
+                            if sum(lim - abs(f_new) < 1e-8) > 0:
                                 k += 1
                                 brute_cont[i, j] = sum(lim < abs(f_new))
                                 # brute_cont[k, 0] = i

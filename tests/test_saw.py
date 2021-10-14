@@ -368,7 +368,11 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
         saw = SAW(PATH_14, pw_order=True)
         key_field = saw.get_key_field_list("branch")
         device_list = saw.ListOfDevices("branch")
+        device_list['BusNum'] = device_list['BusNum'].astype(int)
+        device_list['BusNum:1'] = device_list['BusNum:1'].astype(int)
         df = saw.GetParametersMultipleElement("branch", key_field)
+        df['BusNum'] = df['BusNum'].astype(int)
+        df['BusNum:1'] = df['BusNum:1'].astype(int)
         assert_frame_equal(device_list, df)
 
 
@@ -808,6 +812,7 @@ class FastCATestCase(unittest.TestCase):
     def test_run_contingency_analysis(self):
         """ Test fast contingency analysis
         """
+        self.saw = SAW(PATH_14, CreateIfNotFound=True)
         self.assertRaises(Error, self.saw.run_contingency_analysis)
         self.saw.pw_order = True
         df = self.saw.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom',
@@ -827,12 +832,44 @@ class FastCATestCase(unittest.TestCase):
         self.assertFalse(secure)
         secure, result, validation_result = self.saw.run_contingency_analysis('N-2', validate=True)
         self.assertFalse(secure)
-        df['LineLimMVA'] = df['LineLimMVA'] + 100
+        df['LineLimMVA'] = df['LineLimMVA'] + 1000
         self.saw.change_parameters_multiple_element_df('branch', df)
         secure, result, validation_result = self.saw.run_contingency_analysis('N-1', validate=True)
         self.assertTrue(secure)
         secure, result, validation_result = self.saw.run_contingency_analysis('N-2')
+        self.assertTrue(secure)
+        self.saw.exit()
+
+    def test_n2_fast(self):
+        """ Test fast N-2
+        """
+        self.saw = SAW(PATH_14, CreateIfNotFound=True)
+        self.saw.pw_order = True
+        df = self.saw.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom',
+                                                              'LineLimMVA'])
+        convert_dict = {'MWFrom': float,
+                        'LineLimMVA': float
+                        }
+        df = df.astype(convert_dict)
+        df['LineLimMVA'] = df['LineLimMVA'] + 200
+        # Slightly increase the line limits. Just for testing.
+        self.saw.change_parameters_multiple_element_df('branch', df)
+        lim = df['LineLimMVA'].to_numpy().flatten()
+        f = df['MWFrom'].to_numpy().flatten()
+        count = df.shape[0]
+        c1_isl = np.zeros(count)
+        lodf, isl = self.saw.get_lodf_matrix()
+        c1_isl[isl] = 1
+        A0 = np.ones([count, count]) - np.eye(count)
+        A0[c1_isl == 1, :] = 0
+        A0[:, c1_isl == 1] = 0
+        A0[abs(f) < 1e-8, :] = 0
+        A0[:, abs(f) < 1e-8] = 0
+        lodf[2,3] = 1
+        lodf[3,2] = 1
+        secure,  result = self.saw.n2_bruteforce(count, A0, lodf, lim, f)
         self.assertFalse(secure)
+        self.saw.exit()
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):
@@ -850,7 +887,7 @@ class CTGAutoInsertTestCase(unittest.TestCase):
     def test_ctg_autoinsert(self):
         """ Returns a dataframe with auto generated ctg.
         """
-        self.assertIsInstance(self.saw.ctg_autoinsert('branch'), pd.DataFrame)
+        self.assertIsInstance(self.saw.ctg_autoinsert('branch', {'kVAll': 'YES'}), pd.DataFrame)
         self.assertIsInstance(self.saw.ctg_autoinsert('bus'), pd.DataFrame)
         self.assertIsInstance(self.saw.ctg_autoinsert('load'), pd.DataFrame)
         self.assertIsInstance(self.saw.ctg_autoinsert('transformer'), pd.DataFrame)
