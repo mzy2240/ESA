@@ -867,7 +867,7 @@ class SAW(object):
                 f_result = df[result>0]
                 ctg = pd.DataFrame()
                 ctg_ele = pd.DataFrame()
-                temp = 'BRANCH' + f_result['BusNum'] + f_result['BusNum:1'] + f_result['LineCircuit']
+                temp = 'BRANCH' + f_result['BusNum'] + f_result['BusNum:1'] + ' ' + f_result['LineCircuit']
                 ctg['Name'] = temp
                 ctg_ele['Contingency'] = temp
                 ctg_ele['Object'] = temp
@@ -880,14 +880,14 @@ class SAW(object):
                 ctg = pd.DataFrame()
                 ctg_ele0 = pd.DataFrame()
                 ctg_ele1 = pd.DataFrame()
-                temp = 'L' + bf0['BusNum'] + bf0['BusNum:1'] + bf0['LineCircuit'] + bf1['BusNum'] + bf1['BusNum:1'] + \
-                       bf1['LineCircuit']
+                temp = 'L' + bf0['BusNum'] + bf0['BusNum:1'] + ' ' + bf0['LineCircuit'] + bf1['BusNum'] + bf1[
+                    'BusNum:1'] + ' ' + bf1['LineCircuit']
                 ctg['Name'] = temp
                 ctg_ele0['Contingency'] = temp
-                ctg_ele0['Object'] = 'BRANCH' + bf0['BusNum'] + bf0['BusNum:1'] + bf0['LineCircuit']
+                ctg_ele0['Object'] = 'BRANCH' + bf0['BusNum'] + bf0['BusNum:1'] + ' ' + bf0['LineCircuit']
                 ctg_ele0['Action'] = 'OPEN'
                 ctg_ele1['Contingency'] = temp
-                ctg_ele1['Object'] = 'BRANCH' + bf1['BusNum'] + bf1['BusNum:1'] + bf1['LineCircuit']
+                ctg_ele1['Object'] = 'BRANCH' + bf1['BusNum'] + bf1['BusNum:1'] + ' ' + bf1['LineCircuit']
                 ctg_ele1['Action'] = 'OPEN'
                 ctg_ele = pd.concat([ctg_ele0, ctg_ele1]).sort_index().reset_index(drop=True)
             self.change_parameters_multiple_element_df('Contingency', ctg)
