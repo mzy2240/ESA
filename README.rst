@@ -6,6 +6,7 @@ Easy SimAuto (ESA)
    :target: https://doi.org/10.21105/joss.02289
 .. image:: https://img.shields.io/pypi/l/esa.svg
    :target: https://github.com/mzy2240/ESA/blob/master/LICENSE
+.. image:: https://img.shields.io/badge/coverage-100%25-brightgreen
 
 Easy SimAuto (ESA) is an easy-to-use Power System Analysis Automation
 Platform atop PowerWorld's Simulator Automation Server (SimAuto).
