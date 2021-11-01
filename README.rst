@@ -6,7 +6,7 @@ Easy SimAuto (ESA)
    :target: https://doi.org/10.21105/joss.02289
 .. image:: https://img.shields.io/pypi/l/esa.svg
    :target: https://github.com/mzy2240/ESA/blob/master/LICENSE
-.. image:: https://static.pepy.tech/personalized-badge/esa?period=total&units=international_system&left_color=black&right_color=orange&left_text=Downloads
+.. image:: https://static.pepy.tech/personalized-badge/esa?period=total&units=international_system&left_color=grey&right_color=orange&left_text=Downloads
    :target: https://pepy.tech/project/esa
 .. image:: https://img.shields.io/badge/coverage-100%25-brightgreen
 
