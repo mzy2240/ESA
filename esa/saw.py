@@ -914,16 +914,16 @@ class SAW(object):
                 flows = f + lodf[i, :] * f[i]
                 qq = abs(flows) / lim
                 violating_lines = abs(flows) > lim
-                num_of_violations = sum(violating_lines)
+                num_of_violations = np.sum(violating_lines)
                 margins = np.maximum(margins, qq)
                 if num_of_violations:
                     ctg[i] = 1
                     violations[violating_lines] += 1
-        print(f"The size of N-1 islanding set is {sum(c1_isl)}")
+        print(f"The size of N-1 islanding set is {np.sum(c1_isl)}")
         print(
-            f"Fast N-1 analysis was performed, {sum(ctg)} dangerous N-1 contigencies were found, "
-            f"{sum(violations > 0)} lines are violated")
-        if sum(ctg):
+            f"Fast N-1 analysis was performed, {np.sum(ctg)} dangerous N-1 contigencies were found, "
+            f"{np.sum(violations > 0)} lines are violated")
+        if np.sum(ctg):
             print(
                 "Grid is not N-1 secure. Invoke n1_protect function to automatically increasing limits through lines.")
             return False, margins, ctg, violations
@@ -971,7 +971,7 @@ class SAW(object):
         qq = lodf * (lodf.conj().T)
         A0[abs(qq - 1) <= tr] = 0
         c2_isl[abs(qq - 1) <= tr] = 1
-        print("Size of C2_isl is", (sum(c2_isl.flatten()) - count) / 2)
+        print("Size of C2_isl is", (np.sum(c2_isl.ravel()) - count) / 2)
         denominator -= lodf * (lodf.conj().T)
         numerator += multi_dot([np.diag(1 / f), lodf, np.diag(f)])
         A[A0.nonzero()] = numerator[A0.nonzero()] / denominator[A0.nonzero()]
@@ -982,20 +982,20 @@ class SAW(object):
         B0 -= np.diag(np.diag(B0))
         k = 0
         changing = 1
-        num_isl_ctg = sum(c1_isl.flatten()) * count - sum(c1_isl.flatten()) + sum(c2_isl.flatten()) / 2
+        num_isl_ctg = np.sum(c1_isl.ravel()) * count - np.sum(c1_isl.ravel()) + np.sum(c2_isl.ravel()) / 2
         kmax = 10
         storage = dict()
 
         while changing == 1 and k < kmax:
-            oldA = sum(A0.flatten())
-            oldB = sum(B0.flatten())
+            oldA = np.sum(A0.ravel())
+            oldB = np.sum(B0.ravel())
             print(
                 f"{k} iteration: number of potential contingencies::{oldA / 2: <10}, B::{oldB: <10}; Islanding "
                 f"contingencies: {num_isl_ctg: <10}")
 
             # PHASE I
-            Wbuf1 = np.maximum(np.diag(bp.max(0)).dot(A), np.diag(bp.min(0)).dot(A))
-            Wbuf2 = np.maximum(np.diag(bn.max(0)).dot(A), np.diag(bn.min(0)).dot(A))
+            Wbuf1 = np.maximum(np.diag(bp.max(0)) @ A, np.diag(bp.min(0)) @ A)
+            Wbuf2 = np.maximum(np.diag(bn.max(0)) @ A, np.diag(bn.min(0)) @ A)
             W = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
 
             storage[k + 1, 1] = A0
@@ -1008,17 +1008,21 @@ class SAW(object):
             A[A0 == 0] = 0
 
             # PHASE II
-            Wbuf1 = np.maximum(np.outer(bp.max(1), A.max(0)), np.outer(bp.min(1), A.min(0)))
-            Wbuf2 = np.maximum(np.outer(bn.max(1), A.max(0)), np.outer(bn.min(1), A.min(0)))
-            Wb1 = np.maximum(bp.dot(np.diag(A.max(1))) + Wbuf1, bp.dot(np.diag(A.min(1))) + Wbuf1)
-            Wb2 = np.maximum(bn.dot(np.diag(A.max(1))) + Wbuf2, bn.dot(np.diag(A.min(1))) + Wbuf2)
+            Amax0 = A.max(0)
+            Amin0 = A.min(0)
+            Amax1 = A.max(1)
+            Amin1 = A.min(1)
+            Wbuf1 = np.maximum(np.outer(bp.max(1), Amax0), np.outer(bp.min(1), Amin0))
+            Wbuf2 = np.maximum(np.outer(bn.max(1), Amax0), np.outer(bn.min(1), Amin0))
+            Wb1 = np.maximum(bp @ np.diag(Amax1) + Wbuf1, bp @ np.diag(Amin1) + Wbuf1)
+            Wb2 = np.maximum(bn @ np.diag(Amax1) + Wbuf2, bn @ np.diag(Amin1) + Wbuf2)
             W = np.maximum(Wb1, Wb2)  # bounding matrix for the set B
             storage[k + 1, 7] = W
             B0[W <= 1] = 0
             bn[B0 == 0] = 0
             bp[B0 == 0] = 0
             k = k + 1
-            if oldA == sum(A0.flatten()) and oldB == sum(B0.flatten()):
+            if oldA == np.sum(A0.ravel()) and oldB == np.sum(B0.ravel()):
                 changing = 0
         secure, result = self.n2_bruteforce(count, A0, lodf, lim, f)
         return secure, result
@@ -1038,9 +1042,9 @@ class SAW(object):
         k = 0
         brute_cont = dict()
         c2 = np.zeros([count, count])
-        print(f"Bruteforce enumeration over {int(sum(A0.flatten()) / 2)} pairs")
+        print(f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
         for i in trange(count - 1):
-            if sum(A0[i, :] > 0):
+            if np.sum(A0[i, :] > 0):
                 for j in range(i + 1, count):
                     if A0[i, j]:
                         if abs(det(lodf[np.ix_([i, j], [i, j])])) < 1e-8:
@@ -1051,14 +1055,16 @@ class SAW(object):
                             f_new = f - lodf[[i, j], :].T @ xq
                             f_new[i] = 0
                             f_new[j] = 0
-                            if sum(lim - abs(f_new) < 1e-8) > 0:
+                            v = lim < abs(f_new)
+                            violations = np.sum(v)
+                            if violations > 0:
                                 k += 1
-                                brute_cont[i, j] = sum(lim < abs(f_new))
+                                brute_cont[i, j] = violations
                                 # brute_cont[k, 0] = i
                                 # brute_cont[k, 1] = j
                                 # brute_cont[k, 2] = sum(lim < abs(f_new))
                         completed = (count * i + 1 - (i + 2) * (i + 1) / 2 + j - i) / ((count - 1) * count / 2)
-        print(f"Processed {100}% percent. Number of contingencies {k}; fake {sum(c2.flatten()) / 2}")
+        print(f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
         if k:
             return False, brute_cont
         else:
