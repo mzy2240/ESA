@@ -35,6 +35,7 @@ setuptools.setup(
     author_email='zeyumao2@tamu.edu, blthayer@tamu.edu, yiji21@tamu.edu',
     url='https://github.com/mzy2240/ESA',
     packages=setuptools.find_packages(),
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3 :: Only",
         "Programming Language :: Python :: 3.5",
@@ -59,7 +60,7 @@ setuptools.setup(
               'Automation', 'Power Systems', 'Electric Power', 'Power',
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
     install_requires=['pandas >= 0.25', 'numpy >= 1.13.3', 'scipy', 'pywin32',
-                      'pypiwin32', 'networkx', 'tqdm'],
+                      'pypiwin32', 'networkx', 'tqdm', 'numba >= 0.55'],
     python_requires='>=3.5',
     # There are a couple tests that use networkx, and we use the magic
     # of sphinx for documentation. Coverage is necessary to keep the

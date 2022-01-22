@@ -18,6 +18,7 @@ import signal
 
 import numpy as np
 from numpy.linalg import multi_dot, det, solve, inv
+import numba as nb
 import pandas as pd
 from scipy.sparse import csr_matrix
 import networkx as nx
@@ -25,6 +26,7 @@ from tqdm import trange
 import pythoncom
 import win32com
 from win32com.client import VARIANT
+from performance import initialize_bound, calculate_bound
 
 import tempfile
 
@@ -819,6 +821,8 @@ class SAW(object):
 
     def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
         """ESA implementation of fast N-1 and N-2 contingency analysis.
+        The case is expected to have a valid power flow state.
+        Run SolvePowerFlow first if you are not sure.
 
         :param option: Choose between N-1 and N-2 mode
         :param validate: Use PW internal CA to validate the result. Default is False.
@@ -994,9 +998,10 @@ class SAW(object):
                 f"contingencies: {num_isl_ctg: <10}")
 
             # PHASE I
-            Wbuf1 = np.maximum(np.diag(bp.max(0)) @ A, np.diag(bp.min(0)) @ A)
-            Wbuf2 = np.maximum(np.diag(bn.max(0)) @ A, np.diag(bn.min(0)) @ A)
-            W = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
+            # Wbuf1 = np.maximum(np.diag(bp.max(0)) @ A, np.diag(bp.min(0)) @ A)
+            # Wbuf2 = np.maximum(np.diag(bn.max(0)) @ A, np.diag(bn.min(0)) @ A)
+            # W = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
+            W, Wbuf1, Wbuf2 = initialize_bound(bp.max(0), bp.min(0), bn.max(0), bn.min(0), A)
 
             storage[k + 1, 1] = A0
             storage[k + 1, 2] = B0
@@ -1014,9 +1019,10 @@ class SAW(object):
             Amin1 = A.min(1)
             Wbuf1 = np.maximum(np.outer(bp.max(1), Amax0), np.outer(bp.min(1), Amin0))
             Wbuf2 = np.maximum(np.outer(bn.max(1), Amax0), np.outer(bn.min(1), Amin0))
-            Wb1 = np.maximum(bp @ np.diag(Amax1) + Wbuf1, bp @ np.diag(Amin1) + Wbuf1)
-            Wb2 = np.maximum(bn @ np.diag(Amax1) + Wbuf2, bn @ np.diag(Amin1) + Wbuf2)
-            W = np.maximum(Wb1, Wb2)  # bounding matrix for the set B
+            # Wb1 = np.maximum(bp @ np.diag(Amax1) + Wbuf1, bp @ np.diag(Amin1) + Wbuf1)
+            # Wb2 = np.maximum(bn @ np.diag(Amax1) + Wbuf2, bn @ np.diag(Amin1) + Wbuf2)
+            # W = np.maximum(Wb1, Wb2)  # bounding matrix for the set B
+            W = calculate_bound(bp, bn, Amax1, Amin1, Wbuf1, Wbuf2)
             storage[k + 1, 7] = W
             B0[W <= 1] = 0
             bn[B0 == 0] = 0
@@ -1026,6 +1032,37 @@ class SAW(object):
                 changing = 0
         secure, result = self.n2_bruteforce(count, A0, lodf, lim, f)
         return secure, result
+
+    @nb.njit(fastmath=True)
+    def compute_violation_numba(self, lodf, f, lim, i, j, count, A0, brute_cont, idx):
+        for j in range(i + 1, count):
+            if A0[i, j]:
+                length = len(f)
+                num = 0
+                f_new = np.zeros(length)
+                temp1 = lodf[i, i] * lodf[j, j]
+                temp2 = lodf[i, j] * lodf[j, i]
+                temp3 = lodf[j, j] * f[i] - lodf[i, j] * f[j]
+                temp4 = lodf[i, i] * f[j] - lodf[j, i] * f[i]
+                det = temp1 - temp2
+                xq_0 = temp3 / det
+                xq_1 = temp4 / det
+                for k in range(length):
+                    temp5 = lodf[k, i] * xq_0
+                    temp6 = lodf[k, j] * xq_1
+                    f_new[k] = f[k] - temp5 - temp6
+                    if abs(f_new[k]) > lim[k]:
+                        num = num + 1
+                if f_new[i] > lim[i]:
+                    num = num - 1
+                if f_new[j] > lim[j]:
+                    num = num - 1
+                if num > 0:
+                    brute_cont[idx, 0] = i
+                    brute_cont[idx, 1] = j
+                    brute_cont[idx, 2] = num
+                    idx += 1
+        return idx
 
     def n2_bruteforce(self, count, A0, lodf, lim, f):
         """ Bruteforce for fast N-2 method
@@ -1040,30 +1077,12 @@ class SAW(object):
         """
         # Bruteforce the filtered contingencies
         k = 0
-        brute_cont = dict()
+        brute_cont = np.zeros((len(f)**2,3))
         c2 = np.zeros([count, count])
         print(f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
         for i in trange(count - 1):
             if np.sum(A0[i, :] > 0):
-                for j in range(i + 1, count):
-                    if A0[i, j]:
-                        if abs(det(lodf[np.ix_([i, j], [i, j])])) < 1e-8:
-                            c2[i, j] = 1
-                            c2[j, i] = 1
-                        else:
-                            xq = solve(lodf[np.ix_([i, j], [i, j])], f[[i, j]])
-                            f_new = f - lodf[[i, j], :].T @ xq
-                            f_new[i] = 0
-                            f_new[j] = 0
-                            v = lim < abs(f_new)
-                            violations = np.sum(v)
-                            if violations > 0:
-                                k += 1
-                                brute_cont[i, j] = violations
-                                # brute_cont[k, 0] = i
-                                # brute_cont[k, 1] = j
-                                # brute_cont[k, 2] = sum(lim < abs(f_new))
-                        completed = (count * i + 1 - (i + 2) * (i + 1) / 2 + j - i) / ((count - 1) * count / 2)
+                k = self.compute_violation_numba(lodf, f, lim, i, j, count, A0, brute_cont, k)
         print(f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
         if k:
             return False, brute_cont
