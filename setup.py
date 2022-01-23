@@ -66,7 +66,8 @@ setuptools.setup(
     # of sphinx for documentation. Coverage is necessary to keep the
     # coverage report up to date.
     extras_require={'test': ['networkx', 'coverage', 'matplotlib'],
-                    'doc': ['sphinx', 'tabulate']},
+                    'doc': ['sphinx', 'tabulate'],
+                    'dev': ['pythran']},
     license='MIT',
     # TODO: Why aren't we zip safe?
     zip_safe=False

@@ -26,7 +26,7 @@ from tqdm import trange
 import pythoncom
 import win32com
 from win32com.client import VARIANT
-from performance import initialize_bound, calculate_bound
+from .performance import initialize_bound, calculate_bound
 
 import tempfile
 
@@ -877,8 +877,9 @@ class SAW(object):
                 ctg_ele['Object'] = temp
                 ctg_ele['Action'] = 'OPEN'
             elif option == 'N-2':
-                b0 = [x[0] for x in result.keys()]
-                b1 = [x[1] for x in result.keys()]
+                result_cleaned = result[~(result==0).all(1)]
+                b0 = result_cleaned[:,0]
+                b1 = result_cleaned[:,1]
                 bf0 = df.iloc[b0, :].reset_index(drop=True)
                 bf1 = df.iloc[b1, :].reset_index(drop=True)
                 ctg = pd.DataFrame()
@@ -1033,37 +1034,6 @@ class SAW(object):
         secure, result = self.n2_bruteforce(count, A0, lodf, lim, f)
         return secure, result
 
-    @nb.njit(fastmath=True)
-    def compute_violation_numba(self, lodf, f, lim, i, j, count, A0, brute_cont, idx):
-        for j in range(i + 1, count):
-            if A0[i, j]:
-                length = len(f)
-                num = 0
-                f_new = np.zeros(length)
-                temp1 = lodf[i, i] * lodf[j, j]
-                temp2 = lodf[i, j] * lodf[j, i]
-                temp3 = lodf[j, j] * f[i] - lodf[i, j] * f[j]
-                temp4 = lodf[i, i] * f[j] - lodf[j, i] * f[i]
-                det = temp1 - temp2
-                xq_0 = temp3 / det
-                xq_1 = temp4 / det
-                for k in range(length):
-                    temp5 = lodf[k, i] * xq_0
-                    temp6 = lodf[k, j] * xq_1
-                    f_new[k] = f[k] - temp5 - temp6
-                    if abs(f_new[k]) > lim[k]:
-                        num = num + 1
-                if f_new[i] > lim[i]:
-                    num = num - 1
-                if f_new[j] > lim[j]:
-                    num = num - 1
-                if num > 0:
-                    brute_cont[idx, 0] = i
-                    brute_cont[idx, 1] = j
-                    brute_cont[idx, 2] = num
-                    idx += 1
-        return idx
-
     def n2_bruteforce(self, count, A0, lodf, lim, f):
         """ Bruteforce for fast N-2 method
 
@@ -1075,6 +1045,42 @@ class SAW(object):
 
         :returns: Security status and detailed results
         """
+
+        @nb.njit(fastmath=True)
+        def compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, idx):
+            for j in range(i + 1, count):
+                if A0[i, j]:
+                    temp1 = lodf[i, i] * lodf[j, j]
+                    temp2 = lodf[i, j] * lodf[j, i]
+                    det = temp1 - temp2
+                    if det == 0:
+                        c2[i,j] = 1
+                        c2[j,i] = 1
+                    else:
+                        length = len(f)
+                        num = 0
+                        f_new = np.zeros(length)
+                        temp3 = lodf[j, j] * f[i] - lodf[i, j] * f[j]
+                        temp4 = lodf[i, i] * f[j] - lodf[j, i] * f[i]
+                        xq_0 = temp3 / det
+                        xq_1 = temp4 / det
+                        for k in range(length):
+                            temp5 = lodf[k, i] * xq_0
+                            temp6 = lodf[k, j] * xq_1
+                            f_new[k] = f[k] - temp5 - temp6
+                            if abs(f_new[k]) > lim[k]:
+                                num = num + 1
+                        if f_new[i] > lim[i]:
+                            num = num - 1
+                        if f_new[j] > lim[j]:
+                            num = num - 1
+                        if num > 0:
+                            brute_cont[idx, 0] = i
+                            brute_cont[idx, 1] = j
+                            brute_cont[idx, 2] = num
+                            idx += 1
+            return idx
+
         # Bruteforce the filtered contingencies
         k = 0
         brute_cont = np.zeros((len(f)**2,3))
@@ -1082,7 +1088,7 @@ class SAW(object):
         print(f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
         for i in trange(count - 1):
             if np.sum(A0[i, :] > 0):
-                k = self.compute_violation_numba(lodf, f, lim, i, j, count, A0, brute_cont, k)
+                k = compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, k)
         print(f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
         if k:
             return False, brute_cont
