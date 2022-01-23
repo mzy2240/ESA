@@ -4,3 +4,5 @@
 source = esa
 command_line = -m unittest discover tests
 data_file = docs/rst/.coverage
+omit =
+    esa/_performance.py
