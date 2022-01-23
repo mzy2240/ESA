@@ -1047,7 +1047,7 @@ class SAW(object):
         """
 
         @nb.njit(fastmath=True)
-        def compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, idx):
+        def compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, idx):  # pragma: no cover
             for j in range(i + 1, count):
                 if A0[i, j]:
                     temp1 = lodf[i, i] * lodf[j, j]
