@@ -29,7 +29,7 @@ sys.path.insert(0, TOP_LEVEL)
 
 def main():
     # Initialize coverage stuff.
-    cov = Coverage(source=[ESA_DIR], config_file=False)
+    cov = Coverage(source=[ESA_DIR], config_file=False, omit=[os.path.join(ESA_DIR, '_performance.py')])
     cov.start()
 
     # Run tests.
