@@ -2,6 +2,14 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.2.1
+^^^^^^^^^^^^^
+
+* Greatly improve the fast contingency analysis by taking advantage of
+  SIMD, JIT and AOT. Now it could finish a N-1 and N-2 contingency analysis of
+  a synthetic 2000 bus grid in less than 15 seconds!
+* Adjust the release process to include AOT functions
+
 Version 1.2.0
 ^^^^^^^^^^^^^
 
