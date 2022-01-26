@@ -1876,8 +1876,8 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
 
         #
-        t1 = '0.0'
-        t2 = '10.0'
+        t1 = 0
+        t2 = 10
 
         meta, data = self.saw.TSGetContingencyResults(ctg_name, obj_field_list,
                                                       t1, t2)
@@ -1895,8 +1895,8 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
 
         #
-        t1 = '0.0'
-        t2 = '10.0'
+        t1 = 0
+        t2 = 10
 
         result = self.saw.TSGetContingencyResults(
             self.ctg_name, obj_field_list, t1, t2)
@@ -1911,8 +1911,8 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         obj_field_list = ['"Plot ''Gen_Rotor Angle''"']
 
         #
-        t1 = '0.0'
-        t2 = '10.0'
+        t1 = 0
+        t2 = 10
 
         # Solve.
         self.saw.RunScriptCommand('TSSolve("{}")'.format(self.ctg_name))

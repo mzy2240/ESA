@@ -1939,8 +1939,8 @@ class SAW(object):
                                   FieldList)
 
     def TSGetContingencyResults(self, CtgName: str, ObjFieldList: List[str],
-                                StartTime: Union[None, str] = None,
-                                StopTime: Union[None, str] = None) -> \
+                                StartTime: Union[None, int, float] = None,
+                                StopTime: Union[None, int, float] = None) -> \
             Union[Tuple[None, None], Tuple[pd.DataFrame, pd.DataFrame]]:
         """
         WARNING: This function should only be used after the simulation
@@ -2011,7 +2011,7 @@ class SAW(object):
             to the timestamp (in seconds).
         """
         out = self._call_simauto('TSGetContingencyResults', CtgName,
-                                 ObjFieldList, StartTime, StopTime)
+                                 ObjFieldList, str(StartTime), str(StopTime))
 
         # We get (None, (None,)) if the contingency does not exist.
         if out == (None, (None,)):
