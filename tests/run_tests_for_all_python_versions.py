@@ -32,7 +32,7 @@ def main(python_install_dir, local, fresh):
     for d in dirs:
         # Get last two characters of d.
         code = d[-2:]
-        assert code in ('35', '36', '37', '38'), 'Only Python >= 3.5!'
+        assert code in ('35', '36', '37', '38', '39'), 'Only Python >= 3.5!'
 
         print('*' * 80)
         print('Doing work for Python {}'.format(code))
