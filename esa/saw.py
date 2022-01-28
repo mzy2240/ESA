@@ -32,7 +32,11 @@ import tempfile
 import platform
 PYTHON_VERSION = platform.python_version_tuple()
 if PYTHON_VERSION[1] in ['7', '8', '9']:  # pragma: no cover
-    exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+    try:
+        exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+    except ImportError:
+        print("Fail to load ahead-of-time compiled module. Downgrade to just-in-time module for compatibility.")
+        from ._performance_jit import initialize_bound, calculate_bound
 else:  # pragma: no cover
     from ._performance_jit import initialize_bound, calculate_bound
 
