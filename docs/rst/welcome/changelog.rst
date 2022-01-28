@@ -2,6 +2,13 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+
+Version 1.2.2
+^^^^^^^^^^^^^
+
+* Fix the AOT version-dependent issue
+* Update the dependency version
+
 Version 1.2.1
 ^^^^^^^^^^^^^
 

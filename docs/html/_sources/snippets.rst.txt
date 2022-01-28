@@ -33,6 +33,11 @@ Add Lines to Case
 
 .. include:: snippets/add_lines_2000.rst
 
+Transient Stability Analysis
+----------------------------
+
+.. include:: snippets/ts_mycontingency_200.rst
+
 Create Simple Graph Model
 -------------------------
 
