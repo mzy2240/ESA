@@ -28,10 +28,13 @@ import win32com
 from win32com.client import VARIANT
 import tempfile
 
-# Import corresponding compiled functions
+# Import corresponding AOT/JIT functions
 import platform
 PYTHON_VERSION = platform.python_version_tuple()
-exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+if PYTHON_VERSION[1] in ['7', '8', '9']:  # pragma: no cover
+    exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+else:  # pragma: no cover
+    from ._performance_jit import initialize_bound, calculate_bound
 
 
 # Before doing anything else, set up the locale. The docs note this is

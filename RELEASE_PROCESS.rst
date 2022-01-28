@@ -6,7 +6,7 @@ ESA.
 
 #.  (Optional) If any updates has been made to the ``_performance.py``
     then you need to compile the module first by running
-    ``pythran --config compiler.blas=mkl -O3 -ffast-math -DUSE_XSIMD esa/_performance.py -o esa/performance.pyd``.
+    ``compile_for_all_versions.py``.
 #.  Ensure you have checked out the ``develop`` branch and have a clean
     repository (no local changes, new files, etc.).
 #.  Run all tests for all Python versions (3.5 - 3.8) by running the
