@@ -26,9 +26,13 @@ from tqdm import trange
 import pythoncom
 import win32com
 from win32com.client import VARIANT
-from .performance import initialize_bound, calculate_bound
-
 import tempfile
+
+# Import corresponding compiled functions
+import platform
+PYTHON_VERSION = platform.python_version_tuple()
+exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+
 
 # Before doing anything else, set up the locale. The docs note this is
 # not thread safe, and should thus be done right away.

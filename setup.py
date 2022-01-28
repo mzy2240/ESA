@@ -60,7 +60,7 @@ setuptools.setup(
               'PowerWorld Simulation Automation Server', 'SimAuto',
               'Automation', 'Power Systems', 'Electric Power', 'Power',
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
-    install_requires=['pandas >= 0.25', 'numpy >= 1.13.3', 'scipy', 'pywin32',
+    install_requires=['pandas >= 0.25', 'numpy >= 1.13.3, <1.22', 'scipy', 'pywin32',
                       'pypiwin32', 'networkx', 'tqdm', 'numba >= 0.55'],
     python_requires='>=3.5',
     # There are a couple tests that use networkx, and we use the magic
