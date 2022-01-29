@@ -9,6 +9,7 @@ PowrWorld's documentation for SimAuto can be found
 """
 import locale
 import logging
+import warnings
 import os
 from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
@@ -34,8 +35,8 @@ PYTHON_VERSION = platform.python_version_tuple()
 if PYTHON_VERSION[1] in ['7', '8', '9']:  # pragma: no cover
     try:
         exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
-    except ImportError:
-        print("Fail to load ahead-of-time compiled module. Downgrade to just-in-time module for compatibility.")
+    except ImportError or RuntimeError:
+        warnings.warn("Fail to load ahead-of-time compiled module. Downgrade to just-in-time module for compatibility.")
         from ._performance_jit import initialize_bound, calculate_bound
 else:  # pragma: no cover
     from ._performance_jit import initialize_bound, calculate_bound
