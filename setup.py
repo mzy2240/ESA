@@ -38,11 +38,10 @@ setuptools.setup(
     include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3 :: Only",
-        "Programming Language :: Python :: 3.5",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
         "License :: OSI Approved :: MIT License",
         "Operating System :: Microsoft :: Windows",
         "Development Status :: 5 - Production/Stable",
@@ -62,7 +61,7 @@ setuptools.setup(
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
     install_requires=['pandas >= 0.25', 'numpy >= 1.19.5, <1.22', 'scipy', 'pywin32',
                       'pypiwin32', 'networkx', 'tqdm', 'numba'],
-    python_requires='>=3.5',
+    python_requires='>=3.7',
     # There are a couple tests that use networkx, and we use the magic
     # of sphinx for documentation. Coverage is necessary to keep the
     # coverage report up to date.

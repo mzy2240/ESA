@@ -152,9 +152,14 @@ class SAW(object):
         # https://youtu.be/xPtp8qFAHuA
         try:
             if early_bind:
-                # Use early binding.
-                self._pwcom = win32com.client.gencache.EnsureDispatch(
-                    'pwrworld.SimulatorAuto')
+                try:
+                    # Use early binding.
+                    self._pwcom = win32com.client.gencache.EnsureDispatch(
+                        'pwrworld.SimulatorAuto')
+                except AttributeError:
+                    # Use late binding.
+                    self._pwcom = win32com.client.dynamic.Dispatch(
+                        'pwrworld.SimulatorAuto')
             else:
                 # Use late binding.
                 self._pwcom = win32com.client.dynamic.Dispatch(
