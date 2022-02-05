@@ -124,6 +124,8 @@ class InitializationTestCase(unittest.TestCase):
                 self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS)
             elif len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS_OLD):
                 self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS_OLD)
+            elif len(cols) == len(my_saw_14.FIELD_LIST_COLUMNS_NEW):
+                self.assertEqual(cols, my_saw_14.FIELD_LIST_COLUMNS_NEW)
             else:
                 raise AssertionError(
                     'Columns, {}, do not match either FIELD_LIST_COLUMNS or '
@@ -1267,23 +1269,30 @@ class GetFieldListTestCase(unittest.TestCase):
 
         # Check FIELD_LIST_COLUMNS first, then check
         # FIELD_LIST_COLUMNS_OLD
-        new = False
+        default = False
         old = False
+        new = False
 
         try:
             self.assertEqual(saw_14.FIELD_LIST_COLUMNS, actual)
         except AssertionError:
-            new = True
+            default = True
 
         try:
             self.assertEqual(saw_14.FIELD_LIST_COLUMNS_OLD, actual)
         except AssertionError as e2:
             old = True
 
-        if new and old:
-            raise AssertionError('Valid columns:\n{}\n{}\nReceived:{}'
+        try:
+            self.assertEqual(saw_14.FIELD_LIST_COLUMNS_NEW, actual)
+        except AssertionError as e2:
+            new = True
+
+        if new and old and default:
+            raise AssertionError('Valid columns:\n{}\n{}\n{}\nReceived:{}'
                                  .format(saw_14.FIELD_LIST_COLUMNS,
                                          saw_14.FIELD_LIST_COLUMNS_OLD,
+                                         saw_14.FIELD_LIST_COLUMNS_NEW,
                                          actual))
 
         pd.testing.assert_frame_equal(
@@ -1523,8 +1532,12 @@ class GetSpecificFieldListTestCase(unittest.TestCase):
     def helper(self, df):
         """Helper for checking basic DataFrame attributes."""
         # Ensure columns match up.
-        self.assertListEqual(list(df.columns),
-                             saw_14.SPECIFIC_FIELD_LIST_COLUMNS)
+        try:
+            self.assertListEqual(list(df.columns),
+                                 saw_14.SPECIFIC_FIELD_LIST_COLUMNS)
+        except AssertionError:
+            self.assertListEqual(list(df.columns),
+                                 saw_14.SPECIFIC_FIELD_LIST_COLUMNS_NEW)
 
         # The dtypes for all columns should be strings, which are
         # 'objects' in Pandas.

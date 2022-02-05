@@ -87,11 +87,20 @@ class SAW(object):
     # Older versions of Simulator omit the "display name" field.
     FIELD_LIST_COLUMNS_OLD = FIELD_LIST_COLUMNS[0:-1]
 
+    # Latest versions (V22 Nov and V23) introduce new field "enterable"
+    FIELD_LIST_COLUMNS_NEW = \
+        ['key_field', 'internal_field_name', 'field_data_type', 'description',
+         'display_name', 'enterable']
+
     # Class level property defining columns used for
     # GetSpecificFieldList method.
     SPECIFIC_FIELD_LIST_COLUMNS = \
         ['variablename:location', 'field', 'column header',
          'field description']
+
+    SPECIFIC_FIELD_LIST_COLUMNS_NEW = \
+        ['variablename:location', 'field', 'column header',
+         'field description', 'enterable']
 
     # SimAuto properties that we allow users to set via the
     # set_simauto_property method.
@@ -1370,18 +1379,25 @@ class SAW(object):
                 exp_end = r'{}\)'
                 # Get number of columns for new/old lists.
                 nf_old = len(self.FIELD_LIST_COLUMNS_OLD)
-                nf_new = len(self.FIELD_LIST_COLUMNS)
+                nf_default = len(self.FIELD_LIST_COLUMNS)
+                nf_new = len(self.FIELD_LIST_COLUMNS_NEW)
                 # Search the error's arguments.
                 r1 = re.search(exp_base + exp_end.format(nf_old), e.args[0])
-                r2 = re.search(exp_base + exp_end.format(nf_new), e.args[0])
+                r2 = re.search(exp_base + exp_end.format(nf_default), e.args[0])
+                r3 = re.search(exp_base + exp_end.format(nf_new), e.args[0])
 
                 # Both results should match, i.e., not be None.
                 if (r1 is None) or (r2 is None):
-                    raise e
-
-                # If we made it here, use the older columns.
-                output = pd.DataFrame(result_arr,
-                                      columns=self.FIELD_LIST_COLUMNS_OLD)
+                    if r3 is None:
+                        raise e
+                    else:
+                        # If we made it here, use the latest columns.
+                        output = pd.DataFrame(result_arr,
+                                              columns=self.FIELD_LIST_COLUMNS_NEW)
+                else:
+                    # If we made it here, use the older columns.
+                    output = pd.DataFrame(result_arr,
+                                          columns=self.FIELD_LIST_COLUMNS_OLD)
 
             # While it appears PowerWorld gives us the list sorted by
             # internal_field_name, let's make sure it's always sorted.
@@ -1596,11 +1612,19 @@ class SAW(object):
             used in the FieldList. The DataFrame will be sorted
             alphabetically by the variablenames.
         """
-        return pd.DataFrame(
-            self._call_simauto('GetSpecificFieldList', ObjectType,
-                               convert_list_to_variant(FieldList)),
-            columns=self.SPECIFIC_FIELD_LIST_COLUMNS).sort_values(
-            by=self.SPECIFIC_FIELD_LIST_COLUMNS[0]).reset_index(drop=True)
+        try:
+            df = pd.DataFrame(
+                self._call_simauto('GetSpecificFieldList', ObjectType,
+                                   convert_list_to_variant(FieldList)),
+                columns=self.SPECIFIC_FIELD_LIST_COLUMNS).sort_values(
+                by=self.SPECIFIC_FIELD_LIST_COLUMNS[0]).reset_index(drop=True)
+        except ValueError:
+            df = pd.DataFrame(
+                self._call_simauto('GetSpecificFieldList', ObjectType,
+                                   convert_list_to_variant(FieldList)),
+                columns=self.SPECIFIC_FIELD_LIST_COLUMNS_NEW).sort_values(
+                by=self.SPECIFIC_FIELD_LIST_COLUMNS_NEW[0]).reset_index(drop=True)
+        return df
 
     def GetSpecificFieldMaxNum(self, ObjectType: str, Field: str) -> int:
         """The GetSpecificFieldMaxNum function is used to return the
