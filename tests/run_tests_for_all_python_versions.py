@@ -3,7 +3,7 @@ installed versions of Python. Ensure you run this from the 'tests'
 directory.
 
 Prior to running this script, you should install all supported Python
-versions to your system (>= 3.5).
+versions to your system (>= 3.7).
 
 For help, simply run this script like:
 python _test_python_versions.py -h
@@ -32,7 +32,7 @@ def main(python_install_dir, local, fresh):
     for d in dirs:
         # Get last two characters of d.
         code = d[-2:]
-        assert code in ('35', '36', '37', '38', '39'), 'Only Python >= 3.5!'
+        assert code in ('37', '38', '39', '310'), 'Only Python >= 3.7!'
 
         print('*' * 80)
         print('Doing work for Python {}'.format(code))

@@ -18,7 +18,7 @@ def main():
     print(list_of_envs)
     # print(env_name)
 
-    versions = ['37', '38', '39']  # pythran seems to only work in 3.7 3.8 3.9
+    versions = ['37', '38', '39', '310']  # pythran seems to only work in 3.7 3.8 3.9
 
     for ver in versions:
         # Create a virtual environment if necessary.
@@ -35,8 +35,6 @@ def main():
 
     print('*' * 80)
     print('ALL DONE!')
-
-
 
 
 if __name__ == '__main__':
