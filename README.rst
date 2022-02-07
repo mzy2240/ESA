@@ -2,6 +2,8 @@ Easy SimAuto (ESA)
 ==================
 .. image:: https://img.shields.io/pypi/v/esa.svg
    :target: https://pypi.org/project/esa/
+.. image:: https://img.shields.io/pypi/pyversions/esa.svg
+   :target: https://pypi.org/project/esa/
 .. image:: https://joss.theoj.org/papers/10.21105/joss.02289/status.svg
    :target: https://doi.org/10.21105/joss.02289
 .. image:: https://img.shields.io/pypi/l/esa.svg
