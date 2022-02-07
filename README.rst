@@ -61,6 +61,12 @@ directions. In many cases, ESA can simply be installed by:
 .. code:: bat
 
     python -m pip install esa
+    
+Simulator Compatibility
+-----------------------
+
+Currently ESA supports PW Simulator V17, V18, V19, V20, V21, V22 and V23(Beta).
+
 
 Testing Coverage
 ----------------
