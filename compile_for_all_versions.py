@@ -6,7 +6,6 @@ import subprocess
 import shutil
 
 
-
 def main():
     list_of_envs = []
     envs = subprocess.check_output('conda env list').splitlines()[2:-1]
