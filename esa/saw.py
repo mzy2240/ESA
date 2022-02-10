@@ -845,17 +845,29 @@ class SAW(object):
             incidence[i, row["BusNum:1"] - 1] = -1
         return incidence
 
-    def change_to_temperature(self, T, R25=7.283, R75=8.688):
+    def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """
         Change line resistance according to temperature.
         The default coefficients are from IEEE Std 738-2012.
+        Note: The original case has to be set for 25 degree Celsius.
 
-        :param T: Target temperature
+        :param T: Target temperature. If it is a single int or float, then a uniform temperature
+            will be assigned to all the lines; If it is a numpy array, then you need to pass a
+            2D array with first row being the index of branch and second row being the temperature.
         :param R25: Per unit resistance at 25 Celsius
         :param R75: Per unit resistance at 75 Celsius
         """
         branch = self.GetParametersMultipleElement('branch', self.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
-        branch.loc[branch['BranchDeviceType'] == "Line", "LineR"] *= (1 + (R75 / R25 - 1) / 50 * (T - 25))
+        if isinstance(T, np.ndarray):
+            temp = np.full(branch.shape[0], 25, dtype=float)
+            columns = T.shape[1]
+            indexes = T[0, :].copy()
+            indexes = indexes.astype(int).ravel()
+            for i in range(columns):
+                temp[indexes[i]] = T[1, i]
+            branch['LineR'] = np.multiply(branch['LineR'], temp)
+        else:
+            branch.loc[branch['BranchDeviceType'] == "Line", "LineR"] *= (1 + (R75 / R25 - 1) / 50 * (T - 25))
         self.change_parameters_multiple_element_df('branch', branch)
 
     def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
