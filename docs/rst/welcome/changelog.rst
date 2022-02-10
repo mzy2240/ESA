@@ -2,6 +2,12 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.2.5
+^^^^^^^^^^^^^
+
+* Add one example for fast contingency analysis (N-1 & N-2)
+* Supports changing system models based on temperature
+
 Version 1.2.4
 ^^^^^^^^^^^^^
 
