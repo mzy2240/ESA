@@ -845,6 +845,19 @@ class SAW(object):
             incidence[i, row["BusNum:1"] - 1] = -1
         return incidence
 
+    def change_to_temperature(self, T, R25=7.283, R75=8.688):
+        """
+        Change line resistance according to temperature.
+        The default coefficients are from IEEE Std 738-2012.
+
+        :param T: Target temperature
+        :param R25: Per unit resistance at 25 Celsius
+        :param R75: Per unit resistance at 75 Celsius
+        """
+        branch = self.GetParametersMultipleElement('branch', self.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        branch.loc[branch['BranchDeviceType'] == "Line", "LineR"] *= (1 + (R75 / R25 - 1) / 50 * (T - 25))
+        self.change_parameters_multiple_element_df('branch', branch)
+
     def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
         """ESA implementation of fast N-1 and N-2 contingency analysis.
         The case is expected to have a valid power flow state.
