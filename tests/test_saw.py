@@ -713,6 +713,32 @@ class GetJacobianTestCase(unittest.TestCase):
         self.assertIsInstance(self.saw.get_jacobian(full=True), np.ndarray)
 
 
+class ChangeToTemperatureTestCase(unittest.TestCase):
+    """Test change_to_temperature function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_change_to_temperature_default(self):
+        """LineR will be adjusted. So does the Ybus.
+        """
+        old_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        self.saw.change_to_temperature(0)
+        new_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        self.assertFalse(old_branch.equals(new_branch))
+        old_ybus = self.saw.get_ybus(True)
+        temperature = np.array([[1], [25]])
+        self.saw.change_to_temperature(temperature)
+        new_ybus = self.saw.get_ybus(True)
+        self.assertFalse(np.array_equal(old_ybus, new_ybus))
+
+
 class ToGraphTestCase(unittest.TestCase):
     """Test the to_graph function."""
 

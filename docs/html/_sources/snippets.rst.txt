@@ -38,6 +38,11 @@ Transient Stability Analysis
 
 .. include:: snippets/ts_mycontingency_200.rst
 
+Contingency Analysis
+--------------------
+
+.. include:: snippets/contingency_analysis_2000.rst
+
 Create Simple Graph Model
 -------------------------
 

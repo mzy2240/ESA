@@ -6,7 +6,7 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Examples &#8212; ESA 1.2.4 documentation</title>
+    <title>Examples &#8212; ESA 1.2.5 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
@@ -476,6 +476,41 @@ automated, but it might be easier for most users to pre-define the plots and con
 in the case and then load the case using ESA. GetParametersMultipleElement cannot be used
 here to retrieve the TS datapoints (which is a very rare situation).</p>
 </section>
+<section id="contingency-analysis">
+<h2>Contingency Analysis<a class="headerlink" href="#contingency-analysis" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to do fast contingency analysis (N-1 &amp; N-2) using
+ESA. The fast contingency analysis is a slightly improved implementation
+of <a class="reference external" href="https://ieeexplore.ieee.org/document/7390321">this paper</a>. It is generally
+much faster than the built-in CA that simulator provides (which, by the way,
+could also be invoked from ESA).</p>
+<p>The initialization procedure is the same as others.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">CASE_PATH</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Make sure your case already has a valid operating states. If not, run power flow first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then let’s run N-1 first.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">run_contingency_analysis</span><span class="p">(</span><span class="s1">&#39;N-1&#39;</span><span class="p">)</span>
+<span class="go">The size of N-1 islanding set is 451.0</span>
+<span class="go">Fast N-1 analysis was performed, 156 dangerous N-1 contigencies were found, 138 lines are violated</span>
+<span class="go">Grid is not N-1 secure. Invoke n1_protect function to automatically increasing limits through lines.</span>
+<span class="go">Out: (False, array([0, 0, 0, ..., 1, 0, 0]), None)</span>
+</pre></div>
+</div>
+<p>So the test system (TX2000) is not N-1 secured. In this case, when running N-2,
+the line limit will be automatically adjusted to ensure no N-1 violations. Based on
+the use case you have, you could adjust the line limits manually as well.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">run_contingency_analysis</span><span class="p">(</span><span class="s1">&#39;N-2&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<a class="reference internal image-reference" href="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif"><img alt="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif" class="align-center" src="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif" style="width: 100%;" /></a>
+<p>You could also validate the fast CA result with the built-in CA result by
+simply set the argument <cite>validate=True</cite> when calling <cite>run_contingency_analysis</cite> function.</p>
+</section>
 <section id="create-simple-graph-model">
 <h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this headline">¶</a></h2>
 <p>This example shows how to easily transform a grid model into a graph
@@ -739,6 +774,7 @@ known as key fields.</p>
 <li class="toctree-l2"><a class="reference internal" href="#increase-loading-in-case">Increase Loading in Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#add-lines-to-case">Add Lines to Case</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#transient-stability-analysis">Transient Stability Analysis</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#contingency-analysis">Contingency Analysis</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#create-simple-graph-model">Create Simple Graph Model</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#created-graph-model-with-edges-weighted-by-branch-impedance">Created Graph Model with Edges Weighted by Branch Impedance</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#plot-histogram-of-line-flows-with-matplotlib">Plot Histogram of Line Flows with Matplotlib</a></li>
