@@ -678,6 +678,68 @@ class SAW(object):
         else:
             return sparse_matrix
 
+    def get_branch_admittance(self):
+        """Helper function to get the branch admittance matrix, usually known as
+        Yf and Yt.
+        :returns: A Yf sparse matrix and a Yt sparse matrix
+        """
+        key = self.get_key_field_list('bus')
+        df = self.GetParametersMultipleElement('bus', key)
+
+        branch = self.GetParametersMultipleElement('branch', self.get_key_field_list('branch') + ['LineR', 'LineX', 'LineC',
+                                                                                              'LineTap', 'LinePhase'])
+        branch['LineR'] = branch['LineR'].astype(float)
+        branch['LineX'] = branch['LineX'].astype(float)
+        branch['LineC'] = branch['LineC'].astype(float)
+        branch['LineTap'] = branch['LineTap'].astype(float)
+        branch['LinePhase'] = branch['LinePhase'].astype(float)
+
+        nb = df.shape[0]
+        nl = branch.shape[0]
+
+        Ys = 1 / (branch['LineR'].to_numpy() + 1j * branch['LineX'].to_numpy())  # series admittance
+        Bc = branch['LineC'].to_numpy()  # line charging susceptance
+        tap = branch['LineTap'].to_numpy()
+        shift = branch['LinePhase'].to_numpy()
+        tap = tap * np.exp(1j * np.pi / 180 * shift)
+        Ytt = Ys + 1j * Bc / 2
+        Yff = Ytt / (tap * np.conj(tap))
+        Yft = - Ys / np.conj(tap)
+        Ytf = - Ys / tap
+
+        # lookup table for formatting bus numbers
+        def loop_translate(a, d):
+            n = np.ndarray(a.shape, dtype=int)
+            for k in d:
+                n[a == k] = d[k]
+            return n
+
+        d = dict()
+        for index, value in df['BusNum'].items():
+            d[value] = index
+        f = branch['BusNum'].to_numpy(dtype=int).reshape(-1)
+        f = loop_translate(f, d)
+        t = branch['BusNum:1'].to_numpy(dtype=int).reshape(-1)
+        t = loop_translate(t, d)
+        ## connection matrix for line & from buses
+        i = np.r_[range(nl), range(nl)]  ## double set of row indices
+        Yf = csr_matrix((np.hstack([Yff.reshape(-1), Yft.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
+        Yt = csr_matrix((np.hstack([Ytf.reshape(-1), Ytt.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
+        return Yf, Yt
+
+    def get_shunt_admittance(self):
+        """Get shunt admittance Ysh.
+        :return: A Ysh sparse matrix
+        """
+        base = self.GetParametersMultipleElement('Sim_Solution_Options', ['SBase']).to_numpy(float).ravel()
+        key = self.get_key_field_list('bus')
+        df = self.GetParametersMultipleElement('bus', key + ['BusSS', 'BusSSMW'])
+        df['BusSS'] = df['BusSS'].astype(float)
+        df['BusSSMW'] = df['BusSSMW'].astype(float)
+        df.fillna(0, inplace=True)
+        Ysh = (df['BusSSMW'].to_numpy() + 1j * df['BusSS'].to_numpy()) / base
+        return Ysh
+
     def get_jacobian(self, full=False):
         """Helper function to get the Jacobian matrix, by default return a
         scipy sparse matrix in the csr format
