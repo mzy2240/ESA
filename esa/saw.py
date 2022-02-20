@@ -15,7 +15,7 @@ from pathlib import Path, PureWindowsPath
 from typing import Union, List, Tuple
 import re
 import datetime
-import signal
+import json
 
 import numpy as np
 from numpy.linalg import multi_dot, det, solve, inv
@@ -2570,6 +2570,47 @@ class SAW(object):
             return data.str.replace(self.decimal_delimiter, '.')
         except AttributeError:
             return data
+
+
+def df_to_aux(fp, df, object_name: str):  # pragma: no cover
+    """ Convert a dataframe to PW aux/axd data section.
+
+    :param fp: file handler
+    :param df: dataframe
+    :param object_name: object type
+    """
+    # write the header
+    fields = ','.join(df.columns.tolist())
+    header = f"DATA ({object_name}, [{fields}])"
+    header_chunks = header.split(',')
+    i = 0
+    line_width = 0
+    max_width = 86
+    working_line = []
+    container = []
+    while True:
+        if line_width + len(header_chunks[i]) <= max_width:
+            working_line.append(header_chunks[i])
+            line_width += len(header_chunks[i])
+            i += 1
+        else:
+            container.append(','.join(working_line))
+            working_line = []
+            line_width = 0
+        if i == len(header_chunks):
+            if len(working_line):
+                container.append(','.join(working_line))
+            break
+    container = [ls + "," for ls in container[:len(container) - 1]] + [
+        container[-1]]  # add comma to each line
+    container = [container[0]] + ["    " + ls for ls in container[1:]]  # add tab to each line
+
+    # write the remaining part
+    container.append("{")
+    for row in df.values.tolist():
+        container.append(json.dumps(row, separators=(' ', ': '))[1:-1])
+    container.append("}\r\n")
+    fp.write('\n'.join(container))
 
 
 def convert_to_windows_path(p):
