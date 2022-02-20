@@ -2326,7 +2326,7 @@ class CallSimAutoTestCase(unittest.TestCase):
                     saw_14.GetParametersSingleElement('bus', ['BusNum'], [1])
 
 
-class AuxTestCase(unittest.TestCase):
+class DfToAuxTestCase(unittest.TestCase):
     """
     Test the df_to_aux method.
     """
