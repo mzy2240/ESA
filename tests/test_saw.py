@@ -47,7 +47,7 @@ from scipy.sparse import csr_matrix
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, \
     Error
-from esa.saw import convert_to_windows_path
+from esa.saw import convert_to_windows_path, df_to_aux
 
 # noinspection PyUnresolvedReferences
 from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, \
@@ -2324,6 +2324,24 @@ class CallSimAutoTestCase(unittest.TestCase):
                        side_effect=TypeError('weird things')):
                 with self.assertRaises(TypeError):
                     saw_14.GetParametersSingleElement('bus', ['BusNum'], [1])
+
+
+class AuxTestCase(unittest.TestCase):
+    """
+    Test the df_to_aux method.
+    """
+    def test_default(self):
+        df = pd.DataFrame(columns=['SOZoomHigh', 'SOZoomLow', 'SOZoomCond', 'SLName', 'SLShown',
+                                   'SOSLAnimationLayer', 'SelectableInEditMode'])
+        df.loc[len(df)] = [9900.00, 0.00, "NO ", "Borders", "YES", -1, "NO "]
+        with open("test.aux", 'w') as file:
+            df_to_aux(file, df, object_name='ScreenLayer')
+
+        with open("test.aux", 'r') as file:
+            x = len(file.readlines())
+            self.assertEqual(x, 6)
+
+        os.remove("test.aux")
 
 
 class ToNumericTestCase(unittest.TestCase):

@@ -2572,7 +2572,7 @@ class SAW(object):
             return data
 
 
-def df_to_aux(fp, df, object_name: str):  # pragma: no cover
+def df_to_aux(fp, df, object_name: str):
     """ Convert a dataframe to PW aux/axd data section.
 
     :param fp: file handler
