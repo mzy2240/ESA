@@ -1,4 +1,4 @@
-.. table:: ESA's testing coverage as of 2022-02-19 (Git commit: 4df471e)
+.. table:: ESA's testing coverage as of 2022-02-19 (Git commit: 87ae0c5)
     :widths: auto
     :align: left
 
