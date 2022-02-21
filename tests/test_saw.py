@@ -690,6 +690,32 @@ class GetYbusTestCase(unittest.TestCase):
                               csr_matrix)
 
 
+class GetAdmittanceTestCase(unittest.TestCase):
+    """Test get_branch_admittance and get_shunt_admittance function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=False)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_branch_admittance_default(self):
+        """It should return two scipy csr_matrix.
+        """
+        Yf, Yt = self.saw.get_branch_admittance()
+        self.assertIsInstance(Yf, csr_matrix)
+        self.assertIsInstance(Yt, csr_matrix)
+
+    def test_get_shunt_admittance_default(self):
+        """It should return a complex numpy array.
+        """
+        Ysh = self.saw.get_shunt_admittance()
+        self.assertEqual(Ysh.dtype, np.complex_)
+
+
 class GetJacobianTestCase(unittest.TestCase):
     """Test get_jacobian function."""
 
