@@ -13,7 +13,7 @@ doi: 10.21105/joss.02289
 date-released: 2022-02-20
 url: "https://github.com/mzy2240/ESA"
 preferred-citation:
-  type: journal
+  type: article
   authors:
     - family-names: "Mao"
       given-names: "Zeyu"
