@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: "Mao"
+  given-names: "Zeyu"
+- family-names: "Thayer"
+  given-names: "Brandon"
+- family-names: "Liu"
+  given-names: "Yijing"
+title: "Easy SimAuto (ESA)"
+version: 1.2.6
+doi: 10.21105/joss.02289
+date-released: 2022-02-20
+url: "https://github.com/mzy2240/ESA"
+preferred-citation:
+  type: journal
+  authors:
+    - family-names: "Mao"
+      given-names: "Zeyu"
+    - family-names: "Thayer"
+      given-names: "Brandon"
+    - family-names: "Liu"
+      given-names: "Yijing"
+    - family-names: "Davis"
+      given-names: "Katherine"
+    - family-names: "Overbye"
+      given-names: "Thomas"
+  doi: "10.21105/joss.02289"
+  url: "https://doi.org/10.21105/joss.02289"
+  journal: "The Journal of Open Source Software"
+  title: "Easy SimAuto (ESA): A Python Package that Simplifies Interacting with PowerWorld Simulator"
+  volume: 5
+  number: 50
+  pages: 2289
+  year: 2020
