@@ -859,6 +859,8 @@ class SAW(object):
                                         create_using=graph_type,
                                         edge_key="LineCircuit",
                                         edge_attr=edge_attr)
+        if node == "substation":
+            graph.remove_edges_from(nx.selfloop_edges(graph))
         if node_attr:
             if isinstance(node_attr, (list, tuple)):
                 nf.extend(node_attr)
