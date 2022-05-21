@@ -16,12 +16,13 @@ from typing import Union, List, Tuple
 import re
 import datetime
 import json
+from toolz.itertoolz import partition_all
 
 import numpy as np
 from numpy.linalg import multi_dot, det, solve, inv
 import numba as nb
 import pandas as pd
-from scipy.sparse import csr_matrix
+from scipy.sparse import csr_matrix, coo_matrix, hstack
 import networkx as nx
 from tqdm import trange
 import pythoncom
@@ -859,6 +860,8 @@ class SAW(object):
                                         create_using=graph_type,
                                         edge_key="LineCircuit",
                                         edge_attr=edge_attr)
+        if node == "substation":
+            graph.remove_edges_from(nx.selfloop_edges(graph))
         if node_attr:
             if isinstance(node_attr, (list, tuple)):
                 nf.extend(node_attr)
@@ -873,23 +876,50 @@ class SAW(object):
                 raise e
         return graph
 
-    def get_lodf_matrix(self):
-        """Obtain LODF matrix in numpy array format.
-        By default, it obtains the lodf matrix directly from PW.
+    def get_lodf_matrix(self, precision: int = 3):
+        """Obtain LODF matrix in numpy array or scipy sparse matrix.
+        By default, it obtains the lodf matrix directly from PW. If size
+        is larger than 1000, then precision will be applied to filter out
+        small values and the result will be returned in scipy sparse matrix.
+
+        :param precision:  number of decimal to keep.
 
         :returns: LODF matrix
         """
         self.pw_order = True
+        count = self.ListOfDevices('branch').shape[0]
         statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
         self.RunScriptCommand(statement)
-        count = self.ListOfDevices('branch').shape[0]
         array = [f"LODFMult:{x}" for x in range(count)]
-        df = self.GetParametersMultipleElement('branch', array)
-        temp = df.to_numpy(dtype=float)/100
-        self.isl = np.any(temp >= 10, axis=1)
-        temp[self.isl, :] = 0
-        temp[self.isl, self.isl] = -1
-        self.lodf = temp
+        if count <= 1000:
+            df = self.GetParametersMultipleElement('branch', array)
+            temp = df.to_numpy(dtype=float)/100
+            self.isl = np.any(temp >= 10, axis=1)
+            temp[self.isl, :] = 0
+            temp[self.isl, self.isl] = -1
+            self.lodf = temp
+        else:
+            container = []
+            isl = None
+            for batch in partition_all(20, array):
+                df = self.GetParametersMultipleElement('branch', batch)
+                temp = df.to_numpy(dtype=float) / 100
+                temp = temp.round(precision)
+                if isl is None:
+                    isl = np.any(temp >= 10, axis=1)
+                else:
+                    isl = np.logical_or(isl, np.any(temp >= 10, axis=1))
+                temp[isl, :] = 0
+                temp = coo_matrix(temp)
+                temp.eliminate_zeros()
+                container.append(temp)
+            temp = hstack(container).tolil()
+            temp[isl, :] = 0
+            temp[isl, isl] = -1
+            temp = temp.tocsr()
+            temp.eliminate_zeros()
+            self.lodf = temp
+            self.isl = isl
         return self.lodf, self.isl
 
     def get_incidence_matrix(self):

@@ -2,6 +2,14 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.2.7
+^^^^^^^^^^^^^
+
+* Officially support PW23
+* Support obtaining LODF matrix from large case (>1000)
+* Fix the self-loop issue when generating inter-substation level graph model
+
+
 Version 1.2.6
 ^^^^^^^^^^^^^
 
