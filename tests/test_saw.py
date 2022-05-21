@@ -41,8 +41,10 @@ import time
 
 import numpy as np
 import pandas as pd
+import scipy.sparse.csr
 from pandas._testing import assert_frame_equal
 import networkx as nx
+import scipy as sp
 from scipy.sparse import csr_matrix
 
 from esa import SAW, COMError, PowerWorldError, CommandNotRespectedError, \
@@ -843,11 +845,13 @@ class FastCATestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, CreateIfNotFound=True)
+        cls.saw2 = SAW(PATH_2000, CreateIfNotFound=True)
 
     @classmethod
     def tearDownClass(cls) -> None:
         # noinspection PyUnresolvedReferences
         cls.saw.exit()
+        cls.saw2.exit()
 
     def test_get_lodf_matrix_default(self):
         """Should return an N*N square matrix
@@ -856,6 +860,12 @@ class FastCATestCase(unittest.TestCase):
         self.assertIsInstance(lodf, np.ndarray)
         self.assertEqual(lodf.shape[0], lodf.shape[1])
         self.assertEqual(lodf.shape[0], lodf.shape[0])
+
+    def test_get_lodf_matrix_large(self):
+        """Should return a sparse matrix
+        """
+        lodf, isl = self.saw2.get_lodf_matrix()
+        self.assertIsInstance(lodf, sp.sparse.csr.csr_matrix)
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix
