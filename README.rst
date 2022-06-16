@@ -66,7 +66,7 @@ directions. In many cases, ESA can simply be installed by:
 Simulator Compatibility
 -----------------------
 
-Currently ESA supports PW Simulator V17, V18, V19, V20, V21, V22 and V23(Beta).
+Currently ESA supports PW Simulator V17, V18, V19, V20, V21, V22 and V23.
 
 
 Testing Coverage
