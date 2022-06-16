@@ -7,6 +7,7 @@ PowrWorld's documentation for SimAuto can be found
 `here
 <https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7C_____1>`__
 """
+
 import locale
 import logging
 import warnings
@@ -56,7 +57,7 @@ logging.basicConfig(
 # Listing of PowerWorld data types. I guess 'real' means float?
 DATA_TYPES = ['Integer', 'Real', 'String']
 # Hard-code based on indices.
-NUMERIC_TYPES = DATA_TYPES[0:2]
+NUMERIC_TYPES = DATA_TYPES[:2]
 NON_NUMERIC_TYPES = DATA_TYPES[-1]
 
 # RequestBuildDate uses Delphi conventions, which counts days since
@@ -194,15 +195,15 @@ class SAW(object):
 
         # Get the version number and the build date
         version_string, self.build_date = self.get_version_and_builddate()
-        self.version = int(re.search(r'\d+', version_string).group(0))
+        self.version = int(re.search(r'\d+', version_string)[0])
 
         # Sensitivity-related initialization
         self.lodf = None
 
         # Look up and cache field listing and key fields for the given
         # object types in object_field_lookup.
-        self._object_fields = dict()
-        self._object_key_fields = dict()
+        self._object_fields = {}
+        self._object_key_fields = {}
 
         for obj in object_field_lookup:
             # Always use lower case.
@@ -329,42 +330,37 @@ class SAW(object):
 
         # Do not sort if pw_order = True
         if not self.pw_order:
+            self._clean_df(ObjectType, fields, obj, df_flag)
+        return obj
 
-            # Determine which types are numeric.
-            numeric = self.identify_numeric_fields(ObjectType=ObjectType,
-                                                   fields=fields)
-            numeric_fields = fields[numeric]
+    def _clean_df(self, ObjectType, fields, obj, df_flag):
+        # Determine which types are numeric.
+        numeric = self.identify_numeric_fields(ObjectType=ObjectType,
+                                               fields=fields)
+        numeric_fields = fields[numeric]
 
-            # Make the numeric fields, well, numeric.
-            obj[numeric_fields] = self._to_numeric(obj[numeric_fields])
+        # Make the numeric fields, well, numeric.
+        obj[numeric_fields] = self._to_numeric(obj[numeric_fields])
 
-            # Now handle the non-numeric cols.
-            nn_cols = fields[~numeric]
+        # Now handle the non-numeric cols.
+        nn_cols = fields[~numeric]
 
-            # Start by ensuring the non-numeric columns are indeed strings.
-            obj[nn_cols] = obj[nn_cols].astype(str)
+        # Start by ensuring the non-numeric columns are indeed strings.
+        obj[nn_cols] = obj[nn_cols].astype(str)
 
             # Here we'll strip off the white space.
-            if df_flag:
-                # Need to use apply to strip strings from multiple columns.
-                obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip())
+        obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip()) if df_flag else obj[nn_cols].str.strip()
+
+        # Sort by BusNum if present.
+        if df_flag:
+            try:
+                obj.sort_values(by='BusNum', axis=0, inplace=True)
+            except KeyError:
+                # If there's no BusNum don't sort the DataFrame.
+                pass
             else:
-                # A series is much simpler, and the .str.strip() method can
-                # be used directly.
-                obj[nn_cols] = obj[nn_cols].str.strip()
-
-            # Sort by BusNum if present.
-            if df_flag:
-                try:
-                    obj.sort_values(by='BusNum', axis=0, inplace=True)
-                except KeyError:
-                    # If there's no BusNum don't sort the DataFrame.
-                    pass
-                else:
-                    # Re-index with simple monotonically increasing values.
-                    obj.index = np.arange(start=0, stop=obj.shape[0])
-
-        return obj
+                # Re-index with simple monotonically increasing values.
+                obj.index = np.arange(start=0, stop=obj.shape[0])
 
     def exit(self):
         """Clean up for the PowerWorld COM object"""
@@ -485,8 +481,7 @@ class SAW(object):
         return key_field_df['internal_field_name'].tolist()
 
     def get_power_flow_results(self, ObjectType: str, additional_fields: Union[
-        None, List[str]] = None) -> \
-            Union[None, pd.DataFrame]:
+        None, List[str]] = None) -> Union[None, pd.DataFrame]:
         """Get the power flow results from SimAuto server.
 
         :param ObjectType: Object type to get results for. Valid types
@@ -510,9 +505,10 @@ class SAW(object):
                 field_list = field_list[:]
                 # Extend it.
                 field_list += additional_fields
-        except KeyError:
-            raise ValueError('Unsupported ObjectType for power flow results, '
-                             '{}.'.format(ObjectType))
+        except KeyError as e:
+            raise ValueError(f'Unsupported ObjectType for power flow results, {ObjectType}.') from e
+
+
 
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
@@ -525,8 +521,7 @@ class SAW(object):
             convert_list_to_variant(["", ""]))
 
     def identify_numeric_fields(self, ObjectType: str,
-                                fields: Union[List, np.ndarray]) -> \
-            np.ndarray:
+                                fields: Union[List, np.ndarray]) -> np.ndarray:
         """Helper which looks up PowerWorld internal field names to
         determine if they're numeric (True) or not (False).
 
@@ -565,10 +560,10 @@ class SAW(object):
             if set(ifn) != set(fields):
                 raise ValueError('The given object has fields which do not'
                                  ' match a PowerWorld internal field name!')
-        except IndexError:
+        except IndexError as e:
             # An index error also indicates failure.
-            raise ValueError('The given object has fields which do not'
-                             ' match a PowerWorld internal field name!')
+            raise ValueError('The given object has fields which do not' ' match a PowerWorld internal field name!') from e
+
 
         # Now extract the corresponding data types.
         data_types = field_list['field_data_type'].to_numpy()[idx]
@@ -591,26 +586,22 @@ class SAW(object):
         """
         # Ensure the given property name is valid.
         if property_name not in self.SIMAUTO_PROPERTIES:
-            raise ValueError(('The given property_name, {}, is not currently '
-                              'supported. Valid properties are: {}')
-                             .format(property_name,
-                                     list(self.SIMAUTO_PROPERTIES.keys())))
+            raise ValueError(f'The given property_name, {property_name}, is not currently supported. Valid properties are: {list(self.SIMAUTO_PROPERTIES.keys())}')
+
 
         # Ensure the given property value has a valid type.
         # noinspection PyTypeHints
         if not isinstance(property_value,
                           self.SIMAUTO_PROPERTIES[property_name]):
-            m = ('The given property_value, {}, is invalid. It must be '
-                 'of type {}.').format(property_value,
-                                       self.SIMAUTO_PROPERTIES[property_name])
+            m = f'The given property_value, {property_value}, is invalid. It must be of type {self.SIMAUTO_PROPERTIES[property_name]}.'
+
             raise ValueError(m)
 
         # If we're setting CurrentDir, ensure the path is valid.
         # It seems PowerWorld does not check this.
-        if property_name == 'CurrentDir':
-            if not os.path.isdir(property_value):
-                raise ValueError('The given path for CurrentDir, {}, is '
-                                 'not a valid path!'.format(property_value))
+        if property_name == 'CurrentDir' and not os.path.isdir(property_value):
+            raise ValueError(f'The given path for CurrentDir, {property_value}, is not a valid path!')
+
 
         # Set the property.
         try:
@@ -626,8 +617,7 @@ class SAW(object):
             else:
                 raise e from None
 
-    def get_ybus(self, full: bool = False, file: Union[str, None] = None) -> \
-            Union[np.ndarray, csr_matrix]:
+    def get_ybus(self, full: bool = False, file: Union[str, None] = None) -> Union[np.ndarray, csr_matrix]:
         """Helper to obtain the YBus matrix from PowerWorld (in Matlab sparse
         matrix format) and then convert to scipy csr_matrix by default.
         :param full: Convert the csr_matrix to the numpy array (full matrix).
@@ -640,7 +630,7 @@ class SAW(object):
                                                     delete=False)
             _tempfile_path = Path(_tempfile.name).as_posix()
             _tempfile.close()
-            cmd = 'SaveYbusInMatlabFormat("{}", NO)'.format(_tempfile_path)
+            cmd = f'SaveYbusInMatlabFormat("{_tempfile_path}", NO)'
             self.RunScriptCommand(cmd)
         with open(_tempfile_path, 'r') as f:
             f.readline()
@@ -654,7 +644,7 @@ class SAW(object):
             r'(?:Ybus\()({ie}),({ie})(?:\)=)({fe})(?:\+j\*)(?:\()({fe})'.format(
                 ie=ie, fe=fe))
         # Get the dimension from the first line in lines
-        dim = dr.match(lines[0]).group(1)
+        dim = dr.match(lines[0])[1]
         n = int(dim)
         row = []
         col = []
@@ -674,10 +664,7 @@ class SAW(object):
         sparse_matrix = csr_matrix(
             (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n),
             dtype=complex)
-        if full:
-            return sparse_matrix.toarray()
-        else:
-            return sparse_matrix
+        return sparse_matrix.toarray() if full else sparse_matrix
 
     def get_branch_admittance(self):
         """Helper function to get the branch admittance matrix, usually known as
@@ -738,8 +725,7 @@ class SAW(object):
         df['BusSS'] = df['BusSS'].astype(float)
         df['BusSSMW'] = df['BusSSMW'].astype(float)
         df.fillna(0, inplace=True)
-        Ysh = (df['BusSSMW'].to_numpy() + 1j * df['BusSS'].to_numpy()) / base
-        return Ysh
+        return (df['BusSSMW'].to_numpy() + 1j * df['BusSS'].to_numpy()) / base
 
     def get_jacobian(self, full=False):
         """Helper function to get the Jacobian matrix, by default return a
@@ -753,7 +739,7 @@ class SAW(object):
         jidfile = tempfile.NamedTemporaryFile(mode='w', delete=False)
         jidfile_path = Path(jidfile.name).as_posix()
         jidfile.close()
-        cmd = 'SaveJacobian("{}","{}",M,R);'.format(jacfile_path, jidfile_path)
+        cmd = f'SaveJacobian("{jacfile_path}","{jidfile_path}",M,R);'
         self.RunScriptCommand(cmd)
         with open(jacfile_path, 'r') as f:
             mat_str = f.read()
@@ -771,7 +757,7 @@ class SAW(object):
         col = []
         data = []
         # Get the dimension from the first line in lines
-        dim = dr.match(lines[0]).group(1)
+        dim = dr.match(lines[0])[1]
         n = int(dim)
         for line in lines[1:]:
             match = exp.match(line)
@@ -783,10 +769,7 @@ class SAW(object):
             data.append(float(real))
         sparse_matrix = csr_matrix(
             (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n))
-        if full:
-            return sparse_matrix.toarray()
-        else:
-            return sparse_matrix
+        return sparse_matrix.toarray() if full else sparse_matrix
 
     def to_graph(self, node: str = 'bus', geographic: bool = False,
                  directed: bool = False, node_attr=None, edge_attr=None) \
@@ -888,39 +871,44 @@ class SAW(object):
         """
         self.pw_order = True
         count = self.ListOfDevices('branch').shape[0]
-        statement = "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)"
-        self.RunScriptCommand(statement)
+        self.RunScriptCommand("CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)")
         array = [f"LODFMult:{x}" for x in range(count)]
         if count <= 1000:
-            df = self.GetParametersMultipleElement('branch', array)
-            temp = df.to_numpy(dtype=float)/100
-            self.isl = np.any(temp >= 10, axis=1)
-            temp[self.isl, :] = 0
-            temp[self.isl, self.isl] = -1
-            self.lodf = temp
+            self._extracted_from_get_lodf_matrix_9(array)
         else:
-            container = []
-            isl = None
-            for batch in partition_all(20, array):
-                df = self.GetParametersMultipleElement('branch', batch)
-                temp = df.to_numpy(dtype=float) / 100
-                temp = temp.round(precision)
-                if isl is None:
-                    isl = np.any(temp >= 10, axis=1)
-                else:
-                    isl = np.logical_or(isl, np.any(temp >= 10, axis=1))
-                temp[isl, :] = 0
-                temp = coo_matrix(temp)
-                temp.eliminate_zeros()
-                container.append(temp)
-            temp = hstack(container).tolil()
-            temp[isl, :] = 0
-            temp[isl, isl] = -1
-            temp = temp.tocsr()
-            temp.eliminate_zeros()
-            self.lodf = temp
-            self.isl = isl
+            self._extracted_from_get_lodf_matrix_16(array, precision)
         return self.lodf, self.isl
+
+    # TODO Rename this here and in `get_lodf_matrix`
+    def _extracted_from_get_lodf_matrix_16(self, array, precision):
+        container = []
+        isl = None
+        for batch in partition_all(20, array):
+            df = self.GetParametersMultipleElement('branch', batch)
+            temp = df.to_numpy(dtype=float) / 100
+            temp = temp.round(precision)
+            isl = np.any(temp >= 10, axis=1) if isl is None else np.logical_or(isl, np.any(temp >= 10, axis=1))
+
+            temp[isl, :] = 0
+            temp = coo_matrix(temp)
+            temp.eliminate_zeros()
+            container.append(temp)
+        temp = hstack(container).tolil()
+        temp[isl, :] = 0
+        temp[isl, isl] = -1
+        temp = temp.tocsr()
+        temp.eliminate_zeros()
+        self.lodf = temp
+        self.isl = isl
+
+    # TODO Rename this here and in `get_lodf_matrix`
+    def _extracted_from_get_lodf_matrix_9(self, array):
+        df = self.GetParametersMultipleElement('branch', array)
+        temp = df.to_numpy(dtype=float)/100
+        self.isl = np.any(temp >= 10, axis=1)
+        temp[self.isl, :] = 0
+        temp[self.isl, self.isl] = -1
+        self.lodf = temp
 
     def get_incidence_matrix(self):
         """
@@ -999,16 +987,14 @@ class SAW(object):
         secure, margins, ctg, violations = self.n1_fast(c1_isl, count, self.lodf, f, lim)
         result = ctg
         if option == 'N-2':
-            if secure:
-                secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
-            else:
+            if not secure:
                 # Adjust line limits to eliminate N-1 contingencies
                 lim = self.n1_protect(margins, violations, lim)
                 df['LineLimMVA'] = pd.Series(lim)
                 # Update the line limits in the case as well
                 # Of course without saving it won't affect the original case
                 self.change_parameters_multiple_element_df('branch', df)
-                secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
+            secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
         if validate and not secure:
             if option == 'N-1':
                 f_result = df[result>0]
@@ -1132,7 +1118,7 @@ class SAW(object):
         changing = 1
         num_isl_ctg = np.sum(c1_isl.ravel()) * count - np.sum(c1_isl.ravel()) + np.sum(c2_isl.ravel()) / 2
         kmax = 10
-        storage = dict()
+        storage = {}
 
         while changing == 1 and k < kmax:
             oldA = np.sum(A0.ravel())
@@ -1529,10 +1515,7 @@ class SAW(object):
             self._object_fields[object_type] = output
 
         # Either return a copy or not.
-        if copy:
-            return output.copy(deep=True)
-        else:
-            return output
+        return output.copy(deep=True) if copy else output
 
     def GetParametersSingleElement(self, ObjectType: str,
                                    ParamList: list, Values: list) -> pd.Series:
@@ -2007,8 +1990,7 @@ class SAW(object):
         `Auxiliary File Format
         <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
         """
-        output = self._call_simauto('RunScriptCommand', Statements)
-        return output
+        return self._call_simauto('RunScriptCommand', Statements)
 
     def SaveCase(self, FileName=None, FileType='PWB', Overwrite=True):
         """Save the current case to file.
@@ -2042,11 +2024,11 @@ class SAW(object):
         """
         if FileName is not None:
             f = convert_to_windows_path(FileName)
+        elif self.pwb_file_path is None:
+            raise TypeError('SaveCase was called without a FileName, but '
+                            'it would appear OpenCase has not yet been '
+                            'called.')
         else:
-            if self.pwb_file_path is None:
-                raise TypeError('SaveCase was called without a FileName, but '
-                                'it would appear OpenCase has not yet been '
-                                'called.')
             f = convert_to_windows_path(self.pwb_file_path)
 
         return self._call_simauto('SaveCase', f, FileType, Overwrite)
@@ -2244,7 +2226,7 @@ class SAW(object):
         <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
         for more details.
         """
-        script_command = "SolvePowerFlow(%s)" % SolMethod.upper()
+        script_command = f"SolvePowerFlow({SolMethod.upper()})"
         return self.RunScriptCommand(script_command)
 
     def OpenOneLine(self, filename: str, view: str = "",
@@ -2297,7 +2279,7 @@ class SAW(object):
 
          :returns: None
          """
-        script = 'CloseOneline({})'.format(OnelineName)
+        script = f'CloseOneline({OnelineName})'
         return self.RunScriptCommand(script)
 
     ####################################################################
@@ -2401,17 +2383,16 @@ class SAW(object):
         try:
             f = getattr(self._pwcom, func)
         except AttributeError:
-            raise AttributeError('The given function, {}, is not a valid '
-                                 'SimAuto function.'.format(func)) from None
+            raise AttributeError(f'The given function, {func}, is not a valid SimAuto function.') from None
+
 
         # Call the function.
         try:
             output = f(*args)
-        except Exception:
-            m = ('An error occurred when trying to call {} with '
-                 '{}').format(func, args)
+        except Exception as e:
+            m = f'An error occurred when trying to call {func} with {args}'
             self.log.exception(m)
-            raise COMError(m)
+            raise COMError(m) from e
 
         # handle errors
         if output == ('',):
@@ -2425,9 +2406,7 @@ class SAW(object):
         try:
             if output is None or output[0] == '':
                 pass
-            elif 'No data' in output[0]:
-                pass
-            else:
+            elif 'No data' not in output[0]:
                 raise PowerWorldError(output[0])
 
         except TypeError as e:
@@ -2442,7 +2421,7 @@ class SAW(object):
                         "we can help you with. Perhaps the arguments are "
                         "invalid or in the wrong order - double-check the "
                         "documentation.").format(func=func, args=args)
-                    raise PowerWorldError(m)
+                    raise PowerWorldError(m) from e
                 elif isinstance(output, int):
                     # Return the integer.
                     return output
@@ -2452,11 +2431,7 @@ class SAW(object):
 
         # After errors have been handled, return the data. Typically
         # this is in position 1.
-        if len(output) == 2:
-            return output[1]
-        else:
-            # Return all the remaining data.
-            return output[1:]
+        return output[1] if len(output) == 2 else output[1:]
 
     def _change_parameters_multiple_element_df(
             self, ObjectType: str, command_df: pd.DataFrame) -> pd.DataFrame:
@@ -2631,14 +2606,12 @@ def df_to_aux(fp, df, object_name: str):
             if len(working_line):
                 container.append(','.join(working_line))
             break
-    container = [ls + "," for ls in container[:len(container) - 1]] + [
-        container[-1]]  # add comma to each line
+    container = [ls + "," for ls in container[:-1]] + [container[-1]]
     container = [container[0]] + ["    " + ls for ls in container[1:]]  # add tab to each line
 
     # write the remaining part
     container.append("{")
-    for row in df.values.tolist():
-        container.append(json.dumps(row, separators=(' ', ': '))[1:-1])
+    container.extend(json.dumps(row, separators=(' ', ': '))[1:-1] for row in df.values.tolist())
     container.append("}\r\n")
     fp.write('\n'.join(container))
 

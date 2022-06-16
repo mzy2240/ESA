@@ -31,5 +31,4 @@ def calculate_bound(bp, bn, Amax1, Amin1, Wbuf1, Wbuf2):
         bn1[:, i] *= Amin1[i]
     wb1 = np.maximum(bp0, bp1) + Wbuf1
     wb2 = np.maximum(bn0, bn1) + Wbuf2
-    w = np.maximum(wb1,wb2)
-    return w
+    return np.maximum(wb1,wb2)
