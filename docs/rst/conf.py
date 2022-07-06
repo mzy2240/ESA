@@ -22,8 +22,8 @@ with open('../../VERSION', 'r') as fh:
 # -- Project information -----------------------------------------------------
 
 project = 'ESA'
-copyright = '2020, Brandon Thayer, Zeyu Mao, Yijing Liu'
-author = 'Brandon Thayer, Zeyu Mao, Yijing Liu'
+copyright = '2022, Zeyu Mao, Brandon Thayer, Yijing Liu'
+author = 'Zeyu Mao, Brandon Thayer, Yijing Liu'
 
 # The short X.Y version
 version = __version__
@@ -58,7 +58,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = 'alabaster'
+html_theme = 'press'  #alabaster
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,

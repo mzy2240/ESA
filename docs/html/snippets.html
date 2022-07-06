@@ -1,37 +1,192 @@
-
 <!DOCTYPE html>
-
-<html>
+<html >
   <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-    <title>Examples &#8212; ESA 1.2.7 documentation</title>
-    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
-    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
-    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-    <script src="_static/jquery.js"></script>
-    <script src="_static/underscore.js"></script>
-    <script src="_static/doctools.js"></script>
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Common Issues" href="common_issues.html" />
-    <link rel="prev" title="esa API Documentation" href="esa.html" />
-   
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+      <title>Examples</title>
+    
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
 
-  </head><body>
-  
+      
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
+    
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Common Issues" href="common_issues.html" />
+  <link rel="prev" title="esa API Documentation" href="esa.html" /> 
+  </head>
 
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
+    
+      <span class="site-name">ESA</span>
+    
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
+
+
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
           
+          <navlinks>
+            
 
-          <div class="body" role="main">
+
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="index.html#easy-simauto-esa-documentation">Contents:</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="welcome.html" class="reference internal ">Welcome!</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="installation.html" class="reference internal ">Installing ESA</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="quick_start.html" class="reference internal ">Quick Start</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="overview.html" class="reference internal ">ESA Overview</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="esa.html" class="reference internal ">esa API Documentation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Examples</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#esa-quick-start" class="reference internal">ESA Quick Start</a></li>
+                
+                  <li class="toctree-l2"><a href="#increase-loading-in-case" class="reference internal">Increase Loading in Case</a></li>
+                
+                  <li class="toctree-l2"><a href="#add-lines-to-case" class="reference internal">Add Lines to Case</a></li>
+                
+                  <li class="toctree-l2"><a href="#transient-stability-analysis" class="reference internal">Transient Stability Analysis</a></li>
+                
+                  <li class="toctree-l2"><a href="#contingency-analysis" class="reference internal">Contingency Analysis</a></li>
+                
+                  <li class="toctree-l2"><a href="#create-simple-graph-model" class="reference internal">Create Simple Graph Model</a></li>
+                
+                  <li class="toctree-l2"><a href="#created-graph-model-with-edges-weighted-by-branch-impedance" class="reference internal">Created Graph Model with Edges Weighted by Branch Impedance</a></li>
+                
+                  <li class="toctree-l2"><a href="#plot-histogram-of-line-flows-with-matplotlib" class="reference internal">Plot Histogram of Line Flows with Matplotlib</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="common_issues.html" class="reference internal ">Common Issues</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+    <li>Examples</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="esa.html"
+       title="previous chapter">← esa API Documentation</a>
+  </li>
+  <li class="next">
+    <a href="common_issues.html"
+       title="next chapter">Common Issues →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
             
   <section id="examples">
 <span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
@@ -747,87 +902,26 @@ known as key fields.</p>
 
 
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">ESA</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="welcome.html">Welcome!</a></li>
-<li class="toctree-l1"><a class="reference internal" href="installation.html">Installing ESA</a></li>
-<li class="toctree-l1"><a class="reference internal" href="quick_start.html">Quick Start</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">ESA Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="esa.html">esa API Documentation</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Examples</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#esa-quick-start">ESA Quick Start</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#increase-loading-in-case">Increase Loading in Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#add-lines-to-case">Add Lines to Case</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#transient-stability-analysis">Transient Stability Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#contingency-analysis">Contingency Analysis</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#create-simple-graph-model">Create Simple Graph Model</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#created-graph-model-with-edges-weighted-by-branch-impedance">Created Graph Model with Edges Weighted by Branch Impedance</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#plot-histogram-of-line-flows-with-matplotlib">Plot Histogram of Line Flows with Matplotlib</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="common_issues.html">Common Issues</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="esa.html" title="previous chapter">esa API Documentation</a></li>
-      <li>Next: <a href="common_issues.html" title="next chapter">Common Issues</a></li>
-  </ul></li>
-</ul>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="esa.html"
+       title="previous chapter">← esa API Documentation</a>
+  </li>
+  <li class="next">
+    <a href="common_issues.html"
+       title="next chapter">Common Issues →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2022, Zeyu Mao, Brandon Thayer, Yijing Liu.
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
-<div id="searchbox" style="display: none" role="search">
-  <h3 id="searchlabel">Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
-      <input type="submit" value="Go" />
-    </form>
-    </div>
-</div>
-<script>$('#searchbox').show(0);</script>
-
-
-
-
-
-
-
-
-        </div>
-      </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2020, Brandon Thayer, Zeyu Mao, Yijing Liu.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.1.2</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/snippets.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
-
+            </div>
+          </div>
+      </page>
+    </div></div>
     
-
     
   </body>
 </html>
