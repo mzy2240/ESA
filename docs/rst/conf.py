@@ -59,7 +59,7 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
 # a list of builtin themes.
 #
 html_theme = 'press'  #alabaster
-html_logo = '_static/esa_logo.PNG'
+html_logo = '_static/esa_logo.webp'
 html_theme_options = {
   "external_links": [
       ("Github", "https://github.com/mzy2240/ESA"),
