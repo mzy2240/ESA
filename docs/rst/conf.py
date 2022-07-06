@@ -59,6 +59,13 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
 # a list of builtin themes.
 #
 html_theme = 'press'  #alabaster
+html_logo = '_static/esa_logo.PNG'
+html_theme_options = {
+  "external_links": [
+      ("Github", "https://github.com/mzy2240/ESA"),
+      ("PyPI", "https://pypi.org/project/esa/")
+  ]
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
