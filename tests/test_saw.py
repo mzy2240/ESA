@@ -936,6 +936,29 @@ class FastCATestCase(unittest.TestCase):
         self.saw.exit()
 
 
+class SensitivityAnalysisTestCase(unittest.TestCase):
+    """Test all the methods related to the sensitivity analysis (either native
+    or using auxiliary script)
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, CreateIfNotFound=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_shift_factor_matrix(self):
+        """
+        Expect to return an M*N numpy array with M is the number of buses and
+        N is the number of branches.
+        """
+        res = self.saw.get_shift_factor_matrix()
+        self.assertEqual(res.shape, (14, 20))  # IEEE14 case has 14 buses and 20 branches
+
+
 class CTGAutoInsertTestCase(unittest.TestCase):
     """ Test the ctg_autoinsert method.
     """

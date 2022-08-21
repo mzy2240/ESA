@@ -937,6 +937,34 @@ class SAW(object):
             incidence[i, row["BusNum:1"] - 1] = -1
         return incidence
 
+    def get_shift_factor_matrix(self, method: str = 'DC'):
+        """
+        Calculate the injection shift factor matrix using the auxiliary
+        script CalculateShiftFactorsMultipleElement.
+
+        :param method: The linear method to be used for the calculation. The
+        options are AC, DC or DCPS.
+        :returns: A dense float matrix in the numpy array format.
+        """
+        temp = self.pw_order
+        self.pw_order = True
+        key = self.get_key_field_list('branch')
+        fields = key + ['Selected']
+        df = self.GetParametersMultipleElement('branch', fields)
+        num_branch = df.shape[0]
+        df['Selected'] = 'YES'
+        self.change_parameters_multiple_element_df('branch', df)
+        # now run the calculation for all the seleced branches
+        self.RunScriptCommand(f"CalculateShiftFactorsMultipleElement(BRANCH,SELECTED,BUYER,"
+                              f"[SLACK],{method})")
+        isf_fields = ['MultBusTLRSens']
+        for i in range(1, num_branch):
+            isf_fields += [f"MultBusTLRSens:{i}"]
+        res = self.GetParametersMultipleElement('Bus', isf_fields).to_numpy(dtype=float)
+        self.pw_order = temp
+        return res
+
+
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """
         Change line resistance according to temperature.
