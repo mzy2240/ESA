@@ -966,18 +966,18 @@ class SAW(object):
         return res
 
 
-    def get_shift_factor_matrix_fast(self):
+    def _prepare_sensitivity(self):
         """
-        Calculate the injection shift factor matrix directly using the incidence
-        matrix and the susceptance matrix.
-
-        :returns: A dense float matrix in the numpy array format.
+        Prepare the matrix for sensitivity analysis.
         """
         temp = self.pw_order
         self.pw_order = True
-        bus = self.GetParametersMultipleElement('bus', ['BusNum'])
+        bus = self.GetParametersMultipleElement('bus', ['BusNum', 'BusCat'])
         br = self.GetParametersMultipleElement('branch', ['BusNum', 'BusNum:1', 'LineX'])
         self.pw_order = temp
+        slack = bus[bus['BusCat'] == 'Slack'].index.tolist()[0]
+        noslack = bus.index.tolist()
+        noslack.remove(slack)
         bus.reset_index(inplace=True)
         bus.set_index('BusNum', inplace=True)
         f = br['BusNum'].map(bus['index']).to_numpy(dtype=int)
@@ -993,9 +993,75 @@ class SAW(object):
         Bbus[0, :] = 0
         Bbus[:, 0] = 0
         Bbus[0, 0] = -1
+        return Bbus, Bf, Cft, slack, noslack
+
+
+    def get_shift_factor_matrix_fast(self):
+        """
+        Calculate the injection shift factor matrix directly using the incidence
+        matrix and the susceptance matrix. This method should be much faster than
+        the PW script command for large cases.
+
+        :returns: A dense float matrix in the numpy array format.
+        """
+        Bbus, Bf, _, _, _ = self._prepare_sensitivity()
         res = Bf * sp.linalg.inv(Bbus)
         res[:, 0] = 0
         return res.T.todense()
+
+
+    def get_ptdf_matrix_fast(self):
+        """
+        Calculate the power transfer distribution factor natively. This method should be much
+        faster than the PW script command for large cases.
+
+        :returns: A dense float matrix in the numpy array format.
+        """
+        Bbus, Bf, _, slack, noslack = self._prepare_sensitivity()
+        n = Bbus.shape[0]
+        noref = noslack
+        dP = np.eye(n, n)
+
+        # solve for change in voltage angles
+        dTheta = np.zeros((n, n))
+        Bref = Bbus[noslack, :][:, noref].tocsc()
+        dtheta_ref = sp.linalg.spsolve(Bref, dP[noslack, :])
+
+        if sp.issparse(dtheta_ref):
+            dTheta[noref, :] = dtheta_ref.toarray()
+        else:
+            dTheta[noref, :] = dtheta_ref
+
+        return Bf * dTheta
+
+
+    def get_lodf_matrix_fast(self):
+        """
+        Calculate the line outage distribution factor natively. This method should be much
+        faster than the PW script command for large cases.
+
+        :returns: A dense float matrix in the numpy array format.
+        """
+        Bbus, Bf, Cft, slack, noslack = self._prepare_sensitivity()
+        PTDF = self.get_ptdf_matrix_fast()
+        H = PTDF * Cft.T
+        numerical_zero = 1e-10
+
+        nl, nb = PTDF.shape
+        # this loop avoids the divisions by zero
+        # in those cases the LODF column should be zero
+        LODF = np.zeros((nl, nl))
+        div = 1 - H.diagonal()
+        islands = []
+        for j in range(H.shape[1]):
+            if abs(div[j]) > numerical_zero:
+                LODF[:, j] = H[:, j] / div[j]
+            else:
+                islands.append(j)
+
+        res = LODF - np.diag(np.diag(LODF)) - np.eye(nl, nl)
+        return res.T
+
 
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """

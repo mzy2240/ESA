@@ -944,11 +944,13 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, CreateIfNotFound=True)
+        cls.saw2 = SAW(PATH_2000, CreateIfNotFound=True)
 
     @classmethod
     def tearDownClass(cls) -> None:
         # noinspection PyUnresolvedReferences
         cls.saw.exit()
+        cls.saw2.exit()
 
     def test_get_shift_factor_matrix(self):
         """
@@ -965,6 +967,34 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         """
         res = self.saw.get_shift_factor_matrix_fast()
         self.assertEqual(res.shape, (14, 20))  # IEEE14 case has 14 buses and 20 branches
+
+        # now compare the speed
+        start = time.time()
+        res = self.saw2.get_shift_factor_matrix_fast()
+        duration1 = time.time()-start
+
+        start = time.time()
+        res = self.saw2.get_shift_factor_matrix()
+        duration2 = time.time() - start
+
+        # the fast method should be faster than the PW method
+        self.assertLess(duration1, duration2)
+
+
+    def test_get_ptdf_matrix_fast(self):
+        """
+        Expect to return a full ptdf matrix
+        """
+        res = self.saw.get_ptdf_matrix_fast()
+        self.assertEqual(res.shape, (20, 14))
+
+
+    def test_get_lodf_matrix_fast(self):
+        """
+        Expect to return a full lodf matrix
+        """
+        res = self.saw.get_lodf_matrix_fast()
+        self.assertEqual(res.shape, (20, 20))
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):
