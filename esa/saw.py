@@ -23,6 +23,7 @@ from numpy.linalg import multi_dot, det, solve, inv
 import numba as nb
 import pandas as pd
 from scipy.sparse import csr_matrix, coo_matrix, hstack
+from scipy import sparse as sp
 import networkx as nx
 from tqdm import trange
 import pythoncom
@@ -964,6 +965,37 @@ class SAW(object):
         self.pw_order = temp
         return res
 
+
+    def get_shift_factor_matrix_fast(self):
+        """
+        Calculate the injection shift factor matrix directly using the incidence
+        matrix and the susceptance matrix.
+
+        :returns: A dense float matrix in the numpy array format.
+        """
+        temp = self.pw_order
+        self.pw_order = True
+        bus = self.GetParametersMultipleElement('bus', ['BusNum'])
+        br = self.GetParametersMultipleElement('branch', ['BusNum', 'BusNum:1', 'LineX'])
+        self.pw_order = temp
+        bus.reset_index(inplace=True)
+        bus.set_index('BusNum', inplace=True)
+        f = br['BusNum'].map(bus['index']).to_numpy(dtype=int)
+        t = br['BusNum:1'].map(bus['index']).to_numpy(dtype=int)
+        nl = br.shape[0]
+        nb = bus.shape[0]
+        i = np.r_[range(nl), range(nl)]
+        Cft = csr_matrix((np.r_[np.ones(nl), -np.ones(nl)], (i, np.r_[f, t])), (nl, nb))
+        x_val = br['LineX'].to_numpy(dtype=float)
+        b = 1 / x_val
+        Bf = csr_matrix((np.r_[b, -b], (i, np.r_[f, t])))
+        Bbus = Cft.T * Bf
+        Bbus[0, :] = 0
+        Bbus[:, 0] = 0
+        Bbus[0, 0] = -1
+        res = Bf * sp.linalg.inv(Bbus)
+        res[:, 0] = 0
+        return res.T.todense()
 
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """

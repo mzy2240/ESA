@@ -958,6 +958,14 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         res = self.saw.get_shift_factor_matrix()
         self.assertEqual(res.shape, (14, 20))  # IEEE14 case has 14 buses and 20 branches
 
+    def test_get_shift_factor_matrix_fast(self):
+        """
+        Expect to return an M*N numpy array with M is the number of buses and
+        N is the number of branches.
+        """
+        res = self.saw.get_shift_factor_matrix_fast()
+        self.assertEqual(res.shape, (14, 20))  # IEEE14 case has 14 buses and 20 branches
+
 
 class CTGAutoInsertTestCase(unittest.TestCase):
     """ Test the ctg_autoinsert method.
