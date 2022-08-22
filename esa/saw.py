@@ -1027,10 +1027,7 @@ class SAW(object):
         Bref = Bbus[noslack, :][:, noref].tocsc()
         dtheta_ref = sp.linalg.spsolve(Bref, dP[noslack, :])
 
-        if sp.issparse(dtheta_ref):
-            dTheta[noref, :] = dtheta_ref.toarray()
-        else:
-            dTheta[noref, :] = dtheta_ref
+        dTheta[noref, :] = dtheta_ref
 
         return Bf * dTheta
 

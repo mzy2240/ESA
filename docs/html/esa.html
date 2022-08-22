@@ -1479,6 +1479,18 @@ small values and the result will be returned in scipy sparse matrix.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.get_lodf_matrix_fast">
+<span class="sig-name descname"><span class="pre">get_lodf_matrix_fast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_lodf_matrix_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the line outage distribution factor natively. This method should be much
+faster than the PW script command for large cases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dense float matrix in the numpy array format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_power_flow_results">
 <span class="sig-name descname"><span class="pre">get_power_flow_results</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ObjectType</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">additional_fields</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">None</span><span class="p"><span class="pre">,</span> </span><span class="pre">pandas.core.frame.DataFrame</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#esa.saw.SAW.get_power_flow_results" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the power flow results from SimAuto server.</p>
@@ -1498,6 +1510,45 @@ None if the given ObjectType is not present in the model.</p>
 </dd>
 <dt class="field-odd">Raises</dt>
 <dd class="field-odd"><p><strong>ValueError</strong> – if given ObjectType is invalid.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.get_ptdf_matrix_fast">
+<span class="sig-name descname"><span class="pre">get_ptdf_matrix_fast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_ptdf_matrix_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the power transfer distribution factor natively. This method should be much
+faster than the PW script command for large cases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dense float matrix in the numpy array format.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.get_shift_factor_matrix">
+<span class="sig-name descname"><span class="pre">get_shift_factor_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'DC'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_shift_factor_matrix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the injection shift factor matrix using the auxiliary
+script CalculateShiftFactorsMultipleElement.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>method</strong> – The linear method to be used for the calculation. The</p>
+</dd>
+</dl>
+<p>options are AC, DC or DCPS.
+:returns: A dense float matrix in the numpy array format.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.get_shift_factor_matrix_fast">
+<span class="sig-name descname"><span class="pre">get_shift_factor_matrix_fast</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_shift_factor_matrix_fast" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the injection shift factor matrix directly using the incidence
+matrix and the susceptance matrix. This method should be much faster than
+the PW script command for large cases.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A dense float matrix in the numpy array format.</p>
 </dd>
 </dl>
 </dd></dl>
