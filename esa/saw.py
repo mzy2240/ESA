@@ -1048,6 +1048,32 @@ class SAW(object):
         return res.T
 
 
+    def fast_n1_test(self):
+        """
+        A pure LODF-based fast N-1 contingency analysis implementation.
+
+        :returns: A boolean value to indicate whether the system is N-1 secure.
+        """
+        LODF = self.get_lodf_matrix_fast()
+        temp = LODF.copy()
+        np.fill_diagonal(temp, 0)
+        isl = np.invert(np.any(temp, axis=1))
+        print(f"There are {np.sum(isl)} branches that could cause islanding.")
+        original = self.pw_order
+        self.pw_order = True
+        br = self.GetParametersMultipleElement('branch', ['LineMW', 'LineLimMVA'])
+        self.pw_order = original
+        flows = br['LineMW'].to_numpy(dtype=float)
+        limits = br['LineLimMVA'].to_numpy(dtype=float)
+        limits[limits == 0] = np.inf
+        post_flows = flows + LODF*flows
+        res = np.invert(np.any(post_flows > limits, axis=0))
+        secure = np.all(res)
+        print("---------- Omitting the islanding cases ----------")
+        print(f"N-1 secure: {secure}")
+        return secure
+
+
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """
         Change line resistance according to temperature.

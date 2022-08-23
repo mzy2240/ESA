@@ -997,6 +997,11 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         self.assertEqual(res.shape, (20, 20))
 
 
+    def test_fast_n1_test(self):
+        res = self.saw.fast_n1_test()
+        self.assertEqual(res, True)
+
+
 class CTGAutoInsertTestCase(unittest.TestCase):
     """ Test the ctg_autoinsert method.
     """
