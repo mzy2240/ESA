@@ -24,7 +24,8 @@ from numpy.linalg import multi_dot, det, solve, inv
 import numba as nb
 import pandas as pd
 from scipy.sparse import csr_matrix, coo_matrix, hstack
-from scipy import sparse as sp
+import scipy.sparse.linalg
+import scipy
 import networkx as nx
 from tqdm import trange
 import pythoncom
@@ -993,7 +994,7 @@ class SAW(object):
         :returns: A dense float matrix in the numpy array format.
         """
         Bbus, Bf, _, _, _ = self._prepare_sensitivity()
-        res = Bf * sp.linalg.inv(Bbus)
+        res = Bf * scipy.sparse.linalg.inv(Bbus)
         res[:, 0] = 0
         return res.T.todense()
 
@@ -1013,7 +1014,7 @@ class SAW(object):
         # solve for change in voltage angles
         dTheta = np.zeros((n, n))
         Bref = Bbus[noslack, :][:, noref].tocsc()
-        dtheta_ref = sp.linalg.spsolve(Bref, dP[noslack, :])
+        dtheta_ref = scipy.sparse.linalg.spsolve(Bref, dP[noslack, :])
 
         dTheta[noref, :] = dtheta_ref
 
