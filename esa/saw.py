@@ -1075,6 +1075,23 @@ class SAW(object):
         return secure
 
 
+    def fast_n2_islanding_detection(self):
+        """
+        Quickly identify the N-2 islanding CTGs using LODF
+
+        returns: A tuple with the number of islanding CTGs and the islanding matrix
+        """
+        LODF = self.get_lodf_matrix_fast()
+        nb = LODF.shape[0]
+        tr = 1e-8
+        c2_isl = np.zeros([nb, nb])
+        qq = LODF * LODF.conj().T
+        c2_isl[abs(qq - 1) <= tr] = 1  # use tr for better numerical stability
+        return (np.count_nonzero(c2_isl) - nb) / 2, c2_isl
+
+
+
+
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """
         Change line resistance according to temperature.

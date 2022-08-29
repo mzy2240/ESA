@@ -998,8 +998,19 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
 
 
     def test_fast_n1_test(self):
+        """
+        The original IEEE14 case is N-1 secure due to no transmission limits
+        """
         res = self.saw.fast_n1_test()
         self.assertEqual(res, True)
+
+
+    def test_fast_n2_islanding_detection(self):
+        """
+        Expect to find 8 N-2 islanding CTGs for the 14 bus case
+        """
+        num, isl = self.saw.fast_n2_islanding_detection()
+        self.assertEqual(int(num), 8)
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):

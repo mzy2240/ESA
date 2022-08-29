@@ -6,6 +6,7 @@ Version 1.2.9
 ^^^^^^^^^^^^^
 
 * Fix the scipy sparse linalg import issue
+* Add the function to quickly identify the N-2 islanding ctg
 
 Version 1.2.8
 ^^^^^^^^^^^^^
