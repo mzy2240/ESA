@@ -1201,6 +1201,10 @@ class SAW(object):
         power grids against cascading failures. The RCF metric takes the
         operational states, the branch's capacities and the topological
         structure into account and gives an entropy-based value.
+        The formula is given from the following paper:
+        Koç, Yakup, Martijn Warnier, Robert E. Kooij, and Frances MT Brazier.
+        "An entropy-based metric to quantify the robustness of power grids
+        against cascading failures." Safety science 59 (2013): 126-134.
 
         :returns: The RCF value.
         """
