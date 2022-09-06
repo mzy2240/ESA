@@ -1004,13 +1004,39 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         res = self.saw.fast_n1_test()
         self.assertEqual(res, True)
 
-
     def test_fast_n2_islanding_detection(self):
         """
         Expect to find 8 N-2 islanding CTGs for the 14 bus case
         """
         num, isl = self.saw.fast_n2_islanding_detection()
         self.assertEqual(int(num), 8)
+
+
+class RunRobustnessAnalysisTestCase(unittest.TestCase):
+    """ Test the run_robustness_analysis method.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14)
+        cls.saw2 = SAW(PATH_2000, CreateIfNotFound=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+        cls.saw2.exit()
+
+    def test_run_robustness_analysis(self):
+        """ Returns a float value.
+        """
+        self.saw.SolvePowerFlow(SolMethod='RECTNEWT')
+        rcf = self.saw.run_robustness_analysis()
+        self.assertGreater(rcf, 1e6)  # large value due to no line limits
+
+        self.saw2.SolvePowerFlow(SolMethod='RECTNEWT')
+        rcf = self.saw2.run_robustness_analysis()
+        self.assertLess(rcf, 1e2)  # normal value
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):

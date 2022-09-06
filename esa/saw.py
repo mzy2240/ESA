@@ -19,6 +19,7 @@ import datetime
 import json
 from toolz.itertoolz import partition_all
 
+import math
 import numpy as np
 from numpy.linalg import multi_dot, det, solve, inv
 import numba as nb
@@ -1086,10 +1087,9 @@ class SAW(object):
         tr = 1e-8
         c2_isl = np.zeros([nb, nb])
         qq = LODF * LODF.conj().T
-        c2_isl[abs(qq - 1) <= tr] = 1  # use tr for better numerical stability
+        c2_isl[abs(qq - 1) <= tr] = 1  # use
+        # tr for better numerical stability
         return (np.count_nonzero(c2_isl) - nb) / 2, c2_isl
-
-
 
 
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
@@ -1195,6 +1195,83 @@ class SAW(object):
             self.change_parameters_multiple_element_df('ContingencyElement', ctg_ele)
             validation_result = self.ctg_solveall()
         return secure, result, validation_result
+
+    def run_robustness_analysis(self):
+        """Compute the metric RCF to quantify the robustness of
+        power grids against cascading failures. The RCF metric takes the
+        operational states, the branch's capacities and the topological
+        structure into account and gives an entropy-based value.
+
+        :returns: The RCF value.
+        """
+        warnings.warn("Please make sure the current system state is valid")
+        kf = self.get_key_field_list('branch') + ["LineMW", "LineMVA", "LineLimMVA",
+                                                  "LineMaxPercent", "BranchDeviceType"]
+        branch_df = self.GetParametersMultipleElement('branch', kf)
+        if (branch_df['LineLimMVA'] == 0).all():
+            warnings.warn("Line limits are missing or infinite")
+        for index, row in branch_df.iterrows():
+            linemw = row['LineMW']
+            if linemw < 0:
+                original_from = row['BusNum']
+                original_to = row['BusNum:1']
+                branch_df.loc[index, 'LineMW'] = abs(linemw)
+                branch_df.loc[index, 'BusNum'] = original_to
+                branch_df.loc[index, 'BusNum:1'] = original_from
+
+        graph = nx.from_pandas_edgelist(branch_df, "BusNum", "BusNum:1",
+                                        create_using=nx.MultiDiGraph, edge_key="LineCircuit",
+                                        edge_attr=["LineMW", "LineLimMVA", "LineMaxPercent",
+                                                   "BranchDeviceType"])
+        for edge in graph.edges:
+            out_node = edge[0]
+            total = 0
+            for out_edge in graph.out_edges(out_node, data='LineMW'):
+                total += out_edge[2]
+            if total == 0:
+                total += 0.000001
+            for key in list(graph[edge[0]][edge[1]].keys()):
+                p = graph[edge[0]][edge[1]][key]['LineMW'] / float(
+                    total)  # Assume no parallel lines
+                graph[edge[0]][edge[1]][key]['p'] = p
+                graph[edge[0]][edge[1]][key]['tolerance'] = 100 / (
+                            graph[edge[0]][edge[1]][key]['LineMaxPercent'] + 0.000001)
+
+        output_nodes = [u for u, deg in graph.out_degree() if deg]
+        for node in output_nodes:
+            H = 0
+            nodal_robust = 0
+            out_edge_copy = (None, None, None)
+            for out_edge in graph.out_edges(node, data='p'):
+                p = out_edge[2]
+                if out_edge[0] == out_edge_copy[0] and out_edge[1] == out_edge_copy[1]:
+                    tolerance = graph[out_edge[0]][out_edge[1]]['2'][
+                        'tolerance']  # Assume no parallel lines
+                else:
+                    tolerance = graph[out_edge[0]][out_edge[1]]['1'][
+                        'tolerance']  # Assume no parallel lines
+                H += p * math.log(p + 1e-6, 10)  # Some p = 0, and assume the base is 10
+                nodal_robust += tolerance * p * math.log(p + 1e-6, 10)
+                out_edge_copy = out_edge
+            graph.nodes[node]['H'] = H
+            graph.nodes[node]['nodal_robust'] = -nodal_robust
+
+        total_distribution = 0
+        for node in output_nodes:
+            for out_edge in graph.out_edges(node, data='LineMW'):
+                total_distribution += out_edge[2]
+        for node in output_nodes:
+            node_dist = 0
+            for out_edge in graph.out_edges(node, data='LineMW'):
+                node_dist += out_edge[2]
+            node_significance = node_dist / total_distribution
+            graph.nodes[node]['node_significance'] = node_significance
+
+        rcf = 0
+        for node in output_nodes:
+            rcf += graph.nodes[node]['nodal_robust'] * graph.nodes[node]['node_significance']
+
+        return rcf
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
         """ A modified fast N-1 method.
