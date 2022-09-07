@@ -39,9 +39,11 @@ import platform
 PYTHON_VERSION = platform.python_version_tuple()
 if PYTHON_VERSION[1] in ['7', '8', '9']:  # pragma: no cover
     try:
-        exec(f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
+        exec(
+            f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
     except ImportError or RuntimeError:
-        warnings.warn("Fail to load ahead-of-time compiled module. Downgrade to just-in-time module for compatibility.")
+        warnings.warn(
+            "Fail to load ahead-of-time compiled module. Downgrade to just-in-time module for compatibility.")
         from ._performance_jit import initialize_bound, calculate_bound
 else:  # pragma: no cover
     from ._performance_jit import initialize_bound, calculate_bound
@@ -351,8 +353,9 @@ class SAW(object):
         # Start by ensuring the non-numeric columns are indeed strings.
         obj[nn_cols] = obj[nn_cols].astype(str)
 
-            # Here we'll strip off the white space.
-        obj[nn_cols] = obj[nn_cols].apply(lambda x: x.str.strip()) if df_flag else obj[nn_cols].str.strip()
+        # Here we'll strip off the white space.
+        obj[nn_cols] = obj[nn_cols].apply(
+            lambda x: x.str.strip()) if df_flag else obj[nn_cols].str.strip()
 
         # Sort by BusNum if present.
         if df_flag:
@@ -484,7 +487,7 @@ class SAW(object):
         return key_field_df['internal_field_name'].tolist()
 
     def get_power_flow_results(self, ObjectType: str, additional_fields: Union[
-        None, List[str]] = None) -> Union[None, pd.DataFrame]:
+            None, List[str]] = None) -> Union[None, pd.DataFrame]:
         """Get the power flow results from SimAuto server.
 
         :param ObjectType: Object type to get results for. Valid types
@@ -509,9 +512,8 @@ class SAW(object):
                 # Extend it.
                 field_list += additional_fields
         except KeyError as e:
-            raise ValueError(f'Unsupported ObjectType for power flow results, {ObjectType}.') from e
-
-
+            raise ValueError(
+                f'Unsupported ObjectType for power flow results, {ObjectType}.') from e
 
         return self.GetParametersMultipleElement(ObjectType=object_type,
                                                  ParamList=field_list)
@@ -565,8 +567,8 @@ class SAW(object):
                                  ' match a PowerWorld internal field name!')
         except IndexError as e:
             # An index error also indicates failure.
-            raise ValueError('The given object has fields which do not' ' match a PowerWorld internal field name!') from e
-
+            raise ValueError(
+                'The given object has fields which do not' ' match a PowerWorld internal field name!') from e
 
         # Now extract the corresponding data types.
         data_types = field_list['field_data_type'].to_numpy()[idx]
@@ -589,8 +591,8 @@ class SAW(object):
         """
         # Ensure the given property name is valid.
         if property_name not in self.SIMAUTO_PROPERTIES:
-            raise ValueError(f'The given property_name, {property_name}, is not currently supported. Valid properties are: {list(self.SIMAUTO_PROPERTIES.keys())}')
-
+            raise ValueError(
+                f'The given property_name, {property_name}, is not currently supported. Valid properties are: {list(self.SIMAUTO_PROPERTIES.keys())}')
 
         # Ensure the given property value has a valid type.
         # noinspection PyTypeHints
@@ -603,8 +605,8 @@ class SAW(object):
         # If we're setting CurrentDir, ensure the path is valid.
         # It seems PowerWorld does not check this.
         if property_name == 'CurrentDir' and not os.path.isdir(property_value):
-            raise ValueError(f'The given path for CurrentDir, {property_value}, is not a valid path!')
-
+            raise ValueError(
+                f'The given path for CurrentDir, {property_value}, is not a valid path!')
 
         # Set the property.
         try:
@@ -678,7 +680,7 @@ class SAW(object):
         df = self.GetParametersMultipleElement('bus', key)
 
         branch = self.GetParametersMultipleElement('branch', self.get_key_field_list('branch') + ['LineR', 'LineX', 'LineC',
-                                                                                              'LineTap', 'LinePhase'])
+                                                                                                  'LineTap', 'LinePhase'])
         branch['LineR'] = branch['LineR'].astype(float)
         branch['LineX'] = branch['LineX'].astype(float)
         branch['LineC'] = branch['LineC'].astype(float)
@@ -688,7 +690,8 @@ class SAW(object):
         nb = df.shape[0]
         nl = branch.shape[0]
 
-        Ys = 1 / (branch['LineR'].to_numpy() + 1j * branch['LineX'].to_numpy())  # series admittance
+        Ys = 1 / (branch['LineR'].to_numpy() + 1j *
+                  branch['LineX'].to_numpy())  # series admittance
         Bc = branch['LineC'].to_numpy()  # line charging susceptance
         tap = branch['LineTap'].to_numpy()
         shift = branch['LinePhase'].to_numpy()
@@ -712,19 +715,23 @@ class SAW(object):
         f = loop_translate(f, d)
         t = branch['BusNum:1'].to_numpy(dtype=int).reshape(-1)
         t = loop_translate(t, d)
-        ## connection matrix for line & from buses
-        i = np.r_[range(nl), range(nl)]  ## double set of row indices
-        Yf = csr_matrix((np.hstack([Yff.reshape(-1), Yft.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
-        Yt = csr_matrix((np.hstack([Ytf.reshape(-1), Ytt.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
+        # connection matrix for line & from buses
+        i = np.r_[range(nl), range(nl)]  # double set of row indices
+        Yf = csr_matrix(
+            (np.hstack([Yff.reshape(-1), Yft.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
+        Yt = csr_matrix(
+            (np.hstack([Ytf.reshape(-1), Ytt.reshape(-1)]), (i, np.hstack([f, t]))), (nl, nb))
         return Yf, Yt
 
     def get_shunt_admittance(self):
         """Get shunt admittance Ysh.
         :return: A Ysh sparse matrix
         """
-        base = self.GetParametersMultipleElement('Sim_Solution_Options', ['SBase']).to_numpy(float).ravel()
+        base = self.GetParametersMultipleElement(
+            'Sim_Solution_Options', ['SBase']).to_numpy(float).ravel()
         key = self.get_key_field_list('bus')
-        df = self.GetParametersMultipleElement('bus', key + ['BusSS', 'BusSSMW'])
+        df = self.GetParametersMultipleElement(
+            'bus', key + ['BusSS', 'BusSSMW'])
         df['BusSS'] = df['BusSS'].astype(float)
         df['BusSSMW'] = df['BusSSMW'].astype(float)
         df.fillna(0, inplace=True)
@@ -856,7 +863,8 @@ class SAW(object):
         if geographic or node_attr:
             try:
                 node_df = self.GetParametersMultipleElement(node, nf)
-                node_attr_reformat = node_df.set_index(node_from).to_dict('index')
+                node_attr_reformat = node_df.set_index(
+                    node_from).to_dict('index')
                 nx.set_node_attributes(graph, node_attr_reformat)
             except ValueError as e:
                 raise e
@@ -874,7 +882,8 @@ class SAW(object):
         """
         self.pw_order = True
         count = self.ListOfDevices('branch').shape[0]
-        self.RunScriptCommand("CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)")
+        self.RunScriptCommand(
+            "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)")
         array = [f"LODFMult:{x}" for x in range(count)]
         if count <= 1000:
             self._extracted_from_get_lodf_matrix_9(array)
@@ -890,7 +899,8 @@ class SAW(object):
             df = self.GetParametersMultipleElement('branch', batch)
             temp = df.to_numpy(dtype=float) / 100
             temp = temp.round(precision)
-            isl = np.any(temp >= 10, axis=1) if isl is None else np.logical_or(isl, np.any(temp >= 10, axis=1))
+            isl = np.any(temp >= 10, axis=1) if isl is None else np.logical_or(
+                isl, np.any(temp >= 10, axis=1))
 
             temp[isl, :] = 0
             temp = coo_matrix(temp)
@@ -951,10 +961,10 @@ class SAW(object):
         isf_fields = ['MultBusTLRSens']
         for i in range(1, num_branch):
             isf_fields += [f"MultBusTLRSens:{i}"]
-        res = self.GetParametersMultipleElement('Bus', isf_fields).to_numpy(dtype=float)
+        res = self.GetParametersMultipleElement(
+            'Bus', isf_fields).to_numpy(dtype=float)
         self.pw_order = temp
         return res
-
 
     def _prepare_sensitivity(self):
         """
@@ -963,7 +973,8 @@ class SAW(object):
         temp = self.pw_order
         self.pw_order = True
         bus = self.GetParametersMultipleElement('bus', ['BusNum', 'BusCat'])
-        br = self.GetParametersMultipleElement('branch', ['BusNum', 'BusNum:1', 'LineX'])
+        br = self.GetParametersMultipleElement(
+            'branch', ['BusNum', 'BusNum:1', 'LineX'])
         self.pw_order = temp
         slack = bus[bus['BusCat'] == 'Slack'].index.tolist()[0]
         noslack = bus.index.tolist()
@@ -975,7 +986,8 @@ class SAW(object):
         nl = br.shape[0]
         nb = bus.shape[0]
         i = np.r_[range(nl), range(nl)]
-        Cft = csr_matrix((np.r_[np.ones(nl), -np.ones(nl)], (i, np.r_[f, t])), (nl, nb))
+        Cft = csr_matrix(
+            (np.r_[np.ones(nl), -np.ones(nl)], (i, np.r_[f, t])), (nl, nb))
         x_val = br['LineX'].to_numpy(dtype=float)
         b = 1 / x_val
         Bf = csr_matrix((np.r_[b, -b], (i, np.r_[f, t])))
@@ -991,17 +1003,18 @@ class SAW(object):
             if _col.size < _row.size:
                 _col = np.insert(_col, 0, -1)
             elif first_zero:
-                _data = np.insert(_row, 0, -1)  # replace the first data with -1
+                # replace the first data with -1
+                _data = np.insert(_row, 0, -1)
                 _row = np.insert(_row, 0, 0)
                 _col = np.insert(_col, 0, 0)
-            return csr_matrix((_data, (_row, _col)), shape=ary[0].shape)  # create zero like csr
-                                                                          # matrix
+            # create zero like csr
+            return csr_matrix((_data, (_row, _col)), shape=ary[0].shape)
+            # matrix
 
         v_Bbus = vstack([get_data(Bbus), Bbus[1:]], format='csr').T
         Bbus = vstack([get_data(v_Bbus, True), v_Bbus[1:]]).T
 
         return Bbus, Bf, Cft, slack, noslack
-
 
     def get_shift_factor_matrix_fast(self):
         """
@@ -1015,7 +1028,6 @@ class SAW(object):
         res = Bf * scipy.sparse.linalg.inv(Bbus)
         res[:, 0] = 0
         return res.T.todense()
-
 
     def get_ptdf_matrix_fast(self):
         """
@@ -1037,7 +1049,6 @@ class SAW(object):
         dTheta[noref, :] = dtheta_ref
 
         return Bf * dTheta
-
 
     def get_lodf_matrix_fast(self):
         """
@@ -1066,7 +1077,6 @@ class SAW(object):
         res = LODF - np.diag(np.diag(LODF)) - np.eye(nl, nl)
         return res.T
 
-
     def fast_n1_test(self):
         """
         A pure LODF-based fast N-1 contingency analysis implementation.
@@ -1080,7 +1090,8 @@ class SAW(object):
         print(f"There are {np.sum(isl)} branches that could cause islanding.")
         original = self.pw_order
         self.pw_order = True
-        br = self.GetParametersMultipleElement('branch', ['LineMW', 'LineLimMVA'])
+        br = self.GetParametersMultipleElement(
+            'branch', ['LineMW', 'LineLimMVA'])
         self.pw_order = original
         flows = br['LineMW'].to_numpy(dtype=float)
         limits = br['LineLimMVA'].to_numpy(dtype=float)
@@ -1091,7 +1102,6 @@ class SAW(object):
         print("---------- Omitting the islanding cases ----------")
         print(f"N-1 secure: {secure}")
         return secure
-
 
     def fast_n2_islanding_detection(self):
         """
@@ -1108,7 +1118,6 @@ class SAW(object):
         # tr for better numerical stability
         return (np.count_nonzero(c2_isl) - nb) / 2, c2_isl
 
-
     def change_to_temperature(self, T: Union[int, float, np.ndarray], R25=7.283, R75=8.688):
         """
         Change line resistance according to temperature.
@@ -1121,7 +1130,8 @@ class SAW(object):
         :param R25: Per unit resistance at 25 Celsius
         :param R75: Per unit resistance at 75 Celsius
         """
-        branch = self.GetParametersMultipleElement('branch', self.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        branch = self.GetParametersMultipleElement(
+            'branch', self.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
         if isinstance(T, np.ndarray):
             temp = np.full(branch.shape[0], 25, dtype=float)
             columns = T.shape[1]
@@ -1131,7 +1141,8 @@ class SAW(object):
                 temp[indexes[i]] = T[1, i]
             branch['LineR'] = np.multiply(branch['LineR'], temp)
         else:
-            branch.loc[branch['BranchDeviceType'] == "Line", "LineR"] *= (1 + (R75 / R25 - 1) / 50 * (T - 25))
+            branch.loc[branch['BranchDeviceType'] == "Line",
+                       "LineR"] *= (1 + (R75 / R25 - 1) / 50 * (T - 25))
         self.change_parameters_multiple_element_df('branch', branch)
 
     def run_contingency_analysis(self, option: str = "N-1", validate: bool = False):
@@ -1149,7 +1160,8 @@ class SAW(object):
         self.pw_order = True
         validation_result = None
 
-        df = self.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom', 'LineLimMVA'])
+        df = self.GetParametersMultipleElement(
+            "branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom', 'LineLimMVA'])
         convert_dict = {'MWFrom': float,
                         'LineLimMVA': float
                         }
@@ -1157,7 +1169,8 @@ class SAW(object):
         if np.any(df['LineLimMVA'] == 0):
             raise(Error("Branch without limit is detected. Please fix and try again."))
         if np.any((df['MWFrom'] > df['LineLimMVA'])):
-            raise(Error("The current operational states has violations. Please fix and try again."))
+            raise(Error(
+                "The current operational states has violations. Please fix and try again."))
 
         if self.lodf is None:
             self.lodf, self.isl = self.get_lodf_matrix()
@@ -1168,7 +1181,8 @@ class SAW(object):
         count = df.shape[0]
         c1_isl = np.zeros(count)
         c1_isl[self.isl] = 1
-        secure, margins, ctg, violations = self.n1_fast(c1_isl, count, self.lodf, f, lim)
+        secure, margins, ctg, violations = self.n1_fast(
+            c1_isl, count, self.lodf, f, lim)
         result = ctg
         if option == 'N-2':
             if not secure:
@@ -1181,18 +1195,20 @@ class SAW(object):
             secure, result = self.n2_fast(c1_isl, count, self.lodf, f, lim)
         if validate and not secure:
             if option == 'N-1':
-                f_result = df[result>0]
+                f_result = df[result > 0]
                 ctg = pd.DataFrame()
                 ctg_ele = pd.DataFrame()
-                temp = 'BRANCH' + f_result['BusNum'] + f_result['BusNum:1'] + ' ' + f_result['LineCircuit']
+                temp = 'BRANCH' + \
+                    f_result['BusNum'] + f_result['BusNum:1'] + \
+                    ' ' + f_result['LineCircuit']
                 ctg['Name'] = temp
                 ctg_ele['Contingency'] = temp
                 ctg_ele['Object'] = temp
                 ctg_ele['Action'] = 'OPEN'
             elif option == 'N-2':
-                result_cleaned = result[~(result==0).all(1)]
-                b0 = result_cleaned[:,0]
-                b1 = result_cleaned[:,1]
+                result_cleaned = result[~(result == 0).all(1)]
+                b0 = result_cleaned[:, 0]
+                b1 = result_cleaned[:, 1]
                 bf0 = df.iloc[b0, :].reset_index(drop=True)
                 bf1 = df.iloc[b1, :].reset_index(drop=True)
                 ctg = pd.DataFrame()
@@ -1202,14 +1218,18 @@ class SAW(object):
                     'BusNum:1'] + ' ' + bf1['LineCircuit']
                 ctg['Name'] = temp
                 ctg_ele0['Contingency'] = temp
-                ctg_ele0['Object'] = 'BRANCH' + bf0['BusNum'] + bf0['BusNum:1'] + ' ' + bf0['LineCircuit']
+                ctg_ele0['Object'] = 'BRANCH' + bf0['BusNum'] + \
+                    bf0['BusNum:1'] + ' ' + bf0['LineCircuit']
                 ctg_ele0['Action'] = 'OPEN'
                 ctg_ele1['Contingency'] = temp
-                ctg_ele1['Object'] = 'BRANCH' + bf1['BusNum'] + bf1['BusNum:1'] + ' ' + bf1['LineCircuit']
+                ctg_ele1['Object'] = 'BRANCH' + bf1['BusNum'] + \
+                    bf1['BusNum:1'] + ' ' + bf1['LineCircuit']
                 ctg_ele1['Action'] = 'OPEN'
-                ctg_ele = pd.concat([ctg_ele0, ctg_ele1]).sort_index().reset_index(drop=True)
+                ctg_ele = pd.concat([ctg_ele0, ctg_ele1]
+                                    ).sort_index().reset_index(drop=True)
             self.change_parameters_multiple_element_df('Contingency', ctg)
-            self.change_parameters_multiple_element_df('ContingencyElement', ctg_ele)
+            self.change_parameters_multiple_element_df(
+                'ContingencyElement', ctg_ele)
             validation_result = self.ctg_solveall()
         return secure, result, validation_result
 
@@ -1256,7 +1276,7 @@ class SAW(object):
                     total)  # Assume no parallel lines
                 graph[edge[0]][edge[1]][key]['p'] = p
                 graph[edge[0]][edge[1]][key]['tolerance'] = 100 / (
-                            graph[edge[0]][edge[1]][key]['LineMaxPercent'] + 0.000001)
+                    graph[edge[0]][edge[1]][key]['LineMaxPercent'] + 0.000001)
 
         output_nodes = [u for u, deg in graph.out_degree() if deg]
         for node in output_nodes:
@@ -1271,7 +1291,8 @@ class SAW(object):
                 else:
                     tolerance = graph[out_edge[0]][out_edge[1]]['1'][
                         'tolerance']  # Assume no parallel lines
-                H += p * math.log(p + 1e-6, 10)  # Some p = 0, and assume the base is 10
+                # Some p = 0, and assume the base is 10
+                H += p * math.log(p + 1e-6, 10)
                 nodal_robust += tolerance * p * math.log(p + 1e-6, 10)
                 out_edge_copy = out_edge
             graph.nodes[node]['H'] = H
@@ -1290,7 +1311,8 @@ class SAW(object):
 
         rcf = 0
         for node in output_nodes:
-            rcf += graph.nodes[node]['nodal_robust'] * graph.nodes[node]['node_significance']
+            rcf += graph.nodes[node]['nodal_robust'] * \
+                graph.nodes[node]['node_significance']
 
         return rcf
 
@@ -1319,39 +1341,52 @@ class SAW(object):
         """
         warnings.warn("Please make sure the current system state is valid")
 
-        ### Collect power flow information from the case
-        ## ideally, allow users to choose whether they want to analyze real power (MW), reactive power (MVR), or whole power (MVA)
-        ## one issue, losses don't have MVA
-        kf = self.get_key_field_list('branch') + ["LineMW", "LineMVR", "LineMVA","LineLossMW","LineLossMVR"]
+        # Collect power flow information from the case
+        # ideally, allow users to choose whether they want to analyze real power (MW), reactive power (MVR), or whole power (MVA)
+        # one issue, losses don't have MVA
+        kf = self.get_key_field_list(
+            'branch') + ["LineMW", "LineMVR", "LineMVA", "LineLossMW", "LineLossMVR"]
         branch_df = self.GetParametersMultipleElement('branch', kf)
-        ###add a function to get LinelossMVA
+        # add a function to get LinelossMVA
         LinelossMVA = np.zeros(len(branch_df))
         for i in range(len(branch_df)):
             realloss = branch_df["LineLossMW"][i]
             reactiveloss = branch_df["LineLossMVR"][i]
-            LinelossMVA[i] = np.sqrt(pow(realloss,2) + pow(reactiveloss,2))
+            LinelossMVA[i] = np.sqrt(pow(realloss, 2) + pow(reactiveloss, 2))
         branch_df['LineLossMVA'] = LinelossMVA
-        gen_keys = self.get_key_field_list('gen') + ["GenMW","GenMVR","GenMVA","GenProdCost"]
+        gen_keys = self.get_key_field_list(
+            'gen') + ["GenMW", "GenMVR", "GenMVA", "GenProdCost"]
         gen = self.GetParametersMultipleElement('gen', gen_keys)
-        self.pw_order = False ## fix the order of generator list for later matrix organization
-        load_keys = self.get_key_field_list('load')+["LoadMW","LoadMVR","LoadMVA"]
+        self.pw_order = False  # fix the order of generator list for later matrix organization
+        load_keys = self.get_key_field_list(
+            'load')+["LoadMW", "LoadMVR", "LoadMVA"]
         load = self.GetParametersMultipleElement('load', load_keys)
         bus_keys = self.get_key_field_list('bus')
         bus = self.GetParametersMultipleElement('bus', bus_keys)
+        bus.reset_index(inplace=True)
+        bus.set_index('BusNum', inplace=True)
+        f = branch_df['BusNum'].map(bus['index']).to_numpy(dtype=int)
+        t = branch_df['BusNum:1'].map(bus['index']).to_numpy(dtype=int)
+        branch_df['findex'] = f
+        branch_df['tindex'] = t
+        genb = gen['BusNum'].map(bus['index']).to_numpy(dtype=int)
+        gen['gindex'] = genb
+        loadb = load['BusNum'].map(bus['index']).to_numpy(dtype=int)
+        load['loadindex'] = loadb
 
         if split_generator:
-            ##Option 1  -- the previous way to study the overall robustness, 
-            #### It should be better since it captures the generators' robustness
+            # Option 1  -- the previous way to study the overall robustness,
+            # It should be better since it captures the generators' robustness
             ### not aggregate gen #################################################################################################
-            ## gen_unique=list(set(gen.BusNum))
+            # gen_unique=list(set(gen.BusNum))
             num_gen = len(gen)
             num_bus = len(bus)
             num_actor = num_gen+num_bus+3
-            s = (num_actor,num_actor)
+            s = (num_actor, num_actor)
             EFM = np.zeros(s)
-            #print(num_gen)
-            #print(num_bus)
-            ## feed generator to first row
+            # print(num_gen)
+            # print(num_bus)
+            # feed generator to first row
             for i in range(num_gen):
                 if target == 'MW':
                     flow = gen.GenMW[i]
@@ -1359,18 +1394,19 @@ class SAW(object):
                     flow = gen.GenMVR[i]
                 elif target == 'MVA':
                     flow = gen.GenMVA[i]
-                EFM[0][i+1] += flow #[row][col]
-            
-            ## feed generator to diagonal between Gen and Bus
+                EFM[0][i+1] += flow  # [row][col]
+
+            # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
-                    if bus.BusNum[i] == gen.BusNum[j]:
+                     # if bus.BusNum[i]==gen.BusNum[j]:
+                    if i == gen.gindex[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
-                        
-            ## feed load to last second
+
+            # feed load to last second
             for i in range(len(load)):
                 for j in range(num_bus):
-                    if load.BusNum[i] == bus.BusNum[j]:
+                    if load.loadindex[i] == j:
                         if target == 'MW':
                             flow = load.LoadMW[i]
                         elif target == 'MVR':
@@ -1379,11 +1415,11 @@ class SAW(object):
                             flow = load.LoadMVA[i]
                         #flow = load.LoadMW[i]
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
-                        
-            ##feed line flow to EFM
+
+            # feed line flow to EFM
             for i in range(len(branch_df)):
-                frombus = branch_df['BusNum'][i]
-                tobus = branch_df['BusNum:1'][i]
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
                 if target == 'MW':
                     flow = branch_df.LineMW[i]
                 elif target == 'MVR':
@@ -1391,56 +1427,59 @@ class SAW(object):
                 elif target == 'MVA':
                     flow = branch_df.LineMVA[i]
                     #flow = branch_df.LineMW[i]
-                if flow>0:
-                    EFM[frombus+num_gen][tobus+num_gen] += abs(flow)
+                if flow > 0:
+                    EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
-                    EFM[tobus+num_gen][frombus+num_gen] += abs(flow)
-                    
-            ## feed loss
+                    EFM[1+tobus+num_gen][1+frombus+num_gen] += abs(flow)
+
+            # feed loss
+            # this loss aggregates the line loss to from bus
+            # can be further updated based on your consideration.
+            # however, the loss is/should be very small, thus it may not induce any change
             for i in range(len(branch_df)):
-                frombus=branch_df['BusNum'][i]
-                tobus=branch_df['BusNum:1'][i]
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
                 if target == 'MW':
                     flow = branch_df.LineLossMW[i]
                 elif target == 'MVR':
                     flow = branch_df.LineLossMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineLossMVA[i]
-                #flow=branch_df.LineLossMW[i]
-                EFM[num_gen+frombus][2+num_bus+num_gen] +=abs(flow)
+                # flow=branch_df.LineLossMW[i]
+                EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
         else:
-            ##Option 2 #### Not considering generators' robustness
+            # Option 2 #### Not considering generators' robustness
             ###aggregate gen#####################################################################################################
             gen_unique = list(set(gen.BusNum))
             num_gen = len(gen_unique)
             num_bus = bus.shape[0]
             num_actor = num_gen+num_bus+3
-            s = (num_actor,num_actor)
+            s = (num_actor, num_actor)
             EFM = np.zeros(s)
 
-            ## feed generator to first row
+            # feed generator to first row
             for i in range(num_gen):
                 for j in range(len(gen)):
-                    if gen_unique[i] == gen.BusNum[j]:
+                    if gen_unique[i] == gen.gindex[j]:
                         if target == 'MW':
                             flow = gen.GenMW[i]
                         elif target == 'MVR':
                             flow = gen.GenMVR[i]
                         elif target == 'MVA':
                             flow = gen.GenMVA[i]
-                        #flow = gen.GenMW[j] 
-                        EFM[0][i+1] += flow #[row][col]
-            ## feed generator to diagonal between Gen and Bus
+                        #flow = gen.GenMW[j]
+                        EFM[0][i+1] += flow  # [row][col]
+            # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
-                    if bus.BusNum[i] == gen_unique[j]:
+                    if i == gen_unique[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
-                        
-            ## feed load to last second
+
+            # feed load to last second
             for i in range(len(load)):
                 for j in range(num_bus):
-                    if load.BusNum[i] == bus.BusNum[j]:
+                    if load.BusNum[i] == j:
                         if target == 'MW':
                             flow = load.LoadMW[i]
                         elif target == 'MVR':
@@ -1449,125 +1488,123 @@ class SAW(object):
                             flow = load.LoadMVA[i]
                         #flow = load.LoadMW[i]
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
-                        
-            ##feed line flow to EFM
+
+            # feed line flow to EFM
             for i in range(len(branch_df)):
-                frombus = branch_df['BusNum'][i]
-                tobus = branch_df['BusNum:1'][i]
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
                 if target == 'MW':
                     flow = branch_df.LineMW[i]
                 elif target == 'MVR':
                     flow = branch_df.LineMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineMVA[i]
-                #flow = branch_df.LineMW[i]
-                if flow>0:
-                    EFM[frombus+num_gen][tobus+num_gen] += abs(flow)
+                if flow > 0:
+                    EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
-                    EFM[tobus+num_gen][frombus+num_gen] += abs(flow)
-                    
-            ## feed loss
+                    EFM[1+tobus+num_gen][1+frombus+num_gen] += abs(flow)
+
+            # feed loss
+            # this loss aggregates the line loss to from bus
+            # can be further updated based on your consideration.
+            # however, the loss is/should be very small, thus it may not induce any change
             for i in range(len(branch_df)):
-                frombus = branch_df['BusNum'][i]
-                tobus = branch_df['BusNum:1'][i]
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
                 if target == 'MW':
                     flow = branch_df.LineLossMW[i]
                 elif target == 'MVR':
                     flow = branch_df.LineLossMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineLossMVA[i]
-                    #flow=branch_df.LineLossMW[i]
-                EFM[num_gen+frombus][2+num_bus+num_gen] += abs(flow)
-            
-            
-        
-            
-            
-        ###All ecological metrics#############################################################################################
+                EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
+        ###All ecological metrics#############################################################################################
 
         T = EFM
         tstp = sum(T)
 
-        k = 1 #coefficient variable
+        k = 1  # coefficient variable
         P = T.transpose()
         # P_rsum=sum(P,dims=2) sum over row
         # P_csum=sum(P,dims=1) sum over columns
 
-        P_csum = P.sum(axis =0) #sum over colums
-        P_rsum = P.sum(axis =1) #sum over rows
+        P_csum = P.sum(axis=0)  # sum over colums
+        P_rsum = P.sum(axis=1)  # sum over rows
 
         k = 1
         s = len(T)
-        Q = np.zeros((s,s))
+        Q = np.zeros((s, s))
 
         tstp = T.sum()
 
-        for i in range(len(T)):         
-            if P_rsum[i] > 0:     
+        for i in range(len(T)):
+            if P_rsum[i] > 0:
                 Q[i] = P[i]/P_rsum[1]
             else:
-                i=i+1
-                
-        # N = inv(eye(size(P,1))-Q);  % Leontief's Inverse      
+                i = i+1
+
+        # N = inv(eye(size(P,1))-Q);  % Leontief's Inverse
         N = np.linalg.inv(np.eye(s)-Q)
 
-        inflow = T[0].sum() #sum(T[1,:])
+        inflow = T[0].sum()  # sum(T[1,:])
 
-        internal_flow = sum(sum(T[1:s-2][1:s-2])) #sum(sum(T[2:(s-2),2:(s-2)]));
-            
-        tstf = inflow + internal_flow    # total system throughflow (inflow + internal_flow)
+        # sum(sum(T[2:(s-2),2:(s-2)]));
+        internal_flow = sum(sum(T[1:s-2][1:s-2]))
 
-        mpl = tstf/inflow                # mean path length   
-            
+        # total system throughflow (inflow + internal_flow)
+        tstf = inflow + internal_flow
+
+        mpl = tstf/inflow                # mean path length
+
         d_N = N.diagonal()                   # diagonal elements of the N matrix
 
-        # c_re = (d_N[2:(n_T-2)]-ones(size(d_N[2:(n_T-2)]))) ./ d_N[2:(n_T-2)];  
+        # c_re = (d_N[2:(n_T-2)]-ones(size(d_N[2:(n_T-2)]))) ./ d_N[2:(n_T-2)];
         temp = d_N[1:s-2]
         temp1 = np.ones(s-3)
-        c_re = (temp-temp1)/temp # cycling efficiency vector
+        c_re = (temp-temp1)/temp  # cycling efficiency vector
 
-        #tstc = c_re.transpose()*P_rsum[1:s-2]; # cycled throughflow
+        # tstc = c_re.transpose()*P_rsum[1:s-2]; # cycled throughflow
         tstc = np.dot(c_re.transpose(), P_rsum[1:s-2])
-            
-        ci = tstc/tstf;   # Finn Cycling Index (CI) 
-            
-        AMI_ij = np.zeros((s,s))  # Average Mutual Information (AMI)
-        T_csum = T.sum(axis = 0) #sum over colums
-        T_rsum = T.sum(axis = 1) #sum over rows
 
-        # i=1;    
+        ci = tstc/tstf   # Finn Cycling Index (CI)
+
+        AMI_ij = np.zeros((s, s))  # Average Mutual Information (AMI)
+        T_csum = T.sum(axis=0)  # sum over colums
+        T_rsum = T.sum(axis=1)  # sum over rows
+
+        # i=1;
         for i in range(len(T)):
             for j in range(len(T)):
                 value = ((T[i][j]*tstp)/(T_rsum[i]*T_csum[j]))
-                if value>0:
-                    AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value,2)
+                if value > 0:
+                    AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value, 2)
                 else:
-                    AMI_ij[i][j] = 0       
+                    AMI_ij[i][j] = 0
 
         ami = sum(sum(AMI_ij))
-        asc = ami * tstp; # Ascendency (ASC) 
+        asc = ami * tstp  # Ascendency (ASC)
 
-        DC_ij =  np.zeros((s,s)) # Development Capacity (DC)
+        DC_ij = np.zeros((s, s))  # Development Capacity (DC)
         for i in range(len(T)):
             for j in range(len(T)):
                 value = T[i][j]/tstp
-                if value>0:
-                    DC_ij[i][j] = T[i][j]*math.log(value,2)
+                if value > 0:
+                    DC_ij[i][j] = T[i][j]*math.log(value, 2)
                 else:
                     DC_ij[i][j] = 0
         dc = -1*sum(sum(DC_ij))
-            
-        tso = dc - asc; # Total System Overhead (TSO)
 
-        reco = -1*k*(asc/dc)*math.log(asc/dc);   # Robustness (R)
+        tso = dc - asc  # Total System Overhead (TSO)
 
-        ###Here are all ecosystems' metrics can be calculated
-        ## tstc: cycled throughflow
-        ## ci: Finn Cycling Index (CI) 
-        ## tso: Total System Overhead (TSO)
+        reco = -1*k*(asc/dc)*math.log(asc/dc)   # Robustness (R)
+
+        # Here are all ecosystems' metrics can be calculated
+        # tstc: cycled throughflow
+        # ci: Finn Cycling Index (CI)
+        # tso: Total System Overhead (TSO)
         ## asc: Ascendency (ASC)
-        ## dc:  Development Capacity (DC)
+        # dc:  Development Capacity (DC)
         ## robustness: Reco
         return [reco, asc, dc, tstc, ci, tso]
 
@@ -1658,7 +1695,8 @@ class SAW(object):
         B0 -= np.diag(np.diag(B0))
         k = 0
         changing = 1
-        num_isl_ctg = np.sum(c1_isl.ravel()) * count - np.sum(c1_isl.ravel()) + np.sum(c2_isl.ravel()) / 2
+        num_isl_ctg = np.sum(c1_isl.ravel()) * count - \
+            np.sum(c1_isl.ravel()) + np.sum(c2_isl.ravel()) / 2
         kmax = 10
         storage = {}
 
@@ -1673,7 +1711,8 @@ class SAW(object):
             # Wbuf1 = np.maximum(np.diag(bp.max(0)) @ A, np.diag(bp.min(0)) @ A)
             # Wbuf2 = np.maximum(np.diag(bn.max(0)) @ A, np.diag(bn.min(0)) @ A)
             # W = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
-            W, Wbuf1, Wbuf2 = initialize_bound(bp.max(0), bp.min(0), bn.max(0), bn.min(0), A)
+            W, Wbuf1, Wbuf2 = initialize_bound(
+                bp.max(0), bp.min(0), bn.max(0), bn.min(0), A)
 
             storage[k + 1, 1] = A0
             storage[k + 1, 2] = B0
@@ -1689,8 +1728,10 @@ class SAW(object):
             Amin0 = A.min(0)
             Amax1 = A.max(1)
             Amin1 = A.min(1)
-            Wbuf1 = np.maximum(np.outer(bp.max(1), Amax0), np.outer(bp.min(1), Amin0))
-            Wbuf2 = np.maximum(np.outer(bn.max(1), Amax0), np.outer(bn.min(1), Amin0))
+            Wbuf1 = np.maximum(np.outer(bp.max(1), Amax0),
+                               np.outer(bp.min(1), Amin0))
+            Wbuf2 = np.maximum(np.outer(bn.max(1), Amax0),
+                               np.outer(bn.min(1), Amin0))
             # Wb1 = np.maximum(bp @ np.diag(Amax1) + Wbuf1, bp @ np.diag(Amin1) + Wbuf1)
             # Wb2 = np.maximum(bn @ np.diag(Amax1) + Wbuf2, bn @ np.diag(Amin1) + Wbuf2)
             # W = np.maximum(Wb1, Wb2)  # bounding matrix for the set B
@@ -1725,8 +1766,8 @@ class SAW(object):
                     temp2 = lodf[i, j] * lodf[j, i]
                     det = temp1 - temp2
                     if det == 0:
-                        c2[i,j] = 1
-                        c2[j,i] = 1
+                        c2[i, j] = 1
+                        c2[j, i] = 1
                     else:
                         length = len(f)
                         num = 0
@@ -1754,19 +1795,22 @@ class SAW(object):
 
         # Bruteforce the filtered contingencies
         k = 0
-        brute_cont = np.zeros((len(f)**2,3))
+        brute_cont = np.zeros((len(f)**2, 3))
         c2 = np.zeros([count, count])
-        print(f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
+        print(
+            f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
         for i in trange(count - 1):
             if np.sum(A0[i, :] > 0):
-                k = compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, k)
-        print(f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
+                k = compute_violation_numba(
+                    lodf, f, c2, lim, i, count, A0, brute_cont, k)
+        print(
+            f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
         if k:
             return False, brute_cont
         else:
             return True, None
 
-    def ctg_autoinsert(self, object_type: str, options: Union[None, dict]=None):
+    def ctg_autoinsert(self, object_type: str, options: Union[None, dict] = None):
         """Auto insert contingencies.
 
         :param object_type: Object type, e.g. branch.
@@ -1776,7 +1820,8 @@ class SAW(object):
         :returns: List of contingencies.
         """
         self.pw_order = True
-        option = self.GetParametersMultipleElement('CTG_AutoInsert_Options_Value', ['Option', 'Value'])
+        option = self.GetParametersMultipleElement(
+            'CTG_AutoInsert_Options_Value', ['Option', 'Value'])
         if object_type.lower() == 'branch':
             _object_type = 'LINE'
         elif object_type.lower() == 'bus':
@@ -1791,7 +1836,8 @@ class SAW(object):
             for key, value in options.items():
                 _mask = option['Option'] == key
                 option.loc[_mask, 'Value'] = value
-        self.change_parameters_multiple_element_df('CTG_AutoInsert_Options_Value', option)
+        self.change_parameters_multiple_element_df(
+            'CTG_AutoInsert_Options_Value', option)
         self.RunScriptCommand("CTGAutoInsert;")
         return self.GetParametersMultipleElement('Contingency', ['Name', 'Skip'])
 
@@ -2033,7 +2079,8 @@ class SAW(object):
                 nf_new = len(self.FIELD_LIST_COLUMNS_NEW)
                 # Search the error's arguments.
                 r1 = re.search(exp_base + exp_end.format(nf_old), e.args[0])
-                r2 = re.search(exp_base + exp_end.format(nf_default), e.args[0])
+                r2 = re.search(
+                    exp_base + exp_end.format(nf_default), e.args[0])
                 r3 = re.search(exp_base + exp_end.format(nf_new), e.args[0])
 
                 # Both results should match, i.e., not be None.
@@ -2203,7 +2250,7 @@ class SAW(object):
         """This function is maintained in versions of Simulator later 
         than version 9 for compatibility with Simulator version 9. This 
         function will call the GetParametersSingleElement implicitly.
-        
+
         `PowerWorld Documentation
         <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/GetParametersSingleElement_Function.htm>`__
 
@@ -2925,8 +2972,8 @@ class SAW(object):
         try:
             f = getattr(self._pwcom, func)
         except AttributeError:
-            raise AttributeError(f'The given function, {func}, is not a valid SimAuto function.') from None
-
+            raise AttributeError(
+                f'The given function, {func}, is not a valid SimAuto function.') from None
 
         # Call the function.
         try:
@@ -3044,15 +3091,15 @@ class SAW(object):
         # exactly, this will return True. Otherwise, False will be
         # returned.
         return (
-                np.allclose(
-                    merged[cols_in[numeric_cols]].to_numpy(),
-                    merged[cols_out[numeric_cols]].to_numpy()
-                )
-                and
-                np.array_equal(
-                    merged[cols_in[str_cols]].to_numpy(),
-                    merged[cols_out[str_cols]].to_numpy()
-                )
+            np.allclose(
+                merged[cols_in[numeric_cols]].to_numpy(),
+                merged[cols_out[numeric_cols]].to_numpy()
+            )
+            and
+            np.array_equal(
+                merged[cols_in[str_cols]].to_numpy(),
+                merged[cols_out[str_cols]].to_numpy()
+            )
         )
 
     def _to_numeric(self, data: Union[pd.DataFrame, pd.Series],
@@ -3149,11 +3196,13 @@ def df_to_aux(fp, df, object_name: str):
                 container.append(','.join(working_line))
             break
     container = [ls + "," for ls in container[:-1]] + [container[-1]]
-    container = [container[0]] + ["    " + ls for ls in container[1:]]  # add tab to each line
+    container = [container[0]] + ["    " +
+                                  ls for ls in container[1:]]  # add tab to each line
 
     # write the remaining part
     container.append("{")
-    container.extend(json.dumps(row, separators=(' ', ': '))[1:-1] for row in df.values.tolist())
+    container.extend(json.dumps(row, separators=(' ', ': '))
+                     [1:-1] for row in df.values.tolist())
     container.append("}\r\n")
     fp.write('\n'.join(container))
 
