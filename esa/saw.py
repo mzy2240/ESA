@@ -978,9 +978,25 @@ class SAW(object):
         b = 1 / x_val
         Bf = csr_matrix((np.r_[b, -b], (i, np.r_[f, t])))
         Bbus = Cft.T * Bf
-        Bbus[0, :] = 0
-        Bbus[:, 0] = 0
-        Bbus[0, 0] = -1
+
+        from scipy.sparse import vstack
+        def get_data(ary, first_zero=False):
+
+            """This function takes in the csr matrix, extract the first row, returns zero like matrix."""
+            _col = ary.getrow(0).toarray().nonzero()[1]  # get the non-zero col
+            _row = np.zeros(ary[0].data.shape)  # change data to 0
+            _data = _row
+            if _col.size < _row.size:
+                _col = np.insert(_col, 0, -1)
+            elif first_zero:
+                _data = np.insert(_row, 0, -1) # replace the first data with -1
+                _row = np.insert(_row, 0, 0)
+                _col = np.insert(_col, 0, 0)
+            return csr_matrix((_data, (_row, _col)), shape=ary[0].shape)  # create zero like csr matrix
+
+        v_Bbus = vstack([get_data(Bbus), Bbus[1:]]).T
+        Bbus = vstack([get_data(v_Bbus, True), v_Bbus[1:]]).T
+
         return Bbus, Bf, Cft, slack, noslack
 
 
