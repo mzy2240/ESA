@@ -53,7 +53,7 @@ from esa.saw import convert_to_windows_path, df_to_aux
 
 # noinspection PyUnresolvedReferences
 from tests.constants import PATH_14, PATH_14_PWD, PATH_2000, \
-    PATH_9, THIS_DIR, AREA_AUX_FILE, DATA_DIR, VERSION
+    PATH_9, PATH_200, THIS_DIR, AREA_AUX_FILE, DATA_DIR, VERSION
 
 # Initialize the 14 bus SimAutoWrapper. Adding type hinting to make
 # development easier.
@@ -1037,6 +1037,32 @@ class RunRobustnessAnalysisTestCase(unittest.TestCase):
         self.saw2.SolvePowerFlow(SolMethod='RECTNEWT')
         rcf = self.saw2.run_robustness_analysis()
         self.assertLess(rcf, 1e2)  # normal value
+
+
+class RunEcologicalAnalysisTestCase(unittest.TestCase):
+    """ Test the run_ecological_analysis method.
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_200, CreateIfNotFound=True)
+        cls.saw2 = SAW(PATH_14)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+        cls.saw2.exit()
+
+    def test_run_ecological_analysis(self):
+        """ Returns a list of values.
+        """
+        self.saw.SolvePowerFlow(SolMethod='RECTNEWT')
+        data = self.saw.run_ecological_analysis()
+
+        self.saw2.SolvePowerFlow(SolMethod='RECTNEWT')
+        data = self.saw2.run_ecological_analysis()
+        print(data)
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):

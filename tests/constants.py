@@ -31,6 +31,9 @@ PATH_2000 = os.path.join(CASE_DIR, 'tx2000',
 PATH_9 = os.path.join(CASE_DIR, 'wscc_9',
                       'WSCC 9 bus_pws_version_{}.pwb'.format(VERSION))
 
+# Path to the Illinois 200 bus model.
+PATH_200 = os.path.join(CASE_DIR, 'il200', 'ACTIVSg200.pwb')
+
 # Aux file for filtering buses by area.
 AREA_AUX_FILE = os.path.join(THIS_DIR, 'area_filter.aux')
 
