@@ -1319,138 +1319,202 @@ class SAW(object):
         """
         warnings.warn("Please make sure the current system state is valid")
 
-        # Collect power flow information from the case
-        # ideally, allow users to choose whether they want to analyze real power (MW), reactive
-        # power (MVR), or whole power (MVA)
-        # one issue, losses don't have MVA
-        kf = self.get_key_field_list('branch') + ["LineMW", "LineMVR", "LineMVA", "LineLossMW",
-                                                  "LineLossMVR"]
+        ### Collect power flow information from the case
+        ## ideally, allow users to choose whether they want to analyze real power (MW), reactive power (MVR), or whole power (MVA)
+        ## one issue, losses don't have MVA
+        kf = self.get_key_field_list('branch') + ["LineMW", "LineMVR", "LineMVA","LineLossMW","LineLossMVR"]
         branch_df = self.GetParametersMultipleElement('branch', kf)
-        # add a function to get LinelossMVA
+        ###add a function to get LinelossMVA
         LinelossMVA = np.zeros(len(branch_df))
         for i in range(len(branch_df)):
             realloss = branch_df["LineLossMW"][i]
             reactiveloss = branch_df["LineLossMVR"][i]
-            LinelossMVA[i] = np.sqrt(pow(realloss, 2)+pow(reactiveloss, 2))
+            LinelossMVA[i] = np.sqrt(pow(realloss,2) + pow(reactiveloss,2))
         branch_df['LineLossMVA'] = LinelossMVA
-        gen_keys = self.get_key_field_list('gen') + ["GenMW", "GenMVR", "GenMVA", "GenProdCost"]
+        gen_keys = self.get_key_field_list('gen') + ["GenMW","GenMVR","GenMVA","GenProdCost"]
         gen = self.GetParametersMultipleElement('gen', gen_keys)
-        self.pw_order = False  # fix the order of generator list for later matrix organization
-        load_keys = self.get_key_field_list('load')+["LoadMW", "LoadMVR", "LoadMVA"]
+        self.pw_order = False ## fix the order of generator list for later matrix organization
+        load_keys = self.get_key_field_list('load')+["LoadMW","LoadMVR","LoadMVA"]
         load = self.GetParametersMultipleElement('load', load_keys)
         bus_keys = self.get_key_field_list('bus')
         bus = self.GetParametersMultipleElement('bus', bus_keys)
 
         if split_generator:
-            # Option 2  -- the previous way to study the overall robustness,
-            # It should be better since it captures the generators' robustness
-            # not aggregate gen
-            # gen_unique=list(set(gen.BusNum))
+            ##Option 1  -- the previous way to study the overall robustness, 
+            #### It should be better since it captures the generators' robustness
+            ### not aggregate gen #################################################################################################
+            ## gen_unique=list(set(gen.BusNum))
             num_gen = len(gen)
             num_bus = len(bus)
-            num_actor = num_gen + num_bus + 3
-            s = (num_actor, num_actor)
+            num_actor = num_gen+num_bus+3
+            s = (num_actor,num_actor)
             EFM = np.zeros(s)
-
-            # feed generator to first row
+            #print(num_gen)
+            #print(num_bus)
+            ## feed generator to first row
             for i in range(num_gen):
-                    EFM[0][i+1] += gen.GenMW[i]  # [row][col]
-            # feed generator to diagonal between Gen and Bus
+                if target == 'MW':
+                    flow = gen.GenMW[i]
+                elif target == 'MVR':
+                    flow = gen.GenMVR[i]
+                elif target == 'MVA':
+                    flow = gen.GenMVA[i]
+                EFM[0][i+1] += flow #[row][col]
+            
+            ## feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
                     if bus.BusNum[i] == gen.BusNum[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
-            # feed line flow to EFM
+                        
+            ## feed load to last second
+            for i in range(len(load)):
+                for j in range(num_bus):
+                    if load.BusNum[i] == bus.BusNum[j]:
+                        if target == 'MW':
+                            flow = load.LoadMW[i]
+                        elif target == 'MVR':
+                            flow = load.LoadMVR[i]
+                        elif target == 'MVA':
+                            flow = load.LoadMVA[i]
+                        #flow = load.LoadMW[i]
+                        EFM[1+num_gen+i][1+num_gen+num_bus] += flow
+                        
+            ##feed line flow to EFM
             for i in range(len(branch_df)):
                 frombus = branch_df['BusNum'][i]
                 tobus = branch_df['BusNum:1'][i]
-                flow = branch_df['LineMW'][i]
-            # f_index=bus['BusNum'].index[frombus-1]
-            # t_index=bus['BusNum'].index[tobus-1] 
-                if flow > 0:
+                if target == 'MW':
+                    flow = branch_df.LineMW[i]
+                elif target == 'MVR':
+                    flow = branch_df.LineMVR[i]
+                elif target == 'MVA':
+                    flow = branch_df.LineMVA[i]
+                    #flow = branch_df.LineMW[i]
+                if flow>0:
                     EFM[frombus+num_gen][tobus+num_gen] += abs(flow)
                 else:
                     EFM[tobus+num_gen][frombus+num_gen] += abs(flow)
-            # feed loss
+                    
+            ## feed loss
             for i in range(len(branch_df)):
-                frombus = branch_df['BusNum'][i]
-                tobus = branch_df['BusNum:1'][i]
-                lossMW = branch_df['LineLossMW'][i]
-                EFM[num_gen+frombus][2+num_bus+num_gen] += abs(lossMW)
+                frombus=branch_df['BusNum'][i]
+                tobus=branch_df['BusNum:1'][i]
+                if target == 'MW':
+                    flow = branch_df.LineLossMW[i]
+                elif target == 'MVR':
+                    flow = branch_df.LineLossMVR[i]
+                elif target == 'MVA':
+                    flow = branch_df.LineLossMVA[i]
+                #flow=branch_df.LineLossMW[i]
+                EFM[num_gen+frombus][2+num_bus+num_gen] +=abs(flow)
 
         else:
-            # Option 1 #### Not considering generators' robustness
-            # aggregate gen
+            ##Option 2 #### Not considering generators' robustness
+            ###aggregate gen#####################################################################################################
             gen_unique = list(set(gen.BusNum))
             num_gen = len(gen_unique)
             num_bus = bus.shape[0]
             num_actor = num_gen+num_bus+3
-            s = (num_actor, num_actor)
+            s = (num_actor,num_actor)
             EFM = np.zeros(s)
 
-            # feed generator to first row
+            ## feed generator to first row
             for i in range(num_gen):
                 for j in range(len(gen)):
                     if gen_unique[i] == gen.BusNum[j]:
-                        EFM[0][i+1] += gen.GenMW[j]  # [row][col]
-            # feed generator to diagonal between Gen and Bus
+                        if target == 'MW':
+                            flow = gen.GenMW[i]
+                        elif target == 'MVR':
+                            flow = gen.GenMVR[i]
+                        elif target == 'MVA':
+                            flow = gen.GenMVA[i]
+                        #flow = gen.GenMW[j] 
+                        EFM[0][i+1] += flow #[row][col]
+            ## feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
                     if bus.BusNum[i] == gen_unique[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
                         
-            # feed load to last second
+            ## feed load to last second
             for i in range(len(load)):
                 for j in range(num_bus):
                     if load.BusNum[i] == bus.BusNum[j]:
-                        EFM[1+num_gen+i][1+num_gen+num_bus] += load.LoadMW[i]
+                        if target == 'MW':
+                            flow = load.LoadMW[i]
+                        elif target == 'MVR':
+                            flow = load.LoadMVR[i]
+                        elif target == 'MVA':
+                            flow = load.LoadMVA[i]
+                        #flow = load.LoadMW[i]
+                        EFM[1+num_gen+i][1+num_gen+num_bus] += flow
                         
-            # feed line flow to EFM
+            ##feed line flow to EFM
             for i in range(len(branch_df)):
                 frombus = branch_df['BusNum'][i]
                 tobus = branch_df['BusNum:1'][i]
-                flow = branch_df['LineMW'][i]
-            # f_index=bus['BusNum'].index[frombus-1]
-            # t_index=bus['BusNum'].index[tobus-1] 
-                if flow > 0:
+                if target == 'MW':
+                    flow = branch_df.LineMW[i]
+                elif target == 'MVR':
+                    flow = branch_df.LineMVR[i]
+                elif target == 'MVA':
+                    flow = branch_df.LineMVA[i]
+                #flow = branch_df.LineMW[i]
+                if flow>0:
                     EFM[frombus+num_gen][tobus+num_gen] += abs(flow)
                 else:
                     EFM[tobus+num_gen][frombus+num_gen] += abs(flow)
-            # feed loss
+                    
+            ## feed loss
             for i in range(len(branch_df)):
                 frombus = branch_df['BusNum'][i]
                 tobus = branch_df['BusNum:1'][i]
-                lossMW = branch_df['LineLossMW'][i]
-                EFM[num_gen+frombus][2+num_bus+num_gen] += abs(lossMW)
+                if target == 'MW':
+                    flow = branch_df.LineLossMW[i]
+                elif target == 'MVR':
+                    flow = branch_df.LineLossMVR[i]
+                elif target == 'MVA':
+                    flow = branch_df.LineLossMVA[i]
+                    #flow=branch_df.LineLossMW[i]
+                EFM[num_gen+frombus][2+num_bus+num_gen] += abs(flow)
+            
+            
+        
+            
+            
+        ###All ecological metrics#############################################################################################
 
-        # All ecological metrics
+
         T = EFM
         tstp = sum(T)
 
-        k = 1  # coefficient variable
+        k = 1 #coefficient variable
         P = T.transpose()
         # P_rsum=sum(P,dims=2) sum over row
         # P_csum=sum(P,dims=1) sum over columns
 
-        P_csum = P.sum(axis=0)  # sum over colums
-        P_rsum = P.sum(axis=1)  # sum over rows
+        P_csum = P.sum(axis =0) #sum over colums
+        P_rsum = P.sum(axis =1) #sum over rows
 
         k = 1
         s = len(T)
-        Q = np.zeros((s, s))
+        Q = np.zeros((s,s))
 
         tstp = T.sum()
 
         for i in range(len(T)):         
             if P_rsum[i] > 0:     
                 Q[i] = P[i]/P_rsum[1]
+            else:
+                i=i+1
                 
         # N = inv(eye(size(P,1))-Q);  % Leontief's Inverse      
         N = np.linalg.inv(np.eye(s)-Q)
 
-        inflow = T[0].sum()  # sum(T[1,:])
+        inflow = T[0].sum() #sum(T[1,:])
 
-        internal_flow = sum(sum(T[1:s-2][1:s-2]))  # sum(sum(T[2:(s-2),2:(s-2)]));
+        internal_flow = sum(sum(T[1:s-2][1:s-2])) #sum(sum(T[2:(s-2),2:(s-2)]));
             
         tstf = inflow + internal_flow    # total system throughflow (inflow + internal_flow)
 
@@ -1463,47 +1527,48 @@ class SAW(object):
         temp1 = np.ones(s-3)
         c_re = (temp-temp1)/temp # cycling efficiency vector
 
-        tstc = c_re.transpose()*P_rsum[1:s-2]  # cycled throughflow
+        #tstc = c_re.transpose()*P_rsum[1:s-2]; # cycled throughflow
+        tstc = np.dot(c_re.transpose(), P_rsum[1:s-2])
             
-        ci = tstc/tstf   # Finn Cycling Index (CI)
+        ci = tstc/tstf;   # Finn Cycling Index (CI) 
             
-        AMI_ij = np.zeros((s, s))  # Average Mutual Information (AMI)
-        T_csum = T.sum(axis=0)  # sum over colums
-        T_rsum = T.sum(axis=1)  # sum over rows
+        AMI_ij = np.zeros((s,s))  # Average Mutual Information (AMI)
+        T_csum = T.sum(axis = 0) #sum over colums
+        T_rsum = T.sum(axis = 1) #sum over rows
 
         # i=1;    
         for i in range(len(T)):
             for j in range(len(T)):
                 value = ((T[i][j]*tstp)/(T_rsum[i]*T_csum[j]))
-                if value > 0:
-                    AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value, 2)
+                if value>0:
+                    AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value,2)
                 else:
-                    AMI_ij[i][j] = 0
+                    AMI_ij[i][j] = 0       
 
         ami = sum(sum(AMI_ij))
-        asc = ami * tstp  # Ascendency (ASC)
+        asc = ami * tstp; # Ascendency (ASC) 
 
-        DC_ij = np.zeros((s, s))  # Development Capacity (DC)
+        DC_ij =  np.zeros((s,s)) # Development Capacity (DC)
         for i in range(len(T)):
             for j in range(len(T)):
                 value = T[i][j]/tstp
-                if value > 0:
-                    DC_ij[i][j] = T[i][j]*math.log(value, 2)
+                if value>0:
+                    DC_ij[i][j] = T[i][j]*math.log(value,2)
                 else:
                     DC_ij[i][j] = 0
         dc = -1*sum(sum(DC_ij))
             
-        tso = dc - asc  # Total System Overhead (TSO)
+        tso = dc - asc; # Total System Overhead (TSO)
 
-        reco = -1*k*(asc/dc)*math.log(asc/dc)  # Robustness (R)
+        reco = -1*k*(asc/dc)*math.log(asc/dc);   # Robustness (R)
 
-        # Here are all ecosystems' metrics can be calculated
-        # tstc: cycled throughflow
-        # ci: Finn Cycling Index (CI)
-        # tso: Total System Overhead (TSO)
-        # asc: Ascendency (ASC)
-        # dc:  Development Capacity (DC)
-        # robustness: Reco
+        ###Here are all ecosystems' metrics can be calculated
+        ## tstc: cycled throughflow
+        ## ci: Finn Cycling Index (CI) 
+        ## tso: Total System Overhead (TSO)
+        ## asc: Ascendency (ASC)
+        ## dc:  Development Capacity (DC)
+        ## robustness: Reco
         return [reco, asc, dc, tstc, ci, tso]
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
