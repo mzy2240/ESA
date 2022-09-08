@@ -1319,7 +1319,7 @@ class SAW(object):
     def run_ecological_analysis(self, target: str = 'MW', split_generator: bool = True):
         """
         This method is leveraging applied ecological network analysis to quantify
-        the varity of robustness of the power system.
+        the variety of robustness of the power system.
 
         Reference:
         [1] H. Huang, Z. Mao, A. Layton and K. R. Davis, 
@@ -1335,14 +1335,15 @@ class SAW(object):
         True: split generators, which considers the generators' robustness to the whole system
         False: aggregate generators, which doesn't consider generators' robustness 
 
-        :results: it is a list of ecological metrics, including the Ecological Robustness (Reco), 
+        :returns: it is a list of ecological metrics, including the Ecological Robustness (Reco),
         the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
         and the Total System Overhead (TSO) 
         """
         warnings.warn("Please make sure the current system state is valid")
 
         # Collect power flow information from the case
-        # ideally, allow users to choose whether they want to analyze real power (MW), reactive power (MVR), or whole power (MVA)
+        # ideally, allow users to choose whether they want to analyze real power (MW), reactive
+        # power (MVR), or whole power (MVA)
         # one issue, losses don't have MVA
         kf = self.get_key_field_list(
             'branch') + ["LineMW", "LineMVR", "LineMVA", "LineLossMW", "LineLossMVR"]
@@ -1377,7 +1378,7 @@ class SAW(object):
         if split_generator:
             # Option 1  -- the previous way to study the overall robustness,
             # It should be better since it captures the generators' robustness
-            ### not aggregate gen #################################################################################################
+            # not aggregate gen
             # gen_unique=list(set(gen.BusNum))
             num_gen = len(gen)
             num_bus = len(bus)
@@ -1394,12 +1395,13 @@ class SAW(object):
                     flow = gen.GenMVR[i]
                 elif target == 'MVA':
                     flow = gen.GenMVA[i]
+                else:
+                    flow = 0
                 EFM[0][i+1] += flow  # [row][col]
 
             # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
-                     # if bus.BusNum[i]==gen.BusNum[j]:
                     if i == gen.gindex[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
 
@@ -1413,7 +1415,6 @@ class SAW(object):
                             flow = load.LoadMVR[i]
                         elif target == 'MVA':
                             flow = load.LoadMVA[i]
-                        #flow = load.LoadMW[i]
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
 
             # feed line flow to EFM
@@ -1426,7 +1427,6 @@ class SAW(object):
                     flow = branch_df.LineMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineMVA[i]
-                    #flow = branch_df.LineMW[i]
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
@@ -1450,7 +1450,7 @@ class SAW(object):
 
         else:
             # Option 2 #### Not considering generators' robustness
-            ###aggregate gen#####################################################################################################
+            # aggregate gen
             gen_unique = list(set(gen.BusNum))
             num_gen = len(gen_unique)
             num_bus = bus.shape[0]
@@ -1468,7 +1468,8 @@ class SAW(object):
                             flow = gen.GenMVR[i]
                         elif target == 'MVA':
                             flow = gen.GenMVA[i]
-                        #flow = gen.GenMW[j]
+                        else:
+                            flow = 0
                         EFM[0][i+1] += flow  # [row][col]
             # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
@@ -1486,7 +1487,8 @@ class SAW(object):
                             flow = load.LoadMVR[i]
                         elif target == 'MVA':
                             flow = load.LoadMVA[i]
-                        #flow = load.LoadMW[i]
+                        else:
+                            flow = 0
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
 
             # feed line flow to EFM
@@ -1499,6 +1501,8 @@ class SAW(object):
                     flow = branch_df.LineMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineMVA[i]
+                else:
+                    flow = 0
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
@@ -1517,9 +1521,11 @@ class SAW(object):
                     flow = branch_df.LineLossMVR[i]
                 elif target == 'MVA':
                     flow = branch_df.LineLossMVA[i]
+                else:
+                    flow = 0
                 EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
-        ###All ecological metrics#############################################################################################
+        # All ecological metrics
 
         T = EFM
         tstp = sum(T)
@@ -1529,7 +1535,7 @@ class SAW(object):
         # P_rsum=sum(P,dims=2) sum over row
         # P_csum=sum(P,dims=1) sum over columns
 
-        P_csum = P.sum(axis=0)  # sum over colums
+        P_csum = P.sum(axis=0)  # sum over columns
         P_rsum = P.sum(axis=1)  # sum over rows
 
         k = 1
@@ -1544,36 +1550,33 @@ class SAW(object):
             else:
                 i = i+1
 
-        # N = inv(eye(size(P,1))-Q);  % Leontief's Inverse
+        # Leontief's Inverse
         N = np.linalg.inv(np.eye(s)-Q)
 
         inflow = T[0].sum()  # sum(T[1,:])
 
-        # sum(sum(T[2:(s-2),2:(s-2)]));
         internal_flow = sum(sum(T[1:s-2][1:s-2]))
 
-        # total system throughflow (inflow + internal_flow)
+        # total system through flow (inflow + internal_flow)
         tstf = inflow + internal_flow
 
-        mpl = tstf/inflow                # mean path length
+        mpl = tstf/inflow  # mean path length
 
-        d_N = N.diagonal()                   # diagonal elements of the N matrix
+        d_N = N.diagonal()  # diagonal elements of the N matrix
 
-        # c_re = (d_N[2:(n_T-2)]-ones(size(d_N[2:(n_T-2)]))) ./ d_N[2:(n_T-2)];
         temp = d_N[1:s-2]
         temp1 = np.ones(s-3)
         c_re = (temp-temp1)/temp  # cycling efficiency vector
 
-        # tstc = c_re.transpose()*P_rsum[1:s-2]; # cycled throughflow
+        # cycled through flow
         tstc = np.dot(c_re.transpose(), P_rsum[1:s-2])
 
-        ci = tstc/tstf   # Finn Cycling Index (CI)
+        ci = tstc/tstf  # Finn Cycling Index (CI)
 
         AMI_ij = np.zeros((s, s))  # Average Mutual Information (AMI)
-        T_csum = T.sum(axis=0)  # sum over colums
+        T_csum = T.sum(axis=0)  # sum over columns
         T_rsum = T.sum(axis=1)  # sum over rows
 
-        # i=1;
         for i in range(len(T)):
             for j in range(len(T)):
                 value = ((T[i][j]*tstp)/(T_rsum[i]*T_csum[j]))
@@ -1583,7 +1586,7 @@ class SAW(object):
                     AMI_ij[i][j] = 0
 
         ami = sum(sum(AMI_ij))
-        asc = ami * tstp  # Ascendency (ASC)
+        asc = ami * tstp  # Ascendancy (ASC)
 
         DC_ij = np.zeros((s, s))  # Development Capacity (DC)
         for i in range(len(T)):
@@ -1600,12 +1603,12 @@ class SAW(object):
         reco = -1*k*(asc/dc)*math.log(asc/dc)   # Robustness (R)
 
         # Here are all ecosystems' metrics can be calculated
-        # tstc: cycled throughflow
+        # tstc: cycled through flow
         # ci: Finn Cycling Index (CI)
         # tso: Total System Overhead (TSO)
-        ## asc: Ascendency (ASC)
+        # asc: Ascendancy (ASC)
         # dc:  Development Capacity (DC)
-        ## robustness: Reco
+        # robustness: Reco
         return [reco, asc, dc, tstc, ci, tso]
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
