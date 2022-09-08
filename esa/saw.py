@@ -993,27 +993,12 @@ class SAW(object):
         Bf = csr_matrix((np.r_[b, -b], (i, np.r_[f, t])))
         Bbus = Cft.T * Bf
 
-        def get_data(ary: csr_matrix, first_zero=False):
-            """
-            This function takes in the csr matrix, extract the first row, returns zero like matrix.
-            """
-            _col = ary.getrow(0).toarray().nonzero()[1]  # get the non-zero col
-            _row = np.zeros(ary[0].data.shape)  # change data to 0
-            _data = _row
-            if _col.size < _row.size:
-                _col = np.insert(_col, 0, -1)
-            elif first_zero:
-                # replace the first data with -1
-                _data = np.insert(_row, 0, -1)
-                _row = np.insert(_row, 0, 0)
-                _col = np.insert(_col, 0, 0)
-            # create zero like csr
-            return csr_matrix((_data, (_row, _col)), shape=ary[0].shape)
-            # matrix
-
-        v_Bbus = vstack([get_data(Bbus), Bbus[1:]], format='csr').T
-        Bbus = vstack([get_data(v_Bbus, True), v_Bbus[1:]]).T
-
+        # change the values without breaking the sparsity
+        # note the Bbus should be csc
+        Bbus.data[:Bbus.indptr[1]] = 0  # change the first column to 0
+        first_row_indexes = np.where(Bbus.indices == 0)[0]
+        Bbus.data[first_row_indexes] = 0  # change the first row to 0
+        Bbus.data[first_row_indexes[0]] = -1  # change Bbus[0,0] to -1
         return Bbus, Bf, Cft, slack, noslack
 
     def get_shift_factor_matrix_fast(self):
