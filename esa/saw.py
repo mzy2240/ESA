@@ -1365,8 +1365,8 @@ class SAW(object):
             # It should be better since it captures the generators' robustness
             # not aggregate gen
             # gen_unique=list(set(gen.BusNum))
-            num_gen = len(gen)
-            num_bus = len(bus)
+            num_gen = gen.shape[0]
+            num_bus = bus.shape[0]
             num_actor = num_gen+num_bus+3
             s = (num_actor, num_actor)
             EFM = np.zeros(s)
@@ -1375,11 +1375,11 @@ class SAW(object):
             # feed generator to first row
             for i in range(num_gen):
                 if target == 'MW':
-                    flow = gen.GenMW[i]
+                    flow = gen.loc[i, 'GenMW']
                 elif target == 'MVR':
-                    flow = gen.GenMVR[i]
+                    flow = gen.loc[i, 'GenMVR']
                 elif target == 'MVA':
-                    flow = gen.GenMVA[i]
+                    flow = gen.loc[i, 'GenMVA']
                 else:
                     flow = 0
                 EFM[0][i+1] += flow  # [row][col]
@@ -1391,27 +1391,27 @@ class SAW(object):
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
 
             # feed load to last second
-            for i in range(len(load)):
+            for i in range(load.shape[0]):
                 for j in range(num_bus):
-                    if load.loadindex[i] == j:
+                    if load.loc[i, 'loadindex'] == j:
                         if target == 'MW':
-                            flow = load.LoadMW[i]
+                            flow = load.loc[i, 'LoadMW']
                         elif target == 'MVR':
-                            flow = load.LoadMVR[i]
+                            flow = load.loc[i, 'LoadMVR']
                         elif target == 'MVA':
-                            flow = load.LoadMVA[i]
+                            flow = load.loc[i, 'LoadMVA']
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
 
             # feed line flow to EFM
-            for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
+            for i in range(branch_df.shape[0]):
+                frombus = branch_df.loc[i, 'findex']
+                tobus = branch_df.loc[i, 'tindex']
                 if target == 'MW':
-                    flow = branch_df.LineMW[i]
+                    flow = branch_df.loc[i, 'LineMW']
                 elif target == 'MVR':
-                    flow = branch_df.LineMVR[i]
+                    flow = branch_df.loc[i, 'LineMVR']
                 elif target == 'MVA':
-                    flow = branch_df.LineMVA[i]
+                    flow = branch_df.loc[i, 'LineMVA']
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
@@ -1421,15 +1421,15 @@ class SAW(object):
             # this loss aggregates the line loss to from bus
             # can be further updated based on your consideration.
             # however, the loss is/should be very small, thus it may not induce any change
-            for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
+            for i in range(branch_df.shape[0]):
+                frombus = branch_df.loc[i, 'findex']
+                tobus = branch_df.loc[i, 'tindex']
                 if target == 'MW':
-                    flow = branch_df.LineLossMW[i]
+                    flow = branch_df.loc[i, 'LineLossMW']
                 elif target == 'MVR':
-                    flow = branch_df.LineLossMVR[i]
+                    flow = branch_df.loc[i, 'LineLossMVR']
                 elif target == 'MVA':
-                    flow = branch_df.LineLossMVA[i]
+                    flow = branch_df.loc[i, 'LineLossMVA']
                 # flow=branch_df.LineLossMW[i]
                 EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
