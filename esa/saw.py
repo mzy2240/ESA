@@ -1301,7 +1301,7 @@ class SAW(object):
 
         return rcf
 
-##VSep112022
+# VSep112022
     def run_ecological_analysis(self, target: str = 'MW', split_generator: bool = True):
         """
         This method is leveraging applied ecological network analysis to quantify
@@ -1394,24 +1394,26 @@ class SAW(object):
 
             # feed line flow to EFM
             for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
+                frombus = branch_df.findex[i]
+                tobus = branch_df.tindex[i]
                 flow = branch_df.loc[i, f"Line{target}"]
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
                     EFM[1+tobus+num_gen][1+frombus+num_gen] += abs(flow)
+                losses = branch_df.loc[i, f"LineLoss{target}"]
+                EFM[1+num_gen+frombus][2+num_bus + num_gen] += abs(losses) #feed losses
 
             # feed loss
             # this loss aggregates the line loss to from bus
             # can be further updated based on your consideration.
             # however, the loss is/should be very small, thus it may not induce any change
-            for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
-                flow = branch_df.loc[i, f"LineLoss{target}"]
-                # flow=branch_df.LineLossMW[i]
-                EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
+            # for i in range(len(branch_df)):
+            #     frombus = branch_df['findex'][i]
+            #     tobus = branch_df['tindex'][i]
+            #     flow = branch_df.loc[i, f"LineLoss{target}"]
+            #     # flow=branch_df.LineLossMW[i]
+            #     EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(branch_df.loc[i, f"LineLoss{target}"]) #feed loss
 
         else:
             # Option 2 #### Not considering generators' robustness
@@ -1427,7 +1429,7 @@ class SAW(object):
             for i in range(num_gen):
                 for j in range(len(gen)):
                     if gen_unique[i] == gen.gindex[j]:
-                        #if target == 'MW':
+                        # if target == 'MW':
                         flow = gen.loc[i, f"Gen{target}"]
                         EFM[0][i+1] += flow  # [row][col]
             # feed generator to diagonal between Gen and Bus
@@ -1445,23 +1447,25 @@ class SAW(object):
 
             # feed line flow to EFM
             for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
+                frombus = branch_df.findex[i]
+                tobus = branch_df.tindex[i]
                 flow = branch_df.loc[i, f"Line{target}"]
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
                     EFM[1+tobus+num_gen][1+frombus+num_gen] += abs(flow)
+                losses = branch_df.loc[i, f"LineLoss{target}"]
+                EFM[1+num_gen+frombus][2+num_bus + num_gen] += abs(losses) #feed losses
 
             # feed loss
             # this loss aggregates the line loss to from bus
             # can be further updated based on your consideration.
             # however, the loss is/should be very small, thus it may not induce any change
-            for i in range(len(branch_df)):
-                frombus = branch_df['findex'][i]
-                tobus = branch_df['tindex'][i]
-                flow = branch_df.loc[i, f"LineLoss{target}"]
-                EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
+            # for i in range(len(branch_df)):
+            #     frombus = branch_df['findex'][i]
+            #     tobus = branch_df['tindex'][i]
+            #     flow = branch_df.loc[i, f"LineLoss{target}"]
+            #     EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(branch_df.loc[i, f"LineLoss{target}"])
 
         ###All ecological metrics#############################################################################################
 
@@ -1550,7 +1554,7 @@ class SAW(object):
         ## asc: Ascendency (ASC)
         # dc:  Development Capacity (DC)
         ## robustness: Reco
-        ## EFM: energy flow matrix of corresponding power system, it is a matrix
+        # EFM: energy flow matrix of corresponding power system, it is a matrix
         return [reco, asc, dc, tstc, ci, tso, EFM]
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
