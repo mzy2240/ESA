@@ -1301,10 +1301,11 @@ class SAW(object):
 
         return rcf
 
+##VSep112022
     def run_ecological_analysis(self, target: str = 'MW', split_generator: bool = True):
         """
         This method is leveraging applied ecological network analysis to quantify
-        the variety of robustness of the power system.
+        the varity of robustness of the power system.
 
         Reference:
         [1] H. Huang, Z. Mao, A. Layton and K. R. Davis, 
@@ -1320,22 +1321,21 @@ class SAW(object):
         True: split generators, which considers the generators' robustness to the whole system
         False: aggregate generators, which doesn't consider generators' robustness 
 
-        :returns: it is a list of ecological metrics, including the Ecological Robustness (Reco),
+        :results: it is a list of ecological metrics, including the Ecological Robustness (Reco), 
         the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
-        and the Total System Overhead (TSO) 
+        and the Total System Overhead (TSO) and the energy flow matrix EFM
         """
         warnings.warn("Please make sure the current system state is valid")
 
         # Collect power flow information from the case
-        # ideally, allow users to choose whether they want to analyze real power (MW), reactive
-        # power (MVR), or whole power (MVA)
+        # ideally, allow users to choose whether they want to analyze real power (MW), reactive power (MVR), or whole power (MVA)
         # one issue, losses don't have MVA
         kf = self.get_key_field_list(
             'branch') + ["LineMW", "LineMVR", "LineMVA", "LineLossMW", "LineLossMVR"]
         branch_df = self.GetParametersMultipleElement('branch', kf)
         # add a function to get LinelossMVA
         LinelossMVA = np.zeros(len(branch_df))
-        for i in range(len(branch_df)):
+        for i in range(branch_df.shape(0)):
             realloss = branch_df["LineLossMW"][i]
             reactiveloss = branch_df["LineLossMVR"][i]
             LinelossMVA[i] = np.sqrt(pow(realloss, 2) + pow(reactiveloss, 2))
@@ -1363,10 +1363,10 @@ class SAW(object):
         if split_generator:
             # Option 1  -- the previous way to study the overall robustness,
             # It should be better since it captures the generators' robustness
-            # not aggregate gen
+            ### not aggregate gen #################################################################################################
             # gen_unique=list(set(gen.BusNum))
-            num_gen = gen.shape[0]
-            num_bus = bus.shape[0]
+            num_gen = gen.shape(0)
+            num_bus = bus.shape(0)
             num_actor = num_gen+num_bus+3
             s = (num_actor, num_actor)
             EFM = np.zeros(s)
@@ -1374,44 +1374,29 @@ class SAW(object):
             # print(num_bus)
             # feed generator to first row
             for i in range(num_gen):
-                if target == 'MW':
-                    flow = gen.loc[i, 'GenMW']
-                elif target == 'MVR':
-                    flow = gen.loc[i, 'GenMVR']
-                elif target == 'MVA':
-                    flow = gen.loc[i, 'GenMVA']
-                else:
-                    flow = 0
+                flow = gen.loc[i, f"Gen{target}"]
                 EFM[0][i+1] += flow  # [row][col]
 
             # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
                 for j in range(num_gen):
+                     # if bus.BusNum[i]==gen.BusNum[j]:
                     if i == gen.gindex[j]:
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
 
             # feed load to last second
-            for i in range(load.shape[0]):
+            for i in range(load.shape(0)):
                 for j in range(num_bus):
-                    if load.loc[i, 'loadindex'] == j:
-                        if target == 'MW':
-                            flow = load.loc[i, 'LoadMW']
-                        elif target == 'MVR':
-                            flow = load.loc[i, 'LoadMVR']
-                        elif target == 'MVA':
-                            flow = load.loc[i, 'LoadMVA']
+                    if load.loadindex[i] == j:
+                        flow = load.loc[i, f"Load{target}"]
+                        #flow = load.LoadMW[i]
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
 
             # feed line flow to EFM
-            for i in range(branch_df.shape[0]):
-                frombus = branch_df.loc[i, 'findex']
-                tobus = branch_df.loc[i, 'tindex']
-                if target == 'MW':
-                    flow = branch_df.loc[i, 'LineMW']
-                elif target == 'MVR':
-                    flow = branch_df.loc[i, 'LineMVR']
-                elif target == 'MVA':
-                    flow = branch_df.loc[i, 'LineMVA']
+            for i in range(branch_df.shape(0)):
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
+                flow = branch_df.loc[i, f"Line{target}"]
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
@@ -1421,23 +1406,18 @@ class SAW(object):
             # this loss aggregates the line loss to from bus
             # can be further updated based on your consideration.
             # however, the loss is/should be very small, thus it may not induce any change
-            for i in range(branch_df.shape[0]):
-                frombus = branch_df.loc[i, 'findex']
-                tobus = branch_df.loc[i, 'tindex']
-                if target == 'MW':
-                    flow = branch_df.loc[i, 'LineLossMW']
-                elif target == 'MVR':
-                    flow = branch_df.loc[i, 'LineLossMVR']
-                elif target == 'MVA':
-                    flow = branch_df.loc[i, 'LineLossMVA']
+            for i in range(branch_df.shape(0)):
+                frombus = branch_df['findex'][i]
+                tobus = branch_df['tindex'][i]
+                flow = branch_df.loc[i, f"LineLoss{target}"]
                 # flow=branch_df.LineLossMW[i]
                 EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
         else:
             # Option 2 #### Not considering generators' robustness
-            # aggregate gen
+            ###aggregate gen#####################################################################################################
             gen_unique = list(set(gen.BusNum))
-            num_gen = len(gen_unique)
+            num_gen = gen_unique.shape(0)
             num_bus = bus.shape[0]
             num_actor = num_gen+num_bus+3
             s = (num_actor, num_actor)
@@ -1445,16 +1425,10 @@ class SAW(object):
 
             # feed generator to first row
             for i in range(num_gen):
-                for j in range(len(gen)):
+                for j in range(gen.shape(0)):
                     if gen_unique[i] == gen.gindex[j]:
-                        if target == 'MW':
-                            flow = gen.GenMW[i]
-                        elif target == 'MVR':
-                            flow = gen.GenMVR[i]
-                        elif target == 'MVA':
-                            flow = gen.GenMVA[i]
-                        else:
-                            flow = 0
+                        #if target == 'MW':
+                        flow = gen.loc[i, f"Gen{target}"]
                         EFM[0][i+1] += flow  # [row][col]
             # feed generator to diagonal between Gen and Bus
             for i in range(num_bus):
@@ -1463,31 +1437,17 @@ class SAW(object):
                         EFM[j+1][1+num_gen+i] = EFM[0][j+1]
 
             # feed load to last second
-            for i in range(len(load)):
+            for i in range(load.shape(0)):
                 for j in range(num_bus):
                     if load.BusNum[i] == j:
-                        if target == 'MW':
-                            flow = load.LoadMW[i]
-                        elif target == 'MVR':
-                            flow = load.LoadMVR[i]
-                        elif target == 'MVA':
-                            flow = load.LoadMVA[i]
-                        else:
-                            flow = 0
+                        flow = load.loc[i, f"Load{target}"]
                         EFM[1+num_gen+i][1+num_gen+num_bus] += flow
 
             # feed line flow to EFM
-            for i in range(len(branch_df)):
+            for i in range(branch_df.shape(0)):
                 frombus = branch_df['findex'][i]
                 tobus = branch_df['tindex'][i]
-                if target == 'MW':
-                    flow = branch_df.LineMW[i]
-                elif target == 'MVR':
-                    flow = branch_df.LineMVR[i]
-                elif target == 'MVA':
-                    flow = branch_df.LineMVA[i]
-                else:
-                    flow = 0
+                flow = branch_df.loc[i, f"Line{target}"]
                 if flow > 0:
                     EFM[1+frombus+num_gen][1+tobus+num_gen] += abs(flow)
                 else:
@@ -1497,20 +1457,13 @@ class SAW(object):
             # this loss aggregates the line loss to from bus
             # can be further updated based on your consideration.
             # however, the loss is/should be very small, thus it may not induce any change
-            for i in range(len(branch_df)):
+            for i in range(branch_df.shape(0)):
                 frombus = branch_df['findex'][i]
                 tobus = branch_df['tindex'][i]
-                if target == 'MW':
-                    flow = branch_df.LineLossMW[i]
-                elif target == 'MVR':
-                    flow = branch_df.LineLossMVR[i]
-                elif target == 'MVA':
-                    flow = branch_df.LineLossMVA[i]
-                else:
-                    flow = 0
+                flow = branch_df.loc[i, f"LineLoss{target}"]
                 EFM[1+num_gen+frombus][2+num_bus+num_gen] += abs(flow)
 
-        # All ecological metrics
+        ###All ecological metrics#############################################################################################
 
         T = EFM
         tstp = sum(T)
@@ -1520,48 +1473,51 @@ class SAW(object):
         # P_rsum=sum(P,dims=2) sum over row
         # P_csum=sum(P,dims=1) sum over columns
 
-        P_csum = P.sum(axis=0)  # sum over columns
+        P_csum = P.sum(axis=0)  # sum over colums
         P_rsum = P.sum(axis=1)  # sum over rows
 
         k = 1
-        s = len(T)
+        s = T.shape(0)
         Q = np.zeros((s, s))
 
         tstp = T.sum()
 
-        for i in range(len(T)):
+        for i in range(s):
             if P_rsum[i] > 0:
                 Q[i] = P[i]/P_rsum[1]
             else:
                 i = i+1
 
-        # Leontief's Inverse
+        # N = inv(eye(size(P,1))-Q);  % Leontief's Inverse
         N = np.linalg.inv(np.eye(s)-Q)
 
         inflow = T[0].sum()  # sum(T[1,:])
 
+        # sum(sum(T[2:(s-2),2:(s-2)]));
         internal_flow = sum(sum(T[1:s-2][1:s-2]))
 
-        # total system through flow (inflow + internal_flow)
+        # total system throughflow (inflow + internal_flow)
         tstf = inflow + internal_flow
 
-        mpl = tstf/inflow  # mean path length
+        mpl = tstf/inflow                # mean path length
 
-        d_N = N.diagonal()  # diagonal elements of the N matrix
+        d_N = N.diagonal()                   # diagonal elements of the N matrix
 
+        # c_re = (d_N[2:(n_T-2)]-ones(size(d_N[2:(n_T-2)]))) ./ d_N[2:(n_T-2)];
         temp = d_N[1:s-2]
         temp1 = np.ones(s-3)
         c_re = (temp-temp1)/temp  # cycling efficiency vector
 
-        # cycled through flow
+        # tstc = c_re.transpose()*P_rsum[1:s-2]; # cycled throughflow
         tstc = np.dot(c_re.transpose(), P_rsum[1:s-2])
 
-        ci = tstc/tstf  # Finn Cycling Index (CI)
+        ci = tstc/tstf   # Finn Cycling Index (CI)
 
         AMI_ij = np.zeros((s, s))  # Average Mutual Information (AMI)
-        T_csum = T.sum(axis=0)  # sum over columns
+        T_csum = T.sum(axis=0)  # sum over colums
         T_rsum = T.sum(axis=1)  # sum over rows
 
+        # i=1;
         for i in range(len(T)):
             for j in range(len(T)):
                 value = ((T[i][j]*tstp)/(T_rsum[i]*T_csum[j]))
@@ -1571,7 +1527,7 @@ class SAW(object):
                     AMI_ij[i][j] = 0
 
         ami = sum(sum(AMI_ij))
-        asc = ami * tstp  # Ascendancy (ASC)
+        asc = ami * tstp  # Ascendency (ASC)
 
         DC_ij = np.zeros((s, s))  # Development Capacity (DC)
         for i in range(len(T)):
@@ -1588,13 +1544,14 @@ class SAW(object):
         reco = -1*k*(asc/dc)*math.log(asc/dc)   # Robustness (R)
 
         # Here are all ecosystems' metrics can be calculated
-        # tstc: cycled through flow
+        # tstc: cycled throughflow
         # ci: Finn Cycling Index (CI)
         # tso: Total System Overhead (TSO)
-        # asc: Ascendancy (ASC)
+        ## asc: Ascendency (ASC)
         # dc:  Development Capacity (DC)
-        # robustness: Reco
-        return [reco, asc, dc, tstc, ci, tso]
+        ## robustness: Reco
+        ## EFM: energy flow matrix of corresponding power system, it is a matrix
+        return [reco, asc, dc, tstc, ci, tso, EFM]
 
     def n1_fast(self, c1_isl, count, lodf, f, lim):
         """ A modified fast N-1 method.
