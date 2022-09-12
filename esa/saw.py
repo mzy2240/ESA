@@ -1301,7 +1301,6 @@ class SAW(object):
 
         return rcf
 
-# VSep112022
     def run_ecological_analysis(self, target: str = 'MW', split_generator: bool = True):
         """
         This method is leveraging applied ecological network analysis to quantify

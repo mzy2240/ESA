@@ -9,7 +9,7 @@ ESA.
     ``compile_for_all_versions.py``.
 #.  Ensure you have checked out the ``develop`` branch and have a clean
     repository (no local changes, new files, etc.).
-#.  Run all tests for all Python versions (3.5 - 3.8) by running the
+#.  Run all tests for all Python versions (3.7 - 3.10) by running the
     script ``tests\run_tests_for_all_python_versions.py`` or manually
     run all tests in all Python environments by running the following
     from the top level of the repository after activating each virtual
