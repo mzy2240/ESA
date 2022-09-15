@@ -1470,7 +1470,7 @@ class SAW(object):
         tstp = T.sum()
 
         for i in range(len(T)):
-            if P_rsum[i] > 0:
+            if P_rsum[i] > 0 and P_rsum[1] != 0:
                 Q[i] = P[i]/P_rsum[1]
             else:
                 i = i+1
@@ -1507,11 +1507,15 @@ class SAW(object):
         # i=1;
         for i in range(len(T)):
             for j in range(len(T)):
-                value = ((T[i][j]*tstp)/(T_rsum[i]*T_csum[j]))
-                if value > 0:
-                    AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value, 2)
-                else:
+                den = T_rsum[i]*T_csum[j]
+                if den == 0:
                     AMI_ij[i][j] = 0
+                else:
+                    value = (T[i][j]*tstp)/den
+                    if value > 0:
+                        AMI_ij[i][j] = (T[i][j]/tstp)*math.log(value, 2)
+                    else:
+                        AMI_ij[i][j] = 0
 
         ami = sum(sum(AMI_ij))
         asc = ami * tstp  # Ascendancy (ASC)
