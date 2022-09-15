@@ -157,6 +157,9 @@ class SAW(object):
         #
         # Useful reference for early and late binding in pywin32:
         # https://youtu.be/xPtp8qFAHuA
+        # Initialize the COM libraries for the calling thread
+        pythoncom.CoInitialize()
+
         try:
             if early_bind:
                 try:
@@ -376,6 +379,8 @@ class SAW(object):
         self.CloseCase()
         del self._pwcom
         self._pwcom = None
+        # Uninitialize the COM libraries to avoid the possible memory leak
+        pythoncom.CoUninitialize()
         return None
 
     def get_key_fields_for_object_type(self, ObjectType: str) -> pd.DataFrame:
