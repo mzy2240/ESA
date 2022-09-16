@@ -1045,25 +1045,23 @@ class RunEcologicalAnalysisTestCase(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls) -> None:
-        cls.saw = SAW(PATH_200, CreateIfNotFound=True)
-        cls.saw2 = SAW(PATH_2000, CreateIfNotFound=True)
+        cls.saw = SAW(PATH_2000, CreateIfNotFound=True)
 
     @classmethod
     def tearDownClass(cls) -> None:
         # noinspection PyUnresolvedReferences
         cls.saw.exit()
-        cls.saw2.exit()
 
     def test_run_ecological_analysis(self):
         """ Returns a list of values.
         """
         self.saw.SolvePowerFlow(SolMethod='RECTNEWT')
-        data1 = self.saw.run_ecological_analysis()
+        old = self.saw.run_ecological_analysis()
 
-        self.saw2.SolvePowerFlow(SolMethod='RECTNEWT')
-        data2 = self.saw2.run_ecological_analysis()
-        
-        self.assertLess(data2[0], data1[0])
+        self.saw.SolvePowerFlow(SolMethod='RECTNEWT')
+        new = self.saw.run_ecological_analysis(split_generator=False)
+
+        self.assertLess(new, old)
 
 
 class CTGAutoInsertTestCase(unittest.TestCase):

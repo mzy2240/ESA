@@ -1397,6 +1397,24 @@ to modify the Ctg_AutoInsert_Options.</p></li>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.fast_n1_test">
+<span class="sig-name descname"><span class="pre">fast_n1_test</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.fast_n1_test" title="Permalink to this definition">¶</a></dt>
+<dd><p>A pure LODF-based fast N-1 contingency analysis implementation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>A boolean value to indicate whether the system is N-1 secure.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.fast_n2_islanding_detection">
+<span class="sig-name descname"><span class="pre">fast_n2_islanding_detection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.fast_n2_islanding_detection" title="Permalink to this definition">¶</a></dt>
+<dd><p>Quickly identify the N-2 islanding CTGs using LODF</p>
+<p>returns: A tuple with the number of islanding CTGs and the islanding matrix</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_branch_admittance">
 <span class="sig-name descname"><span class="pre">get_branch_admittance</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_branch_admittance" title="Permalink to this definition">¶</a></dt>
 <dd><p>Helper function to get the branch admittance matrix, usually known as
@@ -1533,10 +1551,10 @@ faster than the PW script command for large cases.</p>
 script CalculateShiftFactorsMultipleElement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – The linear method to be used for the calculation. The</p>
+<dd class="field-odd"><p><strong>method</strong> – The linear method to be used for the calculation. The options are AC,</p>
 </dd>
 </dl>
-<p>options are AC, DC or DCPS.
+<p>DC or DCPS.
 :returns: A dense float matrix in the numpy array format.</p>
 </dd></dl>
 
@@ -1691,6 +1709,54 @@ Run SolvePowerFlow first if you are not sure.</p>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>A tuple of system security status (bool) and a matrix
 showing the result of contingency analysis (if exist)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.run_ecological_analysis">
+<span class="sig-name descname"><span class="pre">run_ecological_analysis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">target</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'MW'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">split_generator</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.run_ecological_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method is leveraging applied ecological network analysis to quantify
+the varity of robustness of the power system.</p>
+<p>Reference:
+[1] H. Huang, Z. Mao, A. Layton and K. R. Davis, 
+“An Ecological Robustness Oriented Optimal Power Flow for Power Systems’ Survivability,”
+in IEEE Transactions on Power Systems, doi: 10.1109/TPWRS.2022.3168226.
+[2] Panyam, V., Huang, H., Davis, K., &amp; Layton, A. (2019).
+An ecosystem perspective for the design of sustainable power systems. Procedia Cirp, 80, 269-274.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>target</strong> – the real, reactive, and apparent power over the system. The default value</p>
+</dd>
+</dl>
+<p>is MW, which is the real power. Users can change to MVR, which is the reactive power; or
+MVA, which is the apparent power.
+:param split_generator: Choose to split or aggregate multiple generators associated with
+the same bus. If true, the method will consider the generators’ robustness for each
+generator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Results</dt>
+<dd class="field-odd"><p>it is a list of ecological metrics, including the Ecological Robustness (Reco),</p>
+</dd>
+</dl>
+<p>the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
+and the Total System Overhead (TSO)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="esa.saw.SAW.run_robustness_analysis">
+<span class="sig-name descname"><span class="pre">run_robustness_analysis</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.run_robustness_analysis" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric RCF to quantify the robustness of
+power grids against cascading failures. The RCF metric takes the
+operational states, the branch’s capacities and the topological
+structure into account and gives an entropy-based value.
+The formula is given from the following paper:
+Koç, Yakup, Martijn Warnier, Robert E. Kooij, and Frances MT Brazier.
+“An entropy-based metric to quantify the robustness of power grids
+against cascading failures.” Safety science 59 (2013): 126-134.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The RCF value.</p>
 </dd>
 </dl>
 </dd></dl>

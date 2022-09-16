@@ -948,8 +948,8 @@ class SAW(object):
         Calculate the injection shift factor matrix using the auxiliary
         script CalculateShiftFactorsMultipleElement.
 
-        :param method: The linear method to be used for the calculation. The
-        options are AC, DC or DCPS.
+        :param method: The linear method to be used for the calculation. The options are AC,
+        DC or DCPS.
         :returns: A dense float matrix in the numpy array format.
         """
         temp = self.pw_order
@@ -1318,12 +1318,12 @@ class SAW(object):
         [2] Panyam, V., Huang, H., Davis, K., & Layton, A. (2019).
         An ecosystem perspective for the design of sustainable power systems. Procedia Cirp, 80, 269-274.
 
-        :param target: the real, reactive, and apparent power over the system. 
-        The default value is MW, which is the real power
-        Users can change to MVR, which is the reactive power; or MVA, which is the apparent power
-        :param split_generator: Choose to split or aggregate multiple generators connected to one bus
-        True: split generators, which considers the generators' robustness to the whole system
-        False: aggregate generators, which doesn't consider generators' robustness 
+        :param target: the real, reactive, and apparent power over the system. The default value
+        is MW, which is the real power. Users can change to MVR, which is the reactive power; or
+        MVA, which is the apparent power.
+        :param split_generator: Choose to split or aggregate multiple generators associated with
+        the same bus. If true, the method will consider the generators' robustness for each
+        generator.
 
         :results: it is a list of ecological metrics, including the Ecological Robustness (Reco), 
         the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
