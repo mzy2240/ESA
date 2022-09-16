@@ -9,6 +9,7 @@ Version 1.2.9
 * Add the function to quickly identify the N-2 islanding contingencies
 * Add the functions for robustness and ecological analysis
 * Preliminary support for Streamlit (getting close to thread-safe)
+* Add the support for Python 3.10
 
 Version 1.2.8
 ^^^^^^^^^^^^^
