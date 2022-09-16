@@ -42,7 +42,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "License :: OSI Approved :: Apache License 2.0",
+        "License :: OSI Approved :: Apache Software License",
         "Operating System :: Microsoft :: Windows",
         "Development Status :: 5 - Production/Stable",
         "Environment :: Win32 (MS Windows)",
