@@ -68,7 +68,7 @@ setuptools.setup(
     extras_require={'test': ['networkx', 'coverage', 'matplotlib'],
                     'doc': ['sphinx', 'tabulate', 'sphinx_press_theme'],
                     'dev': ['pythran']},
-    license='MIT',
+    license='Apache License 2.0',
     # TODO: Why aren't we zip safe?
     zip_safe=False
 )
