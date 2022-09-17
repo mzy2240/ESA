@@ -32,6 +32,9 @@ If you have your own copy of the ESA repository, you can also view the
 documentation locally by navigating to the directory ``docs/html`` and
 opening ``index.html`` with your web browser.
 
+If you want to use ESA or SimAuto from julia, definitely check `EasySimauto.jl <https://github.com/mzy2240/EasySimauto.jl>`__
+for a julia wrapper of ESA.
+
 Citation
 --------
 
