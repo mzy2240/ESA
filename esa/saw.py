@@ -813,18 +813,22 @@ class SAW(object):
             raise ValueError(
                 "Currently only support 'bus' or 'substation' as the node "
                 "type.")
+        original = self.pw_order
+        self.pw_order = False
         qf = []
         nf = []
         node_from = None
         node_to = None
-        if node == 'bus':
+        if node.lower() in 'bus':
+            node = 'bus'
             qf = self.get_key_field_list('branch') + ['LineMW']
             node_from = "BusNum"
             node_to = "BusNum:1"
             nf = ['BusNum']
             if geographic:
                 nf += ['Latitude:1', 'Longitude:1']
-        elif node == 'substation':
+        elif node.lower() in 'substation':
+            node = 'substation'
             qf = self.get_key_field_list('branch') + ['SubNum', 'SubNum:1',
                                                       'LineMW']
             node_from = "SubNum"
@@ -873,6 +877,7 @@ class SAW(object):
                 nx.set_node_attributes(graph, node_attr_reformat)
             except ValueError as e:
                 raise e
+        self.pw_order = original
         return graph
 
     def get_lodf_matrix(self, precision: int = 3):

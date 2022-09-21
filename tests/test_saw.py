@@ -773,11 +773,13 @@ class ToGraphTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, early_bind=True)
+        cls.saw2 = SAW(PATH_200, CreateIfNotFound=True)
 
     @classmethod
     def tearDownClass(cls) -> None:
         # noinspection PyUnresolvedReferences
         cls.saw.exit()
+        cls.saw2.exit()
 
     def test_to_graph_default(self):
         """It should return a networkx multigraph object.
@@ -835,6 +837,10 @@ class ToGraphTestCase(unittest.TestCase):
         any substation assigned"""
         with self.assertRaises(AttributeError):
             self.saw.to_graph(node='substation', geographic=True)
+
+        g = self.saw2.to_graph(node='substation', geographic=True)
+
+        self.assertIsNotNone(nx.get_node_attributes(g, "Latitude")[1])
 
 
 class FastCATestCase(unittest.TestCase):
