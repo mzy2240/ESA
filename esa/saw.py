@@ -1045,8 +1045,9 @@ class SAW(object):
         """
         Bbus, Bf, _, _, _ = self._prepare_sensitivity()
         res = Bf * scipy.sparse.linalg.inv(Bbus)
-        res[:, 0] = 0
-        return res.T.todense()
+        res_dense = res.T.todense()
+        res_dense[0, :] = 0
+        return res_dense
 
     def get_ptdf_matrix_fast(self):
         """
