@@ -860,18 +860,29 @@ class FastCATestCase(unittest.TestCase):
         cls.saw2.exit()
 
     def test_get_lodf_matrix_default(self):
-        """Should return an N*N square matrix
+        """Should return an N*N square matrix and a boolean vector
         """
         lodf, isl = self.saw.get_lodf_matrix()
         self.assertIsInstance(lodf, np.ndarray)
         self.assertEqual(lodf.shape[0], lodf.shape[1])
         self.assertEqual(lodf.shape[0], lodf.shape[0])
 
+        lodf, isl = self.saw.get_lodf_matrix(post=False)
+        self.assertIsInstance(lodf, np.ndarray)
+        self.assertEqual(lodf.shape[0], lodf.shape[1])
+        self.assertEqual(lodf.shape[0], lodf.shape[0])
+
     def test_get_lodf_matrix_large(self):
-        """Should return a sparse matrix
+        """Should return a sparse matrix and a boolean vector
         """
         lodf, isl = self.saw2.get_lodf_matrix()
         self.assertIsInstance(lodf, sp.sparse.csr.csr_matrix)
+
+    def test_get_lodf_matrix_raw(self):
+        """Should return a dataframe and a boolean vector
+        """
+        lodf, isl = self.saw.get_lodf_matrix(raw=True)
+        self.assertIsInstance(lodf, pd.DataFrame)
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix

@@ -880,25 +880,49 @@ class SAW(object):
         self.pw_order = original
         return graph
 
-    def get_lodf_matrix(self, precision: int = 3):
+    def get_lodf_matrix(self, precision: int = 3, method: str = 'DC', post: bool = True,
+                        raw: bool = False):
         """Obtain LODF matrix in numpy array or scipy sparse matrix.
         By default, it obtains the lodf matrix directly from PW. If size
         is larger than 1000, then precision will be applied to filter out
         small values and the result will be returned in scipy sparse matrix.
 
         :param precision:  number of decimal to keep.
+        :param method: The linear method to be used for the LODF calculation. Default is DC.
+        Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
+        LODF calculation.
+        :param post: Set to True to calculate any line closure sensitivies relative to
+        post-closure flow on the line being closed. This is known as the LCDF value.
+        Set to False to calculate any line closure sensitivities based on calculating the flow on
+        the line being closed from pre-closure voltages and angles. This is known as the MLCDF
+        value.
+        :param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to
+        be exactly the same as the matrix shown in the PW GUI. Default is False.
 
-        :returns: LODF matrix
+        :returns: The LODF matrix and a boolean vector to indicate which lines would cause
+        islanding.
         """
+        original = self.pw_order
         self.pw_order = True
         count = self.ListOfDevices('branch').shape[0]
-        self.RunScriptCommand(
-            "CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,DC,ALL,YES)")
-        array = [f"LODFMult:{x}" for x in range(count)]
-        if count <= 1000:
-            self._extracted_from_get_lodf_matrix_9(array)
+        if post:
+            self.RunScriptCommand(
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,YES)")
         else:
-            self._extracted_from_get_lodf_matrix_16(array, precision)
+            self.RunScriptCommand(
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,NO)")
+        array = [f"LODFMult:{x}" for x in range(count)]
+        if raw:
+            df = self.GetParametersMultipleElement('branch', array)
+            self.lodf = df.apply(pd.to_numeric, errors='coerce')
+            temp = df.to_numpy(dtype=float) / 100
+            self.isl = np.any(temp >= 10, axis=1)
+        else:
+            if count <= 1000:
+                self._extracted_from_get_lodf_matrix_9(array)
+            else:
+                self._extracted_from_get_lodf_matrix_16(array, precision)
+        self.pw_order = original
         return self.lodf, self.isl
 
     # TODO Rename this here and in `get_lodf_matrix`
