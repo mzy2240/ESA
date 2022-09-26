@@ -6,6 +6,7 @@ Version 1.3.0
 ^^^^^^^^^^^^^
 
 * Improve the `get_lodf_matrix` function to support DCPS (DC with phase shifter) and MLCDF
+* Fix typos and bugs
 
 Version 1.2.9
 ^^^^^^^^^^^^^
