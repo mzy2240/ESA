@@ -896,8 +896,9 @@ class SAW(object):
         Set to False to calculate any line closure sensitivities based on calculating the flow on
         the line being closed from pre-closure voltages and angles. This is known as the MLCDF
         value.
-        :param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to
-        be exactly the same as the matrix shown in the PW GUI. Default is False.
+        :param raw: Set to True if you want to get the raw LODF matrix (dataframe, the first
+        column is line flow), which suppose to be exactly the same as the matrix shown in the PW
+        GUI. Default is False.
 
         :returns: The LODF matrix and a boolean vector to indicate which lines would cause
         islanding.
@@ -913,6 +914,7 @@ class SAW(object):
                 f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,NO)")
         array = [f"LODFMult:{x}" for x in range(count)]
         if raw:
+            array = ['LineMW'] + array
             df = self.GetParametersMultipleElement('branch', array)
             self.lodf = df.apply(pd.to_numeric, errors='coerce')
             temp = df.to_numpy(dtype=float) / 100

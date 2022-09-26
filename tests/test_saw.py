@@ -883,6 +883,7 @@ class FastCATestCase(unittest.TestCase):
         """
         lodf, isl = self.saw.get_lodf_matrix(raw=True)
         self.assertIsInstance(lodf, pd.DataFrame)
+        print(lodf)
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix
