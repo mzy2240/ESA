@@ -1490,24 +1490,22 @@ small values and the result will be returned in scipy sparse matrix.</p>
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>precision</strong> – number of decimal to keep.</p></li>
-<li><p><strong>method</strong> – The linear method to be used for the LODF calculation. Default is DC.</p></li>
-</ul>
-</dd>
-</dl>
-<p>Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
-LODF calculation.
-:param post: Set to True to calculate any line closure sensitivies relative to
+<li><p><strong>method</strong> – The linear method to be used for the LODF calculation. Default is DC.
+Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
+LODF calculation.</p></li>
+<li><p><strong>post</strong> – Set to True to calculate any line closure sensitivies relative to
 post-closure flow on the line being closed. This is known as the LCDF value. Set to
 False to calculate any line closure sensitivities based on calculating the flow on the
-line being closed from pre-closure voltages and angles. This is known as the MLCDF value.
-:param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to be exactly the same as the
-table shown in the PW GUI. Default is False.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>The LODF matrix and a boolean vector to indicate which lines would cause</p>
+line being closed from pre-closure voltages and angles. This is known as the MLCDF value.</p></li>
+<li><p><strong>raw</strong> – Set to True if you want to get the raw LODF matrix (dataframe), which suppose to be exactly the same as the
+table shown in the PW GUI. Default is False.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The LODF matrix and a boolean vector to indicate which lines would cause
+islanding.</p>
 </dd>
 </dl>
-<p>islanding.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1565,11 +1563,13 @@ faster than the PW script command for large cases.</p>
 script CalculateShiftFactorsMultipleElement.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>method</strong> – The linear method to be used for the calculation. The options are AC,</p>
+<dd class="field-odd"><p><strong>method</strong> – The linear method to be used for the calculation. The options are AC,
+DC or DCPS.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A dense float matrix in the numpy array format.</p>
 </dd>
 </dl>
-<p>DC or DCPS.
-:returns: A dense float matrix in the numpy array format.</p>
 </dd></dl>
 
 <dl class="py method">
@@ -1740,21 +1740,21 @@ in IEEE Transactions on Power Systems, doi: 10.1109/TPWRS.2022.3168226.
 An ecosystem perspective for the design of sustainable power systems. Procedia Cirp, 80, 269-274.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>target</strong> – the real, reactive, and apparent power over the system. The default value</p>
-</dd>
-</dl>
-<p>is MW, which is the real power. Users can change to MVR, which is the reactive power; or
-MVA, which is the apparent power.
-:param split_generator: Choose to split or aggregate multiple generators associated with
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>target</strong> – the real, reactive, and apparent power over the system. The default value
+is MW, which is the real power. Users can change to MVR, which is the reactive power; or
+MVA, which is the apparent power.</p></li>
+<li><p><strong>split_generator</strong> – Choose to split or aggregate multiple generators associated with
 the same bus. If true, the method will consider the generators’ robustness for each
-generator.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Results</dt>
-<dd class="field-odd"><p>it is a list of ecological metrics, including the Ecological Robustness (Reco),</p>
+generator.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Results</dt>
+<dd class="field-even"><p>it is a list of ecological metrics, including the Ecological Robustness (Reco), 
+the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
+and the Total System Overhead (TSO)</p>
 </dd>
 </dl>
-<p>the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
-and the Total System Overhead (TSO)</p>
 </dd></dl>
 
 <dl class="py method">

@@ -889,17 +889,17 @@ class SAW(object):
 
         :param precision:  number of decimal to keep.
         :param method: The linear method to be used for the LODF calculation. Default is DC.
-        Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
-        LODF calculation.
+            Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
+            LODF calculation.
         :param post: Set to True to calculate any line closure sensitivies relative to
-        post-closure flow on the line being closed. This is known as the LCDF value. Set to
-        False to calculate any line closure sensitivities based on calculating the flow on the
-        line being closed from pre-closure voltages and angles. This is known as the MLCDF value.
+            post-closure flow on the line being closed. This is known as the LCDF value. Set to
+            False to calculate any line closure sensitivities based on calculating the flow on the
+            line being closed from pre-closure voltages and angles. This is known as the MLCDF value.
         :param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to be exactly the same as the
-        table shown in the PW GUI. Default is False.
+            table shown in the PW GUI. Default is False.
 
         :returns: The LODF matrix and a boolean vector to indicate which lines would cause
-        islanding.
+            islanding.
         """
         original = self.pw_order
         self.pw_order = True
@@ -978,7 +978,7 @@ class SAW(object):
         script CalculateShiftFactorsMultipleElement.
 
         :param method: The linear method to be used for the calculation. The options are AC,
-        DC or DCPS.
+            DC or DCPS.
         :returns: A dense float matrix in the numpy array format.
         """
         temp = self.pw_order
@@ -1349,15 +1349,15 @@ class SAW(object):
         An ecosystem perspective for the design of sustainable power systems. Procedia Cirp, 80, 269-274.
 
         :param target: the real, reactive, and apparent power over the system. The default value
-        is MW, which is the real power. Users can change to MVR, which is the reactive power; or
-        MVA, which is the apparent power.
+            is MW, which is the real power. Users can change to MVR, which is the reactive power; or
+            MVA, which is the apparent power.
         :param split_generator: Choose to split or aggregate multiple generators associated with
-        the same bus. If true, the method will consider the generators' robustness for each
-        generator.
+            the same bus. If true, the method will consider the generators' robustness for each
+            generator.
 
         :results: it is a list of ecological metrics, including the Ecological Robustness (Reco), 
-        the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
-        and the Total System Overhead (TSO) 
+            the Ascendancy (ASC), the Development Capacity (DC), the Cycled Throughflow (tstc), the Finn Cycling Index (CI)
+            and the Total System Overhead (TSO)
         """
         warnings.warn("Please make sure the current system state is valid")
 
