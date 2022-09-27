@@ -1481,19 +1481,34 @@ field returned by the Simulator, but modified to be 0-based.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="esa.saw.SAW.get_lodf_matrix">
-<span class="sig-name descname"><span class="pre">get_lodf_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_lodf_matrix" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_lodf_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">precision</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'DC'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">post</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">raw</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#esa.saw.SAW.get_lodf_matrix" title="Permalink to this definition">¶</a></dt>
 <dd><p>Obtain LODF matrix in numpy array or scipy sparse matrix.
 By default, it obtains the lodf matrix directly from PW. If size
 is larger than 1000, then precision will be applied to filter out
 small values and the result will be returned in scipy sparse matrix.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>precision</strong> – number of decimal to keep.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>LODF matrix</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>precision</strong> – number of decimal to keep.</p></li>
+<li><p><strong>method</strong> – The linear method to be used for the LODF calculation. Default is DC.</p></li>
+</ul>
 </dd>
 </dl>
+<p>Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
+LODF calculation.
+:param post: Set to True to calculate any line closure sensitivies relative to
+post-closure flow on the line being closed. This is known as the LCDF value.
+Set to False to calculate any line closure sensitivities based on calculating the flow on
+the line being closed from pre-closure voltages and angles. This is known as the MLCDF
+value.
+:param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to
+be exactly the same as the table shown in the PW GUI. Default is False.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The LODF matrix and a boolean vector to indicate which lines would cause</p>
+</dd>
+</dl>
+<p>islanding.</p>
 </dd></dl>
 
 <dl class="py method">

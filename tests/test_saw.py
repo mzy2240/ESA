@@ -773,11 +773,13 @@ class ToGraphTestCase(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14, early_bind=True)
+        cls.saw2 = SAW(PATH_200, CreateIfNotFound=True)
 
     @classmethod
     def tearDownClass(cls) -> None:
         # noinspection PyUnresolvedReferences
         cls.saw.exit()
+        cls.saw2.exit()
 
     def test_to_graph_default(self):
         """It should return a networkx multigraph object.
@@ -836,6 +838,10 @@ class ToGraphTestCase(unittest.TestCase):
         with self.assertRaises(AttributeError):
             self.saw.to_graph(node='substation', geographic=True)
 
+        g = self.saw2.to_graph(node='substation', geographic=True)
+
+        self.assertIsNotNone(nx.get_node_attributes(g, "Latitude")[1])
+
 
 class FastCATestCase(unittest.TestCase):
     """Test all the methods related to fast contingency
@@ -854,18 +860,30 @@ class FastCATestCase(unittest.TestCase):
         cls.saw2.exit()
 
     def test_get_lodf_matrix_default(self):
-        """Should return an N*N square matrix
+        """Should return an N*N square matrix and a boolean vector
         """
         lodf, isl = self.saw.get_lodf_matrix()
         self.assertIsInstance(lodf, np.ndarray)
         self.assertEqual(lodf.shape[0], lodf.shape[1])
         self.assertEqual(lodf.shape[0], lodf.shape[0])
 
+        lodf, isl = self.saw.get_lodf_matrix(post=False)
+        self.assertIsInstance(lodf, np.ndarray)
+        self.assertEqual(lodf.shape[0], lodf.shape[1])
+        self.assertEqual(lodf.shape[0], lodf.shape[0])
+
     def test_get_lodf_matrix_large(self):
-        """Should return a sparse matrix
+        """Should return a sparse matrix and a boolean vector
         """
         lodf, isl = self.saw2.get_lodf_matrix()
         self.assertIsInstance(lodf, sp.sparse.csr.csr_matrix)
+
+    def test_get_lodf_matrix_raw(self):
+        """Should return a dataframe and a boolean vector
+        """
+        lodf, isl = self.saw.get_lodf_matrix(raw=True)
+        self.assertIsInstance(lodf, pd.DataFrame)
+        print(lodf)
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix

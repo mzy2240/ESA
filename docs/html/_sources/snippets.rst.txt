@@ -38,10 +38,15 @@ Transient Stability Analysis
 
 .. include:: snippets/ts_mycontingency_200.rst
 
-Contingency Analysis
---------------------
+Fast Contingency Analysis
+-------------------------
 
-.. include:: snippets/contingency_analysis_2000.rst
+.. include:: snippets/fast_contingency_analysis_2000.rst
+
+Contingency Analysis using PW Built-in capability
+-------------------------------------------------
+
+.. include:: snippets/pw_contingency_analysis_2000.rst
 
 Create Simple Graph Model
 -------------------------
@@ -57,3 +62,4 @@ Plot Histogram of Line Flows with Matplotlib
 --------------------------------------------
 
 .. include:: snippets/line_loading_matplotlib_2000.rst
+

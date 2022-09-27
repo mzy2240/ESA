@@ -167,7 +167,9 @@
                 
                   <li class="toctree-l2"><a href="#transient-stability-analysis" class="reference internal">Transient Stability Analysis</a></li>
                 
-                  <li class="toctree-l2"><a href="#contingency-analysis" class="reference internal">Contingency Analysis</a></li>
+                  <li class="toctree-l2"><a href="#fast-contingency-analysis" class="reference internal">Fast Contingency Analysis</a></li>
+                
+                  <li class="toctree-l2"><a href="#contingency-analysis-using-pw-built-in-capability" class="reference internal">Contingency Analysis using PW Built-in capability</a></li>
                 
                   <li class="toctree-l2"><a href="#create-simple-graph-model" class="reference internal">Create Simple Graph Model</a></li>
                 
@@ -663,8 +665,8 @@ automated, but it might be easier for most users to pre-define the plots and con
 in the case and then load the case using ESA. GetParametersMultipleElement cannot be used
 here to retrieve the TS datapoints (which is a very rare situation).</p>
 </section>
-<section id="contingency-analysis">
-<h2>Contingency Analysis<a class="headerlink" href="#contingency-analysis" title="Permalink to this headline">¶</a></h2>
+<section id="fast-contingency-analysis">
+<h2>Fast Contingency Analysis<a class="headerlink" href="#fast-contingency-analysis" title="Permalink to this headline">¶</a></h2>
 <p>This example shows how to do fast contingency analysis (N-1 &amp; N-2) using
 ESA. The fast contingency analysis is a slightly improved implementation
 of <a class="reference external" href="https://ieeexplore.ieee.org/document/7390321">this paper</a>. It is generally
@@ -697,6 +699,38 @@ the use case you have, you could adjust the line limits manually as well.</p>
 <a class="reference internal image-reference" href="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif"><img alt="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif" class="align-center" src="https://github.com/mzy2240/ESA/raw/develop/docs/rst/snippets/n-2.gif" style="width: 100%;" /></a>
 <p>You could also validate the fast CA result with the built-in CA result by
 simply set the argument <cite>validate=True</cite> when calling <cite>run_contingency_analysis</cite> function.</p>
+</section>
+<section id="contingency-analysis-using-pw-built-in-capability">
+<h2>Contingency Analysis using PW Built-in capability<a class="headerlink" href="#contingency-analysis-using-pw-built-in-capability" title="Permalink to this headline">¶</a></h2>
+<p>This example shows how to perform the contingency analysis via PW’s built-in capability. We assume
+you already have the aux file that contains all the contingencies.</p>
+<p>The initialization procedure is the same as others.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">CASE_PATH</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_base_pws_version_21.pwb&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">esa</span> <span class="kn">import</span> <span class="n">SAW</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span> <span class="o">=</span> <span class="n">SAW</span><span class="p">(</span><span class="n">CASE_PATH</span><span class="p">,</span> <span class="n">CreateIfNotFound</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">pw_order</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Make sure your case already has a valid operating states. If not, run power flow first:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">SolvePowerFlow</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Then load the auxiliary file into Powerworld.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">filepath_aux</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_contingency_auxfile.aux&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">ProcessAuxFile</span><span class="p">(</span><span class="n">filepath_aux</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Run the powerworld script command to solve all the contingencies that are not set to skip in the
+loaded auxiliary file.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">cmd_solve</span> <span class="o">=</span> <span class="s1">&#39;CTGSolveAll(</span><span class="si">{}</span><span class="s1">,</span><span class="si">{}</span><span class="s1">)&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;NO&#39;</span><span class="p">,</span><span class="s1">&#39;YES&#39;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">saw</span><span class="o">.</span><span class="n">RunScriptCommand</span><span class="p">(</span><span class="n">cmd_solve</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Use ESA to obtain the CA result</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">result</span> <span class="o">=</span> <span class="n">saw</span><span class="o">.</span><span class="n">GetParametersMultipleElement</span><span class="p">(</span><span class="s1">&#39;Contingency&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s1">&#39;CTGLabel&#39;</span><span class="p">,</span> <span class="s1">&#39;CTGSolved&#39;</span><span class="p">,</span> <span class="s1">&#39;CTGProc&#39;</span><span class="p">,</span> <span class="s1">&#39;CTGCustMonViol&#39;</span><span class="p">,</span> <span class="s1">&#39;CTGViol&#39;</span><span class="p">])</span>
+</pre></div>
+</div>
+<p>The result is stored as a dataframe.</p>
 </section>
 <section id="create-simple-graph-model">
 <h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this headline">¶</a></h2>

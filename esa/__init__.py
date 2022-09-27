@@ -16,4 +16,4 @@
 # Please keep the docstring above up to date with all the imports.
 from .saw import SAW, PowerWorldError, COMError, CommandNotRespectedError,\
     Error
-__version__ = "1.2.9"
+__version__ = "1.3.0"
