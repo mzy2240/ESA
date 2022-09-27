@@ -2,6 +2,11 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
+Version 1.3.1
+^^^^^^^^^^^^^
+
+* Fix the `get_lodf_matrix` function when the system is large
+
 Version 1.3.0
 ^^^^^^^^^^^^^
 
