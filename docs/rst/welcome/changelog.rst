@@ -6,6 +6,7 @@ Version 1.3.0
 ^^^^^^^^^^^^^
 
 * Improve the `get_lodf_matrix` function to support DCPS (DC with phase shifter) and MLCDF
+* Add a new example for the built-in contingency analysis
 * Fix typos and bugs
 
 Version 1.2.9
