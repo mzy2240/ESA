@@ -892,12 +892,11 @@ class SAW(object):
         Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
         LODF calculation.
         :param post: Set to True to calculate any line closure sensitivies relative to
-        post-closure flow on the line being closed. This is known as the LCDF value.
-        Set to False to calculate any line closure sensitivities based on calculating the flow on
-        the line being closed from pre-closure voltages and angles. This is known as the MLCDF
-        value.
-        :param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to
-        be exactly the same as the table shown in the PW GUI. Default is False.
+        post-closure flow on the line being closed. This is known as the LCDF value. Set to
+        False to calculate any line closure sensitivities based on calculating the flow on the
+        line being closed from pre-closure voltages and angles. This is known as the MLCDF value.
+        :param raw: Set to True if you want to get the raw LODF matrix (dataframe), which suppose to be exactly the same as the
+        table shown in the PW GUI. Default is False.
 
         :returns: The LODF matrix and a boolean vector to indicate which lines would cause
         islanding.
