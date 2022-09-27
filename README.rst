@@ -8,7 +8,7 @@ Easy SimAuto (ESA)
    :target: https://doi.org/10.21105/joss.02289
 .. image:: https://img.shields.io/pypi/l/esa.svg
    :target: https://github.com/mzy2240/ESA/blob/master/LICENSE
-.. image:: https://img.shields.io/pypi/dm/esa.svg
+.. image:: https://pepy.tech/badge/esa/month
    :target: https://pepy.tech/project/esa
 .. image:: https://img.shields.io/badge/coverage-100%25-brightgreen
    :target: https://pypi.org/project/esa/
