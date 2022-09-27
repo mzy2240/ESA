@@ -1,5 +1,5 @@
-This example shows how to do contingency analysis (N-1) using powerworld script functions and
-ESA. 
+This example shows how to perform the contingency analysis via PW's built-in capability. We assume
+you already have the aux file that contains all the contingencies.
 
 The initialization procedure is the same as others.
 
@@ -23,16 +23,17 @@ Then load the auxiliary file into Powerworld.
     >>> filepath_aux = r"C:\Users\myuser\git\ESA\tests\cases\tx2000\tx2000_contingency_auxfile.aux"
     >>> saw.ProcessAuxFile(filepath_aux)
     
-Run the powerworld script command for solving all the contingencies that are not set to skip in the loaded auxiliary file.
+Run the powerworld script command to solve all the contingencies that are not set to skip in the
+loaded auxiliary file.
 
 .. code:: python
 
     >>> cmd_solve = 'CTGSolveAll({},{})'.format('NO','YES')
     >>> saw.RunScriptCommand(cmd_solve)
 
-Use ESA to get the necessary results using the parameters list.
+Use ESA to obtain the CA result
 
 .. code:: python
 
-    >>> result = saw.GetParametersMultipleElement('Contingency',['CTGLabel', 'CTGSolved', 'CTGProc', 'CTGCustMonViol', 'CTGViol'])
-The result is stored as a dataframe. So the test system (TX2000) is not N-1 secured. There are 156 violations.
+    >>> result = saw.GetParametersMultipleElement('Contingency', ['CTGLabel', 'CTGSolved', 'CTGProc', 'CTGCustMonViol', 'CTGViol'])
+The result is stored as a dataframe.
