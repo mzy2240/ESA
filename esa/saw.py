@@ -913,10 +913,14 @@ class SAW(object):
         array = [f"LODFMult:{x}" for x in range(count)]
         if raw:
             array = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW'] + array
-            df = self.GetParametersMultipleElement('branch', array)
-            self.lodf = df.apply(pd.to_numeric, errors='coerce')
-            temp = df.to_numpy(dtype=float) / 100
-            self.isl = np.any(temp >= 10, axis=1)
+            container = []
+            for batch in partition_all(500, array):
+                df = self.GetParametersMultipleElement('branch', batch)
+                temp = df.apply(pd.to_numeric, errors='coerce')
+                container.append(temp)
+            self.lodf = pd.concat(container, axis=1, copy=False)
+            df_array = self.lodf.to_numpy(dtype=float) / 100
+            self.isl = np.any(df_array >= 10, axis=1)
         else:
             if count <= 1000:
                 self._extracted_from_get_lodf_matrix_9(array)
