@@ -1033,10 +1033,11 @@ class SAW(object):
 
         # change the values without breaking the sparsity
         # note the Bbus should be csc
-        Bbus.data[:Bbus.indptr[1]] = 0  # change the first column to 0
-        first_row_indexes = np.where(Bbus.indices == 0)[0]
-        Bbus.data[first_row_indexes] = 0  # change the first row to 0
-        Bbus.data[first_row_indexes[0]] = -1  # change Bbus[0,0] to -1
+        Bbus.data[Bbus.indptr[slack]:Bbus.indptr[slack+1]] = 0  # change the slack column to 0
+        first_row_indexes = np.where(Bbus.indices == slack)[0]
+        Bbus.data[first_row_indexes] = 0  # change the slack row to 0
+        diag_index = np.where(first_row_indexes == slack)[0]
+        Bbus.data[first_row_indexes[diag_index]] = -1
         return Bbus, Bf, Cft, slack, noslack
 
     def get_shift_factor_matrix_fast(self):
@@ -1047,10 +1048,10 @@ class SAW(object):
 
         :returns: A dense float matrix in the numpy array format.
         """
-        Bbus, Bf, _, _, _ = self._prepare_sensitivity()
+        Bbus, Bf, _, slack, _ = self._prepare_sensitivity()
         res = Bf * scipy.sparse.linalg.inv(Bbus)
         res_dense = res.T.todense()
-        res_dense[0, :] = 0
+        res_dense[slack, :] = 0
         return res_dense
 
     def get_ptdf_matrix_fast(self):
