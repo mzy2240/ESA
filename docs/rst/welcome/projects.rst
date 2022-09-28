@@ -42,3 +42,7 @@ project here! Please cite ESA if you use it in your work: see
     Analysis Based on Graph Theory Concepts and Line Outage Distribution
     Factors (LODF)." In this project, ESA is leveraged to extract the
     topology of the power system model and obtain the LODF matrix.
+-   ESA can be used with Julia programming language now via `EasySimauto.jl <https://github.com/mzy2240/EasySimauto.jl>`__.
+    Julia is a fast and amazing language, and it is currently widely used in the
+    research and scientific computing area. EasySimauto.jl is by far the simplest way
+    to interact with PowerWorld Simulator from Julia.

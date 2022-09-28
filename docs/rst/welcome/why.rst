@@ -13,6 +13,8 @@ following desirable properties:
 *   Provides functions to interact with PowerWorld Simulator interface,
     without the hassle of creating and loading the display auxiliary
     files
+*   Provides native (but much more performant) methods of contingency
+    analysis and sensitivity analysis
 *   Returns useful data types such as Pandas DataFrames, unlocking a
     whole new realm of analysis and control capabilities
 *   Gets data from a power system model for other application, like
