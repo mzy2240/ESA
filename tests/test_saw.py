@@ -997,7 +997,6 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         # the fast method should be faster than the PW method
         self.assertLess(duration1, duration2)
 
-
     def test_get_ptdf_matrix_fast(self):
         """
         Expect to return a full ptdf matrix

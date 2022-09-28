@@ -1049,10 +1049,11 @@ class SAW(object):
         :returns: A dense float matrix in the numpy array format.
         """
         Bbus, Bf, _, slack, _ = self._prepare_sensitivity()
-        res = Bf * scipy.sparse.linalg.inv(Bbus)
-        res_dense = res.T.todense()
-        res_dense[slack, :] = 0
-        return res_dense
+        Bbus[slack, slack] = -1
+        temp = Bf * scipy.sparse.linalg.inv(Bbus)
+        isf = temp.T.todense()
+        isf[slack, :] = 0
+        return isf
 
     def get_ptdf_matrix_fast(self):
         """
