@@ -1008,10 +1008,14 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
 
     def test_get_lodf_matrix_fast(self):
         """
-        Expect to return a full lodf matrix
+        Expect to return a full lodf matrix, and it should be the same as the
+        result from PW directly.
         """
         res = self.saw.get_lodf_matrix_fast()
         self.assertEqual(res.shape, (20, 20))
+
+        lodf, isl = self.saw.get_lodf_matrix()
+        self.assertTrue(np.allclose(lodf, res, rtol=1e-02, atol=1e-04, equal_nan=True))
 
 
     def test_fast_n1_test(self):
