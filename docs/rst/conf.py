@@ -155,18 +155,16 @@ def linkcode_resolve(
     fn = relpath(fn, start=dirname(esa.__file__))
 
     if "dev" in about["__version__"]:
-        return "{}/blob/master/{}/{}/{}{}".format(
+        return "{}/blob/master/{}/{}{}".format(
             about["__github__"],
-            "src",
             about["__package_name__"],
             fn,
             linespec,
         )
     else:
-        return "{}/blob/v{}/{}/{}/{}{}".format(
+        return "{}/blob/v{}/{}/{}{}".format(
             about["__github__"],
             about["__version__"],
-            "src",
             about["__package_name__"],
             fn,
             linespec,
