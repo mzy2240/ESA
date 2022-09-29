@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html  lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
@@ -13,7 +13,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
 
       
       <!-- bundled in js (rollup iife) -->
@@ -223,7 +225,7 @@
           <div class="content" role="main" v-pre>
             
   <section id="examples">
-<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Examples<a class="headerlink" href="#examples" title="Permalink to this heading">¶</a></h1>
 <p>For your convenience, several ESA usage examples are provided in this
 section. Some examples may also be presented earlier in the
 documentation. If you would like to share your own examples with us,
@@ -232,7 +234,7 @@ examples (though in a <em>much</em> less reader friendly format), check out
 ESA’s <a class="reference external" href="https://github.com/mzy2240/ESA/tree/master/tests">tests</a>,
 specifically the <code class="docutils literal notranslate"><span class="pre">test_saw.py</span></code> file.</p>
 <section id="esa-quick-start">
-<h2>ESA Quick Start<a class="headerlink" href="#esa-quick-start" title="Permalink to this headline">¶</a></h2>
+<h2>ESA Quick Start<a class="headerlink" href="#esa-quick-start" title="Permalink to this heading">¶</a></h2>
 <p>The following example is also presented in the <a class="reference internal" href="quick_start.html#quick-start"><span class="std std-ref">Quick Start</span></a>
 section.</p>
 <p>This “quick start” example has several purposes:</p>
@@ -455,7 +457,7 @@ objects hanging around.</p>
 using ESA to improve your simulation and analysis work flows!</p>
 </section>
 <section id="increase-loading-in-case">
-<span id="increase-loading"></span><h2>Increase Loading in Case<a class="headerlink" href="#increase-loading-in-case" title="Permalink to this headline">¶</a></h2>
+<span id="increase-loading"></span><h2>Increase Loading in Case<a class="headerlink" href="#increase-loading-in-case" title="Permalink to this heading">¶</a></h2>
 <p>The following example is also presented in the <a class="reference internal" href="welcome.html#what-is-esa"><span class="std std-ref">What Is ESA?</span></a>
 section.</p>
 <p>This simple example uniformly increases the loading in a power system
@@ -526,7 +528,7 @@ file), like so (adapt the path for your system):</p>
 <p>Easy, isn’t it?</p>
 </section>
 <section id="add-lines-to-case">
-<h2>Add Lines to Case<a class="headerlink" href="#add-lines-to-case" title="Permalink to this headline">¶</a></h2>
+<h2>Add Lines to Case<a class="headerlink" href="#add-lines-to-case" title="Permalink to this heading">¶</a></h2>
 <p>This example shows how to add transmission lines to a model.</p>
 <p>Before starting the example, please define the constants
 <code class="docutils literal notranslate"><span class="pre">CASE_PATH</span></code> (the file path to a PowerWorld <code class="docutils literal notranslate"><span class="pre">.pwb</span></code> case file) and
@@ -625,7 +627,7 @@ the lines will be created.</p>
 </div>
 </section>
 <section id="transient-stability-analysis">
-<h2>Transient Stability Analysis<a class="headerlink" href="#transient-stability-analysis" title="Permalink to this headline">¶</a></h2>
+<h2>Transient Stability Analysis<a class="headerlink" href="#transient-stability-analysis" title="Permalink to this heading">¶</a></h2>
 <p>This example illustrates the procedure to perform transient stability(TS) analysis
 and obtain the TS result. To retrieve the result, the most convenient way is to create
 a plot object and connect the object/fields pairs to it, then you will be able to query it
@@ -666,7 +668,7 @@ in the case and then load the case using ESA. GetParametersMultipleElement canno
 here to retrieve the TS datapoints (which is a very rare situation).</p>
 </section>
 <section id="fast-contingency-analysis">
-<h2>Fast Contingency Analysis<a class="headerlink" href="#fast-contingency-analysis" title="Permalink to this headline">¶</a></h2>
+<h2>Fast Contingency Analysis<a class="headerlink" href="#fast-contingency-analysis" title="Permalink to this heading">¶</a></h2>
 <p>This example shows how to do fast contingency analysis (N-1 &amp; N-2) using
 ESA. The fast contingency analysis is a slightly improved implementation
 of <a class="reference external" href="https://ieeexplore.ieee.org/document/7390321">this paper</a>. It is generally
@@ -701,7 +703,7 @@ the use case you have, you could adjust the line limits manually as well.</p>
 simply set the argument <cite>validate=True</cite> when calling <cite>run_contingency_analysis</cite> function.</p>
 </section>
 <section id="contingency-analysis-using-pw-built-in-capability">
-<h2>Contingency Analysis using PW Built-in capability<a class="headerlink" href="#contingency-analysis-using-pw-built-in-capability" title="Permalink to this headline">¶</a></h2>
+<h2>Contingency Analysis using PW Built-in capability<a class="headerlink" href="#contingency-analysis-using-pw-built-in-capability" title="Permalink to this heading">¶</a></h2>
 <p>This example shows how to perform the contingency analysis via PW’s built-in capability. We assume
 you already have the aux file that contains all the contingencies.</p>
 <p>The initialization procedure is the same as others.</p>
@@ -733,7 +735,7 @@ loaded auxiliary file.</p>
 <p>The result is stored as a dataframe.</p>
 </section>
 <section id="create-simple-graph-model">
-<h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this headline">¶</a></h2>
+<h2>Create Simple Graph Model<a class="headerlink" href="#create-simple-graph-model" title="Permalink to this heading">¶</a></h2>
 <p>This example shows how to easily transform a grid model into a graph
 supported by <a class="reference external" href="https://networkx.github.io/">NetworkX</a>. NetworkX is a
 popular Python package for analyzing graph structure, building network
@@ -796,7 +798,7 @@ adapting the path to your system:</p>
 </div>
 </section>
 <section id="created-graph-model-with-edges-weighted-by-branch-impedance">
-<h2>Created Graph Model with Edges Weighted by Branch Impedance<a class="headerlink" href="#created-graph-model-with-edges-weighted-by-branch-impedance" title="Permalink to this headline">¶</a></h2>
+<h2>Created Graph Model with Edges Weighted by Branch Impedance<a class="headerlink" href="#created-graph-model-with-edges-weighted-by-branch-impedance" title="Permalink to this heading">¶</a></h2>
 <p>This example shows how one can create a weighted graph using branch
 impedance values from a PowerWorld grid model as weights. You’ll need to
 have the <a class="reference external" href="https://networkx.github.io/">NetworkX</a> Python package
@@ -890,7 +892,7 @@ diagonal Y bus matrix entries and buses which are not connected
 </div>
 </section>
 <section id="plot-histogram-of-line-flows-with-matplotlib">
-<h2>Plot Histogram of Line Flows with Matplotlib<a class="headerlink" href="#plot-histogram-of-line-flows-with-matplotlib" title="Permalink to this headline">¶</a></h2>
+<h2>Plot Histogram of Line Flows with Matplotlib<a class="headerlink" href="#plot-histogram-of-line-flows-with-matplotlib" title="Permalink to this heading">¶</a></h2>
 <p>This examples shows how to make a histogram of percent line loading in
 a power system model using SimAuto, ESA, and Matplotlib.</p>
 <p><a class="reference external" href="https://matplotlib.org/">Matplotlib</a> is a “comprehensive library for
@@ -981,7 +983,7 @@ known as key fields.</p>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2022, Zeyu Mao, Brandon Thayer, Yijing Liu.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>

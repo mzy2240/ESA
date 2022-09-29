@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html  lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
@@ -13,7 +13,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
 
       
       <!-- bundled in js (rollup iife) -->
@@ -217,7 +219,7 @@
           <div class="content" role="main" v-pre>
             
   <section id="esa-overview">
-<h1>ESA Overview<a class="headerlink" href="#esa-overview" title="Permalink to this headline">¶</a></h1>
+<h1>ESA Overview<a class="headerlink" href="#esa-overview" title="Permalink to this heading">¶</a></h1>
 <p>Please see <a class="reference internal" href="welcome.html#about-simauto"><span class="std std-ref">About SimAuto</span></a> for a description of SimAuto as well as
 for links to PowerWorld’s documentation.</p>
 <p>When using ESA, you’ll likely only use a single class: <code class="docutils literal notranslate"><span class="pre">SAW</span></code>, which is
@@ -232,7 +234,7 @@ inputs and outputs use type hinting so that your interactive development
 environment (IDE, such as PyCharm) will automatically highlight
 incorrect input types.</p>
 <section id="naming-conventions">
-<h2>Naming Conventions<a class="headerlink" href="#naming-conventions" title="Permalink to this headline">¶</a></h2>
+<h2>Naming Conventions<a class="headerlink" href="#naming-conventions" title="Permalink to this heading">¶</a></h2>
 <p>When browsing the documentation, you’ll notice that naming
 conventions are mixed, with some being CamelCase and others being
 lower_case_with_underscores. We use the CamelCase convention to indicate
@@ -258,21 +260,21 @@ letters. Variables use the lower_case_with_underscores convention any
 time the variable is not a direct SimAuto input.</p>
 </section>
 <section id="functions-methods">
-<h2>Functions/Methods<a class="headerlink" href="#functions-methods" title="Permalink to this headline">¶</a></h2>
+<h2>Functions/Methods<a class="headerlink" href="#functions-methods" title="Permalink to this heading">¶</a></h2>
 <section id="simauto-functions">
-<h3>SimAuto Functions<a class="headerlink" href="#simauto-functions" title="Permalink to this headline">¶</a></h3>
+<h3>SimAuto Functions<a class="headerlink" href="#simauto-functions" title="Permalink to this heading">¶</a></h3>
 <p>The <code class="docutils literal notranslate"><span class="pre">SAW</span></code> class has every SimAuto function implemented. I.e., you
 can call a <code class="docutils literal notranslate"><span class="pre">SAW</span></code> method corresponding to every documented <a class="reference external" href="https://www.powerworld.com/WebHelp/#MainDocumentation_HTML/Simulator_Automation_Server_Functions.htm%3FTocPath%3DAutomation%2520Server%2520Add-On%2520(SimAuto)%7CAutomation%2520Server%2520Functions%7C_____3">SimAuto
 function</a>.</p>
 </section>
 <section id="high-level-helper-functions">
-<h3>High-Level/Helper Functions<a class="headerlink" href="#high-level-helper-functions" title="Permalink to this headline">¶</a></h3>
+<h3>High-Level/Helper Functions<a class="headerlink" href="#high-level-helper-functions" title="Permalink to this heading">¶</a></h3>
 <p>As mentioned in the <a class="reference internal" href="#naming-conventions">Naming Conventions</a> section, we recommend you use
 the high level helper functions (which use the
 lower_case_with_underscores convention) where possible.</p>
 </section>
 <section id="runscriptcommand">
-<span id="id1"></span><h3>RunScriptCommand<a class="headerlink" href="#runscriptcommand" title="Permalink to this headline">¶</a></h3>
+<span id="id1"></span><h3>RunScriptCommand<a class="headerlink" href="#runscriptcommand" title="Permalink to this heading">¶</a></h3>
 <p>For PowerWorld functionality not directly covered by the SimAuto
 functions, you’ll want to use <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code>. Note that we
 already have some methods defined which are script commands, e.g.
@@ -287,7 +289,7 @@ action is to create a DataFrame/Series from the output, and use the
 <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf">here</a>.</p>
 </section>
 <section id="clean-df-or-series">
-<h3>clean_df_or_series<a class="headerlink" href="#clean-df-or-series" title="Permalink to this headline">¶</a></h3>
+<h3>clean_df_or_series<a class="headerlink" href="#clean-df-or-series" title="Permalink to this heading">¶</a></h3>
 <p>This helper function will do automatic type translation for you based
 on known PowerWorld data types. If you’re dealing with direct outputs
 from PowerWorld (e.g. from using <code class="docutils literal notranslate"><span class="pre">RunScriptCommand</span></code>), this method
@@ -296,7 +298,7 @@ thoroughly before using.</p>
 </section>
 </section>
 <section id="data-types">
-<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this headline">¶</a></h2>
+<h2>Data Types<a class="headerlink" href="#data-types" title="Permalink to this heading">¶</a></h2>
 <p>All method input and output data types are documented in the API
 documentation. Where possible, <code class="docutils literal notranslate"><span class="pre">SAW</span></code> methods return Pandas DataFrames
 or Pandas Series. If there’s nothing to return, <code class="docutils literal notranslate"><span class="pre">None</span></code> will be
@@ -304,7 +306,7 @@ returned. ESA makes extensive use of type hinting so that your IDE can
 automatically highlight issues related to data types.</p>
 </section>
 <section id="powerworld-variables">
-<span id="id2"></span><h2>PowerWorld Variables<a class="headerlink" href="#powerworld-variables" title="Permalink to this headline">¶</a></h2>
+<span id="id2"></span><h2>PowerWorld Variables<a class="headerlink" href="#powerworld-variables" title="Permalink to this heading">¶</a></h2>
 <p>At present, ESA uses PowerWorld “Variable Names” as opposed to
 PowerWorld “Concise Variable Names.” A listing of these variables can be
 found <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/docs/power_world_object_fields.xlsx">here</a>.
@@ -312,7 +314,7 @@ It would seem that PowerWorld is moving toward “Concise Variable Names,”
 and in a future update ESA may support these (see <a class="reference external" href="https://github.com/mzy2240/ESA/issues/1#issue-525219427">this issue</a>).</p>
 </section>
 <section id="testing-coverage">
-<h2>Testing Coverage<a class="headerlink" href="#testing-coverage" title="Permalink to this headline">¶</a></h2>
+<h2>Testing Coverage<a class="headerlink" href="#testing-coverage" title="Permalink to this heading">¶</a></h2>
 <p>The ESA team strives to write good tests with 100% coverage. The table
 below provides the latest test coverage data for ESA.</p>
 <table class="colwidths-auto docutils align-left" id="id3">
@@ -342,7 +344,7 @@ below provides the latest test coverage data for ESA.</p>
 </table>
 </section>
 <section id="contributing">
-<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this headline">¶</a></h2>
+<h2>Contributing<a class="headerlink" href="#contributing" title="Permalink to this heading">¶</a></h2>
 <p>We welcome contributions to ESA - please give
 <a class="reference external" href="https://github.com/mzy2240/ESA/blob/master/contributing.md">contributing.md</a>
 a read.</p>
@@ -364,7 +366,7 @@ a read.</p>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2022, Zeyu Mao, Brandon Thayer, Yijing Liu.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>

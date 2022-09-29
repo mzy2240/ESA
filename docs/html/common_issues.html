@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html >
+<html  lang="en">
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
@@ -13,7 +13,9 @@
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
 
       
       <!-- bundled in js (rollup iife) -->
@@ -204,7 +206,7 @@
           <div class="content" role="main" v-pre>
             
   <section id="common-issues">
-<h1>Common Issues<a class="headerlink" href="#common-issues" title="Permalink to this headline">¶</a></h1>
+<h1>Common Issues<a class="headerlink" href="#common-issues" title="Permalink to this heading">¶</a></h1>
 <p>This section will describes some (maybe) common issues and their
 solutions. If you encounter and solve an issue, please file a <a class="reference external" href="https://github.com/mzy2240/ESA/issues">GitHub
 issue</a> so that we can add your
@@ -214,7 +216,7 @@ you have all the prerequisite software installed (including PowerWorld
 Simulator and the SimAuto add-on) and are using a supported version of
 Python (&gt;= 3.5).</p>
 <section id="installation-virtual-environment-issues">
-<span id="venv-issues"></span><h2>Installation/Virtual Environment Issues<a class="headerlink" href="#installation-virtual-environment-issues" title="Permalink to this headline">¶</a></h2>
+<span id="venv-issues"></span><h2>Installation/Virtual Environment Issues<a class="headerlink" href="#installation-virtual-environment-issues" title="Permalink to this heading">¶</a></h2>
 <p>If you have issues installing ESA and/or its dependencies, you may need
 to do some manual work installing prerequisites in your virtual
 environment. Hopefully following these simple directions will help fix
@@ -260,7 +262,7 @@ try to uninstall and reinstall pywin32 and pypiwin32 with the
 <code class="docutils literal notranslate"><span class="pre">python</span> <span class="pre">-m</span> <span class="pre">pip</span> <span class="pre">install</span> <span class="pre">esa</span></code></p></li>
 </ol>
 <section id="pycharm-virtual-environments">
-<h3>PyCharm Virtual Environments<a class="headerlink" href="#pycharm-virtual-environments" title="Permalink to this headline">¶</a></h3>
+<h3>PyCharm Virtual Environments<a class="headerlink" href="#pycharm-virtual-environments" title="Permalink to this heading">¶</a></h3>
 <p>If you use PyCharm to automatically create virtual environments for you,
 there’s a little extra work to do to get everything working for Python
 3.8 (and possibly for other Python versions as well). Start up a
@@ -272,12 +274,12 @@ required for <code class="docutils literal notranslate"><span class="pre">setupt
 </section>
 </section>
 <section id="errors-issues-initializing-a-saw-instance">
-<h2>Errors/Issues Initializing a SAW Instance<a class="headerlink" href="#errors-issues-initializing-a-saw-instance" title="Permalink to this headline">¶</a></h2>
+<h2>Errors/Issues Initializing a SAW Instance<a class="headerlink" href="#errors-issues-initializing-a-saw-instance" title="Permalink to this heading">¶</a></h2>
 <p>This section will cover some common issues when attempting to initialize
 a SAW instance. The first thing to check is that your arguments are
 correct - check the API documentation first.</p>
 <section id="esa-saw-powerworlderror-opencase-errors-have-occurred">
-<h3>esa.saw.PowerWorldError: OpenCase: Errors have occurred<a class="headerlink" href="#esa-saw-powerworlderror-opencase-errors-have-occurred" title="Permalink to this headline">¶</a></h3>
+<h3>esa.saw.PowerWorldError: OpenCase: Errors have occurred<a class="headerlink" href="#esa-saw-powerworlderror-opencase-errors-have-occurred" title="Permalink to this heading">¶</a></h3>
 <p>You may see an error stack trace that looks something like the
 following:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Traceback</span> <span class="p">(</span><span class="n">most</span> <span class="n">recent</span> <span class="n">call</span> <span class="n">last</span><span class="p">):</span>
@@ -311,7 +313,7 @@ install <a class="reference external" href="https://git-lfs.github.com/">Git LFS
 <code class="docutils literal notranslate"><span class="pre">git</span> <span class="pre">lfs</span> <span class="pre">pull</span></code>.</p>
 </section>
 <section id="typeerror-this-com-object-can-not-automate-the-makepy-process-please-run-makepy-manually-for-this-object">
-<h3>TypeError: This COM object can not automate the makepy process - please run makepy manually for this object<a class="headerlink" href="#typeerror-this-com-object-can-not-automate-the-makepy-process-please-run-makepy-manually-for-this-object" title="Permalink to this headline">¶</a></h3>
+<h3>TypeError: This COM object can not automate the makepy process - please run makepy manually for this object<a class="headerlink" href="#typeerror-this-com-object-can-not-automate-the-makepy-process-please-run-makepy-manually-for-this-object" title="Permalink to this heading">¶</a></h3>
 <p>If you see an error like the above, try initializing your SAW object
 again but set <code class="docutils literal notranslate"><span class="pre">early_bind=False</span></code>. While we’re unsure of the root cause
 of this issue, it seems to be related to the fact that
@@ -319,7 +321,7 @@ of this issue, it seems to be related to the fact that
 the SimAuto COM API, and file permission issues can crop up.</p>
 </section>
 <section id="attributeerror-module-win32com-gen-py-c99f1760-277e-11d5-a106-00c04f469176x0x20x0-has-no-attribute-clsidtoclassmap">
-<h3>AttributeError: module ‘win32com.gen_py.C99F1760-277E-11D5-A106-00C04F469176x0x20x0’ has no attribute ‘CLSIDToClassMap’<a class="headerlink" href="#attributeerror-module-win32com-gen-py-c99f1760-277e-11d5-a106-00c04f469176x0x20x0-has-no-attribute-clsidtoclassmap" title="Permalink to this headline">¶</a></h3>
+<h3>AttributeError: module ‘win32com.gen_py.C99F1760-277E-11D5-A106-00C04F469176x0x20x0’ has no attribute ‘CLSIDToClassMap’<a class="headerlink" href="#attributeerror-module-win32com-gen-py-c99f1760-277e-11d5-a106-00c04f469176x0x20x0-has-no-attribute-clsidtoclassmap" title="Permalink to this heading">¶</a></h3>
 <p>If you see an error like that listed above, it’s possible the pywin32
 cache has been somehow corrupted (perhaps your computer crashed while
 a script which uses ESA was running). Simply delete the following
@@ -329,13 +331,13 @@ directory (the default, you may have to adapt for your system):</p>
 use Windows to search for <code class="docutils literal notranslate"><span class="pre">gen_py</span></code>.</p>
 </section>
 <section id="modulenotfounderror-no-module-pywintypes">
-<h3>ModuleNotFoundError: no module pywintypes<a class="headerlink" href="#modulenotfounderror-no-module-pywintypes" title="Permalink to this headline">¶</a></h3>
+<h3>ModuleNotFoundError: no module pywintypes<a class="headerlink" href="#modulenotfounderror-no-module-pywintypes" title="Permalink to this heading">¶</a></h3>
 <p>If you see an error like that listed above, try reinstalling pywin32
 and pypiwin32 with the <code class="docutils literal notranslate"><span class="pre">--only-binary</span></code> option, as described in the
 <a class="reference internal" href="#venv-issues"><span class="std std-ref">Installation/Virtual Environment Issues</span></a> section.</p>
 </section>
 <section id="esa-saw-powerworlderror-access-violation">
-<h3>esa.saw.PowerWorldError: Access Violation<a class="headerlink" href="#esa-saw-powerworlderror-access-violation" title="Permalink to this headline">¶</a></h3>
+<h3>esa.saw.PowerWorldError: Access Violation<a class="headerlink" href="#esa-saw-powerworlderror-access-violation" title="Permalink to this heading">¶</a></h3>
 <p>If you see an error like that listed above, you probably could observe
 the same errors using script functionality in the PowerWorld Simulator
 interface. When you start the simulator (either the GUI or ESA) in a
@@ -360,7 +362,7 @@ remote desktop to continue your work.</p>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2022, Zeyu Mao, Brandon Thayer, Yijing Liu.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.2.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>

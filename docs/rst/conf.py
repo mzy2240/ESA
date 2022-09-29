@@ -52,6 +52,10 @@ exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store', 'installation',
                     'snippets', 'welcome', 'citation.rst', 'README.rst',
                     '.coverage', 'coverage.rst', 'coverage_to_rst.py']
 
+# Include module's functions and class' methods
+# Note from Zeyu: This feature requires at least Sphinx version 5.2
+toc_object_entries_show_parents = 'all'
+
 
 # -- Options for HTML output -------------------------------------------------
 
