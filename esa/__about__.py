@@ -2,7 +2,6 @@ __title__ = "esa"
 __package_name__ = "esa"
 __description__ = "Easy SimAuto (ESA): An easy-to-use Python connector to PowerWorld Simulator " \
                   "Automation Server (SimAuto)"
-__version__ = "1.3.2"
 __author__ = "Zeyu Mao"
 __github__ = "https://github.com/mzy2240/ESA"
 __docs__ = "https://mzy2240.github.io/ESA"

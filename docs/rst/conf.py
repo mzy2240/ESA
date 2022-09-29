@@ -164,7 +164,7 @@ def linkcode_resolve(
     else:
         return "{}/blob/v{}/{}/{}{}".format(
             about["__github__"],
-            about["__version__"],
+            version,
             about["__package_name__"],
             fn,
             linespec,
