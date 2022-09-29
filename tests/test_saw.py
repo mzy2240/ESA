@@ -1017,7 +1017,6 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         res = self.saw.get_ptdf_matrix_fast()
         self.assertEqual(res.shape, (20, 14))
 
-
     def test_get_lodf_matrix_fast(self):
         """
         Expect to return a full lodf matrix, and it should be the same as the
@@ -1028,7 +1027,6 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
 
         lodf, isl = self.saw.get_lodf_matrix()
         self.assertTrue(np.allclose(lodf, res, rtol=1e-02, atol=1e-04, equal_nan=True))
-
 
     def test_fast_n1_test(self):
         """

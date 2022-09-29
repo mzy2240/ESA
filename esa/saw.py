@@ -1092,7 +1092,17 @@ class SAW(object):
         :returns: A dense float matrix in the numpy array format.
         """
         Bbus, Bf, Cft, slack, noslack = self._prepare_sensitivity()
-        PTDF = self.get_ptdf_matrix_fast()
+        n = Bbus.shape[0]
+        dP = np.eye(n, n)
+
+        # solve for change in voltage angles
+        dTheta = np.zeros((n, n))
+        Bref = Bbus[noslack, :][:, noslack].tocsc()
+        dtheta_ref = scipy.sparse.linalg.spsolve(Bref, dP[noslack, :])
+
+        dTheta[noslack, :] = dtheta_ref
+        PTDF = Bf * dTheta
+
         H = PTDF * Cft.T
         numerical_zero = 1e-10
 
