@@ -1012,7 +1012,9 @@ class SAW(object):
         self.pw_order = True
         bus = self.GetParametersMultipleElement('bus', ['BusNum', 'BusCat'])
         br = self.GetParametersMultipleElement(
-            'branch', ['BusNum', 'BusNum:1', 'LineX'])
+            'branch', ['BusNum', 'BusNum:1', 'LineX', 'LineStatus'])
+        # remove the open branches
+        br.drop(br.index[br['LineStatus'] == 'Open'], inplace=True)
         self.pw_order = temp
         slack = bus[bus['BusCat'] == 'Slack'].index.tolist()[0]
         noslack = bus.index.tolist()
@@ -1040,11 +1042,13 @@ class SAW(object):
         Bbus.data[first_row_indexes[diag_index]] = -1
         return Bbus, Bf, Cft, slack, noslack
 
-    def get_shift_factor_matrix_fast(self):
+    def get_shift_factor_matrix_fast(self, precision: int = 4):
         """
         Calculate the injection shift factor matrix directly using the incidence
         matrix and the susceptance matrix. This method should be much faster than
         the PW script command for large cases.
+
+        :param precision: Default is 4 decimals. Integer only.
 
         :returns: A dense float matrix in the numpy array format.
         """
@@ -1053,12 +1057,14 @@ class SAW(object):
         temp = Bf * scipy.sparse.linalg.inv(Bbus)
         isf = temp.T.todense()
         isf[slack, :] = 0
-        return isf
+        return np.round(isf, decimals=precision)
 
-    def get_ptdf_matrix_fast(self):
+    def get_ptdf_matrix_fast(self, precision: int = 4):
         """
         Calculate the power transfer distribution factor natively. This method should be much
         faster than the PW script command for large cases.
+
+        :param precision: Default is 4 decimals. Integer only.
 
         :returns: A dense float matrix in the numpy array format.
         """
@@ -1074,12 +1080,14 @@ class SAW(object):
 
         dTheta[noref, :] = dtheta_ref
 
-        return Bf * dTheta
+        return np.round(Bf * dTheta, decimals=precision)
 
-    def get_lodf_matrix_fast(self):
+    def get_lodf_matrix_fast(self, precision: int = 4):
         """
         Calculate the line outage distribution factor natively. This method should be much
         faster than the PW script command for large cases.
+
+        :param precision: Default is 4 decimals. Integer only.
 
         :returns: A dense float matrix in the numpy array format.
         """
@@ -1101,7 +1109,7 @@ class SAW(object):
                 islands.append(j)
 
         res = LODF - np.diag(np.diag(LODF)) - np.eye(nl, nl)
-        return res.T
+        return np.round(res.T, decimals=precision)
 
     def fast_n1_test(self):
         """

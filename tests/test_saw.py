@@ -997,6 +997,19 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         # the fast method should be faster than the PW method
         self.assertLess(duration1, duration2)
 
+    def test_prepare_sensitivity_with_open_branch(self):
+        """
+        Expect to return a different LODF matrix when there are branches opened
+        """
+        res = self.saw.get_lodf_matrix_fast()
+        br = self.saw.GetParametersMultipleElement('branch', ['BusNum', 'BusNum:1', 'LineCircuit',
+                                                              'LineX', 'LineStatus'])
+        br.loc[0, 'LineStatus'] = 'Open'
+        self.saw.change_parameters_multiple_element_df('branch', br)
+
+        res2 = self.saw.get_lodf_matrix_fast()
+        self.assertNotEqual(res.shape, res2.shape)
+
     def test_get_ptdf_matrix_fast(self):
         """
         Expect to return a full ptdf matrix
