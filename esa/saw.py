@@ -793,21 +793,24 @@ class SAW(object):
         Currently supports the bus-level topology and the inter-substation
         level topology. Parallel lines (if exist) are preserved in the
         model.
+
         :param edge_attr:  A valid field name(str) or iterable of
-        field names that are used to retrieve values and add them to the
-        graph as edge attributes. All fields belonging to object branch are
-        available.
+            field names that are used to retrieve values and add them to the
+            graph as edge attributes. All fields belonging to object branch are
+            available.
         :param node_attr: A valid field name(str) or iterable of
-        field names that are used to retrieve values and add them to the
-        graph as node attributes. All fields belonging to the node type are
-        available.
+            field names that are used to retrieve values and add them to the
+            graph as node attributes. All fields belonging to the node type are
+            available.
         :param directed: Whether to convert to a directed graph (based on
-        the direction of real power flow).
+            the direction of real power flow).
         :param geographic: Include latitude and longitude in the node's
-        attributes. If geographic information is unavailable in the case,
-        the latitude and the longitude will be NaN.
+            attributes. If geographic information is unavailable in the case,
+            the latitude and the longitude will be NaN.
         :param node: Elements to be represented by nodes. Only 'bus' or
-        'substation' is supported.
+            'substation' is supported.
+
+        :returns: A network graph
         """
         if node not in ['bus', 'substation']:
             raise ValueError(
