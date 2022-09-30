@@ -988,7 +988,7 @@ class SAW(object):
             DC or DCPS.
         :returns: A dense float matrix in the numpy array format.
         """
-        temp = self.pw_order
+        original = self.pw_order
         self.pw_order = True
         key = self.get_key_field_list('branch')
         fields = key + ['Selected']
@@ -1004,11 +1004,11 @@ class SAW(object):
             isf_fields += [f"MultBusTLRSens:{i}"]
         container = []
         for batch in partition_all(500, isf_fields):
-            df = self.GetParametersMultipleElement('Bus', batch).to_numpy(dtype=float)
+            df = self.GetParametersMultipleElement('Bus', batch)
             temp = df.apply(pd.to_numeric, errors='coerce')
             container.append(temp)
         res = pd.concat(container, axis=1, copy=False)
-        self.pw_order = temp
+        self.pw_order = original
         return res.to_numpy(dtype=float)
 
     def _prepare_sensitivity(self):
