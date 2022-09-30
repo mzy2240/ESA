@@ -1002,10 +1002,14 @@ class SAW(object):
         isf_fields = ['MultBusTLRSens']
         for i in range(1, num_branch):
             isf_fields += [f"MultBusTLRSens:{i}"]
-        res = self.GetParametersMultipleElement(
-            'Bus', isf_fields).to_numpy(dtype=float)
+        container = []
+        for batch in partition_all(500, isf_fields):
+            df = self.GetParametersMultipleElement('Bus', batch).to_numpy(dtype=float)
+            temp = df.apply(pd.to_numeric, errors='coerce')
+            container.append(temp)
+        res = pd.concat(container, axis=1, copy=False)
         self.pw_order = temp
-        return res
+        return res.to_numpy(dtype=float)
 
     def _prepare_sensitivity(self):
         """
