@@ -37,7 +37,7 @@ import tempfile
 # Import corresponding AOT/JIT functions
 import platform
 PYTHON_VERSION = platform.python_version_tuple()
-if PYTHON_VERSION[1] in ['7', '8', '9']:  # pragma: no cover
+if PYTHON_VERSION[1] in ['7', '8', '9', '10']:  # pragma: no cover
     try:
         exec(
             f"from .performance{PYTHON_VERSION[0]}{PYTHON_VERSION[1]} import initialize_bound, calculate_bound")
