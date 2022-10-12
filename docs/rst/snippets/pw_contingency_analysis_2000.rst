@@ -36,4 +36,5 @@ Use ESA to obtain the CA result
 .. code:: python
 
     >>> result = saw.GetParametersMultipleElement('Contingency', ['CTGLabel', 'CTGSolved', 'CTGProc', 'CTGCustMonViol', 'CTGViol'])
-The result is stored as a dataframe.
+
+The result is presented in a Pandas DataFrame.
