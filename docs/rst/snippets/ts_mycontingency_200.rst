@@ -47,3 +47,7 @@ automated, but it might be easier for most users to pre-define the plots and con
 in the case and then load the case using ESA. GetParametersMultipleElement cannot be used
 here to retrieve the TS datapoints (which is a very rare situation).
 
+*10/26/2022 Update* You could access and modify the TS-related objects and fields using ESA.
+In other words, no need to create and use the aux file for those tasks. If you encounter errors
+when accessing some of the objects, setting `pw_order` (a SAW property) to true might solve the issue.
+
