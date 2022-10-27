@@ -2572,6 +2572,27 @@ class SAW(object):
         """
         return self._call_simauto('RunScriptCommand', Statements)
 
+    def RunScriptCommand2(self, Statements: str, StatusMessage: str):
+        """Execute a list of script statements. The script actions are
+        those included in the script sections of auxiliary files. 
+        This function differs from RunScriptCommand in that it allows 
+        informational messages to be returned from the script execution 
+        when the execution is successful. 
+
+        Output is a boolean value indicating whether the script command
+        was succesful or not. If False is returned, the error message will
+        be returned as defined in Status message input parameter. If True,
+        the Status message will be empty. 
+
+        `PowerWorld documentation
+        <https://www.powerworld.com/WebHelp/Content/MainDocumentation_HTML/RunScriptCommand2_Function.htm>`__
+
+        `Auxiliary File Format
+        <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
+        """
+        x = self._call_simauto('RunScriptCommand2', Statements, StatusMessage)
+        return x
+
     def SaveCase(self, FileName=None, FileType='PWB', Overwrite=True):
         """Save the current case to file.
 
@@ -3244,3 +3265,5 @@ class CommandNotRespectedError(Error):
     be used with helpers that double-check commands.
     """
     pass
+
+

@@ -2047,6 +2047,26 @@ class RunScriptCommandTestCase(unittest.TestCase):
             saw_14.RunScriptCommand(Statements='invalid statement')
 
 
+class RunScriptCommand2TestCase(unittest.TestCase):
+    """Light weight testing of RunScriptCommand2."""
+
+    # noinspection PyMethodMayBeStatic
+    def test_calls_call_simauto_2(self):
+        """RunScriptCommand2 is a simple wrapper. Enforce this."""
+        with patch.object(saw_14, '_call_simauto') as p:
+            saw_14.RunScriptCommand2(Statements='Some stuff', StatusMessage='Some error message')
+
+        # _call_simauto should have been called once and the statements
+        # should simply be passed through.
+        p.assert_called_once_with('RunScriptCommand2', 'Some stuff', 'Some error message')
+
+    def test_exception_for_bad_statement_2(self):
+        """Ensure an exception is thrown for a bad statement."""
+        with self.assertRaisesRegex(PowerWorldError,
+                                    'Error in script statements definition'):
+            x = saw_14.RunScriptCommand2(Statements='invalid statement',StatusMessage='Some error message')
+            self.assertEqual(x, 'False')
+
 class OpenCaseTypeTestCase(unittest.TestCase):
     """Test OpenCaseType. The tests here are admittedly a bit crude."""
     @classmethod
