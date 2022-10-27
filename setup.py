@@ -74,14 +74,14 @@ setuptools.setup(
               'Automation', 'Power Systems', 'Electric Power', 'Power',
               'Easy SimAuto', 'ESA', 'Smart Grid', 'Numpy', 'Pandas'],
     install_requires=['pandas >= 0.25', 'numpy >= 1.19.5', 'scipy', 'pywin32',
-                      'pypiwin32', 'toolz', 'networkx', 'tqdm', 'numba'],
+                      'pypiwin32', 'toolz', 'networkx', 'tqdm'],
     python_requires='>=3.7',
     # There are a couple tests that use networkx, and we use the magic
     # of sphinx for documentation. Coverage is necessary to keep the
     # coverage report up to date.
     extras_require={'test': ['networkx', 'coverage', 'matplotlib'],
                     'doc': ['sphinx', 'tabulate', 'sphinx_press_theme'],
-                    'dev': ['pythran']},
+                    'dev': ['pythran', 'numba']},
     license='Apache License 2.0',
     # TODO: Why aren't we zip safe?
     zip_safe=False

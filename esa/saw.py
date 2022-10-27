@@ -22,7 +22,6 @@ from toolz.itertoolz import partition_all
 import math
 import numpy as np
 from numpy.linalg import multi_dot, det, solve, inv
-import numba as nb
 import pandas as pd
 from scipy.sparse import csr_matrix, coo_matrix, hstack, vstack
 import scipy.sparse.linalg
@@ -33,6 +32,13 @@ import pythoncom
 import win32com
 from win32com.client import VARIANT
 import tempfile
+
+# Import numba
+try:  # pragma: no cover
+    import numba as nb
+    use_numba = True
+except ImportError:
+    use_numba = False
 
 # Import corresponding AOT/JIT functions
 import platform
@@ -1749,8 +1755,7 @@ class SAW(object):
         :returns: Security status and detailed results
         """
 
-        @nb.njit(fastmath=True)
-        def compute_violation_numba(lodf, f, c2, lim, i, count, A0, brute_cont, idx):  # pragma: no cover
+        def _compute_violation(lodf, f, c2, lim, i, count, A0, brute_cont, idx):  # pragma: no cover
             for j in range(i + 1, count):
                 if A0[i, j]:
                     temp1 = lodf[i, i] * lodf[j, j]
@@ -1784,6 +1789,14 @@ class SAW(object):
                             idx += 1
             return idx
 
+        # JITify if possible
+        if use_numba:  # pragma: no cover
+            print("Numba detected. JIT is used.")
+            compute_violation = nb.njit()(_compute_violation)
+        else:  # pragma: no cover
+            print("Numba is not found. Falling back to Python.")
+            compute_violation = _compute_violation
+
         # Bruteforce the filtered contingencies
         k = 0
         brute_cont = np.zeros((len(f)**2, 3))
@@ -1792,7 +1805,7 @@ class SAW(object):
             f"Bruteforce enumeration over {int(np.sum(A0.ravel()) / 2)} pairs")
         for i in trange(count - 1):
             if np.sum(A0[i, :] > 0):
-                k = compute_violation_numba(
+                k = compute_violation(
                     lodf, f, c2, lim, i, count, A0, brute_cont, k)
         print(
             f"Processed {100}% percent. Number of contingencies {k}; fake {np.sum(c2.flatten()) / 2}")
