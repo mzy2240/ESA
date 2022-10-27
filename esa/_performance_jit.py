@@ -1,9 +1,15 @@
-import numba as nb
 import numpy as np
 
+# Import numba
+try:  # pragma: no cover
+    import numba as nb
 
-@nb.njit
-def initialize_bound(bpmax, bpmin, bnmax, bnmin, A):
+    use_numba = True
+except ImportError:
+    use_numba = False
+
+
+def _initialize_bound(bpmax, bpmin, bnmax, bnmin, A):
     bp0 = A.copy()
     bp1 = A.copy()
     bn0 = A.copy()
@@ -15,12 +21,11 @@ def initialize_bound(bpmax, bpmin, bnmax, bnmin, A):
         bn1[i, :] *= bnmin[i]
     Wbuf1 = np.maximum(bp0, bp1)
     Wbuf2 = np.maximum(bn0, bn1)
-    w = np.maximum(Wbuf1+Wbuf1.conj().T, Wbuf2+Wbuf2.conj().T)
+    w = np.maximum(Wbuf1 + Wbuf1.conj().T, Wbuf2 + Wbuf2.conj().T)
     return w, Wbuf1, Wbuf2
 
 
-@nb.njit
-def calculate_bound(bp, bn, Amax1, Amin1, Wbuf1, Wbuf2):
+def _calculate_bound(bp, bn, Amax1, Amin1, Wbuf1, Wbuf2):
     bp0 = bp.copy()
     bp1 = bp.copy()
     bn0 = bn.copy()
@@ -32,4 +37,12 @@ def calculate_bound(bp, bn, Amax1, Amin1, Wbuf1, Wbuf2):
         bn1[:, i] *= Amin1[i]
     wb1 = np.maximum(bp0, bp1) + Wbuf1
     wb2 = np.maximum(bn0, bn1) + Wbuf2
-    return np.maximum(wb1,wb2)
+    return np.maximum(wb1, wb2)
+
+
+if use_numba:  # pragma: no cover
+    initialize_bound = nb.njit()(_initialize_bound)
+    calculate_bound = nb.njit()(_calculate_bound)
+else:  # pragma: no cover
+    initialize_bound = _initialize_bound
+    calculate_bound = nb.njit()(_calculate_bound)
