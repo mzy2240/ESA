@@ -30,6 +30,7 @@ using doctest. These files use a suffix convention to determine which
 .pwb file to use in the CASE_PATH constant.
 """
 
+from array import array
 import logging
 import os
 import tempfile
@@ -2049,23 +2050,22 @@ class RunScriptCommandTestCase(unittest.TestCase):
 
 class RunScriptCommand2TestCase(unittest.TestCase):
     """Light weight testing of RunScriptCommand2."""
+    def test_returns_tuple_RunScriptCommand2(self):
+        """Expect to return a tuple with 2 as length of tuple with 
+        a boolean value and error statement."""
+        res = saw_14.RunScriptCommand2(Statements="Some Stuff", StatusMessage = "Some Error Message")
+        self.assertEqual(len(res), 2)  # ('Boolean value','Error Statement')
+    
+    def test_for_valid_statement(self):
+        """Ensure True is returned in case of a valid statement."""
+        res = saw_14.RunScriptCommand2(Statements='LogClear', StatusMessage = 'Some Error Message')
+        self.assertEqual(res[0], True) #'LogClear' is a Powerworld script command
 
-    # noinspection PyMethodMayBeStatic
-    def test_calls_call_simauto_2(self):
-        """RunScriptCommand2 is a simple wrapper. Enforce this."""
-        with patch.object(saw_14, '_call_simauto') as p:
-            saw_14.RunScriptCommand2(Statements='Some stuff', StatusMessage='Some error message')
-
-        # _call_simauto should have been called once and the statements
-        # should simply be passed through.
-        p.assert_called_once_with('RunScriptCommand2', 'Some stuff', 'Some error message')
-
-    def test_exception_for_bad_statement_2(self):
+    def test_exception_for_bad_statement(self):
         """Ensure an exception is thrown for a bad statement."""
-        with self.assertRaisesRegex(PowerWorldError,
-                                    'Error in script statements definition'):
-            x = saw_14.RunScriptCommand2(Statements='invalid statement',StatusMessage='Some error message')
-            self.assertEqual(x, 'False')
+        res = saw_14.RunScriptCommand2(Statements='invalid statement', StatusMessage = 'Some Error Message')
+        self.assertEqual(res[0], False)  # For an invalid statement it should return False
+        self.assertIsInstance(res[1], str) # For an invalid statement it returns a string of error message
 
 class OpenCaseTypeTestCase(unittest.TestCase):
     """Test OpenCaseType. The tests here are admittedly a bit crude."""
@@ -2372,6 +2372,25 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
+    
+    def test_program_information(self):
+        # Check returned values are variant arrays
+        result = saw_14.ProgramInformation
+        result_list = list(result) #convert tuple of tuples to list of tuples
+
+        #Checking first entry of each tuple
+        values = ['version','addons','executable']
+        k=0
+        first_element = map(lambda x: x[0], result_list)
+        for i in first_element:
+            self.assertEqual(i,values[k])
+            k=k+1
+        
+        #Program Information introduced in version 21.
+        if VERSION < 21:
+            self.assertFalse(saw_14.ProgramInformation)
+        else:
+            self.assertIsInstance(saw_14.ProgramInformation,tuple)
 
 
 ########################################################################

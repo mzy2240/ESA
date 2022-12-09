@@ -2603,8 +2603,7 @@ class SAW(object):
         `Auxiliary File Format
         <https://github.com/mzy2240/ESA/blob/master/docs/Auxiliary%20File%20Format.pdf>`__
         """
-        x = self._call_simauto('RunScriptCommand2', Statements, StatusMessage)
-        return x
+        return self._pwcom.RunScriptCommand2(Statements, StatusMessage)
 
     def SaveCase(self, FileName=None, FileType='PWB', Overwrite=True):
         """Save the current case to file.
@@ -2962,6 +2961,36 @@ class SAW(object):
             self.log.warning(
                 'UIVisible attribute could not be accessed. Note this SimAuto '
                 'property was not introduced until Simulator version 20. '
+                'Check your version with the get_simulator_version method.')
+            return False
+
+    @property
+    def ProgramInformation(self) -> bool:
+        """Get the Program Information property of the Simulator Automation
+        Server which returns information about the version of PowerWorld 
+        Simulator run by the current instance of SimAuto. This property 
+        returns a variant array of variant arrays. The order of each array
+        within the main array is subject to change and additional arrays 
+        may be added in the future. The first entry of each array will 
+        indicate what type of information is in the array. The order of 
+        entries within each array will not change. Set this property through
+        the ``set_simauto_property`` method.
+        """
+        try:
+            result = self._pwcom.ProgramInformation
+
+            #convert tuple of tuple to list of list to modify the pywintypes.datetime to datetime.datetime
+            result = [list(x) for x in result]
+            result[0][2] = datetime.datetime.fromtimestamp(timestamp=result[0][2].timestamp(),tz=result[0][2].tzinfo)
+            result[1][2] = datetime.datetime.fromtimestamp(timestamp=result[1][2].timestamp(),tz=result[1][2].tzinfo)
+
+            #convert list of list back to tuple of tuple
+            result = tuple(tuple(x) for x in result)
+            return result
+        except AttributeError:
+            self.log.warning(
+                'ProgramInformation attribute could not be accessed. Note this SimAuto '
+                'property was not introduced until Simulator version 21. '
                 'Check your version with the get_simulator_version method.')
             return False
 
