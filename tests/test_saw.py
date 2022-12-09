@@ -757,9 +757,11 @@ class ChangeToTemperatureTestCase(unittest.TestCase):
     def test_change_to_temperature_default(self):
         """LineR will be adjusted. So does the Ybus.
         """
-        old_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        old_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR',
+                                                                                                              'BranchDeviceType'])
         self.saw.change_to_temperature(0)
-        new_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR', 'BranchDeviceType'])
+        new_branch = self.saw.GetParametersMultipleElement('branch', self.saw.get_key_field_list('branch') + ['LineR',
+                                                                                                              'BranchDeviceType'])
         self.assertFalse(old_branch.equals(new_branch))
         old_ybus = self.saw.get_ybus(True)
         temperature = np.array([[1], [25]])
@@ -898,7 +900,7 @@ class FastCATestCase(unittest.TestCase):
         self.assertRaises(Error, self.saw.run_contingency_analysis)
         self.saw.pw_order = True
         df = self.saw.GetParametersMultipleElement("branch", ['BusNum', 'BusNum:1', 'LineCircuit', 'MWFrom',
-                                                            'LineLimMVA'])
+                                                              'LineLimMVA'])
         convert_dict = {'MWFrom': float,
                         'LineLimMVA': float
                         }
@@ -947,9 +949,9 @@ class FastCATestCase(unittest.TestCase):
         A0[:, c1_isl == 1] = 0
         A0[abs(f) < 1e-8, :] = 0
         A0[:, abs(f) < 1e-8] = 0
-        lodf[2,3] = 1
-        lodf[3,2] = 1
-        secure,  result = self.saw.n2_bruteforce(count, A0, lodf, lim, f)
+        lodf[2, 3] = 1
+        lodf[3, 2] = 1
+        secure, result = self.saw.n2_bruteforce(count, A0, lodf, lim, f)
         self.assertFalse(secure)
         self.saw.exit()
 
@@ -989,7 +991,7 @@ class SensitivityAnalysisTestCase(unittest.TestCase):
         # now compare the speed
         start = time.time()
         res = self.saw2.get_shift_factor_matrix_fast()
-        duration1 = time.time()-start
+        duration1 = time.time() - start
 
         start = time.time()
         res = self.saw2.get_shift_factor_matrix()
@@ -1099,6 +1101,7 @@ class RunEcologicalAnalysisTestCase(unittest.TestCase):
 class CTGAutoInsertTestCase(unittest.TestCase):
     """ Test the ctg_autoinsert method.
     """
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14)
@@ -2049,26 +2052,29 @@ class RunScriptCommandTestCase(unittest.TestCase):
 
 
 class RunScriptCommand2TestCase(unittest.TestCase):
-    """Light weight testing of RunScriptCommand2."""
+    """Lightweight testing of RunScriptCommand2."""
+
     def test_returns_tuple_RunScriptCommand2(self):
         """Expect to return a tuple with 2 as length of tuple with 
         a boolean value and error statement."""
-        res = saw_14.RunScriptCommand2(Statements="Some Stuff", StatusMessage = "Some Error Message")
+        res = saw_14.RunScriptCommand2(Statements="Some Stuff", StatusMessage="Some Error Message")
         self.assertEqual(len(res), 2)  # ('Boolean value','Error Statement')
-    
+
     def test_for_valid_statement(self):
         """Ensure True is returned in case of a valid statement."""
-        res = saw_14.RunScriptCommand2(Statements='LogClear', StatusMessage = 'Some Error Message')
-        self.assertEqual(res[0], True) #'LogClear' is a Powerworld script command
+        res = saw_14.RunScriptCommand2(Statements='LogClear', StatusMessage='Some Error Message')
+        self.assertEqual(res[0], True)
 
     def test_exception_for_bad_statement(self):
         """Ensure an exception is thrown for a bad statement."""
-        res = saw_14.RunScriptCommand2(Statements='invalid statement', StatusMessage = 'Some Error Message')
+        res = saw_14.RunScriptCommand2(Statements='invalid statement', StatusMessage='Some Error Message')
         self.assertEqual(res[0], False)  # For an invalid statement it should return False
-        self.assertIsInstance(res[1], str) # For an invalid statement it returns a string of error message
+        self.assertIsInstance(res[1], str)  # For an invalid statement it returns a string of error message
+
 
 class OpenCaseTypeTestCase(unittest.TestCase):
     """Test OpenCaseType. The tests here are admittedly a bit crude."""
+
     @classmethod
     def setUpClass(cls) -> None:
         cls.saw = SAW(PATH_14)
@@ -2096,6 +2102,7 @@ class OpenCaseTypeTestCase(unittest.TestCase):
 
 class OpenCaseTestCase(unittest.TestCase):
     """Test OpenCase."""
+
     def test_failure_if_pwb_file_path_none(self):
         m = 'When OpenCase is called for the first time,'
         with patch.object(saw_14, 'pwb_file_path', new=None):
@@ -2238,7 +2245,7 @@ class TSGetContingencyResultsTestCase(unittest.TestCase):
         contingency = self.saw.GetParametersMultipleElement(
             'TSContingencyElement', params)
         self.assertGreaterEqual(data.shape[0],
-                                (t2-t1)/stepsize+contingency.shape[0]+1)
+                                (t2 - t1) / stepsize + contingency.shape[0] + 1)
 
 
 class WriteAuxFileTestCaseTestCase(unittest.TestCase):
@@ -2372,25 +2379,25 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
 
     def test_create_if_not_found(self):
         self.assertFalse(saw_14.CreateIfNotFound)
-    
+
     def test_program_information(self):
         # Check returned values are variant arrays
         result = saw_14.ProgramInformation
-        result_list = list(result) #convert tuple of tuples to list of tuples
+        result_list = list(result)  # convert tuple of tuples to list of tuples
 
-        #Checking first entry of each tuple
-        values = ['version','addons','executable']
-        k=0
+        #  Checking first entry of each tuple
+        values = ['version', 'addons', 'executable']
+        k = 0
         first_element = map(lambda x: x[0], result_list)
         for i in first_element:
-            self.assertEqual(i,values[k])
-            k=k+1
-        
-        #Program Information introduced in version 21.
+            self.assertEqual(i, values[k])
+            k = k + 1
+
+        #  Program Information introduced in version 21.
         if VERSION < 21:
             self.assertFalse(saw_14.ProgramInformation)
         else:
-            self.assertIsInstance(saw_14.ProgramInformation,tuple)
+            self.assertIsInstance(saw_14.ProgramInformation, tuple)
 
 
 ########################################################################
@@ -2542,6 +2549,7 @@ class CallSimAutoTestCase(unittest.TestCase):
     """Test portions of _call_simauto not covered by the higher level
     methods.
     """
+
     def test_bad_function(self):
         with self.assertRaisesRegex(AttributeError, 'The given function, bad'):
             saw_14._call_simauto('bad')
@@ -2564,6 +2572,7 @@ class DfToAuxTestCase(unittest.TestCase):
     """
     Test the df_to_aux method.
     """
+
     def test_default(self):
         df = pd.DataFrame(columns=['SOZoomHigh', 'SOZoomLow', 'SOZoomCond', 'SLName', 'SLShown',
                                    'SOSLAnimationLayer', 'SelectableInEditMode'])
@@ -2642,21 +2651,21 @@ class ToNumericTestCase(unittest.TestCase):
                    '  1,06152019', '  1,09000003', '  1,05593281',
                    '  1,05098559', '  1,05690694', '  1,05518907',
                    '  1,05038265', '  1,03553058'), (
-                  '  0,00000000', ' -4,98255334', '-12,72502699',
-                  '-10,31282882', ' -8,77379918', '-14,22086891',
-                  '-13,35955842', '-13,35957101', '-14,93845750',
-                  '-15,09722071', '-14,79055172', '-15,07551240',
-                  '-15,15619553', '-16,03356498'), (
-                  '232,39169121', ' 18,30000132', '-94,19999719',
-                  '-47,79999852', ' -7,59999976', '-11,20000035',
-                  '  0,00000000', '  0,00000000', '-29,49999869',
-                  ' -9,00000036', ' -3,50000001', ' -6,10000007',
-                  '-13,50000054', '-14,90000039'), (
-                  '-16,54938906', ' 30,85595667', '  6,07485175',
-                  '  3,90000008', ' -1,60000008', '  5,22969961',
-                  '  0,00000000', ' 17,62306690', '  4,58488762',
-                  ' -5,79999983', ' -1,79999992', ' -1,60000008',
-                  ' -5,79999983', ' -5,00000007'))
+                      '  0,00000000', ' -4,98255334', '-12,72502699',
+                      '-10,31282882', ' -8,77379918', '-14,22086891',
+                      '-13,35955842', '-13,35957101', '-14,93845750',
+                      '-15,09722071', '-14,79055172', '-15,07551240',
+                      '-15,15619553', '-16,03356498'), (
+                      '232,39169121', ' 18,30000132', '-94,19999719',
+                      '-47,79999852', ' -7,59999976', '-11,20000035',
+                      '  0,00000000', '  0,00000000', '-29,49999869',
+                      ' -9,00000036', ' -3,50000001', ' -6,10000007',
+                      '-13,50000054', '-14,90000039'), (
+                      '-16,54938906', ' 30,85595667', '  6,07485175',
+                      '  3,90000008', ' -1,60000008', '  5,22969961',
+                      '  0,00000000', ' 17,62306690', '  4,58488762',
+                      ' -5,79999983', ' -1,79999992', ' -1,60000008',
+                      ' -5,79999983', ' -5,00000007'))
 
         # Force the decimal delimiter to be a comma.
         with patch.object(saw_14, 'decimal_delimiter', new=','):
