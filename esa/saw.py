@@ -173,7 +173,7 @@ class SAW(object):
                     # Use early binding.
                     self._pwcom = win32com.client.gencache.EnsureDispatch(
                         'pwrworld.SimulatorAuto')
-                except AttributeError:
+                except AttributeError:  # pragma: no cover
                     # Use late binding.
                     self._pwcom = win32com.client.dynamic.Dispatch(
                         'pwrworld.SimulatorAuto')
@@ -2988,7 +2988,7 @@ class SAW(object):
             # convert list of list back to tuple of tuple
             result = tuple(tuple(x) for x in result)
             return result
-        except AttributeError:
+        except AttributeError:    # pragma: no cover
             self.log.warning(
                 'ProgramInformation attribute could not be accessed. Note this SimAuto '
                 'property was not introduced until Simulator version 21. '
