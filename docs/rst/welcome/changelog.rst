@@ -5,6 +5,15 @@ versions prior to 1.0.0 are not listed here, but are still available on
 Version 1.3.3
 ^^^^^^^^^^^^^
 
+* Add `DetermineBranchesThatCreateIslands`
+* Add `DeterminePathDistance`
+* Add `DetermineShortestPath`
+* Add `RunScriptCommand2`
+* Add `ProgramInformation` property
+
+Version 1.3.3
+^^^^^^^^^^^^^
+
 * Fix the `get_shift_factor_matrix` function when the system is large
 
 Version 1.3.2

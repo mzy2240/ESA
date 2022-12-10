@@ -2110,6 +2110,63 @@ class OpenCaseTestCase(unittest.TestCase):
                 saw_14.OpenCase()
 
 
+class DeterminePathDistanceTestCase(unittest.TestCase):
+    """Test DeterminePathDistance"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Open up the nine bus model.
+        cls.saw = SAW(PATH_9, early_bind=True)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_normal_op(self):
+        """Should return a dataframe with bus number and distance"""
+        df = self.saw.DeterminePathDistance(start="[Bus 1]")
+        self.assertEqual(df.shape, (9, 2))
+
+
+class DetermineBranchesThatCreateIslands(unittest.TestCase):
+    """Test DetermineBranchesThatCreateIslands"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Open up the nine bus model.
+        cls.saw = SAW(PATH_9, early_bind=True)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_normal_op(self):
+        """Should return a dataframe"""
+        df = self.saw.DetermineBranchesThatCreateIslands()
+        self.assertIsInstance(df, pd.DataFrame)
+
+
+class DetermineShortestPath(unittest.TestCase):
+    """Test DetermineShortestPath"""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        # Open up the nine bus model.
+        cls.saw = SAW(PATH_9, early_bind=True)
+
+    # noinspection PyUnresolvedReferences
+    @classmethod
+    def tearDownClass(cls) -> None:
+        cls.saw.exit()
+
+    def test_normal_op(self):
+        """Should return a dataframe"""
+        df = self.saw.DetermineShortestPath(start="[Bus 1]", end="[Bus 2]")
+        self.assertIsInstance(df, pd.DataFrame)
+
+
 class TSGetContingencyResultsTestCase(unittest.TestCase):
     """Test TSGetContingencyResults."""
 

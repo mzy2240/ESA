@@ -891,6 +891,73 @@ class SAW(object):
         self.pw_order = original
         return graph
 
+    def DeterminePathDistance(self, start: str, BranchDistMeas: str = "X", BranchFilter: str = "ALL",
+                              BusField="CustomFloat:1"):
+        """
+        Powerworld's built-in function to calculate a distance measure at each bus in the entire model.
+        The distance measure will represent how far each bus is from the starting group specified. The distance
+        measure can be related to impedance, geographical distance, or simply the number of nodes.
+
+        :param start: The starting location. String only. Follow the powerworld auxilliary file document.
+        :param BranchDistMeas: is either X, Z, Length, Nodes, or a field variable name for a branch.
+        :param BranchFilter: is either ALL, Selected, Closed, or the name of a branch Advanced Filter.
+        :param BusField: Optional. Only need to change if the CustomFloat:1 column has been used.
+
+        :returns: A dataframe with bus number and distance measurements.
+        """
+        original = self.pw_order
+        self.pw_order = True
+        statement = f"DeterminePathDistance({start}, {BranchDistMeas}, {BranchFilter}, {BusField});"
+        self.RunScriptCommand(statement)
+        key = self.get_key_field_list("Bus")
+        df = self.GetParametersMultipleElement("Bus", key + [BusField])
+        df.rename(columns={BusField: BranchDistMeas}, inplace=True)
+        df["BusNum"] = df["BusNum"].astype(int)
+        df[BranchDistMeas] = df[BranchDistMeas].astype(float)
+        self.pw_order = original
+        return df
+
+    def DetermineBranchesThatCreateIslands(self, Filter: str = "ALL", StoreBuses: str = "YES", SetSelectedOnLines: str = "NO"):
+        """
+        Powerworld's built-in function to determine the branches whose outage results in island formation. Note that
+        setting the Selected field will overwrite the Selected fields.
+
+        :param Filter: This parameter is used to specify which branches are checked
+        :param StoreBuses: YES to store the buses in the island
+        :param SetSelectedOnLines: Yes to set the SELECTED field to YES for branches that create islands
+
+        :returns: A dataframe that contains the branch and the island information
+        """
+        file = tempfile.NamedTemporaryFile()
+        filename = Path(file.name).as_posix()
+        file.close()
+        statement = f"DetermineBranchesThatCreateIslands({Filter},{StoreBuses},{filename},{SetSelectedOnLines},CSV);"
+        self.RunScriptCommand(statement)
+        df = pd.read_csv(filename, header=0)
+        return df
+
+    def DetermineShortestPath(self, start: str, end: str, BranchDistanceMeasure: str = "X", BranchFilter: str = "ALL"):
+        """
+        Powerworld's built-in function to calculate the shortest path between a starting group and an ending group. The
+        first bus listed in the dataframe will be in the end grouping and the last bus listed will be the start grouping.
+        The dataframe will have a line for each bus passed.
+
+        :param start: same as the starting place for the DeterminePathDistance function
+        :param end: same as the starting place for the DeterminePathDistance function
+        :param BranchDistanceMeasure: same as for the DeterminePathDistance function
+        :param BranchFilter: same as for the DeterminePathDistance function
+
+        :returns: A dataframe with number, distance, and name
+        """
+        file = tempfile.NamedTemporaryFile()
+        filename = Path(file.name).as_posix()
+        file.close()
+        statement = f"DetermineShortestPath({start}, {end}, {BranchDistanceMeasure}, {BranchFilter}, {filename});"
+        self.RunScriptCommand(statement)
+        df = pd.read_csv(filename, header=None, delim_whitespace=True, names=["BusNum", BranchDistanceMeasure, "BusName"])
+        df["BusNum"] = df["BusNum"].astype(int)
+        return df
+
     def get_lodf_matrix(self, precision: int = 3, method: str = 'DC', post: bool = True,
                         raw: bool = False):
         """Obtain LODF matrix in numpy array or scipy sparse matrix.
@@ -2988,7 +3055,7 @@ class SAW(object):
             # convert list of list back to tuple of tuple
             result = tuple(tuple(x) for x in result)
             return result
-        except AttributeError:    # pragma: no cover
+        except AttributeError:  # pragma: no cover
             self.log.warning(
                 'ProgramInformation attribute could not be accessed. Note this SimAuto '
                 'property was not introduced until Simulator version 21. '
