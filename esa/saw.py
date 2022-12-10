@@ -892,7 +892,7 @@ class SAW(object):
         return graph
 
     def DeterminePathDistance(self, start: str, BranchDistMeas: str = "X", BranchFilter: str = "ALL",
-                              BusField="CustomFloat:1"):
+                              BusField="CustomFloat:1") -> pd.DataFrame:
         """
         Powerworld's built-in function to calculate a distance measure at each bus in the entire model.
         The distance measure will represent how far each bus is from the starting group specified. The distance
@@ -917,7 +917,7 @@ class SAW(object):
         self.pw_order = original
         return df
 
-    def DetermineBranchesThatCreateIslands(self, Filter: str = "ALL", StoreBuses: str = "YES", SetSelectedOnLines: str = "NO"):
+    def DetermineBranchesThatCreateIslands(self, Filter: str = "ALL", StoreBuses: str = "YES", SetSelectedOnLines: str = "NO") -> pd.DataFrame:
         """
         Powerworld's built-in function to determine the branches whose outage results in island formation. Note that
         setting the Selected field will overwrite the Selected fields.
@@ -936,7 +936,7 @@ class SAW(object):
         df = pd.read_csv(filename, header=0)
         return df
 
-    def DetermineShortestPath(self, start: str, end: str, BranchDistanceMeasure: str = "X", BranchFilter: str = "ALL"):
+    def DetermineShortestPath(self, start: str, end: str, BranchDistanceMeasure: str = "X", BranchFilter: str = "ALL") -> pd.DataFrame:
         """
         Powerworld's built-in function to calculate the shortest path between a starting group and an ending group. The
         first bus listed in the dataframe will be in the end grouping and the last bus listed will be the start grouping.
