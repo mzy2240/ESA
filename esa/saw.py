@@ -2963,6 +2963,228 @@ class SAW(object):
          """
         script = f'CloseOneline({OnelineName})'
         return self.RunScriptCommand(script)
+    
+     def define_Gen_Var(self, Bus_num: int, ID: str, Var: list):
+        """
+        Helper to define variables at a generator
+        @param Bus_num: The number of bus, where the generator is connected to.
+        @param ID: Generator ID, i.e., '1'.
+        @param Var: : variables desired to be stored, i.e., ["TSVpu","TSSpeed"]. This list consists of the name of each variable. Specifically,
+            TSMWAccel: Accelerating MW;
+            TSAGCState:1: States of AGC Model\State  1 (largest index is 1);
+            TSRotorAngle: Rotor Angle relative to angle reference (degrees);
+            TSRotorAngleNoShift: Rotor Angle, No Shift (degrees);
+            TSExciterInput:1: Inputs of Exciter\Input  1 (largest index is 1);
+            TSExciter: Shows the name of the active exciter type for transient stability;
+            TSExciterOther:1: Other Fields of Exciter\Other  1 (largest index is 8);
+            TSExciterOther:2: Other Fields of Exciter\Other  2 (largest index is 8);
+            TSExciterState:1: States of Exciter\State  1 (largest index is 20);
+            TSExciterState:2: States of Exciter\State  2 (largest index is 20);
+            TSEfd: Field Voltage Magnitude (pu);
+            TSGovernorInput:1: Inputs of Governor\Input  1 (largest index is 1);
+            TSGovernor: Shows the name of the active governor type for transient stability;
+            TSGovernorOther:1: Other Fields of Governor\Other  1 (largest index is 16);
+            TSGovernorOther:2: Other Fields of Governor\Other  2 (largest index is 16);
+            TSGovernorState:1: States of Governor\State  1 (largest index is 62);
+            TSGovernorState:2: States of Governor\State  2 (largest index is 62);
+            TSIfd: Field Current;
+            TSIpu: Genrator current magnitude (pu);
+            TSMachineInput:1: Inputs of Machine\Input  1 (largest index is 1);
+            TSMachine: Shows the name of the active machine type for transient stability;
+            TSMachineOther:1: Other Fields of Machine\Other  1 (largest index is 10);
+            TSMachineOther:2: Other Fields of Machine\Other  2 (largest index is 10);
+            TSMachineState:1: States of Machine\State  1 (largest index is 10);
+            TSMachineState:2: States of Machine\State  2 (largest index is 10);
+            TSMWRef: MW reference value for the generator;
+            TSOELOther:1: DSC::TSTimePointResult_TSGenOELOther\Other  1 (largest index is 16);
+            TSOELOther:2: DSC::TSTimePointResult_TSGenOELOther\Other  2 (largest index is 16);
+            TSOELState:1: DSC::TSTimePointResult_TSGenOELState\State  1 (largest index is 24);
+            TSOELState:2: DSC::TSTimePointResult_TSGenOELState\State  2 (largest index is 24);
+            TSOther: Shows the name of the first other model type for transient stability;
+            TSMW: MW injected by generator into its bus; this is after any transformer included as part of the generator model;
+            TSPlantCtrlState:1: States of Plant Controller\State  1 (largest index is 27);
+            TSPlantCtrlState:2: States of Plant Controller\State  2 (largest index is 27);
+            TSMWMech: Mech Input;
+            TSPrefCtrlOther:1: Other Fields of Pref Controller such as Turbine Load Controller\Other  1 (largest index is 2);
+            TSPrefCtrlOther:2: Other Fields of Pref Controller such as Turbine Load Controller\Other  2 (largest index is 2);
+            TSPrefCtrlState:1: States of Pref Controller such as Turbine Load Controller\State  1 (largest index is 4);
+            TSPrefCtrlState:2: States of Pref Controller such as Turbine Load Controller\State  2 (largest index is 4);
+            TSMvar: Mvar injected by generator into its bus; this is after any transformer included as part of the generator model;
+            TSRelayOther:1: Other Fields of Gen Relay\Other  1 (largest index is 16);
+            TSRelayOther:2: Other Fields of Gen Relay\Other  2 (largest index is 16);
+            TSRelayState:1: States of Gen Relay\State  1 (largest index is 24);
+            TSRelayState:2: States of Gen Relay\State  2 (largest index is 24);
+            TSSCLOther:1: DSC::TSTimePointResult_TSGenSCLOther\Other  1 (largest index is 16);
+            TSSCLOther:2: DSC::TSTimePointResult_TSGenSCLOther\Other  2 (largest index is 16);
+            TSSCLState:1: DSC::TSTimePointResult_TSGenSCLState\State  1 (largest index is 24);
+            TSSCLState:2: DSC::TSTimePointResult_TSGenSCLState\State  2 (largest index is 24);
+            TSStabilizer: Shows the name of the active stabilizer type for transient stability;
+            TSStabilizerState:1: States of Stabilizer\State  1 (largest index is 40);
+            TSStabilizerState:2: States of Stabilizer\State  2 (largest index is 40);
+            TSVstab: Stabilizer Vs;
+            TSStatus: Status of generator: 0 for open, 1 for closed;
+            TSVpu: Terminal Voltage Magnitude (pu);
+            TSUELOther:1: DSC::TSTimePointResult_TSGenUELOther\Other  1 (largest index is 16);
+            TSUELOther:2: DSC::TSTimePointResult_TSGenUELOther\Other  2 (largest index is 16);
+            TSUELState:1: DSC::TSTimePointResult_TSGenUELState\State  1 (largest index is 24);
+            TSUELState:2: DSC::TSTimePointResult_TSGenUELState\State  2 (largest index is 24);
+            TSVOEL: Over-Excitation Limiter Signal;
+            TSVpuRef: Voltage setpoint for the generator (in per unit);
+            TSVSCL: DSC::TSTimePointResult_TSGenVSCL;
+            TSVSCLOEL: DSC::TSTimePointResult_TSGenVSCLOEL;
+            TSVSCLUEL: DSC::TSTimePointResult_TSGenVSCLUEL;
+            TSVUEL: Under-Excitation Limiter Signal;
+            TSSpeed: Speed;
+            GovRespLimit: Determines the response of the governor control limits during a transient stability run.  Options are "Normal", "Down Only", or "Fixed".  "Normal" means that the specified governor limits are used.  "Down Only" means that the upper limit is set equal to the initial condition value (and thus control can only go down).  "Fixed" means that both the upper and lower limits are set equal to the initial condition (and thus control will be approximately constant).  Note that power output can still vary for those turbines whose MW output is sensitive to speed.;
+            TSH: Shows the generator's active machine model's inertia on the system MVA base.;
+            TSGovMWCap: Shows the generator's active governor model's MW Capability Base.  If the generator either has no governor or the governor model does not have a MWCap value then this will be blank.;
+            TSPowerAngle: Rotor angle relative to the voltage angle of the machine terminal (i.e., the generator side of the internal step up transformer);
+            BreakerDelay: Breaker time delay in seconds;
+        @return:
+        """
+        cmd = 'TSResultStorageSetAll(GEN, YES)'
+        res = self.RunScriptCommand(cmd)
+        # store variables
+        objFieldList = []
+        for var_name in Var:
+            objFieldList.extend(['Gen ' + str(Bus_num) + ' ' + '\'' + ID + '\'' + ' ' + '| ' + var_name])
+
+        return objFieldList
+
+    def define_Bus_Var(self,Bus_num: int, Var: list):
+        """
+        Helper to define variables at a bus
+        @param Bus_num: Bus number
+        @param Var: variables desired to be stored, i.e., ["TSVangle","TSGenMW"]. This list consists of the name of each variable. Specifically,
+            TSFrequencyinPU: Frequency (pu);
+            TSVangle: Angle relative to angle reference (degrees);
+            TSVangleNoshift: Angle, No Shift (degrees);
+            TSGenMW: Total Generator MW;
+            TSGenMvar: Total Generator Mvar;
+            TSLoadMW: Total Load MW;
+            TSLoadMvar: Total Load Mvar;
+            TSVAnglerad: Angle relative to angle reference (radians);
+            TSROCOFHzperSecond: Rate of Change of Frequency (ROCOF) in Hz/s;
+            TSStatus: Status of bus: 0 for open, 1 for energized;
+            TSVkV: Voltage Magnitude (kV);
+            TSVpu: Voltage Magnitude (pu);
+            TSDistGen: Name of the Distributed Generation models that mode the DistMW and DistMvar portion of the load;
+
+        @return:
+        """
+        cmd = 'TSResultStorageSetAll(BUS, YES)'
+        res = self.RunScriptCommand(cmd)
+        # store variables
+        objFieldList = []
+        for var_name in Var:
+            objFieldList.extend(['Bus ' + str(Bus_num) + '| ' + var_name])
+
+        return objFieldList
+
+    def define_Load_Var(self,Bus_num: int, ID: str, Var):
+        """
+        Helper to define variables at a load
+        @param Bus_num:The number of bus, where the load is connected to.
+        @param ID: Generator ID, i.e., '1'.
+        @param Var: : variables desired to be stored, i.e., ["TSMW","TSMvar"]. This list consists of the name of each variable. Specifically,
+            TSDistGen: Name of the Distributed Generation models that mode the DistMW and DistMvar portion of the load;
+            TSDistGenUsed: Name of the Distributed Generation model used during transient stability to model the DistMW and DistMvar portion of the load;
+            TSDistEquivOther:1: Other Fields of Distribution Equivalent\Other  1 (largest index is 12);
+            TSDistEquivOther:2: Other Fields of Distribution Equivalent\Other  2 (largest index is 12);
+            TSDistGenOther:1: Other Fields of Load Distributed Generation\Other  1 (largest index is 10);
+            TSDistGenOther:2: Other Fields of Load Distributed Generation\Other  2 (largest index is 10);
+            TSDistMW: Distributed Generation MW;
+            TSDistMvar: Distributed Generation Mvar;
+            TSDistGenState:1: States of Load Distributed Generation\State  1 (largest index is 10);
+            TSDistGenState:2: States of Load Distributed Generation\State  2 (largest index is 10);
+            TSLoadIAMPS: Load Current (amps);
+            TSIangle: Load Current Angle;
+            TSIpu: Load Current (pu);
+            TSLoadOther:1: Other Fields of Load\Other  1 (largest index is 36);
+            TSLoadOther:2: Other Fields of Load\Other  2 (largest index is 36);
+            TSMW: MW Load;
+            TSMvar: Mvar Load;
+            TSRelayState:1: States of Load Relay\State  1 (largest index is 6);
+            TSRelayState:2: States of Load Relay\State  2 (largest index is 6);
+            TSTotalLoadMVA: MVA Load;
+            TSLoadState:1: States of Load\State  1 (largest index is 20);
+            TSLoadState:2: States of Load\State  2 (largest index is 20);
+            TSStatus: Status of load: 0 for open, 1 for closed;
+            TSVangle: Bus Voltage Angle (degrees);
+            TSVkV: Bus Voltage Magnitude (kV);
+            TSVpu: Bus Voltage Magnitude (pu);
+            TSAlgebraic: Names of the Load Characteristic types assigned to this load which govern the static behavior of the load;
+            TSDynamic: Names of the Load Characteristic types assigned to this load which govern the motor behavior of the load;
+            TSAlgebraicUsed: Names of the Load Characteristic types used with this load which govern the static behavior of the load;
+            TSDynamicUsed: Names of the Load Characteristic types used with this load which govern the motor behavior of the load;
+            TSRelay: Names of the Load Relay types assigned to this load;
+            TSDistEquivMVABase: Specify a positive value to indicate the MVABase for the distribution equivalent of this load directly. Specify a negative value and the distribution equivalent MVABase will be set equal to LoadMW/abs(Value). Specify a value of 0 to default the calculation of the distribution equivalent MVABase back to the MBase parameter of the Distribution ;
+            TSDistEquivMVABaseUsed: If DistEquivMVABase is not 0 then this represents the value used.  Otherwise it may be the value inherited from the Load Model Group, Owner, Zone, or Area model value.;
+            LoadModelGroup: Name of the Load Model Group to which the load belongs.;
+
+
+        @return:
+        """
+        cmd = 'TSResultStorageSetAll(LOAD, YES)'
+        res = self.RunScriptCommand(cmd)
+        # store variables
+        objFieldList = []
+        for var_name in Var:
+            objFieldList.extend(['Load ' + str(Bus_num) + ' ' + '\'' + ID + '\'' + ' ' + '| ' + var_name])
+
+        return objFieldList
+
+    def define_Branch_Var(self, From_num: int, To_num: int, Circuit: str, Var: list):
+        """
+        Helper to define variables at a branch
+        @param From_num: The from bus number of the branch.
+        @param To_num: The to bus number of the branch.
+        @param Circuit: default one is '1'
+        @param Var: : variables desired to be stored, i.e., ["TSCurrentFrom","TSMWFrom"]. This list consists of the name of each variable. Specifically,
+            TSCurrentFrom: Current at From End in Amps;
+            TSCurrentFrominPU: Current at From End in pu;
+            TSAppImpRFrom: Apparent Impedance Resistance at From End in pu;
+            TSAppImpROhmsFrom: Apparent Impedance Resistance at From End in Ohms;
+            TSAppImpXFrom: Apparent Impedance Reactance at From End in pu;
+            TSAppImpXOhmsFrom: Apparent Impedance Reactance at From End in Ohms;
+            TSAppImpAngleFrom: Apparent Impedance Angle at From End;
+            TSAppImpMagFrom: Apparent Impedance Magnitude at From End in pu;
+            TSAppImpMagOhmsFrom: Apparent Impedance Magnitude at From End in Ohms;
+            TSGICFrom: Per phase GIC flowing into the line/transformer at the from end, amps;
+            TSMWFrom: MW at From End;
+            TSMvarFrom: Mvar at From End;
+            TSMVAFrom: MVA at From End;
+            TSMinProfileVpu: Minimum Profile Vpu;
+            TSPercent: Flow Percentage of Contingency Limit (Result may be based on Amps or MVA depending on the Limit Monitoring Settings) ;
+            TSRelayOther:1: Other Fields of AC Line Relay\Other  1 (largest index is 2);
+            TSRelayOther:2: Other Fields of AC Line Relay\Other  2 (largest index is 2);
+            TSRelayState:1: States of AC Line Relay\State  1 (largest index is 3);
+            TSRelayState:2: States of AC Line Relay\State  2 (largest index is 3);
+            TSStatus: Status of line or transformer: 0 for open, 1 for closed;
+            TSCurrentTo: Current at To End in amps;
+            TSCurrentToinPU: Current at To End in pu;
+            TSAppImpRTo: Apparent Impedance Resistance at To End in pu;
+            TSAppImpROhmsTo: Apparent Impedance Resistance at To End in Ohms;
+            TSAppImpXTo: Apparent Impedance Reactance at To End in pu;
+            TSAppImpXOhmsTo: Apparent Impedance Reactance at To End in Ohms;
+            TSAppImpAngleTo: Apparent Impedance Angle at To End;
+            TSAppImpMagTo: Apparent Impedance Magnitude at To End in pu;
+            TSAppImpMagOhmsTo: Apparent Impedance Magnitude at To End Ohms;
+            TSGICTo: Per phase GIC flowing into the line/transformer at the to end, amps;
+            TSMWTo: MW at To End;
+            TSMvarTo: Mvar at To End;
+            TSMVATo: MVA at To End;
+            TSRelayName: Names of the Line Relay types assigned to this branch;
+        @return:
+        """
+        cmd = 'TSResultStorageSetAll(BRANCH, YES)'
+        res = self.RunScriptCommand(cmd)
+        # store variables
+        objFieldList = []
+        for var_name in Var:
+            objFieldList.extend(['Branch ' + str(From_num) + ' ' + str(To_num) + ' ' + Circuit + '| ' + var_name])
+
+        return objFieldList
 
     ####################################################################
     # PowerWorld SimAuto Properties
