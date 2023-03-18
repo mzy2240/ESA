@@ -981,7 +981,12 @@ class SAW(object):
         """
         original = self.pw_order
         self.pw_order = True
-        count = self.ListOfDevices('branch').shape[0]
+        # count = self.ListOfDevices('branch').shape[0]
+        # Changed on 03/18/2023. Fixed issue of shifted column & rows when there is at least one line in outage.
+        branch_key_fields = self.get_key_field_list('Branch')
+        params = branch_key_fields + ['Status']
+        lines_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
+        count = lines_data[lines_data['Status'] == 'Closed'].shape[0]
         if post:
             self.RunScriptCommand(
                 f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,YES)")
