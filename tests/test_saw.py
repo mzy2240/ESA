@@ -886,6 +886,17 @@ class FastCATestCase(unittest.TestCase):
         """
         lodf, isl = self.saw.get_lodf_matrix(raw=True)
         self.assertIsInstance(lodf, pd.DataFrame)
+        
+    def test_get_lodf_matrix_outage(self):
+        """Should return an (N-x)*(N-x) square matrix and a boolean vector
+        if there is x line in outage in the case.
+        """
+        branch_kf = self.saw.get_key_field_list('Branch')
+        lines_data = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf+['LineStatus'])
+        x = lines_data[lines_data['LineStatus'] == 'Open'].shape[0]
+        N = lines_data.shape[0]
+        lodf, isl = self.saw.get_lodf_matrix()
+        self.assertEqual(lodf.shape[0], N-x)
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix
