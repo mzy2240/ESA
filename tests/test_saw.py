@@ -348,7 +348,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
                                    columns=['BusNum', 'GenMW', 'GenAGCAble'])
 
         df_actual = saw_14.clean_df_or_series(obj=df_in, ObjectType='gen')
-
+        df_expected.index = df_expected.index.astype('int32')
         pd.testing.assert_frame_equal(df_actual, df_expected)
 
     def test_bad_type(self):
@@ -1864,7 +1864,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
         # ID of 1. However, ID is a string field.
         expected = pd.DataFrame([[1, '1'], [2, '1'], [3, '1'], [6, '1'],
                                  [8, '1']], columns=['BusNum', 'GenID'])
-
+        expected.index = expected.index.astype('int32')
         pd.testing.assert_frame_equal(expected, result)
 
     def test_shunts(self):

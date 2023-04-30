@@ -931,7 +931,9 @@ class SAW(object):
         file = tempfile.NamedTemporaryFile()
         filename = Path(file.name).as_posix()
         file.close()
-        statement = f"DetermineBranchesThatCreateIslands({Filter},{StoreBuses},{filename},{SetSelectedOnLines},CSV);"
+        statement = f"DetermineBranchesThatCreateIslands({Filter},{StoreBuses},\"{filename}\",{SetSelectedOnLines}," \
+                    f"CSV);"
+        print(statement)
         self.RunScriptCommand(statement)
         df = pd.read_csv(filename, header=0)
         return df
@@ -952,7 +954,7 @@ class SAW(object):
         file = tempfile.NamedTemporaryFile()
         filename = Path(file.name).as_posix()
         file.close()
-        statement = f"DetermineShortestPath({start}, {end}, {BranchDistanceMeasure}, {BranchFilter}, {filename});"
+        statement = f"DetermineShortestPath({start}, {end}, {BranchDistanceMeasure}, {BranchFilter}, \"{filename}\");"
         self.RunScriptCommand(statement)
         df = pd.read_csv(filename, header=None, delim_whitespace=True, names=["BusNum", BranchDistanceMeasure, "BusName"])
         df["BusNum"] = df["BusNum"].astype(int)
@@ -2852,7 +2854,6 @@ class SAW(object):
         """
         out = self._call_simauto('TSGetContingencyResults', CtgName,
                                  ObjFieldList, str(StartTime), str(StopTime))
-
         # We get (None, (None,)) if the contingency does not exist.
         if out == (None, (None,)):
             return None, None
@@ -2868,7 +2869,8 @@ class SAW(object):
         # Remove extraneous white space in the strings.
         # https://stackoverflow.com/a/40950485/11052174
         meta = meta.apply(lambda x: x.str.strip(), axis=0)
-
+        # print(out[0])
+        # print(out[1])
         # Extract the data.
         data = pd.DataFrame(out[1])
 
@@ -3122,7 +3124,6 @@ class SAW(object):
             m = f'An error occurred when trying to call {func} with {args}'
             self.log.exception(m)
             raise COMError(m) from e
-
         # handle errors
         if output == ('',):
             # If we just get a tuple with the empty string in it,
