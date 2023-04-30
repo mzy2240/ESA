@@ -958,8 +958,8 @@ class SAW(object):
         df["BusNum"] = df["BusNum"].astype(int)
         return df
 
-    def get_lodf_matrix(self, precision: int = 3, ignore: bool = True, method: str = 'DC', post: bool = True,
-                        raw: bool = False):
+    def get_lodf_matrix(self, precision: int = 3, ignore_open_branch: bool = True, method: str = 'DC',
+                        post: bool = True, raw: bool = False):
         """Obtain LODF matrix in numpy array or scipy sparse matrix.
         By default, it obtains the lodf matrix directly from PW. If size
         is larger than 1000, then precision will be applied to filter out
@@ -969,8 +969,8 @@ class SAW(object):
         interest is in "CLOSED" status, or calculate LCDF value instead.
 
         :param precision:  number of decimal to keep.
-        :param ignore: Ignore lines are open or not. Set to True to monitor only those branches that are closed. Set to
-            False to monitor branches regardless of their status.
+        :param ignore_open_branch: Ignore branches are open or not. Set to True to monitor only those branches that
+            are closed. Set to False to monitor branches regardless of their status.
         :param method: The linear method to be used for the LODF calculation. Default is DC.
             Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
             LODF calculation.
@@ -990,9 +990,10 @@ class SAW(object):
         # Changed on 03/18/2023. Fixed issue of shifted column & rows when there is at least one line in outage.
         branch_key_fields = self.get_key_field_list('Branch')
         params = branch_key_fields + ['Status']
-        lines_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
-        count = lines_data[lines_data['Status'] == 'Closed'].shape[0] if ignore else lines_data.shape[0]
-        ignore_str = 'YES' if ignore else 'NO'
+        branches_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
+        count = branches_data[branches_data['Status'] == 'Closed'].shape[0] if ignore_open_branch else \
+            branches_data.shape[0]
+        ignore_str = 'YES' if ignore_open_branch else 'NO'
         if post:
             self.RunScriptCommand(
                 f"CalculateLODFMatrix(OUTAGES,ALL,ALL,{ignore_str},{method},ALL,YES)")
@@ -1012,18 +1013,21 @@ class SAW(object):
             self.isl = np.any(df_array >= 10, axis=1)
         else:
             if count <= 1000:
-                self._extracted_from_get_lodf_matrix_9(array)
+                self._extracted_from_get_lodf_matrix_9(array, ignore_open_branch)
             else:
-                self._extracted_from_get_lodf_matrix_16(array, precision)
+                self._extracted_from_get_lodf_matrix_16(array, precision, ignore_open_branch)
         self.pw_order = original
         return self.lodf, self.isl
 
     # TODO Rename this here and in `get_lodf_matrix`
-    def _extracted_from_get_lodf_matrix_16(self, array, precision):
+    def _extracted_from_get_lodf_matrix_16(self, array, precision, ignore_open_branch):
         container = []
         isl = None
         for batch in partition_all(20, array):
             df = self.GetParametersMultipleElement('branch', batch)
+            if ignore_open_branch:
+                df.dropna(axis=0, inplace=True)
+                df.reset_index(inplace=True, drop=True)
             temp = df.to_numpy(dtype=float) / 100
             temp = temp.round(precision)
             isl = np.any(temp >= 10, axis=1) if isl is None else np.logical_or(
@@ -1042,8 +1046,11 @@ class SAW(object):
         self.isl = isl
 
     # TODO Rename this here and in `get_lodf_matrix`
-    def _extracted_from_get_lodf_matrix_9(self, array):
+    def _extracted_from_get_lodf_matrix_9(self, array, ignore_open_branch):
         df = self.GetParametersMultipleElement('branch', array)
+        if ignore_open_branch:
+            df.dropna(axis=0, inplace=True)
+            df.reset_index(inplace=True, drop=True)
         temp = df.to_numpy(dtype=float) / 100
         self.isl = np.any(temp >= 10, axis=1)
         temp[self.isl, :] = 0

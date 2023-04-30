@@ -888,20 +888,23 @@ class FastCATestCase(unittest.TestCase):
         self.assertIsInstance(lodf, pd.DataFrame)
         
     def test_get_lodf_matrix_outage(self):
-        """When param ignore is set to True, the program should return an (N-x)*(N-x) square matrix and
-        a boolean vector if there is x line in outage in the case.
+        """When param ignore_open_branch is set to True, the program should return an (N-x)*(N-x) square matrix and
+        a boolean vector if there is x branch in outage in the case.
         When param ignore is set to False, the program should return an N*N square matrix and a boolean
-        vector no matter how many lines are in open status.
+        vector no matter how many branches are in open status.
         """
         branch_kf = self.saw.get_key_field_list('Branch')
-        lines_data = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf+['LineStatus'])
+        lines_dataPrev = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf + [
+            'LineStatus'])
+        lines_dataPrev.loc[lines_dataPrev['BusNum'].isin([1]), 'LineStatus'] = ['Open', 'Open']
+        self.saw.change_and_confirm_params_multiple_element('Branch', lines_dataPrev)
+        lines_data = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf + ['LineStatus'])
         x = lines_data[lines_data['LineStatus'] == 'Open'].shape[0]
         N = lines_data.shape[0]
-        lodf, isl = self.saw.get_lodf_matrix(ignore=True)
-        self.assertEqual(lodf.shape[0], N-x)
-
-        lodf, isl = self.saw.get_lodf_matrix(ignore=False)
-        self.assertEqual(lodf.shape[0], N)
+        lodf, isl = self.saw.get_lodf_matrix(ignore_open_branch=True)
+        self.assertEqual(lodf.shape, (N-x, N-x))
+        lodf, isl = self.saw.get_lodf_matrix(ignore_open_branch=False)
+        self.assertEqual(lodf.shape, (N, N))
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix
