@@ -958,7 +958,7 @@ class SAW(object):
         df["BusNum"] = df["BusNum"].astype(int)
         return df
 
-    def get_lodf_matrix(self, precision: int = 3, method: str = 'DC', post: bool = True,
+    def get_lodf_matrix(self, precision: int = 3, ignore: bool = True, method: str = 'DC', post: bool = True,
                         raw: bool = False):
         """Obtain LODF matrix in numpy array or scipy sparse matrix.
         By default, it obtains the lodf matrix directly from PW. If size
@@ -969,6 +969,8 @@ class SAW(object):
         interest is in "CLOSED" status, or calculate LCDF value instead.
 
         :param precision:  number of decimal to keep.
+        :param ignore: Ignore lines are open or not. Set to True to monitor only those branches that are closed. Set to
+            False to monitor branches regardless of their status.
         :param method: The linear method to be used for the LODF calculation. Default is DC.
             Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
             LODF calculation.
@@ -989,13 +991,14 @@ class SAW(object):
         branch_key_fields = self.get_key_field_list('Branch')
         params = branch_key_fields + ['Status']
         lines_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
-        count = lines_data[lines_data['Status'] == 'Closed'].shape[0]
+        count = lines_data[lines_data['Status'] == 'Closed'].shape[0] if ignore else lines_data.shape[0]
+        ignore_str = 'YES' if ignore else 'NO'
         if post:
             self.RunScriptCommand(
-                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,YES)")
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,{ignore_str},{method},ALL,YES)")
         else:
             self.RunScriptCommand(
-                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,NO)")
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,{ignore_str},{method},ALL,NO)")
         array = [f"LODFMult:{x}" for x in range(count)]
         if raw:
             array = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW'] + array
