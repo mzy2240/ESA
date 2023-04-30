@@ -970,7 +970,7 @@ class SAW(object):
 
         :param precision:  number of decimal to keep.
         :param ignore_open_branch: Ignore branches are open or not. Set to True to monitor only those branches that
-            are closed. Set to False to monitor branches regardless of their status.
+            are closed. Set to False to monitor branches regardless of their status. Default is True.
         :param method: The linear method to be used for the LODF calculation. Default is DC.
             Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
             LODF calculation.
