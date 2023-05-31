@@ -689,8 +689,11 @@ class GetYbusTestCase(unittest.TestCase):
         """
         Test get_ybus function with external ybus file.
         """
-        self.assertIsInstance(self.saw.get_ybus(file="data/ybus.mat"),
-                              csr_matrix)
+        try:
+            ybus = self.saw.get_ybus(file="data/ybus.mat")
+        except FileNotFoundError:
+            ybus = self.saw.get_ybus(file="tests/data/ybus.mat")
+        self.assertIsInstance(ybus,csr_matrix)
 
 
 class GetAdmittanceTestCase(unittest.TestCase):
