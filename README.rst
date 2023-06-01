@@ -76,20 +76,20 @@ Testing Coverage
 ----------------
 
 The ESA team works hard to ensure ESA is well tested, and we strive for
-100% testing coverage. The table below shows the most up-to-date
+100% testing coverage (sometimes we cannot due to lack of specific add-ons). The table below shows the most up-to-date
 testing coverage data for ESA, using `coverage
 <https://pypi.org/project/coverage/>`__.
 
-.. table:: ESA's testing coverage as of 2022-12-09 (Git commit: 9bf6a24)
+.. table:: ESA's testing coverage as of 2023-05-31 (Git commit: 7180cc9)
     :widths: auto
     :align: left
 
     +-----------------+-------------------+-----------------+-----------------+--------------------+
     | Name            |   Num. Statements |   Missing Lines |   Covered Lines |   Percent Coverage |
     +=================+===================+=================+=================+====================+
-    | esa/__init__.py |                 2 |               0 |               2 |                100 |
+    | esa/__init__.py |                 2 |               0 |               2 |           100      |
     +-----------------+-------------------+-----------------+-----------------+--------------------+
-    | esa/saw.py      |              1196 |               0 |            1196 |                100 |
+    | esa/saw.py      |              1206 |               2 |            1204 |            99.8342 |
     +-----------------+-------------------+-----------------+-----------------+--------------------+
 
 License
