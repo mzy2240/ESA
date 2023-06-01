@@ -1722,7 +1722,7 @@ class SAW(object):
                 margins = np.maximum(margins, qq)
                 if num_of_violations:
                     ctg[i] = 1
-                    violations[violating_lines] += 1
+                    violations[np.ravel(violating_lines)] += 1
         print(f"The size of N-1 islanding set is {np.sum(c1_isl)}")
         print(
             f"Fast N-1 analysis was performed, {np.sum(ctg)} dangerous N-1 contigencies were found, "
