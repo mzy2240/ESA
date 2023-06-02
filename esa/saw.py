@@ -124,7 +124,8 @@ class SAW(object):
     def __init__(self, FileName, early_bind=False, UIVisible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch'),
-                 CreateIfNotFound=False, pw_order=False):
+                 CreateIfNotFound:bool=False, UseDefinedNamesInVariables:bool=False,
+                 pw_order=False):
         """Initialize SimAuto wrapper. The case will be opened, and
         object fields given in object_field_lookup will be retrieved.
 
@@ -143,6 +144,8 @@ class SAW(object):
             initially look up available fields for. Objects not
             specified for lookup here will be looked up later as
             necessary.
+        :param UseDefinedNamesInVariables: Set UseDefinedNamesInVariables to True
+            if you want to have custom field with custom header. Default is False.
         :param pw_order: Set pw_order = True if you want to have exact
             same order as shown in PW Simulator. Default is False, which
             generally sorts the data in a bus ascending order.
@@ -212,6 +215,15 @@ class SAW(object):
         version_string, self.build_date = self.get_version_and_builddate()
         self.version = int(re.search(r'\d+', version_string)[0])
 
+        # Set the UseDefinedNamesInVariables property.
+        if UseDefinedNamesInVariables:
+            self.exec_aux("""
+                CaseInfo_Options_Value (Option,Value)
+                    {
+                        "UseDefinedNamesInVariables"    "YES"
+                    }
+            """)
+
         # Sensitivity-related initialization
         self.lodf = None
 
@@ -235,6 +247,22 @@ class SAW(object):
     ####################################################################
     # Helper Functions
     ####################################################################
+    def exec_aux(self, aux: str, use_double_quotes:bool = False):
+        """Helper function to execute auxiliary script directly. Skip the
+        hassle to save the aux script to a file and then execute it.
+
+        :param aux: Auxiliary script (including data section) to execute.
+        :param use_double_quotes: Whether to use double quotes or single
+            quotes. Default is False. Change to True will replace all the
+            single quotes with double quotes.
+        """
+        if use_double_quotes:
+            aux = aux.replace("'", '"')
+        file = tempfile.NamedTemporaryFile(suffix='.aux')
+        with open(file.name, "w") as f:
+            f.write(aux)
+        self.ProcessAuxFile(file.name)
+
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
                                                    command_df: pd.DataFrame) \
             -> None:
