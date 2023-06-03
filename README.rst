@@ -12,6 +12,8 @@ Easy SimAuto (ESA)
    :target: https://pepy.tech/project/esa
 .. image:: https://img.shields.io/badge/coverage-100%25-brightgreen
    :target: https://pypi.org/project/esa/
+.. image:: https://img.shields.io/discord/1114563747651006524
+   :alt: Discord
 
 
 Easy SimAuto (ESA) is an easy-to-use Power System Analysis Automation
