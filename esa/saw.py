@@ -258,10 +258,11 @@ class SAW(object):
         """
         if use_double_quotes:
             aux = aux.replace("'", '"')
-        file = tempfile.NamedTemporaryFile(suffix='.aux')
-        with open(file.name, "w") as f:
-            f.write(aux)
+        file = tempfile.NamedTemporaryFile(mode='wt', suffix='.aux', delete=False)
+        file.write(aux)
+        file.close()
         self.ProcessAuxFile(file.name)
+        os.unlink(file.name)
 
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
                                                    command_df: pd.DataFrame) \
