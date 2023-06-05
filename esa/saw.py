@@ -995,13 +995,8 @@ class SAW(object):
         By default, it obtains the lodf matrix directly from PW. If size
         is larger than 1000, then precision will be applied to filter out
         small values and the result will be returned in scipy sparse matrix.
-<<<<<<< HEAD
         The line (lines) in "OPEN" status are removed from the returned 
         results, which is aligned with PW GUI. Make sure the line in 
-=======
-        The line (lines) in "OPEN" status are removed from the returned
-        results, which is aligned with PW GUI. Make sure the line in
->>>>>>> upstream/develop
         interest is in "CLOSED" status, or calculate LCDF value instead.
 
         :param precision:  number of decimal to keep.
