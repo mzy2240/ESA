@@ -2,7 +2,17 @@ Changes made with each ESA release are listed here. Please note that
 versions prior to 1.0.0 are not listed here, but are still available on
 `PyPi <https://pypi.org/project/esa/#history>`__.
 
-Version 1.3.3
+Version 1.3.5
+^^^^^^^^^^^^^
+
+* Fix bug in `get_lodf_matrix` that causes mismatched column names and column values
+* Add new parameter ignore_new_branch to `get_lodf_matrix` to ensure the returned matrix is square
+* Fix bug associated with filename format in `DetermineBranchesThatCreateIslands`
+* Fix bug associated with filename format in `DetermineShortestPath`
+* Fix bug in test of `ListOfDevices` associated with dataframe index data type
+* Fix bug in test of `clean_df_or_series` associated with dataframe index data type
+
+Version 1.3.4
 ^^^^^^^^^^^^^
 
 * Add `DetermineBranchesThatCreateIslands`

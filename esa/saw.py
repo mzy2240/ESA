@@ -124,7 +124,8 @@ class SAW(object):
     def __init__(self, FileName, early_bind=False, UIVisible=False,
                  object_field_lookup=('bus', 'gen', 'load', 'shunt',
                                       'branch'),
-                 CreateIfNotFound=False, pw_order=False):
+                 CreateIfNotFound:bool=False, UseDefinedNamesInVariables:bool=False,
+                 pw_order=False):
         """Initialize SimAuto wrapper. The case will be opened, and
         object fields given in object_field_lookup will be retrieved.
 
@@ -143,6 +144,8 @@ class SAW(object):
             initially look up available fields for. Objects not
             specified for lookup here will be looked up later as
             necessary.
+        :param UseDefinedNamesInVariables: Set UseDefinedNamesInVariables to True
+            if you want to have custom field with custom header. Default is False.
         :param pw_order: Set pw_order = True if you want to have exact
             same order as shown in PW Simulator. Default is False, which
             generally sorts the data in a bus ascending order.
@@ -212,6 +215,15 @@ class SAW(object):
         version_string, self.build_date = self.get_version_and_builddate()
         self.version = int(re.search(r'\d+', version_string)[0])
 
+        # Set the UseDefinedNamesInVariables property.
+        if UseDefinedNamesInVariables:
+            self.exec_aux("""
+                CaseInfo_Options_Value (Option,Value)
+                    {
+                        "UseDefinedNamesInVariables"    "YES"
+                    }
+            """)
+
         # Sensitivity-related initialization
         self.lodf = None
 
@@ -235,6 +247,23 @@ class SAW(object):
     ####################################################################
     # Helper Functions
     ####################################################################
+    def exec_aux(self, aux: str, use_double_quotes:bool = False):
+        """Helper function to execute auxiliary script directly. Skip the
+        hassle to save the aux script to a file and then execute it.
+
+        :param aux: Auxiliary script (including data section) to execute.
+        :param use_double_quotes: Whether to use double quotes or single
+            quotes. Default is False. Change to True will replace all the
+            single quotes with double quotes.
+        """
+        if use_double_quotes:
+            aux = aux.replace("'", '"')
+        file = tempfile.NamedTemporaryFile(mode='wt', suffix='.aux', delete=False)
+        file.write(aux)
+        file.close()
+        self.ProcessAuxFile(file.name)
+        os.unlink(file.name)
+
     def change_and_confirm_params_multiple_element(self, ObjectType: str,
                                                    command_df: pd.DataFrame) \
             -> None:
@@ -931,7 +960,9 @@ class SAW(object):
         file = tempfile.NamedTemporaryFile()
         filename = Path(file.name).as_posix()
         file.close()
-        statement = f"DetermineBranchesThatCreateIslands({Filter},{StoreBuses},{filename},{SetSelectedOnLines},CSV);"
+        statement = f"DetermineBranchesThatCreateIslands({Filter},{StoreBuses},\"{filename}\",{SetSelectedOnLines}," \
+                    f"CSV);"
+        print(statement)
         self.RunScriptCommand(statement)
         df = pd.read_csv(filename, header=0)
         return df
@@ -952,14 +983,14 @@ class SAW(object):
         file = tempfile.NamedTemporaryFile()
         filename = Path(file.name).as_posix()
         file.close()
-        statement = f"DetermineShortestPath({start}, {end}, {BranchDistanceMeasure}, {BranchFilter}, {filename});"
+        statement = f"DetermineShortestPath({start}, {end}, {BranchDistanceMeasure}, {BranchFilter}, \"{filename}\");"
         self.RunScriptCommand(statement)
         df = pd.read_csv(filename, header=None, delim_whitespace=True, names=["BusNum", BranchDistanceMeasure, "BusName"])
         df["BusNum"] = df["BusNum"].astype(int)
         return df
 
-    def get_lodf_matrix(self, precision: int = 3, method: str = 'DC', post: bool = True,
-                        raw: bool = False):
+    def get_lodf_matrix(self, precision: int = 3, ignore_open_branch: bool = True, method: str = 'DC',
+                        post: bool = True, raw: bool = False):
         """Obtain LODF matrix in numpy array or scipy sparse matrix.
         By default, it obtains the lodf matrix directly from PW. If size
         is larger than 1000, then precision will be applied to filter out
@@ -969,6 +1000,8 @@ class SAW(object):
         interest is in "CLOSED" status, or calculate LCDF value instead.
 
         :param precision:  number of decimal to keep.
+        :param ignore_open_branch: Ignore branches are open or not. Set to True to monitor only those branches that
+            are closed. Set to False to monitor branches regardless of their status. Default is True.
         :param method: The linear method to be used for the LODF calculation. Default is DC.
             Change to DCPS would take phase shifter into account. Note: AC is NOT an option for the
             LODF calculation.
@@ -988,14 +1021,16 @@ class SAW(object):
         # Changed on 03/18/2023. Fixed issue of shifted column & rows when there is at least one line in outage.
         branch_key_fields = self.get_key_field_list('Branch')
         params = branch_key_fields + ['Status']
-        lines_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
-        count = lines_data[lines_data['Status'] == 'Closed'].shape[0]
+        branches_data = self.GetParametersMultipleElement(ObjectType='Branch', ParamList=params)
+        count = branches_data[branches_data['Status'] == 'Closed'].shape[0] if ignore_open_branch else \
+            branches_data.shape[0]
+        ignore_str = 'YES' if ignore_open_branch else 'NO'
         if post:
             self.RunScriptCommand(
-                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,YES)")
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,{ignore_str},{method},ALL,YES)")
         else:
             self.RunScriptCommand(
-                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,YES,{method},ALL,NO)")
+                f"CalculateLODFMatrix(OUTAGES,ALL,ALL,{ignore_str},{method},ALL,NO)")
         array = [f"LODFMult:{x}" for x in range(count)]
         if raw:
             array = ['BusNum', 'BusNum:1', 'LineCircuit', 'LineMW'] + array
@@ -1009,18 +1044,21 @@ class SAW(object):
             self.isl = np.any(df_array >= 10, axis=1)
         else:
             if count <= 1000:
-                self._extracted_from_get_lodf_matrix_9(array)
+                self._extracted_from_get_lodf_matrix_9(array, ignore_open_branch)
             else:
-                self._extracted_from_get_lodf_matrix_16(array, precision)
+                self._extracted_from_get_lodf_matrix_16(array, precision, ignore_open_branch)
         self.pw_order = original
         return self.lodf, self.isl
 
     # TODO Rename this here and in `get_lodf_matrix`
-    def _extracted_from_get_lodf_matrix_16(self, array, precision):
+    def _extracted_from_get_lodf_matrix_16(self, array, precision, ignore_open_branch):
         container = []
         isl = None
         for batch in partition_all(20, array):
             df = self.GetParametersMultipleElement('branch', batch)
+            if ignore_open_branch:
+                df.dropna(axis=0, inplace=True)
+                df.reset_index(inplace=True, drop=True)
             temp = df.to_numpy(dtype=float) / 100
             temp = temp.round(precision)
             isl = np.any(temp >= 10, axis=1) if isl is None else np.logical_or(
@@ -1039,8 +1077,11 @@ class SAW(object):
         self.isl = isl
 
     # TODO Rename this here and in `get_lodf_matrix`
-    def _extracted_from_get_lodf_matrix_9(self, array):
+    def _extracted_from_get_lodf_matrix_9(self, array, ignore_open_branch):
         df = self.GetParametersMultipleElement('branch', array)
+        if ignore_open_branch:
+            df.dropna(axis=0, inplace=True)
+            df.reset_index(inplace=True, drop=True)
         temp = df.to_numpy(dtype=float) / 100
         self.isl = np.any(temp >= 10, axis=1)
         temp[self.isl, :] = 0
@@ -1705,7 +1746,7 @@ class SAW(object):
                 margins = np.maximum(margins, qq)
                 if num_of_violations:
                     ctg[i] = 1
-                    violations[violating_lines] += 1
+                    violations[np.ravel(violating_lines)] += 1
         print(f"The size of N-1 islanding set is {np.sum(c1_isl)}")
         print(
             f"Fast N-1 analysis was performed, {np.sum(ctg)} dangerous N-1 contigencies were found, "
@@ -2842,7 +2883,6 @@ class SAW(object):
         """
         out = self._call_simauto('TSGetContingencyResults', CtgName,
                                  ObjFieldList, str(StartTime), str(StopTime))
-
         # We get (None, (None,)) if the contingency does not exist.
         if out == (None, (None,)):
             return None, None
@@ -2858,7 +2898,8 @@ class SAW(object):
         # Remove extraneous white space in the strings.
         # https://stackoverflow.com/a/40950485/11052174
         meta = meta.apply(lambda x: x.str.strip(), axis=0)
-
+        # print(out[0])
+        # print(out[1])
         # Extract the data.
         data = pd.DataFrame(out[1])
 
@@ -3112,7 +3153,6 @@ class SAW(object):
             m = f'An error occurred when trying to call {func} with {args}'
             self.log.exception(m)
             raise COMError(m) from e
-
         # handle errors
         if output == ('',):
             # If we just get a tuple with the empty string in it,

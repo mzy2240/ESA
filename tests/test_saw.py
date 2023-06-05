@@ -348,7 +348,7 @@ class CleanDFOrSeriesTestCase(unittest.TestCase):
                                    columns=['BusNum', 'GenMW', 'GenAGCAble'])
 
         df_actual = saw_14.clean_df_or_series(obj=df_in, ObjectType='gen')
-
+        df_expected.index = df_expected.index.astype('int32')
         pd.testing.assert_frame_equal(df_actual, df_expected)
 
     def test_bad_type(self):
@@ -689,8 +689,11 @@ class GetYbusTestCase(unittest.TestCase):
         """
         Test get_ybus function with external ybus file.
         """
-        self.assertIsInstance(self.saw.get_ybus(file="data/ybus.mat"),
-                              csr_matrix)
+        try:
+            ybus = self.saw.get_ybus(file="data/ybus.mat")
+        except FileNotFoundError:
+            ybus = self.saw.get_ybus(file="tests/data/ybus.mat")
+        self.assertIsInstance(ybus,csr_matrix)
 
 
 class GetAdmittanceTestCase(unittest.TestCase):
@@ -886,6 +889,25 @@ class FastCATestCase(unittest.TestCase):
         """
         lodf, isl = self.saw.get_lodf_matrix(raw=True)
         self.assertIsInstance(lodf, pd.DataFrame)
+        
+    def test_get_lodf_matrix_outage(self):
+        """When param ignore_open_branch is set to True, the program should return an (N-x)*(N-x) square matrix and
+        a boolean vector if there is x branch in outage in the case.
+        When param ignore is set to False, the program should return an N*N square matrix and a boolean
+        vector no matter how many branches are in open status.
+        """
+        branch_kf = self.saw.get_key_field_list('Branch')
+        lines_dataPrev = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf + [
+            'LineStatus'])
+        lines_dataPrev.loc[lines_dataPrev['BusNum'].isin([1]), 'LineStatus'] = ['Open', 'Open']
+        self.saw.change_and_confirm_params_multiple_element('Branch', lines_dataPrev)
+        lines_data = self.saw.GetParametersMultipleElement(ObjectType='Branch', ParamList=branch_kf + ['LineStatus'])
+        x = lines_data[lines_data['LineStatus'] == 'Open'].shape[0]
+        N = lines_data.shape[0]
+        lodf, isl = self.saw.get_lodf_matrix(ignore_open_branch=True)
+        self.assertEqual(lodf.shape, (N-x, N-x))
+        lodf, isl = self.saw.get_lodf_matrix(ignore_open_branch=False)
+        self.assertEqual(lodf.shape, (N, N))
 
     def test_get_incidence_matrix(self):
         """ Should return an N*M matrix
@@ -1845,7 +1867,7 @@ class ListOfDevicesTestCase(unittest.TestCase):
         # ID of 1. However, ID is a string field.
         expected = pd.DataFrame([[1, '1'], [2, '1'], [3, '1'], [6, '1'],
                                  [8, '1']], columns=['BusNum', 'GenID'])
-
+        expected.index = expected.index.astype('int32')
         pd.testing.assert_frame_equal(expected, result)
 
     def test_shunts(self):

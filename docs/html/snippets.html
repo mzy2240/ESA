@@ -2,7 +2,7 @@
 <html  lang="en">
   <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="viewport" content="width=device-width, initial-scale=1" />
 
       <title>Examples</title>
     
@@ -11,10 +11,8 @@
       
       <!-- sphinx script_files -->
         <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
-        <script src="_static/jquery.js"></script>
-        <script src="_static/underscore.js"></script>
-        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
         <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
 
       
       <!-- bundled in js (rollup iife) -->
@@ -32,7 +30,7 @@
     <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
   <router-link to="index.html" class="home-link">
     
-      <img class="logo" src="_static/esa_logo.webp" alt="logo"/>
+      <span class="site-name">ESA</span>
     
   </router-link>
 
@@ -416,7 +414,7 @@ knows how to find the generators.</p>
 <span class="gt">Traceback (most recent call last):</span>
   File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
   File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">199</span>, in <span class="n">change_and_confirm_params_multiple_element</span>
-    <span class="k">raise</span> <span class="n">CommandNotRespectedError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
+<span class="w">    </span><span class="k">raise</span> <span class="n">CommandNotRespectedError</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
 <span class="gr">esa.saw.CommandNotRespectedError</span>: <span class="n">After calling ChangeParametersMultipleElement, not all parameters were actually changed within PowerWorld. Try again with a different parameter (e.g. use GenVoltSet instead of GenRegPUVolt).</span>
 </pre></div>
 </div>
@@ -428,9 +426,9 @@ helper function.</p>
 <span class="gt">Traceback (most recent call last):</span>
   File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
   File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">967</span>, in <span class="n">LoadState</span>
-    <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;LoadState&#39;</span><span class="p">)</span>
+<span class="w">    </span><span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;LoadState&#39;</span><span class="p">)</span>
   File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">1227</span>, in <span class="n">_call_simauto</span>
-    <span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="w">    </span><span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="gr">esa.saw.PowerWorldError</span>: <span class="n">LoadState: State hasn&#39;t been previously stored.</span>
 </pre></div>
 </div>
@@ -597,9 +595,9 @@ indicate that it’s not.</p>
 <span class="gt">Traceback (most recent call last):</span>
   File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
   File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">693</span>, in <span class="n">GetParametersSingleElement</span>
-    <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;GetParametersSingleElement&#39;</span><span class="p">,</span> <span class="n">ObjectType</span><span class="p">,</span>
+<span class="w">    </span><span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_call_simauto</span><span class="p">(</span><span class="s1">&#39;GetParametersSingleElement&#39;</span><span class="p">,</span> <span class="n">ObjectType</span><span class="p">,</span>
   File <span class="nb">&quot;C:\Users\myuser\git\ESA\esa\saw.py&quot;</span>, line <span class="m">1227</span>, in <span class="n">_call_simauto</span>
-    <span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="w">    </span><span class="k">raise</span> <span class="n">PowerWorldError</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
 <span class="gr">esa.saw.PowerWorldError</span>: <span class="n">GetParameters: Object not found</span>
 </pre></div>
 </div>
@@ -773,7 +771,7 @@ adapting the path to your system:</p>
 <span class="go">2       1001      1071           1</span>
 <span class="go">3       1001      1071           2</span>
 <span class="go">4       1002      1007           1</span>
-<span class="gp">... </span>     <span class="o">...</span>       <span class="o">...</span>         <span class="o">...</span>
+<span class="go">...      ...       ...         ...</span>
 <span class="go">3199    8157      5124           1</span>
 <span class="go">3200    8157      8156           1</span>
 <span class="go">3201    8158      8030           1</span>
@@ -942,7 +940,7 @@ known as key fields.</p>
 <span class="go">2       1001      1071           1    35.731801</span>
 <span class="go">3       1001      1071           2    35.731801</span>
 <span class="go">4       1002      1007           1     5.342946</span>
-<span class="gp">... </span>     <span class="o">...</span>       <span class="o">...</span>         <span class="o">...</span>          <span class="o">...</span>
+<span class="go">...      ...       ...         ...          ...</span>
 <span class="go">3199    8157      5124           1    36.371236</span>
 <span class="go">3200    8157      8156           1    46.769588</span>
 <span class="go">3201    8158      8030           1    25.982494</span>
@@ -985,7 +983,7 @@ known as key fields.</p>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2022, Zeyu Mao, Brandon Thayer, Yijing Liu.
     <br>
-    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 5.0.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 7.0.1 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
 </div>
             </div>
           </div>
