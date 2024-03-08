@@ -783,6 +783,7 @@ class SAW(object):
         """Helper function to get the Jacobian matrix, by default return a
         scipy sparse matrix in the csr format
         :param full: Convert the csr_matrix to the numpy array (full matrix).
+        :param JacForm: Sets the form for Jacobian output, options: "R", "P", "DC"
         """
         jacfile = tempfile.NamedTemporaryFile(mode='w', suffix='.m',
                                               delete=False)
@@ -791,11 +792,7 @@ class SAW(object):
         jidfile = tempfile.NamedTemporaryFile(mode='w', delete=False)
         jidfile_path = Path(jidfile.name).as_posix()
         jidfile.close()
-        if (JacForm == "R") | (JacForm == "P") | (JacForm == "DC")::
-            cmd = f'SaveJacobian("{jacfile_path}","{jidfile_path}",M,{JacForm});'
-        else:
-            print("Wrong string given for JacForm, needs to be "R", "P", or "DC", default is "R")
-            cmd = f'SaveJacobian("{jacfile_path}","{jidfile_path}",M,R);'
+        cmd = f'SaveJacobian("{jacfile_path}","{jidfile_path}",M,{JacForm});'
         self.RunScriptCommand(cmd)
         with open(jacfile_path, 'r') as f:
             mat_str = f.read()
