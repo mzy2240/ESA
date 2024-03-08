@@ -4,6 +4,8 @@ Easy SimAuto (ESA)
    :target: https://pypi.org/project/esa/
 .. image:: https://img.shields.io/pypi/pyversions/esa.svg
    :target: https://pypi.org/project/esa/
+.. image:: https://img.shields.io/discord/1114563747651006524
+   :target: https://discord.gg/V9v8NRCT
 .. image:: https://joss.theoj.org/papers/10.21105/joss.02289/status.svg
    :target: https://doi.org/10.21105/joss.02289
 .. image:: https://img.shields.io/pypi/l/esa.svg
