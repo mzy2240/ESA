@@ -45,4 +45,4 @@ if use_numba:  # pragma: no cover
     calculate_bound = nb.njit()(_calculate_bound)
 else:  # pragma: no cover
     initialize_bound = _initialize_bound
-    calculate_bound = nb.njit()(_calculate_bound)
+    calculate_bound = _calculate_bound
