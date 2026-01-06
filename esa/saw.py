@@ -779,49 +779,84 @@ class SAW(object):
         df.fillna(0, inplace=True)
         return (df['BusSSMW'].to_numpy() + 1j * df['BusSS'].to_numpy()) / base
 
-    def get_jacobian(self, full=False):
-        """Helper function to get the Jacobian matrix, by default return a
-        scipy sparse matrix in the csr format
-        :param full: Convert the csr_matrix to the numpy array (full matrix).
+    def get_gmatrix(self, full: bool = False) -> Union[np.ndarray, csr_matrix]:
+        """Helper function to get the GIC conductance matrix (G).
+
+        By default, this function returns a scipy sparse matrix in csr format.
+
+        :param full: If True, convert the csr_matrix to a dense numpy array.
+        :return: The GIC conductance matrix as a sparse or dense matrix.
         """
-        jacfile = tempfile.NamedTemporaryFile(mode='w', suffix='.m',
-                                              delete=False)
-        jacfile_path = Path(jacfile.name).as_posix()
-        jacfile.close()
-        jidfile = tempfile.NamedTemporaryFile(mode='w', delete=False)
-        jidfile_path = Path(jidfile.name).as_posix()
-        jidfile.close()
-        cmd = f'SaveJacobian("{jacfile_path}","{jidfile_path}",M,R);'
-        self.RunScriptCommand(cmd)
-        with open(jacfile_path, 'r') as f:
-            mat_str = f.read()
-        os.unlink(jacfile.name)
-        os.unlink(jidfile.name)
-        mat_str = re.sub(r'\s', '', mat_str)
-        lines = re.split(';', mat_str)
-        ie = r'[0-9]+'
-        fe = r'-*[0-9]+\.[0-9]+'
-        dr = re.compile(r'(?:Jac)=(?:sparse\()({ie})'.format(ie=ie))
-        exp = re.compile(
-            r'(?:Jac\()({ie}),({ie})(?:\)=)({fe})'.format(
-                ie=ie, fe=fe))
-        row = []
-        col = []
-        data = []
-        # Get the dimension from the first line in lines
-        dim = dr.match(lines[0])[1]
-        n = int(dim)
-        for line in lines[1:]:
-            match = exp.match(line)
-            if match is None:
-                continue
-            idx1, idx2, real = match.groups()
-            row.append(int(idx1))
-            col.append(int(idx2))
-            data.append(float(real))
-        sparse_matrix = csr_matrix(
-            (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n))
-        return sparse_matrix.toarray() if full else sparse_matrix
+        # Create temporary files for PowerWorld to write to
+        g_matrix_file = tempfile.NamedTemporaryFile(mode="w", suffix=".m", delete=False)
+        id_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
+
+        try:
+            g_matrix_path = Path(g_matrix_file.name).as_posix()
+            id_file_path = Path(id_file.name).as_posix()
+            g_matrix_file.close()
+            id_file.close()
+
+            # Tell PowerWorld to write the G matrix to the files
+            cmd = f'GICSaveGMatrix("{g_matrix_path}","{id_file_path}");'
+
+            # NOTE: PowerWorld seems to require the command to be called twice
+            # to ensure all data is written to the file.
+            self.RunScriptCommand(cmd)
+            self.RunScriptCommand(cmd)
+
+            # Read the matrix data from the temporary file
+            with open(g_matrix_path, "r") as f:
+                mat_str = f.read()
+
+            # Parse the matrix string
+            sparse_matrix = self._parse_real_matrix(mat_str, 'GMatrix')
+
+            return sparse_matrix.toarray() if full else sparse_matrix
+
+        finally:
+            # Ensure temporary files are deleted.
+            os.unlink(g_matrix_file.name)
+            os.unlink(id_file.name)
+
+    def get_jacobian(self, full: bool = False) -> Union[np.ndarray, csr_matrix]:
+        """Helper function to get the Jacobian matrix.
+
+        By default, this function returns a scipy sparse matrix in csr format.
+
+        Note: The power flow must be solved before calling this function, otherwise
+        an error will be raised by PowerWorld.
+
+        :param full: If True, convert the csr_matrix to a dense numpy array.
+        :return: The Jacobian matrix as a sparse or dense matrix.
+        """
+        # Create temporary files for PowerWorld to write to
+        jac_file = tempfile.NamedTemporaryFile(mode="w", suffix=".m", delete=False)
+        id_file = tempfile.NamedTemporaryFile(mode="w", delete=False)
+
+        try:
+            jac_file_path = Path(jac_file.name).as_posix()
+            id_file_path = Path(id_file.name).as_posix()
+            jac_file.close()
+            id_file.close()
+
+            # Tell PowerWorld to write the Jacobian matrix to the files.
+            cmd = f'SaveJacobian("{jac_file_path}","{id_file_path}",M,R);'
+            self.RunScriptCommand(cmd)
+
+            # Read the matrix data from the temporary file.
+            with open(jac_file_path, "r") as f:
+                mat_str = f.read()
+
+            # Parse the matrix string into a sparse matrix.
+            sparse_matrix = self._parse_real_matrix(mat_str, "Jac")
+
+            return sparse_matrix.toarray() if full else sparse_matrix
+        
+        finally:
+            # Ensure temporary files are deleted.
+            os.unlink(jac_file.name)
+            os.unlink(id_file.name)
 
     def to_graph(self, node: str = 'bus', geographic: bool = False,
                  directed: bool = False, node_attr=None, edge_attr=None) \
@@ -3010,7 +3045,7 @@ class SAW(object):
 
          :returns: None
          """
-        script = f'CloseOneline({OnelineName})'
+        script = f'CloseOneline("{OnelineName}")'
         return self.RunScriptCommand(script)
 
     ####################################################################
@@ -3335,6 +3370,47 @@ class SAW(object):
         except AttributeError:
             return data
 
+    def _parse_real_matrix(self, mat_str, matrix_name="Jac"):
+        """Helper to parse a real-valued sparse matrix from '.m' PowerWorld output.  
+
+        :param mat_str: String representation of a real-valued sparse
+            matrix, as returned by PowerWorld.
+        :param matrix_name: Name of the matrix to be parsed.
+        :returns: CSR sparse matrix.
+        """
+        # Regex for File Format
+        mat_str = re.sub(r"\s", "", mat_str)
+        lines = re.split(";", mat_str)
+        ie = r"[0-9]+"
+        fe = r"-*[0-9]+\.[0-9]+"
+
+        # Regex for Data Extraction
+        dr_raw = r"(?:{matrix_name})=(?:sparse\()({ie})".format(ie=ie, matrix_name=matrix_name)
+        exp_raw = r"(?:{matrix_name}\()({ie}),({ie})(?:\)=)({fe})".format(ie=ie, fe=fe, matrix_name=matrix_name)
+        dr = re.compile(dr_raw)
+        exp = re.compile(exp_raw)
+
+
+        # Get the dimension from the first line in lines
+        dim = dr.match(lines[0])[1]
+        n = int(dim)
+
+        # Empty Lists
+        row, col, data = [], [], []
+
+        for line in lines[1:]:
+            match = exp.match(line)
+            if match is None:
+                continue
+            idx1, idx2, real = match.groups()
+            row.append(int(idx1))
+            col.append(int(idx2))
+            data.append(float(real))
+
+        # Return CSR Sparse Matrix
+        return csr_matrix(
+            (data, (np.asarray(row) - 1, np.asarray(col) - 1)), shape=(n, n)
+        )
 
 def df_to_aux(fp, df, object_name: str):
     """ Convert a dataframe to PW aux/axd data section.

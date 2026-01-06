@@ -478,7 +478,7 @@ class GetKeyFieldListTestCase(unittest.TestCase):
 
         # Key fields have changed for 3 winding transformers between
         # versions.
-        if VERSION in [21, 22, 23]:
+        if VERSION in [21, 22, 23, 24]:
             expected = ['BusIdentifier', 'BusIdentifier:1', 'BusIdentifier:2',
                         'LineCircuit']
         elif VERSION == 17:
@@ -551,7 +551,7 @@ class IdentifyNumericFieldsTestCase(unittest.TestCase):
     # noinspection PyMethodMayBeStatic
     def test_correct(self):
         # Intentionally make the fields out of alphabetical order.
-        if VERSION in [21, 22, 23]:
+        if VERSION in [21, 22, 23, 24]:
             fields = ['LineStatus', 'LockOut', 'LineR', 'LineX', 'BusNum']
             expected = np.array([False, False, True, True, True])
         elif VERSION == 17:
@@ -743,6 +743,29 @@ class GetJacobianTestCase(unittest.TestCase):
         """It should return a numpy array of full matrix.
         """
         self.assertIsInstance(self.saw.get_jacobian(full=True), np.ndarray)
+
+
+class GetGMatrixTestCase(unittest.TestCase):
+    """Test get_gmatrix function."""
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.saw = SAW(PATH_14, early_bind=True)
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        # noinspection PyUnresolvedReferences
+        cls.saw.exit()
+
+    def test_get_gmatrix_default(self):
+        """It should return a scipy csr_matrix.
+        """
+        self.assertIsInstance(self.saw.get_gmatrix(), csr_matrix)
+
+    def test_get_gmatrix_full(self):
+        """It should return a numpy array of full matrix.
+        """
+        self.assertIsInstance(self.saw.get_gmatrix(full=True), np.ndarray)
 
 
 class ChangeToTemperatureTestCase(unittest.TestCase):
@@ -2460,23 +2483,23 @@ class SimAutoPropertiesTestCase(unittest.TestCase):
         self.assertFalse(saw_14.CreateIfNotFound)
 
     def test_program_information(self):
-        # Check returned values are variant arrays
-        result = saw_14.ProgramInformation
-        result_list = list(result)  # convert tuple of tuples to list of tuples
-
-        #  Checking first entry of each tuple
-        values = ['version', 'addons', 'executable']
-        k = 0
-        first_element = map(lambda x: x[0], result_list)
-        for i in first_element:
-            self.assertEqual(i, values[k])
-            k = k + 1
-
         #  Program Information introduced in version 21.
         if VERSION < 21:
-            self.assertFalse(saw_14.ProgramInformation)
-        else:
-            self.assertIsInstance(saw_14.ProgramInformation, tuple)
+            with self.assertLogs(logger=saw_14.log, level='WARN'):
+                self.assertFalse(saw_14.ProgramInformation)
+            return
+
+        # Check returned values are variant arrays
+        result = saw_14.ProgramInformation
+        self.assertIsInstance(saw_14.ProgramInformation, tuple)
+
+        # Get the first element of each sub-tuple
+        first_elements = [item[0] for item in result]
+
+        # Check that the expected values are present at the start.
+        # The property may return more data in future versions.
+        expected_values = ['version', 'addons', 'executable']
+        self.assertListEqual(first_elements[:len(expected_values)], expected_values)
 
 
 ########################################################################
@@ -2561,16 +2584,6 @@ class CloseOnelineTestCase(unittest.TestCase):
         with self.assertRaisesRegex(PowerWorldError,
                                     'Cannot find Oneline'):
             saw_14.CloseOneline("A file that cannot be found")
-
-    def test_close_with_invalid_identifier(self):
-        """Close the oneline diagram with invalid identifier should
-        raise a PowerWorld Error
-        """
-        saw_14.OpenOneLine(PATH_14_PWD)
-        with self.assertRaisesRegex(PowerWorldError,
-                                    'invalid identifier character'):
-            saw_14.CloseOneline(PATH_14_PWD)
-
 
 ########################################################################
 # Misc tests
